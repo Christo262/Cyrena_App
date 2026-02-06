@@ -141,10 +141,10 @@ Detailed development documentation will also be provided as soon as possible.
 - Ollama installed and running locally  
   ⚠️ A reasonably powerful machine is recommended (see hardware notes below)
 
-### Setup
+### Setup Ollama Locally
 
 1. Run Cyréna
-2. Click the gear icon (top right)
+2. Click the gear icon (bottom right)
 3. Add an Ollama connection:
    - Enter endpoint
    - Enter model ID
@@ -152,6 +152,14 @@ Detailed development documentation will also be provided as soon as possible.
    - Increase **Context** as much as your model supports
    - If your model supports the `think` parameter, you may enable it
 4. (Optional) Add a Tavily API key to enable web search
+
+### Setup OpenAI
+
+1. Run Cyréna
+2. Click the gear icon (bottom right)
+3. Enter API Key & Model Id
+	- Tested with ``gpt-5``
+4. Save
 
 ### Creating a Project
 
@@ -163,7 +171,7 @@ Detailed development documentation will also be provided as soon as possible.
    - Root directory → select your `.csproj`
    - Root namespace
    - Target framework
-	- Connection: Select your newly created Ollama connection 
+	- Connection: Select your newly created Ollama or OpenAI connection
 4. Click **Submit**
 
 Your project will appear in the Projects window.
