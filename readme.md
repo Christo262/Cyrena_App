@@ -18,9 +18,7 @@ Right now, it’s a working exploration.
 
 Here is Cyréna running a full prompt → build → repair loop:
 
-<a href="https://streamable.com/4lzn75" target="_blank" rel="noopener noreferrer">
-Demo video
-</a>
+👉 [Demo video](https://streamable.com/4lzn75)
 
 This demonstrates the core engineering workflow in action.
 
