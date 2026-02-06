@@ -1,0 +1,73 @@
+﻿@inherits DevelopComponentBase
+
+    <div class="p-0 d-flex flex-column h-100 mh-100 rounded" style="background-color: #1f1f1f">
+        <div class="p-3 flex-grow-1 overflow-auto" style="min-height: 0;" @ref="_scrollHost">
+            @if (Context.DisplayHistory.Count == 0)
+            {
+                <div class="text-muted">
+                    <div class="fw-semibold mb-1">Start chatting</div>
+                    <div>Type a message below. Use Shift+Enter for a new line.</div>
+                </div>
+            }
+            else
+            {
+                for (int i = 0; i < Context.DisplayHistory.Count; i++)
+                {
+                    if (Context.DisplayHistory[i].Role == Context.ErrorRole)
+                    {
+                        <div class="d-flex mb-3 justify-content-start">
+                            <div class="text-danger small" style="white-space: pre-wrap;">@((MarkupString)Context.DisplayHistory[i].Content)</div>
+                        </div>
+                    }
+                    else if (Context.DisplayHistory[i].Role == Context.InfoRole)
+                    {
+                        <div class="d-flex mb-3 justify-content-start">
+                            <div class="text-muted small" style="white-space: pre-wrap;">@((MarkupString)Context.DisplayHistory[i].Content)</div>
+                        </div>
+                    }
+                    else
+                    {
+                        var isUser = Context.DisplayHistory[i].Role == Microsoft.SemanticKernel.ChatCompletion.AuthorRole.User;
+                        <div class="d-flex mb-3 @(isUser ? "justify-content-end" : "justify-content-start")">
+                            <div class="chat-bubble @(isUser ? "chat-bubble-user" : "chat-bubble-assistant") px-3 py-2">
+                                @if (!isUser)
+                                {
+                                    <div class="small opacity-75 mb-1">
+                                        Cyréna
+                                    </div>
+                                }
+                                <div>@((MarkupString)Markdig.Markdown.ToHtml(Context.DisplayHistory[i].Content, _mdp))</div>
+                            </div>
+                        </div>
+                    }
+                }
+
+
+
+                @if (!string.IsNullOrEmpty(_stream))
+                {
+                    <div class="d-flex mb-3 justify-content-start">
+                        <div class="chat-bubble chat-bubble-assistant px-3 py-2">
+                            <div class="small opacity-75 mb-1">
+                                Cyréna
+                            </div>
+                            <div>@((MarkupString)Markdig.Markdown.ToHtml(_stream, _mdp))</div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="p-3 border-top">
+            <BootstrapInputGroup>
+                <textarea value="@_input"
+                          class="form-control auto-grow"
+                          disabled="@Context.Handling"
+                          @ref="_area"
+                          rows="1"
+                          @oninput="AutoGrow"
+                          @onkeydown="ComposerKeyDown" />
+                <Button Icon="bi bi-arrow-up-circle-fill" OnClick="Send" IsDisabled="Context.Handling"></Button>
+            </BootstrapInputGroup>
+        </div>
+    </div>

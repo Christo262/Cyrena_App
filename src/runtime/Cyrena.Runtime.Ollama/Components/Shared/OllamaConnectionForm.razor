@@ -1,0 +1,71 @@
+@using Cyrena.Components.Shared
+ 
+<EditForm EditContext="_context">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-2">
+        <label class="form-label">Endpoint</label>
+        <InputText @bind-Value="Model.Endpoint" class="form-control" />
+    </div>
+    <div class="mb-2">
+        <label class="form-label">Model ID</label>
+        <InputText @bind-Value="Model.ModelId" class="form-control" />
+    </div>
+    <div class="mb-2">
+        <label class="form-label">Name</label>
+        <InputText @bind-Value="Model.Name" class="form-control" />
+    </div>
+
+    <Slider @bind-Value="@Model.NumPredict" ShowLabel="true" Max="16*1024" Min="1024" Step="1024"
+            DisplayText="@($"Tokens: {Model.NumPredict}")"></Slider>
+    <p class="small text-muted">
+        Maximum number of tokens to predict when generating text. (Default: 2048)
+    </p>
+
+    <Slider @bind-Value="@Model.NumContext" ShowLabel="true" Max="16*1024" Min="1024" Step="1024"
+            DisplayText="@($"Context: {Model.NumContext}")"></Slider>
+    <p class="small text-muted">
+        Sets the size of the context window used to generate the next token. (Default: 4096)
+    </p>
+
+    <Slider @bind-Value="@Model.MTemperature" ShowLabel="true" Max="12" Min="0" Step="1"
+            DisplayText="@($"Temperature: {Model.Temperature}")"></Slider>
+    <p class="small text-muted">
+        The temperature of the model. Increasing the temperature will make the model answer more creatively. (Default: 0.2)
+    </p>
+
+    <Slider @bind-Value="@Model.TopK" ShowLabel="true" Max="100" Min="10" Step="10"
+            DisplayText="@($"TopK: {Model.TopK}")"></Slider>
+    <p class="small text-muted">
+        Reduces the probability of generating nonsense. A higher value (e.g. 100) will give more diverse answers, while a lower value (e.g. 10) will be more conservative. (Default: 40)
+    </p>
+
+    <Slider @bind-Value="@Model.MTopP" ShowLabel="true" Max="95" Min="5" Step="5"
+            DisplayText="@($"TopP: {Model.TopP}")"></Slider>
+    <p class="small text-muted">
+        Works together with top-k. A higher value (e.g., 0.95) will lead to more diverse text, while a lower value (e.g., 0.5) will generate more focused and conservative text. (Default: 0.9)
+    </p>
+
+    <Slider @bind-Value="@Model.MMinP" ShowLabel="true" Max="90" Min="0" Step="5"
+            DisplayText="@($"MinP: {Model.MinP}")"></Slider>
+    <p class="small text-muted">
+        Alternative to the topp, and aims to ensure a balance of quality and variety. The parameter _p represents the minimum probability for a token to be considered, relative to the probability of the most likely token. For example, with p=0.05 and the most likely token having a probability of 0.9, logits with a value less than 0.045 are filtered out. (Default: 0.0)
+    </p>
+
+    <div class="mb-3">
+        <label class="form-label">Thinking</label>
+        <select @bind="Model.Thinking" class="form-control">
+            <option value="">Unused</option>
+            <option value="@("low")">Low</option>
+            <option value="@("medium")">Medium</option>
+            <option value="@("high")">High</option>
+            <option value="@("true")">True</option>
+            <option value="@("false")">False</option>
+        </select>
+        <p class="small text-muted">
+            Only applicable to certain models. See <a href="https://docs.ollama.com/capabilities/thinking#thinking" target="_blank">Ollama</a> for details.
+        </p>
+    </div>
+
+</EditForm>

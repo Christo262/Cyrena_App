@@ -1,0 +1,46 @@
+@page "/"
+@inherits CyrenaComponentBase
+
+<div class="p-4 h-100">
+    <div class="row m-0 h-100">
+        <div class="col-md-8 h-100 d-flex flex-column">
+            <h6>Projects</h6>
+            <div class="p-2 border rounded bg-black flex-grow-1 overflow-auto">
+                @if (_projects == null || _projects.Count() == 0)
+                {
+                    <p class="text-center text-muted m-3 small">No Projects</p>
+                }
+                else
+                {
+                    @foreach (var item in _projects)
+                    {
+                        <div class="bg-dark py-2 row m-0 mb-3">
+                            <div class="col">
+                                <p class="m-0 text-truncate">@item.Name</p>
+                                <p class="small m-0 text-muted text-truncate">@item.Description</p>
+                            </div>
+                            <div class="col-3 p-0 pe-1 text-end justify-content-center align-self-center">
+                                <button type="button" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                                <button type="button" @onclick="() => Edit(item)" class="btn btn-sm btn-secondary"><i class="bi bi-pen"></i></button>
+                                <a href="develop/@item.Id" class="btn btn-sm btn-primary"><i class="bi bi-arrow-right-square"></i></a>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="col-md-4 h-100 d-flex flex-column">
+            <h6>Create</h6>
+            <div class="p-2 border rounded bg-black flex-grow-1 overflow-auto">
+                <CreateOptions OnAfterCreate="Refresh" />
+            </div>
+
+            <div class="text-end mt-1">
+                <Tooltip Title="Settings">
+                    <a href="settings" class="btn btn-sm btn-secondary"><i class="bi bi-gear"></i></a>
+                </Tooltip>
+            </div>
+        </div>
+    </div>
+</div>

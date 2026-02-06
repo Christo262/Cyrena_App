@@ -1,0 +1,8 @@
+using System;
+
+namespace {root}.Models;
+
+public class {name}
+{
+
+}

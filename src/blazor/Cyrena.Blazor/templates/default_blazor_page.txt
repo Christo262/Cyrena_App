@@ -1,0 +1,8 @@
+@namespace {root}.Components.Pages
+@page "/{url}"
+
+<h1>{name}</h1>
+
+@code {
+
+}

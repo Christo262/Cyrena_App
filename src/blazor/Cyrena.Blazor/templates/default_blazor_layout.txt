@@ -1,0 +1,6 @@
+@namespace {root}.Components.Layout
+@inherits LayoutComponentBase
+
+<main>
+ @Body
+</main>

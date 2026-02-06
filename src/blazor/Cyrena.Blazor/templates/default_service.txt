@@ -1,0 +1,8 @@
+using {root}.Contracts;
+
+namespace {root}.Services;
+
+internal class {name}
+{
+
+}

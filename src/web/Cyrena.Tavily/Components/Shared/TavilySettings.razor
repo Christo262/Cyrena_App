@@ -1,0 +1,39 @@
+@inject ISettingsService _settings
+@inject ToastService _toasts
+
+<h4>Tavily Web Search</h4>
+
+<EditForm Model="_model" OnValidSubmit="Submit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label">API Key</label>
+        <InputText @bind-Value="_model.ApiKey" type="password" class="form-control" />
+    </div>
+
+    <div class="form-check form-switch mb-3">
+        <InputCheckbox @bind-Value="_model.Enable" class="form-check-input"/>
+        <label class="form-check-label">Enable</label>
+    </div>
+
+    <input type="submit" value="Save" class="btn btn-primary btn-sm"/>
+</EditForm>
+
+@code {
+    private TavilyOptions _model = new();
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender) return;
+        _model = _settings.Read<TavilyOptions>(TavilyOptions.Key) ?? new TavilyOptions();
+        this.StateHasChanged();
+    }
+
+    private void Submit()
+    {
+        if (_model == null) return;
+        _settings.Save(TavilyOptions.Key, _model);
+        _toasts.Success("Tavily", "Settings Updated");
+    }
+}

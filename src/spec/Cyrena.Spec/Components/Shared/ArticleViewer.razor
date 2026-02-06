@@ -1,0 +1,31 @@
+@inherits DevelopComponentBase
+
+<Drawer Placement="Placement.Right" @bind-IsOpen="@_open" IsBackdrop="true">
+    <div class="d-flex">
+        <h5 class="m-0">Engineering Memory</h5>
+
+        <button type="button" class="btn btn-sm btn-close ms-auto" @onclick="Toggle"></button>
+    </div>
+    <hr />
+    <p class="small m-0"><span class="text-info">*</span> Right click a article for options</p>
+
+    <div class="text-end">
+        <button type="button" class="btn btn-success btn-sm" @onclick="Create"><i class="bi bi-plus"></i></button>
+    </div>
+
+    @foreach (var item in _specs.Articles.OrderBy(a => a.Title))
+    {
+        <ContextMenuZone>
+            <ContextMenuTrigger ContextItem="item">
+                <div class="p-2 border-bottom rounded shadow mb-3">
+                    <h6 class="m-0">@item.Title</h6>
+                    <p class="small m-0">@item.Summary</p>
+                </div>
+            </ContextMenuTrigger>
+            <ContextMenu>
+                <ContextMenuItem Icon="bi bi-pen" Text="Edit" OnClick="Edit"></ContextMenuItem>
+                <ContextMenuItem Icon="bi bi-trash" Text="Delete" OnClick="Delete"></ContextMenuItem>
+            </ContextMenu>
+        </ContextMenuZone>
+    }
+</Drawer>

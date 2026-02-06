@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon>favicon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="favicon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Photino.Blazor" Version="4.0.13" />
+    <PackageReference Include="NativeFileDialogs.Net" Version="1.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\blazor\Cyrena.Blazor\Cyrena.Blazor.csproj" />
+    <ProjectReference Include="..\components\Cyrena.Components\Cyrena.Components.csproj" />
+    <ProjectReference Include="..\persistence\Cyrena.Persistence.File\Cyrena.Persistence.File.csproj" />
+    <ProjectReference Include="..\runtime\Cyrena.Runtime.Ollama\Cyrena.Runtime.Ollama.csproj" />
+    <ProjectReference Include="..\runtime\Cyrena.Runtime\Cyrena.Runtime.csproj" />
+    <ProjectReference Include="..\spec\Cyrena.Spec\Cyrena.Spec.csproj" />
+    <ProjectReference Include="..\web\Cyrena.Tavily\Cyrena.Tavily.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="favicon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

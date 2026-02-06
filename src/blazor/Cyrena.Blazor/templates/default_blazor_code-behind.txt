@@ -1,0 +1,8 @@
+using System;
+
+namespace {root}.Components.{section};
+
+public partial class {name} 
+{
+	
+}

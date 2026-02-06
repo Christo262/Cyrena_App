@@ -1,0 +1,64 @@
+@using SimpleBlazor.Models
+@using SimpleBlazor.Contracts
+@inject IInvoiceService InvoiceService
+@inject NavigationManager Nav
+@page "/invoices/edit/{id?}"
+
+<h3>@(invoice?.Id == null ? "Add Invoice" : "Edit Invoice")</h3>
+
+<EditForm Model="invoice" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-3">
+        <label class="form-label">ClientId</label>
+        <InputText class="form-control" @bind-Value="invoice.ClientId" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Date</label>
+        <InputDate class="form-control" @bind-Value="invoice.Date" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">DueDate</label>
+        <InputDate class="form-control" @bind-Value="invoice.DueDate" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Amount</label>
+        <InputNumber class="form-control" @bind-Value="invoice.Amount" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Description</label>
+        <InputTextArea class="form-control" @bind-Value="invoice.Description" />
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="button" class="btn btn-secondary" @onclick="@(() => Nav.NavigateTo("/invoices"))">Cancel</button>
+</EditForm>
+
+@code {
+    [Parameter] public Guid? id { get; set; }
+    private Invoice invoice = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (id.HasValue)
+        {
+            var existing = await InvoiceService.GetByIdAsync(id.Value);
+            if (existing != null)
+            {
+                invoice = existing;
+            }
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (invoice.Id == Guid.Empty)
+        {
+            await InvoiceService.AddAsync(invoice);
+        }
+        else
+        {
+            await InvoiceService.UpdateAsync(invoice);
+        }
+        Nav.NavigateTo("/invoices");
+    }
+}

@@ -1,0 +1,60 @@
+@using SimpleBlazor.Models
+@using SimpleBlazor.Contracts
+@inject IClientService ClientService
+@inject NavigationManager Nav
+@page "/clients/edit/{id?}"
+
+<h3>@(client?.Id == null ? "Add Client" : "Edit Client")</h3>
+
+<EditForm Model="client" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-3">
+        <label class="form-label">Name</label>
+        <InputText class="form-control" @bind-Value="client.Name" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <InputText class="form-control" @bind-Value="client.Email" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Phone</label>
+        <InputText class="form-control" @bind-Value="client.Phone" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Address</label>
+        <InputText class="form-control" @bind-Value="client.Address" />
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="button" class="btn btn-secondary" @onclick="@(() => Nav.NavigateTo("/clients"))">Cancel</button>
+</EditForm>
+
+@code {
+    [Parameter] public Guid? id { get; set; }
+    private Client client = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (id.HasValue)
+        {
+            var existing = await ClientService.GetByIdAsync(id.Value);
+            if (existing != null)
+            {
+                client = existing;
+            }
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (client.Id == Guid.Empty)
+        {
+            await ClientService.AddAsync(client);
+        }
+        else
+        {
+            await ClientService.UpdateAsync(client);
+        }
+        Nav.NavigateTo("/clients");
+    }
+}

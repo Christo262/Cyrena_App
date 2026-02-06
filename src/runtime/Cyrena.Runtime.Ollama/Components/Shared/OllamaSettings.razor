@@ -1,0 +1,58 @@
+﻿
+<h4>
+    Ollama Connections
+</h4>
+
+@if (_models != null)
+{
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Model ID
+                </th>
+                <th>
+                    Endpoint
+                </th>
+                <th>
+                    Temperature
+                </th>
+                <th>
+                    <Tooltip Title="Add">
+                        <button @onclick="Create" type="button" class="btn btn-success btn-sm"><i class="bi bi-plus"></i></button>
+                    </Tooltip>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in _models)
+            {
+                <tr>
+                    <td>
+                        @item.Name
+                    </td>
+                    <td>
+                        @item.ModelId
+                    </td>
+                    <td>
+                        @item.Endpoint
+                    </td>
+                    <td>
+                        @item.Temperature
+                    </td>
+                    <td>
+                        <Tooltip Title="Edit">
+                            <button type="button" @onclick="() => Edit(item)" class="btn btn-secondary btn-sm"><i class="bi bi-pen"></i></button>
+                        </Tooltip>
+                        <Tooltip Title="Delete">
+                            <button type="button" @onclick="() => DeleteAsync(item)" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
+                        </Tooltip>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

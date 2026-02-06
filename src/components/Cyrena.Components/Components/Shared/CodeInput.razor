@@ -1,0 +1,34 @@
+﻿@using BlazorMonaco
+@using BlazorMonaco.Editor
+@using BlazorMonaco.Languages
+
+<div class="monaco-input">
+    <StandaloneCodeEditor @ref="_code" Id="@_id" ConstructionOptions="EditorConstructionOptions" OnKeyDown="OnKeydown" />
+</div>
+
+
+@code {
+    private string _id { get; set; } = Guid.NewGuid().ToString();
+    private StandaloneCodeEditor _code = default!;
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+
+    [Parameter] public string Language { get; set; } = "plaintext";
+
+    private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
+    {
+        return new StandaloneEditorConstructionOptions
+        {
+            AutomaticLayout = true,
+            Language = Language,
+            Value = Value,
+            Theme = "vs-dark"
+        };
+    }
+
+    private async Task OnKeydown(KeyboardEvent e)
+    {
+        Value = await _code.GetValue();
+        await ValueChanged.InvokeAsync(Value);
+    }
+}

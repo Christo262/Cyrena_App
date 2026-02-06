@@ -1,0 +1,53 @@
+@using SimpleBlazor.Models
+@using SimpleBlazor.Contracts
+@inject IClientService ClientService
+@inject NavigationManager Nav
+
+<h3>Clients</h3>
+
+<button class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/clients/edit"))">Add Client</button>
+
+<table class="table table-striped mt-3">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (clients != null)
+        {
+            foreach (var client in clients)
+            {
+                <tr>
+                    <td>@client.Name</td>
+                    <td>@client.Email</td>
+                    <td>@client.Phone</td>
+                    <td>@client.Address</td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" @onclick="@(() => Nav.NavigateTo($"/clients/edit/{client.Id}"))">Edit</button>
+                        <button class="btn btn-sm btn-danger" @onclick="() => Delete(client.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    private IEnumerable<Client>? clients;
+
+    protected override async Task OnInitializedAsync()
+    {
+        clients = await ClientService.GetAllAsync();
+    }
+
+    private async Task Delete(Guid id)
+    {
+        await ClientService.DeleteAsync(id);
+        clients = await ClientService.GetAllAsync();
+    }
+}
