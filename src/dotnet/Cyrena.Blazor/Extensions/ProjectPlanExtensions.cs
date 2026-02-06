@@ -28,6 +28,9 @@ namespace Cyrena.Blazor.Extensions
             var services = plan.GetOrCreateFolder("services", "Services");
             plan.IndexFiles(services, "cs", "services_");
 
+            var options = plan.GetOrCreateFolder("options", "Options");
+            plan.IndexFiles(options, "cs", "options_");
+
             ProjectPlan.Save(plan);
             return plan;
         }

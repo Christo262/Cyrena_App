@@ -69,16 +69,23 @@ namespace Cyrena.Desktop.Components.Pages
         {
             if(_context == null) return;
             _menuItems = new List<MenuItem>();
+            var mni = new List<MenuItem>();
             foreach (var item in _context.ProjectPlan.Folders)
             {
-                _menuItems.Add(Build(item));
+                mni.Add(Build(item));
             }
 
             foreach (var item in _context.ProjectPlan.Files)
             {
                 var ffm = new MenuItem() { Text = item.Name, Id = item.Id, Icon = "bi bi-file-code text-success" };
-                _menuItems.Add(ffm);
+                mni.Add(ffm);
             }
+            var fs = new MenuItem("Files", null, "bi bi-journal-code")
+            {
+                Items = mni,
+                IsCollapsed = false
+            };
+            _menuItems.Add(fs);
         }
 
         private MenuItem Build(ProjectFolder folder)

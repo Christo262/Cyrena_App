@@ -76,3 +76,35 @@ namespace Cyrena.Blazor.Services
         }
     }
 }
+
+/*
+- wwwroot
+	- css
+		- styles.css
+	- js
+		- site.js
+- Components
+	- Layout
+		- MainLayout.razor
+	- Pages
+		- Index.razor //Example
+	- Shared
+		- NavMenu.razor
+	- _Imports.razor
+	- App.razor
+	- Routes.razor
+- Contracts
+	- IMyService.cs
+- Models
+	- MyModel.cs
+- Services
+	- MyService.cs
+- Extensions
+	- MyServiceExtensions.cs
+	- MyModelExtensions.cs
+- Options
+    - SomeOptions.cs
+- Program.cs //entry file
+- appsettings.json
+- appsettings.Development.json
+ */

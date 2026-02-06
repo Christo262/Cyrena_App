@@ -1,16 +1,16 @@
 ﻿using Cyrena.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace Cyrena.Blazor.Models
+namespace Cyrena.Net.Models
 {
-    public class BlazorProject : Project
+    public abstract class DotnetProject : Project
     {
-        public BlazorProject() : base()
+        protected DotnetProject(string type)
         {
-            Type = "blazor-app";
+            Type = type;
         }
 
-        public BlazorProject(Project project)
+        protected DotnetProject(Project project, string type)
         {
             Id = project.Id;
             Name = project.Name;
@@ -18,7 +18,7 @@ namespace Cyrena.Blazor.Models
             RootDirectory = project.RootDirectory;
             Created = project.Created;
             LastModified = project.LastModified;
-            Type = "blazor-app";
+            Type = type;
             ConnectionId = project.ConnectionId;
             Properties = project.Properties;
         }

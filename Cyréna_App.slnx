@@ -2,14 +2,16 @@
   <Folder Name="/src/">
     <Project Path="src/Cyrena.Desktop/Cyrena.Desktop.csproj" />
   </Folder>
-  <Folder Name="/src/blazor/">
-    <Project Path="src/blazor/Cyrena.Blazor/Cyrena.Blazor.csproj" Id="db338793-1e50-4ab4-80b0-818d90addfef" />
-  </Folder>
   <Folder Name="/src/components/">
     <Project Path="src/components/Cyrena.Components/Cyrena.Components.csproj" />
   </Folder>
   <Folder Name="/src/core/">
     <Project Path="src/core/Cyrena.Core/Cyrena.Core.csproj" Id="e480a90d-03ab-4e4a-819e-b60f31560803" />
+  </Folder>
+  <Folder Name="/src/dotnet/">
+    <Project Path="src/dotnet/Cyrena.Blazor/Cyrena.Blazor.csproj" />
+    <Project Path="src/dotnet/Cyrena.ClassLibrary/Cyrena.ClassLibrary.csproj" Id="0186df65-ce36-4f33-b54c-46d0aa35d6a0" />
+    <Project Path="src/dotnet/Cyrena.Net/Cyrena.Net.csproj" Id="c25a0215-1dde-4b07-854f-c8173856610b" />
   </Folder>
   <Folder Name="/src/persistence/">
     <Project Path="src/persistence/Cyrena.Persistence.Core/Cyrena.Persistence.Core.csproj" Id="ce98ccdb-4675-4713-ae9c-536a5ad67df0" />
@@ -26,6 +28,7 @@
     <Project Path="src/web/Cyrena.Tavily/Cyrena.Tavily.csproj" Id="a52527de-2b8d-4184-949d-49f7669e0409" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/MyLib/MyLib.csproj" Id="e3bff4b1-9053-4c9e-86d0-3467b98736c8" />
     <Project Path="tests/SimpleBlazor/SimpleBlazor.csproj" Id="3ec7d4bc-cb08-4725-bc7e-a72a5dcc7042" />
   </Folder>
 </Solution>

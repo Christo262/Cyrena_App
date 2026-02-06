@@ -1,0 +1,8 @@
+using System;
+
+namespace {root}.Extensions;
+
+public static class {name}
+{
+
+}

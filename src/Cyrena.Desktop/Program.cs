@@ -26,16 +26,21 @@ class Program
             .AddRuntime(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "cyrena_app"))
             .AddComponents()
             .AddOllama()
-            .AddBlazorDevelopment()
             .AddSpecifications()
-            .AddTavily();
+            .AddTavily()
+            .AddBlazorDevelopment()
+            .AddClassLibraryDevelopment();
+
         var settings = cyrena.GetOption<ISettingsService>();
         var winCurr = new CurrentWindow(settings);
         cyrena.Services.AddSingleton<ICurrentWindow>(winCurr);
         cyrena.Build();
 
         appBuilder.RootComponents.Add<App>("app");
+        appBuilder.Services.Configure<App>(a =>
+        {
 
+        });
         var app = appBuilder.Build();
 
         // customize window
