@@ -14,6 +14,7 @@ namespace Cyrena.Desktop.Components.Pages
         [Inject] private IStore<Project> _store { get; set; } = default!;
         [Inject] private IServiceProvider _services { get; set; } = default!;
         [Inject] private ToastService _toasts { get; set; } = default!;
+        [Inject] private DialogService _dialog { get; set;  } = default!;
 
         private IEnumerable<Project>? _projects { get; set; }
 
@@ -39,6 +40,16 @@ namespace Cyrena.Desktop.Components.Pages
                 return;
             }
             await cfg.EditAsync(project);
+        }
+
+        private async Task Delete(Project project)
+        {
+            var rf = await _dialog.ShowModal("Delete Project", $"Are you sure you want to delete {project.Name}?");
+            if(rf == DialogResult.Yes)
+            {
+                await _store.DeleteAsync(project);
+                await Refresh();
+            }
         }
     }
 }

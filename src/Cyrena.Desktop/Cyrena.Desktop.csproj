@@ -23,6 +23,7 @@
     <ProjectReference Include="..\dotnet\Cyrena.ClassLibrary\Cyrena.ClassLibrary.csproj" />
     <ProjectReference Include="..\persistence\Cyrena.Persistence.File\Cyrena.Persistence.File.csproj" />
     <ProjectReference Include="..\runtime\Cyrena.Runtime.Ollama\Cyrena.Runtime.Ollama.csproj" />
+    <ProjectReference Include="..\runtime\Cyrena.Runtime.OpenAI\Cyrena.Runtime.OpenAI.csproj" />
     <ProjectReference Include="..\runtime\Cyrena.Runtime\Cyrena.Runtime.csproj" />
     <ProjectReference Include="..\spec\Cyrena.Spec\Cyrena.Spec.csproj" />
     <ProjectReference Include="..\web\Cyrena.Tavily\Cyrena.Tavily.csproj" />

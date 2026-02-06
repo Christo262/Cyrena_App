@@ -26,6 +26,7 @@ class Program
             .AddRuntime(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "cyrena_app"))
             .AddComponents()
             .AddOllama()
+            .AddOpenAI()
             .AddSpecifications()
             .AddTavily()
             .AddBlazorDevelopment()

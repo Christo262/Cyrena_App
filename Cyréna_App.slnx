@@ -23,6 +23,7 @@
   </Folder>
   <Folder Name="/src/runtime/">
     <Project Path="src/runtime/Cyrena.Runtime.Ollama/Cyrena.Runtime.Ollama.csproj" Id="172ba23c-64b1-410c-a4e0-3608bc6bd596" />
+    <Project Path="src/runtime/Cyrena.Runtime.OpenAI/Cyrena.Runtime.OpenAI.csproj" Id="9b0cc0d4-2e15-437c-90b4-2fb1d8b9b669" />
     <Project Path="src/runtime/Cyrena.Runtime/Cyrena.Runtime.csproj" Id="5eb6171f-3aea-4340-aaa9-2f70da7f0d79" />
   </Folder>
   <Folder Name="/src/spec/">

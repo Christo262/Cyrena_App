@@ -20,7 +20,7 @@
                                 <p class="small m-0 text-muted text-truncate">@item.Description</p>
                             </div>
                             <div class="col-3 p-0 pe-1 text-end justify-content-center align-self-center">
-                                <button type="button" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                                <button type="button" class="btn btn-sm btn-danger" @onclick="() => Delete(item)"><i class="bi bi-trash"></i></button>
                                 <button type="button" @onclick="() => Edit(item)" class="btn btn-sm btn-secondary"><i class="bi bi-pen"></i></button>
                                 <a href="develop/@item.Id" class="btn btn-sm btn-primary"><i class="bi bi-arrow-right-square"></i></a>
                             </div>

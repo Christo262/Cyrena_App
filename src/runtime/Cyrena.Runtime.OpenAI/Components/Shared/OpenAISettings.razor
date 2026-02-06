@@ -1,0 +1,23 @@
+@inherits Cyrena.Models.CyrenaComponentBase
+
+<h4>OpenAI Settings</h4>
+
+@if (_model != null)
+{
+    <EditForm Model="_model" OnValidSubmit="Save">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label class="form-label">API Key</label>
+            <InputText @bind-Value="_model.ApiKey" class="form-control" type="password" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Model Id</label>
+            <InputText @bind-Value="_model.ModelId" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-sm btn-primary">Save</button>
+    </EditForm>
+}
