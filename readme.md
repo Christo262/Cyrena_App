@@ -170,6 +170,24 @@ Your project will appear in the Projects window.
 
 Click the blue arrow icon to begin.
 
+### Hardware Notes
+
+Cyréna is currently developed and tested on the following baseline system:
+
+- GPU: Nvidia RTX 3060 (12GB VRAM)
+- RAM: 48GB
+- CPU: Ryzen 7 8700F
+
+Test model configuration:
+
+- Model: `gpt-oss:20b`
+- Tokens: 8k
+- Context: 16k
+
+This setup is sufficient for mid-sized local models. Larger models will benefit from additional VRAM and RAM.
+
+Hardware requirements scale directly with model size.
+
 ---
 
 # ⚠️ IMPORTANT: Experimental Status & Safety Notes
