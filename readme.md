@@ -18,7 +18,7 @@ Right now, it’s a working exploration.
 
 Here is Cyréna running a full prompt → build → repair loop:
 
-👉 [Demo video](cyrena_1.mp4)
+👉 [Demo video](https://streamable.com/4lzn75)
 
 This demonstrates the core engineering workflow in action.
 
