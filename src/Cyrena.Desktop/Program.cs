@@ -51,7 +51,7 @@ class Program
             .Load("index.html")
             .Center();
 
-        app.MainWindow.Height = 700;
+        app.MainWindow.Height = 740;
         app.MainWindow.Width = 1000;
         winCurr.SetWindow(app.MainWindow);
 

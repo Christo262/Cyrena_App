@@ -10,6 +10,7 @@ namespace Cyrena.Desktop.Services
         public bool Maximized { get; set; }
         public int Width { get; set; } = 1200;
         public int Height { get; set; } = 800;
+        
     }
 
     internal class CurrentWindow : ICurrentWindow
@@ -55,13 +56,13 @@ namespace Cyrena.Desktop.Services
         public void Maximize()
         {
             if (_window == null) return;
-            _window.Maximized = true;
+            _window.SetMaximized(true);
         }
 
         public void Minimize()
         {
             if (_window == null) return;
-            _window.Minimized = true;
+            _window.SetMinimized(true);
         }
 
         public void Restore()
@@ -69,10 +70,24 @@ namespace Cyrena.Desktop.Services
             if (_window == null) return;
             _window.Minimized = false;
             _window.Maximized = _options.Maximized;
-            _window.Height = _options.Height;
-            _window.Width = _options.Width;
             _window.Center();
+            if (_options.Maximized)
+                _window.SetMaximized(true);
+            _window.SetHeight(_options.Height);
+            _window.SetWidth(_options.Width);
             _restored = true;
+        }
+
+        public void SetTransparent(bool b)
+        {
+            if (_window == null) return;
+            _window.SetTransparent(b);
+        }
+
+        public void SetFullScreen(bool b)
+        {
+            if(_window ==null) return;
+            _window.SetFullScreen(b);
         }
 
         public void Dispose()
@@ -85,6 +100,13 @@ namespace Cyrena.Desktop.Services
         private void Save()
         {
             _settings.Save(WindowOptions.Key, _options);
+        }
+
+        public async Task<string[]> ShowFileSelect(string title, string name, string[] filters)
+        {
+            if (_window == null) return [];
+            var files = await _window.ShowOpenFileAsync(title, null, false, [(name, filters)]);
+            return files;
         }
     }
 }

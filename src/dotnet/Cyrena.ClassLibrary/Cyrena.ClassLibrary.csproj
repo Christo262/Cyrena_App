@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.2" />
-    <PackageReference Include="NativeFileDialogs.Net" Version="1.2.1" />
   </ItemGroup>
 
   <ItemGroup>

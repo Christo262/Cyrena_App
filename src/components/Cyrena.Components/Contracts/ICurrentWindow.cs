@@ -14,5 +14,8 @@ namespace Cyrena.Contracts
         void Maximize();
 
         void Restore();
+        void SetTransparent(bool b);
+        void SetFullScreen(bool b);
+        Task<string[]> ShowFileSelect(string title, string name, string[] filters);
     }
 }
