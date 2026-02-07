@@ -12,12 +12,12 @@
         <InputText @bind-Value="_model.ApiKey" type="password" class="form-control" />
     </div>
 
-    <div class="form-check form-switch mb-3">
-        <InputCheckbox @bind-Value="_model.Enable" class="form-check-input"/>
+    <div class="form-check mb-3">
+        <InputCheckbox @bind-Value="_model.Enable" class="form-check-input" />
         <label class="form-check-label">Enable</label>
     </div>
 
-    <input type="submit" value="Save" class="btn btn-primary btn-sm"/>
+    <input type="submit" value="Save" class="btn btn-primary btn-sm" />
 </EditForm>
 
 @code {

@@ -1,16 +1,15 @@
 ﻿using BootstrapBlazor.Components;
 using Cyrena.ClassLibrary.Models;
+using Cyrena.Contracts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Cyrena.ClassLibrary.Components.Shared
 {
     public partial class ClassLibraryConfig : IResultDialog
     {
         [Parameter] public ClassLibraryProject Model { get; set; } = default!;
+        [Inject] private ICurrentWindow _win { get; set; } = default!;
 
         private EditContext _context = default!;
 
@@ -35,12 +34,10 @@ namespace Cyrena.ClassLibrary.Components.Shared
         {
             try
             {
-                var result = NativeFileDialogs.Net.Nfd.OpenDialog(out var csp);
-
-                if (result == NativeFileDialogs.Net.NfdStatus.Ok)
+                var files = await _win.ShowFileSelect("Choose csproj", "csproj", [".csproj"]);
+                if (files.Length > 0)
                 {
-                    var t = csp;
-                    var info = new FileInfo(t);
+                    var info = new FileInfo(files[0]);
                     Model.RootDirectory = info.DirectoryName ?? string.Empty;
                 }
             }
