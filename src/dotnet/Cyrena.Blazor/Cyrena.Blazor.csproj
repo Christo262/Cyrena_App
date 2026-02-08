@@ -22,7 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="blazor_prompt.txt">
+    <None Update="blazor_lib_prompt.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="blazor_prompt.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -3,14 +3,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Cyrena.Net.Models
 {
-    public abstract class DotnetProject : Project
+    public class DotnetProject : Project
     {
-        protected DotnetProject(string type)
+        public DotnetProject(string type)
         {
             Type = type;
         }
 
-        protected DotnetProject(Project project, string type)
+        public DotnetProject(Project project, string type)
         {
             Id = project.Id;
             Name = project.Name;

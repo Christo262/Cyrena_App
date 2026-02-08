@@ -10,6 +10,7 @@ namespace Cyrena.Extensions
         public static CyrenaBuilder AddBlazorDevelopment(this CyrenaBuilder builder)
         {
             builder.Services.AddScoped<IProjectConfigurator, BlazorProjectConfigurator>();
+            builder.Services.AddScoped<IProjectConfigurator, BlazorLibraryConfigurator>();
             return builder;
         }
     }

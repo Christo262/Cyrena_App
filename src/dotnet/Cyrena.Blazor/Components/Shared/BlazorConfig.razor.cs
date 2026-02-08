@@ -1,15 +1,15 @@
 ﻿using BootstrapBlazor.Components;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Cyrena.Blazor.Models;
 using Cyrena.Models;
 using Cyrena.Contracts;
+using Cyrena.Net.Models;
 
 namespace Cyrena.Blazor.Components.Shared
 {
-    public partial class BlazorServerConfig : IResultDialog
+    public partial class BlazorConfig : IResultDialog
     {
-        [Parameter] public BlazorProject Model { get; set; } = default!;
+        [Parameter] public DotnetProject Model { get; set; } = default!;
         [Inject] private ICurrentWindow _win { get; set;  } = default!;
 
         private EditContext _context = default!;
