@@ -123,5 +123,39 @@ namespace Cyrena.Blazor.Plugins
             ProjectPlan.Save(_context.ProjectPlan);
             return new ToolResult<ProjectFile>(nf);
         }
+
+        [KernelFunction]
+        [Description("Creates a new css file in the wwwroot/css folder with some starter code.")]
+        public ToolResult<ProjectFile> CreateStylesheet(
+            [Description("The name of the css file, for example, 'my-styles'.")] string name)
+        {
+            name = name.Replace(".css", "");
+            var id = $"styles_{name}";
+            if (_context.ProjectPlan.TryFindFile(id, out var file))
+                return new ToolResult<ProjectFile>(file!, true, "File already exists.");
+            _context.LogInfo($"Creating stylesheet {name}");
+            var www = _context.ProjectPlan.GetOrCreateFolder("wwwroot", "wwwroot");
+            var style = _context.ProjectPlan.GetOrCreateFolder(www, "wwwroot_css", "css");
+            var model = _context.ProjectPlan.CreateFile(style, id, $"{name}.css", $"body {{ {Environment.NewLine} }}");
+            ProjectPlan.Save(_context.ProjectPlan);
+            return new ToolResult<ProjectFile>(model);
+        }
+
+        [KernelFunction]
+        [Description("Creates a new javascript file in the wwwroot/js folder with some starter code.")]
+        public ToolResult<ProjectFile> CreateJavaScript(
+            [Description("The name of the javascript file, for example, 'my-scripts'.")] string name)
+        {
+            name = name.Replace(".js", "");
+            var id = $"script_{name}";
+            if (_context.ProjectPlan.TryFindFile(id, out var file))
+                return new ToolResult<ProjectFile>(file!, true, "File already exists.");
+            _context.LogInfo($"Creating javascript {name}");
+            var www = _context.ProjectPlan.GetOrCreateFolder("wwwroot", "wwwroot");
+            var scripts = _context.ProjectPlan.GetOrCreateFolder(www, "scripts", "js");
+            var model = _context.ProjectPlan.CreateFile(scripts, id, $"{name}.js", $"function foo() {{ {Environment.NewLine} }}");
+            ProjectPlan.Save(_context.ProjectPlan);
+            return new ToolResult<ProjectFile>(model);
+        }
     }
 }

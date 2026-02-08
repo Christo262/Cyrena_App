@@ -33,6 +33,7 @@
     <Project Path="src/web/Cyrena.Tavily/Cyrena.Tavily.csproj" Id="a52527de-2b8d-4184-949d-49f7669e0409" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/BlazorLibrary/BlazorLibrary.csproj" Id="10dffb49-0579-40e8-930f-c3fb997c2ffc" />
     <Project Path="tests/MyLib/MyLib.csproj" Id="e3bff4b1-9053-4c9e-86d0-3467b98736c8" />
     <Project Path="tests/SimpleBlazor/SimpleBlazor.csproj" Id="3ec7d4bc-cb08-4725-bc7e-a72a5dcc7042" />
   </Folder>

@@ -11,38 +11,26 @@ using Microsoft.SemanticKernel;
 
 namespace Cyrena.Blazor.Services
 {
-    internal class BlazorProjectConfigurator : IProjectConfigurator
+    internal class BlazorLibraryConfigurator : IProjectConfigurator
     {
         private readonly DialogService _dialog;
         private readonly IStore<Project> _store;
-        public BlazorProjectConfigurator(DialogService dialog, IStore<Project> store)
+        public BlazorLibraryConfigurator(DialogService dialog, IStore<Project> store)
         {
             _dialog = dialog;
             _store = store;
         }
-
-        public string ProjectType => "blazor-app";
-        public string Name => "Blazor App";
-        public string? Description => "Build a Blazor Server or WASM application.";
-        public string? Icon => "bi bi-hdd-stack";
-
-        public Task<ProjectPlan> InitializeAsync(IDeveloperContextBuilder builder)
-        {
-            var plan = builder.LoadBlazorDefaultPlan();
-            var prompt = File.ReadAllText("./blazor_prompt.md");
-            builder.KernelHistory.AddSystemMessage(prompt);
-            builder.Plugins.AddFromType<BlazorCreatePlugin>();
-            builder.Plugins.AddFromType<DefaultStructurePlugin>();
-            builder.Plugins.AddFromType<DotnetActions>();
-            return Task.FromResult(plan);
-        }
+        public string ProjectType => "blazor-class-lib";
+        public string Name => "Blazor Component Library";
+        public string? Description => "Build a reusable blazor component library";
+        public string? Icon => "bi bi-journal-richtext";
 
         public async Task<bool> CreateNewAsync()
         {
             var project = new DotnetProject(ProjectType);
             var rf = await _dialog.ShowModal<BlazorConfig>(new ResultDialogOption()
             {
-                Title = "Blazor App",
+                Title = "Blazor Library",
                 Size = BootstrapBlazor.Components.Size.Medium,
                 ButtonYesText = "Submit",
                 ButtonNoText = "Cancel",
@@ -51,7 +39,7 @@ namespace Cyrena.Blazor.Services
                     {"Model", project }
                 }
             });
-            if(rf == DialogResult.Yes)
+            if (rf == DialogResult.Yes)
             {
                 await _store.AddAsync(project);
                 return true;
@@ -64,7 +52,7 @@ namespace Cyrena.Blazor.Services
             var model = new DotnetProject(project, ProjectType);
             var rf = await _dialog.ShowModal<BlazorConfig>(new ResultDialogOption()
             {
-                Title = "Blazor App",
+                Title = "Blazor Library",
                 Size = BootstrapBlazor.Components.Size.Medium,
                 ButtonYesText = "Submit",
                 ButtonNoText = "Cancel",
@@ -76,11 +64,22 @@ namespace Cyrena.Blazor.Services
             if (rf == DialogResult.Yes)
                 await _store.UpdateAsync(project);
         }
+
+        public Task<ProjectPlan> InitializeAsync(IDeveloperContextBuilder builder)
+        {
+            var plan = builder.LoadBlazorDefaultPlan();
+            var prompt = File.ReadAllText("./blazor_lib_prompt.md");
+            builder.KernelHistory.AddSystemMessage(prompt);
+            builder.Plugins.AddFromType<BlazorCreatePlugin>();
+            builder.Plugins.AddFromType<DefaultStructurePlugin>();
+            builder.Plugins.AddFromType<DotnetActions>();
+            return Task.FromResult(plan);
+        }
     }
 }
 
 /*
-- wwwroot
+ * - wwwroot
 	- css
 		- styles.css
 	- js
@@ -106,7 +105,4 @@ namespace Cyrena.Blazor.Services
 	- MyModelExtensions.cs
 - Options
     - SomeOptions.cs
-- Program.cs //entry file
-- appsettings.json
-- appsettings.Development.json
  */
