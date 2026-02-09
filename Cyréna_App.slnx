@@ -3,6 +3,9 @@
     <File Path="license.md" />
     <File Path="readme.md" />
   </Folder>
+  <Folder Name="/sln/docs/">
+    <File Path="docs/screenshots.md" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/Cyrena.Desktop/Cyrena.Desktop.csproj" />
   </Folder>
