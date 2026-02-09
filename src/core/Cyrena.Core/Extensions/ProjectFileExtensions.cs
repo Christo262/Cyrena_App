@@ -218,12 +218,8 @@ namespace Cyrena.Extensions
                 }
             }
 
-            for (int i = 0; i < folder.Files.Count; i++)
-            {
-                var flt = folder.Files[i];
-                if (!File.Exists(Path.Combine(plan.RootDirectory, flt.RelativePath)))
-                    folder.Files.Remove(flt);
-            }
+            folder.Files.RemoveAll(f =>
+                    !File.Exists(Path.Combine(plan.RootDirectory, f.RelativePath)));
         }
 
         public static void IndexFiles(this ProjectPlan plan, string extension, string id_prefix)
@@ -246,12 +242,8 @@ namespace Cyrena.Extensions
                 }
             }
 
-            for (int i = 0; i < plan.Files.Count; i++)
-            {
-                var flt = plan.Files[i];
-                if (!File.Exists(Path.Combine(plan.RootDirectory, flt.RelativePath)))
-                    plan.Files.Remove(flt);
-            }
+            plan.Files.RemoveAll(f =>
+                !File.Exists(Path.Combine(plan.RootDirectory, f.RelativePath)));
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Cyrena.Contracts;
+using Cyrena.Extensions;
 using Cyrena.Models;
 using Cyrena.Spec.Contracts;
 using Cyrena.Spec.Models;
@@ -124,10 +125,25 @@ namespace Cyrena.Spec.Services
             return sb.ToString();
         }
 
-        public ToolResult<NewArticle> Create(string title, string[] keywords, string summary, string content)
+        public ToolResult<NewArticle> CreateOrUpdateForFile(string id, string? title, string[]? keywords, string? summary, string? content)
+        {
+            if (!_context.ProjectPlan.TryFindFile(id, out var file))
+                return new ToolResult<NewArticle>(false, $"Unable to find file with id {id}");
+            var article = _articles.FirstOrDefault(a => a.Id == id);
+            if (article == null)
+            {
+                if (title == null || keywords == null || summary == null || content == null)
+                    return new ToolResult<NewArticle>(false, "Requires title, keywords, summary & content in order to create.");
+                return Create(title, keywords, summary, content, id);
+            }
+            return Update(id, title, keywords, summary, content);
+        }
+
+        public ToolResult<NewArticle> Create(string title, string[] keywords, string summary, string content, string? id = null)
         {
             _context.LogInfo($"Create specification: {title}");
-            var id = Guid.NewGuid().ToString();
+            if(string.IsNullOrEmpty(id))
+                id = Guid.NewGuid().ToString(); 
             var article = new Article()
             {
                 Id = id,

@@ -1,17 +1,27 @@
 
-@foreach (var item in _models)
-{
-    <div class="p-2 mb-3 shadow border rounded">
-        <h5 class="m-0">
-            <i class="@item.Icon"></i> @item.Name
-        </h5>
-        <p class="small m-0">
-            @item.Description
-        </p>
-        <div class="text-end">
-            <Tooltip Title="@($"Create {item.Name}")">
-                <button type="button" @onclick="() => CreateAsync(item)" class="btn btn-sm btn-success"><i class="bi bi-plus"></i></button>
-            </Tooltip>
-        </div>
-    </div>
-}
+<Collapse>
+    <CollapseItems>
+        @foreach (var c in _categories)
+        {
+            <CollapseItem Text="@c">
+                @foreach (var item in _models.Where(x => x.Category == c))
+                {
+                    <div class="p-2 mb-3 shadow border rounded">
+                        <p class="m-0">
+                            <i class="@item.Icon"></i> @item.Name
+                        </p>
+                        <p class="small m-0">
+                            @item.Description
+                        </p>
+                        <div class="text-end">
+                            <Tooltip Title="@($"Add {item.Name}")">
+                                <button type="button" @onclick="() => CreateAsync(item)" class="btn btn-sm btn-success"><i class="bi bi-plus"></i></button>
+                            </Tooltip>
+                        </div>
+                    </div>
+                }
+            </CollapseItem>
+            
+        }
+    </CollapseItems>
+</Collapse>

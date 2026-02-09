@@ -23,6 +23,7 @@ namespace Cyrena.ClassLibrary.Services
         public string Name => "Class Library";
         public string? Description => "Build a .NET class library";
         public string? Icon => "bi bi-collection";
+        public string Category => ".NET C#";
 
         public async Task<bool> CreateNewAsync()
         {

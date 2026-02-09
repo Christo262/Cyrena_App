@@ -1,4 +1,5 @@
 ﻿using Cyrena.Contracts;
+using Cyrena.Extensions;
 using Cyrena.Models;
 using Cyrena.Spec.Contracts;
 using Cyrena.Spec.Models;
@@ -15,6 +16,14 @@ namespace Cyrena.Spec.Plugins
         public SpecsPlugin(ISpecsService specs)
         {
             _specs = specs;
+        }
+
+        [KernelFunction]
+        [Description("List All Project Specifications for authoritative technical documentation about this project. Use this before implementing features to understand APIs, architecture rules, integration contracts, and established behavior.")]
+        public IEnumerable<ArticleSummary> ListProjectSpecifications()
+        {
+            var models = _specs.Articles.Select(x => new ArticleSummary(x.Id, x.Title, x.Summary));
+            return models;
         }
 
         [KernelFunction]
@@ -51,8 +60,11 @@ This document becomes authoritative project knowledge.")]
             [Description("Title of the specification document.")] string title,
             [Description("Keywords used to search for this specification in the future.")] string[] keywords,
             [Description("Brief summary of what the specification contains.")] string summary,
-            [Description("Grounded technical content in plaintext or markdown. Do not include Title, Summary or Keywords here.")] string content)
+            [Description("Grounded technical content in plaintext or markdown. Do not include Title, Summary or Keywords here.")] string content,
+            [Description("If creating specification of a file, set to the id of the file.")] string? fileId = null)
         {
+            if(!string.IsNullOrEmpty(fileId))
+                return _specs.CreateOrUpdateForFile(fileId, title, keywords, summary, content);
             return _specs.Create(title, keywords, summary, content);
         }
 
@@ -66,8 +78,11 @@ If implementation changes, the specification must be revised to match reality.")
             [Description("New title. Leave null if unchanged.")] string? title = null,
             [Description("Updated search keywords. Leave null if unchanged.")] string[]? keywords = null,
             [Description("Updated summary. Leave null if unchanged.")] string? summary = null,
-            [Description("Updated grounded technical content. Do not include Title, Summary or Keywords here. Leave null if unchanged.")] string? content = null)
+            [Description("Updated grounded technical content. Do not include Title, Summary or Keywords here. Leave null if unchanged.")] string? content = null,
+            [Description("If creating specification of a file, set to the id of the file.")] string? fileId = null)
         {
+            if(!string.IsNullOrEmpty(fileId))
+                return _specs.CreateOrUpdateForFile(fileId, title, keywords, summary, content);
             return _specs.Update(id, title, keywords, summary, content);
         }
 
