@@ -17,12 +17,15 @@
                 MenuBarIcon="bi bi-three-dots-vertical"
                 ShowSplitBar="true">
             <Header>
+                <p class="lead m-0 ms-3 flex-fill">
+                    @_context.Project.Name
+                </p>
                 <button type="button" class="btn btn-sm btn-info" @onclick="() => _articles.Toggle()"><i class="bi bi-file-earmark-text"></i></button>
             </Header>
             <Side>
                 <div class="layout-banner">
                     <div class="layout-title">
-                        <span>Cyréna</span>
+                        <span></span>
                     </div>
                 </div>
             </Side>

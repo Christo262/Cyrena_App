@@ -69,12 +69,11 @@ namespace Cyrena.Desktop.Services
         {
             if (_window == null) return;
             _window.Minimized = false;
-            _window.Maximized = _options.Maximized;
-            _window.Center();
             if (_options.Maximized)
                 _window.SetMaximized(true);
             _window.SetHeight(_options.Height);
             _window.SetWidth(_options.Width);
+            _window.Center();
             _restored = true;
         }
 
@@ -84,10 +83,28 @@ namespace Cyrena.Desktop.Services
             _window.SetTransparent(b);
         }
 
+        public void SetTitle(string title)
+        {
+            if(_window == null) return;
+            _window.SetTitle($"Cyréna: {title}");
+        }
+
         public void SetFullScreen(bool b)
         {
             if(_window ==null) return;
             _window.SetFullScreen(b);
+        }
+
+        public void SetHeight(int h)
+        {
+            if (_window == null) return;
+            _window.SetHeight(h);
+        }
+
+        public void SetWidth(int w)
+        {
+            if (_window == null) return;
+            _window.SetWidth(w);
         }
 
         public void Dispose()
