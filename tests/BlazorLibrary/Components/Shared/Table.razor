@@ -1,0 +1,23 @@
+@typeparam T
+
+@inherits ComponentBase
+
+@code {
+    [Parameter]
+    public IEnumerable<T> Items { get; set; } = Enumerable.Empty<T>();
+
+    [Parameter]
+    public RenderFragment<T> RowTemplate { get; set; }
+}
+
+<table class="table">
+    @if (Items != null && RowTemplate != null)
+    {
+        foreach (var item in Items)
+        {
+            <tr>
+                @RowTemplate(item)
+            </tr>
+        }
+    }
+</table>

@@ -25,6 +25,7 @@ namespace Cyrena.Blazor.Services
         public string Name => "Blazor App";
         public string? Description => "Build a Blazor Server or WASM application.";
         public string? Icon => "bi bi-hdd-stack";
+        public string Category => ".NET C#";
 
         public Task<ProjectPlan> InitializeAsync(IDeveloperContextBuilder builder)
         {

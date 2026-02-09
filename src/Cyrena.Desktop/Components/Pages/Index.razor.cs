@@ -15,6 +15,7 @@ namespace Cyrena.Desktop.Components.Pages
         [Inject] private IServiceProvider _services { get; set; } = default!;
         [Inject] private ToastService _toasts { get; set; } = default!;
         [Inject] private DialogService _dialog { get; set;  } = default!;
+        [Inject] private NavigationManager _nav { get; set;  } = default!;
 
         private IEnumerable<Project>? _projects { get; set; }
 
@@ -50,6 +51,12 @@ namespace Cyrena.Desktop.Components.Pages
                 await _store.DeleteAsync(project);
                 await Refresh();
             }
+        }
+
+        private Task OnClickNavigate(string url)
+        {
+            _nav.NavigateTo(url);
+            return Task.CompletedTask;
         }
     }
 }

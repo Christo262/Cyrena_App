@@ -52,6 +52,8 @@ This demonstrates the core engineering workflow in action.
 
 Cyréna is built around the idea that AI should behave like a disciplined engineer inside a real codebase.
 
+📸 [Screenshots](./docs/screenshots.md)
+
 ---
 
 ## 🧠 Project Specifications

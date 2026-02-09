@@ -24,6 +24,7 @@ namespace Cyrena.Blazor.Services
         public string Name => "Blazor Component Library";
         public string? Description => "Build a reusable blazor component library";
         public string? Icon => "bi bi-journal-richtext";
+        public string Category => ".NET C#";
 
         public async Task<bool> CreateNewAsync()
         {

@@ -17,5 +17,10 @@ namespace Cyrena.Contracts
         void SetTransparent(bool b);
         void SetFullScreen(bool b);
         Task<string[]> ShowFileSelect(string title, string name, string[] filters);
+
+        void SetHeight(int h);
+        void SetWidth(int w);
+
+        void SetTitle(string title);
     }
 }

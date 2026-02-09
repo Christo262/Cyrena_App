@@ -9,12 +9,14 @@ namespace Cyrena.Components.Shared
         [Inject] private IServiceProvider _services { get; set; } = default!;
         [Parameter] public EventCallback OnAfterCreate { get; set; }
 
+        private IEnumerable<string> _categories = Enumerable.Empty<string>();
         private IEnumerable<IProjectConfigurator> _models { get; set;} = Enumerable.Empty<IProjectConfigurator>();
 
         protected override void OnAfterRender(bool firstRender)
         {
             if (!firstRender) return;
-            _models = _services.GetServices<IProjectConfigurator>();
+            _models = _services.GetServices<IProjectConfigurator>().OrderBy(x => x.Name);
+            _categories = _models.Select(x => x.Category).Distinct().OrderBy(x => x);
             this.StateHasChanged();
         }
 

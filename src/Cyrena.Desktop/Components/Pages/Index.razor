@@ -20,9 +20,27 @@
                                 <p class="small m-0 text-muted text-truncate">@item.Description</p>
                             </div>
                             <div class="col-3 p-0 pe-1 text-end justify-content-center align-self-center">
-                                <button type="button" class="btn btn-sm btn-danger" @onclick="() => Delete(item)"><i class="bi bi-trash"></i></button>
-                                <button type="button" @onclick="() => Edit(item)" class="btn btn-sm btn-secondary"><i class="bi bi-pen"></i></button>
-                                <a href="develop/@item.Id" class="btn btn-sm btn-primary"><i class="bi bi-arrow-right-square"></i></a>
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a href="develop/@item.Id" class="dropdown-item"><i class="bi bi-file-code"></i> Project Mode</a>
+                                        </li>
+                                        <li>
+                                            <a href="mini/@item.Id" class="dropdown-item"><i class="bi bi-chat-dots"></i> Assistant Mode</a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <button type="button" @onclick="() => Edit(item)" class="dropdown-item"><i class="bi bi-pen"></i> Edit</button>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="dropdown-item" @onclick="() => Delete(item)"><i class="bi bi-trash"></i> Delete</button>
+                                        </li>
+                                    </ul>
+                                </div>
+
+
                             </div>
                         </div>
                     }

@@ -16,6 +16,10 @@ namespace Cyrena.Contracts
         /// </summary>
         string Name { get; }
         /// <summary>
+        /// Categorises project types
+        /// </summary>
+        string Category { get; }
+        /// <summary>
         /// Display description for UI
         /// </summary>
         string? Description { get; }
