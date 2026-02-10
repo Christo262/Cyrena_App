@@ -9,6 +9,7 @@ namespace Cyrena.Blazor.Extensions
         public static ProjectPlan LoadBlazorDefaultPlan(this IDeveloperContextBuilder builder)
         {
             ProjectPlan.TryLoadFromDirectory(builder.Project.RootDirectory, out var plan);
+            plan.IndexFiles("csproj", "app_", true);
             plan.IndexFiles("json", "app_json_");
             plan.IndexFiles("cs", "app_");
             plan.IndexFiles("md", "app_doc_");

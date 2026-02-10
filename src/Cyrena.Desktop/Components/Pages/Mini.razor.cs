@@ -4,6 +4,7 @@ using Cyrena.Extensions;
 using Cyrena.Models;
 using Cyrena.Spec.Components.Shared;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Cyrena.Desktop.Components.Pages
 {
@@ -27,7 +28,7 @@ namespace Cyrena.Desktop.Components.Pages
             }
             try
             {
-                _context = await _loader.LoadProjectAsync(Id);
+                _context = await _loader.LoadProjectAsync(Id, ctx => ctx.Services.AddSingleton<IDeveloperWindow>(this));
                 _win.SetHeight(800);
                 _win.SetWidth(400);
                 _win.SetTitle(_context.Project.Name);
@@ -41,6 +42,10 @@ namespace Cyrena.Desktop.Components.Pages
         }
 
         public void OpenFile(string fileId)
+        {
+        }
+
+        public void FilesChanged()
         {
         }
 

@@ -196,7 +196,7 @@ namespace Cyrena.Extensions
             return true;
         }
 
-        public static void IndexFiles(this ProjectPlan plan, ProjectFolder folder, string extension, string id_prefix)
+        public static void IndexFiles(this ProjectPlan plan, ProjectFolder folder, string extension, string id_prefix, bool readOnly = false)
         {
             var cmp_path = Path.Combine(plan.RootDirectory, folder.RelativePath);
 
@@ -212,7 +212,8 @@ namespace Cyrena.Extensions
                     {
                         Id = id,
                         Name = info.Name,
-                        RelativePath = Path.Combine(folder.RelativePath, info.Name)
+                        RelativePath = Path.Combine(folder.RelativePath, info.Name),
+                        ReadOnly = readOnly 
                     };
                     folder.Files.Add(model);
                 }
@@ -222,7 +223,7 @@ namespace Cyrena.Extensions
                     !File.Exists(Path.Combine(plan.RootDirectory, f.RelativePath)));
         }
 
-        public static void IndexFiles(this ProjectPlan plan, string extension, string id_prefix)
+        public static void IndexFiles(this ProjectPlan plan, string extension, string id_prefix, bool readOnly = false)
         {
             var files = Directory.GetFiles(plan.RootDirectory, $"*.{extension}");
             foreach (var file in files)
@@ -236,7 +237,8 @@ namespace Cyrena.Extensions
                     {
                         Id = id,
                         Name = info.Name,
-                        RelativePath = info.Name
+                        RelativePath = info.Name,
+                        ReadOnly = readOnly
                     };
                     plan.Files.Add(model);
                 }

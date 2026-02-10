@@ -70,6 +70,8 @@ namespace Cyrena.Runtime.Plugins
             {
                 if (!_context.ProjectPlan.TryFindFile(fileId, out var file))
                     return new ToolResult<ProjectFileContent>(false, $"File with id {fileId} not found.");
+                if (file!.ReadOnly)
+                    return new ToolResult<ProjectFileContent>(false, "File is READ ONLY");
                 _context.LogInfo($"Writing file {file!.Name}");
                 if (!_context.ProjectPlan.TryWriteFileContent(file!, content, out var newContent))
                     return new ToolResult<ProjectFileContent>(false, $"Unable to write to file");
@@ -92,6 +94,8 @@ namespace Cyrena.Runtime.Plugins
             {
                 if (!_context.ProjectPlan.TryFindFile(fileId, out var file))
                     return new ToolResult<ProjectFileLines>(false, $"File with id {fileId} not found.");
+                if (file!.ReadOnly)
+                    return new ToolResult<ProjectFileLines>(false, "File is READ ONLY");
                 _context.LogInfo($"Writing file {file!.Name}");
                 if (!_context.ProjectPlan.TryWriteFileLine(file!, index, text, out var newContent))
                     return new ToolResult<ProjectFileLines>(false, $"Unable to replace file line");
@@ -137,6 +141,8 @@ namespace Cyrena.Runtime.Plugins
             {
                 if (!_context.ProjectPlan.TryFindFile(fileId, out var file))
                     return new ToolResult(true, "File does not exist.");
+                if (file!.ReadOnly)
+                    return new ToolResult(false, "File is READ ONLY");
                 _context.LogInfo($"Deleting file {file!.Name}");
                 _context.ProjectPlan.RemoveFile(file!);
                 return new ToolResult(true, "File deleted.");

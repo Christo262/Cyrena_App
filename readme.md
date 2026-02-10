@@ -12,6 +12,9 @@ Right now, it’s a working exploration.
 
 ⚠️ **Please read this README in full before using Cyréna. It contains important notes and safety warnings.**
 
+- 📸 [Screenshots](./docs/screenshots.md)
+- [Develop](./docs/code_overview.md)
+
 ---
 
 ## 🎬 Demo
@@ -51,8 +54,6 @@ This demonstrates the core engineering workflow in action.
 - 🧠 Long-term project knowledge system
 
 Cyréna is built around the idea that AI should behave like a disciplined engineer inside a real codebase.
-
-📸 [Screenshots](./docs/screenshots.md)
 
 ---
 

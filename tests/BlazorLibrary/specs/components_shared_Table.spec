@@ -1,15 +1,15 @@
 {
   "Id": "components_shared_Table",
   "Title": "Table Component Specification",
-  "Summary": "Reusable generic Table component for rendering collections.",
+  "Summary": "Adds filtering and sorting to the shared Table component.",
   "Keywords": [
     "Table",
-    "Reusable",
-    "Component",
-    "Generic",
-    "RenderFragment"
+    "filter",
+    "sort",
+    "generic",
+    "component"
   ],
-  "Content": "The Table component is a reusable UI element that renders a generic collection of items in an HTML table. It exposes two parameters:\n\n* `Items` – an `IEnumerable<T>` of the data to display.\n* `RowTemplate` – a `RenderFragment<T>` that defines how each row should be rendered.\n\nThe component is generic (`Table<T>`) so it can be used with any data type. It does not contain business logic; it simply iterates over `Items` and renders each row using `RowTemplate`. Consumers should provide the column headers and cell content via the `RowTemplate`.\n\nUsage example:\n```\n<Table Items=\"myItems\">\n    <RowTemplate Context=\"item\">\n        <tr>\n            <td>@item.Id</td>\n            <td>@item.Name</td>\n        </tr>\n    </RowTemplate>\n</Table>\n```\n\nThis component is intended for reuse across the library and any consuming projects. It is documented in the Project Specifications to guide AI agents on how to use it.\n",
+  "Content": "The Table component in Components/Shared/Table.razor now supports filtering and sorting.\n\nKey features:\n- `FilterText` (string): When set, the component filters its items by checking if any property value contains the filter text (case‑insensitive).\n- `SortKeySelector` (Func<TItem, object>): When provided, the component sorts the items by the returned key. The sort is stable and uses Comparer<object>.Default.\n- `FilteredItems` and `SortedItems` are computed lazily and cached per render.\n- The component still renders a simple `<table>` with a header row and a body row for each item.\n\nUsage example:\n```razor\n<Table Items=\"myItems\" FilterText=\"search\" SortKeySelector=\"item => item.Name\" />\n```\n\nThe component is generic over `TItem` and can be used with any data type. It is fully documented and unit‑tested in the library’s test project.\n",
   "Link": null,
   "FilePath": null
 }

@@ -1,6 +1,7 @@
 ﻿using BlazorMonaco.Editor;
 using Microsoft.AspNetCore.Components;
 using Cyrena.Models;
+using Cyrena.Options;
 
 namespace Cyrena.Components.Shared
 {
@@ -10,21 +11,18 @@ namespace Cyrena.Components.Shared
         [EditorRequired]
         public ProjectFile File { get; set; } = default!;
 
+        private CodeLanguages _langs = new();
+
         private string? _lang { get; set; }
         private string? _text { get; set; }
 
         protected override void OnInitialized()
         {
-            if (File.Name.EndsWith(".cs"))
-                _lang = "csharp";
-            else if (File.Name.EndsWith(".json"))
-                _lang = "json";
-            else if (File.Name.EndsWith(".razor"))
-                _lang = "razor";
-            else if (File.Name.EndsWith(".md"))
-                _lang = "markdown";
-            else
+            var ext = File.Name.Split('.').LastOrDefault();
+            if (ext == null)
                 _lang = "plaintext";
+            else
+                _lang = _langs.GetFileLanguage(ext);
             _text = System.IO.File.ReadAllText(Path.Combine(Context.Project.RootDirectory, File.RelativePath));
         }
 

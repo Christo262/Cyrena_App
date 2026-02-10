@@ -4,6 +4,7 @@ using Cyrena.Contracts;
 using Cyrena.Persistence.Contracts;
 using Cyrena.Runtime.Models;
 using Cyrena.Runtime.Plugins;
+using Cyrena.Extensions;
 
 namespace Cyrena.Runtime.Services
 {
@@ -24,6 +25,18 @@ namespace Cyrena.Runtime.Services
             builder.Services.AddSingleton<IStore<Note>>(_notes);
             builder.Plugins.AddFromType<NotesPlugin>();
             builder.Plugins.AddFromType<DateTimePlugin>();
+
+            builder.Services.AddSingleton<EventQueue>();
+            builder.Services.AddSingleton<IEventPublisher, EventPublisher>();
+            builder.Services.AddSingleton<EventsHostedService>();
+
+            builder.AddStartupTask(1, (c) =>
+            {
+                var hs = c.Kernel.GetRequiredService<EventsHostedService>();
+                hs.Start();
+                return Task.CompletedTask;
+            });
+
             return Task.CompletedTask;
         }
     }

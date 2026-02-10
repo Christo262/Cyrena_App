@@ -1,6 +1,5 @@
+/* Global stylesheet combining dashboard and table styles */
 /* Dashboard component styles */
-
-/* Root container for dashboard pages */
 .dashboard-root {
     display: flex;
     flex-direction: column;
@@ -9,8 +8,6 @@
     color: var(--dashboard-text, #333);
     font-family: system-ui, sans-serif;
 }
-
-/* Header area */
 .dashboard-header {
     background-color: var(--dashboard-header-bg, #ffffff);
     border-bottom: 1px solid var(--dashboard-border, #e0e0e0);
@@ -19,8 +16,6 @@
     align-items: center;
     justify-content: space-between;
 }
-
-/* Navigation menu */
 .dashboard-nav {
     display: flex;
     gap: 1rem;
@@ -34,15 +29,11 @@
 .dashboard-nav a:hover {
     background-color: var(--dashboard-link-hover, rgba(0,123,255,0.1));
 }
-
-/* Main content area */
 .dashboard-main {
     flex: 1;
     padding: 2rem;
     background-color: var(--dashboard-main-bg, #ffffff);
 }
-
-/* Footer */
 .dashboard-footer {
     background-color: var(--dashboard-footer-bg, #ffffff);
     border-top: 1px solid var(--dashboard-border, #e0e0e0);
@@ -51,8 +42,6 @@
     font-size: 0.875rem;
     color: var(--dashboard-footer-text, #777);
 }
-
-/* Utility classes */
 .dashboard-card {
     background-color: var(--dashboard-card-bg, #ffffff);
     border: 1px solid var(--dashboard-border, #e0e0e0);
@@ -63,8 +52,6 @@
 .dashboard-card h3 {
     margin-top: 0;
 }
-
-/* Responsive adjustments */
 @media (max-width: 768px) {
     .dashboard-header, .dashboard-footer {
         flex-direction: column;
@@ -74,3 +61,6 @@
         flex-wrap: wrap;
     }
 }
+/* Table component styles */
+body {
+ }
