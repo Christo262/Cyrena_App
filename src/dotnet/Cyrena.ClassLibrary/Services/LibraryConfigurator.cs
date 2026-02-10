@@ -65,7 +65,7 @@ namespace Cyrena.ClassLibrary.Services
                 }
             });
             if (rf == DialogResult.Yes)
-                await _store.UpdateAsync(project);
+                await _store.UpdateAsync(model);
         }
 
         public Task<ProjectPlan> InitializeAsync(IDeveloperContextBuilder builder)

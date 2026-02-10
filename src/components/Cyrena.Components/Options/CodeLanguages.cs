@@ -20,7 +20,8 @@ namespace Cyrena.Options
                 {"md", "markdown" },
                 {"csproj", "xml" },
                 {"xml", "xml" },
-                {"json", "json" }
+                {"json", "json" },
+                {"ino", "cpp" }
             };
         }
 

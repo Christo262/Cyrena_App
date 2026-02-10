@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/sln/">
+    <File Path="contributing.md" />
     <File Path="license.md" />
     <File Path="readme.md" />
   </Folder>
@@ -21,6 +22,9 @@
     <Project Path="src/dotnet/Cyrena.Blazor/Cyrena.Blazor.csproj" />
     <Project Path="src/dotnet/Cyrena.ClassLibrary/Cyrena.ClassLibrary.csproj" Id="0186df65-ce36-4f33-b54c-46d0aa35d6a0" />
     <Project Path="src/dotnet/Cyrena.Net/Cyrena.Net.csproj" Id="c25a0215-1dde-4b07-854f-c8173856610b" />
+  </Folder>
+  <Folder Name="/src/embed/">
+    <Project Path="src/embed/Cyrena.ArduinoIDE/Cyrena.ArduinoIDE.csproj" Id="72878ba6-fd88-47b9-9668-51248b24e807" />
   </Folder>
   <Folder Name="/src/persistence/">
     <Project Path="src/persistence/Cyrena.Persistence.Core/Cyrena.Persistence.Core.csproj" Id="ce98ccdb-4675-4713-ae9c-536a5ad67df0" />

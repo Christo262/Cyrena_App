@@ -5,7 +5,11 @@
 ![Working Modes](../images/mini_dev.jpg)
 
 Cyréna supports two working styles:
-**Project Mode** for full development workflows, and **Assistant Mode** for a lightweight companion window that stays out of your way while you code.
+
+**Project Mode** — full structured development workflow  
+**Assistant Mode** — lightweight companion window that stays out of your way
+
+Use the mode that fits your workflow.
 
 ---
 
@@ -13,7 +17,7 @@ Cyréna supports two working styles:
 
 ![Launch Window](../images/entry_win.jpg)
 
-Cyréna entry screen for opening or creating projects.
+Entry screen for opening existing projects or creating new ones.
 
 ---
 
@@ -21,7 +25,14 @@ Cyréna entry screen for opening or creating projects.
 
 ![Project Mode](../images/project_mode.jpg)
 
-Full development workspace with file explorer, structured editing, and architecture-aware assistance.
+Full development workspace with:
+
+- file explorer
+- architecture-aware editing
+- structured AI assistance
+- persistent project knowledge
+
+Designed for real engineering work, not chat.
 
 ---
 
@@ -29,7 +40,9 @@ Full development workspace with file explorer, structured editing, and architect
 
 ![Assistant Mode](../images/assistant_mode.jpg)
 
-Minimal companion window for quick chat while you work — designed to stay out of the way.
+Minimal companion window for quick interaction while you code.
+
+It floats beside your IDE and stays unobtrusive.
 
 ---
 
@@ -37,7 +50,9 @@ Minimal companion window for quick chat while you work — designed to stay out of
 
 ![OpenAI Integration](../images/openai-gpt5-test.jpg)
 
-Cyréna working with OpenAI models inside a real project workflow.
+Cyréna operating with OpenAI models inside a real project workflow.
+
+The agent respects architecture and modifies real files safely.
 
 ---
 
@@ -45,4 +60,22 @@ Cyréna working with OpenAI models inside a real project workflow.
 
 ![Blazor Library](../images/blazor_class_lib_test.jpg)
 
-Generating reusable Blazor components and structured project specifications.
+Generating reusable Blazor components and maintaining structured project specifications.
+
+Cyréna enforces project discipline while extending real codebases.
+
+---
+
+## Arduino Firmware Development
+
+![Arduino IDE](../images/arduino_3.jpg)
+
+Cyréna assisting with Arduino firmware:
+
+- constrained embedded workflows
+- library awareness
+- safe sketch modification
+- project specifications
+- repair loops
+
+The same agent architecture, applied to a different domain.
