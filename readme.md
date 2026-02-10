@@ -28,7 +28,7 @@ It contains important safety notes.
 
 Here is Cyréna running a real prompt → build → repair loop:
 
-👉 [Demo video](https://streamable.com/4lzn75)
+👉 [Demo video](https://streamable.com/xet2ig)
 
 This is not code generation —  
 this is an engineering agent working inside a project.
