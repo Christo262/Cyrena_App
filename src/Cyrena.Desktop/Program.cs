@@ -30,7 +30,8 @@ class Program
             .AddSpecifications()
             .AddTavily()
             .AddBlazorDevelopment()
-            .AddClassLibraryDevelopment();
+            .AddClassLibraryDevelopment()
+            .AddArduinoIDE();
 
         var settings = cyrena.GetOption<ISettingsService>();
         var winCurr = new CurrentWindow(settings);
