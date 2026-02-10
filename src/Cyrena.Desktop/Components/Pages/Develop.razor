@@ -20,7 +20,8 @@
                 <p class="lead m-0 ms-3 flex-fill">
                     @_context.Project.Name
                 </p>
-                <button type="button" class="btn btn-sm btn-info" @onclick="() => _articles.Toggle()"><i class="bi bi-file-earmark-text"></i></button>
+                <button type="button" class="btn btn-sm btn-info me-1" @onclick="() => _articles.Toggle()"><i class="bi bi-file-earmark-text"></i></button>
+                <Cyrena.Desktop.Components.Shared.ExportDisplayHistory Context="_context"/>
             </Header>
             <Side>
                 <div class="layout-banner">

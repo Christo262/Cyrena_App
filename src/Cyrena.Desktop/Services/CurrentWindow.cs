@@ -118,6 +118,13 @@ namespace Cyrena.Desktop.Services
             _settings.Save(WindowOptions.Key, _options);
         }
 
+        public async Task<string?> ShowSaveFile(string title, string name, string[] filters)
+        {
+            if( _window == null) return null;
+            var output = await _window.ShowSaveFileAsync(title, null, [(name, filters)]);
+            return output;
+        }
+
         public async Task<string[]> ShowFileSelect(string title, string name, string[] filters)
         {
             if (_window == null) return [];

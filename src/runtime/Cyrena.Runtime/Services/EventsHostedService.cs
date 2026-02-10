@@ -1,4 +1,5 @@
-﻿using Cyrena.Models;
+﻿using Cyrena.Contracts;
+using Cyrena.Models;
 using Cyrena.Runtime.Models;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -43,14 +44,23 @@ namespace Cyrena.Runtime.Services
                                         {
                                             await wrap.Handle(e, _services, _cancellationTokenSource.Token);
                                         }
-                                        catch (Exception ex) { }
+                                        catch (Exception ex)
+                                        {
+                                            _services.GetRequiredService<IDeveloperContext>().LogError($"{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                                        }
                                 });
                                 _currentTasks.Add(task);
                             }
+                            else
+                                await Task.Delay(10, _cancellationTokenSource.Token);
                         }
+                        else
+                            await Task.Delay(10, _cancellationTokenSource.Token);
                     }
-                    catch (Exception ex) { }
-                    finally { await Task.Yield(); }
+                    catch (Exception ex)
+                    {
+                        _services.GetRequiredService<IDeveloperContext>().LogError($"{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                    }
                 }
             }, _cancellationTokenSource.Token);
         }
