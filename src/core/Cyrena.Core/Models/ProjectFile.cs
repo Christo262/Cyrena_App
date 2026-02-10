@@ -4,6 +4,7 @@ namespace Cyrena.Models
 {
     public class ProjectFile : ProjectItem
     {
+        public bool ReadOnly { get; set; } = false;
     }
 
     public class ProjectFileContent : ProjectFile
@@ -15,6 +16,7 @@ namespace Cyrena.Models
             Name = file.Name;
             RelativePath = file.RelativePath;
             Content = content;
+            ReadOnly = file.ReadOnly;
         }
         public string? Content { get; set; }
     }
@@ -31,6 +33,7 @@ namespace Cyrena.Models
             Id = file.Id;
             Name = file.Name;
             RelativePath = file.RelativePath;
+            ReadOnly = file.ReadOnly;
             Lines = new Dictionary<int, string>();
             if (!string.IsNullOrEmpty(content))
             {

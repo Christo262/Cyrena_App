@@ -3,5 +3,7 @@
     public interface IDeveloperWindow
     {
         void OpenFile(string fileId);
+
+        void FilesChanged();
     }
 }

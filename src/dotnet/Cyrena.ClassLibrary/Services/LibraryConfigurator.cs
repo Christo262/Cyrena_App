@@ -1,11 +1,14 @@
 ﻿using BootstrapBlazor.Components;
 using Cyrena.ClassLibrary.Components.Shared;
+using Cyrena.ClassLibrary.Extensions;
 using Cyrena.ClassLibrary.Models;
 using Cyrena.Contracts;
+using Cyrena.Events;
 using Cyrena.Extensions;
 using Cyrena.Models;
 using Cyrena.Net.Plugins;
 using Cyrena.Persistence.Contracts;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 
 namespace Cyrena.ClassLibrary.Services
@@ -68,6 +71,7 @@ namespace Cyrena.ClassLibrary.Services
         public Task<ProjectPlan> InitializeAsync(IDeveloperContextBuilder builder)
         {
             var plan = new ProjectPlan(builder.Project.RootDirectory);
+            plan.IndexFiles("csproj", "app_", true);
             var contracts = plan.GetOrCreateFolder("contracts", "Contracts");
             plan.IndexFiles(contracts, "cs", "contracts_");
 
@@ -89,6 +93,10 @@ namespace Cyrena.ClassLibrary.Services
 
             builder.Plugins.AddFromType<DefaultStructurePlugin>();
             builder.Plugins.AddFromType<DotnetActions>();
+
+            builder.AddEventHandler<FileCreatedEvent, LibProjectFileWatcher>();
+            builder.AddEventHandler<FileDeletedEvent, LibProjectFileWatcher>();
+            builder.AddEventHandler<FileRenamedEvent, LibProjectFileWatcher>();
 
             return Task.FromResult(plan);
         }

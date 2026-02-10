@@ -4,6 +4,8 @@
     <File Path="readme.md" />
   </Folder>
   <Folder Name="/sln/docs/">
+    <File Path="docs/code_new_project_type.md" />
+    <File Path="docs/code_overview.md" />
     <File Path="docs/screenshots.md" />
   </Folder>
   <Folder Name="/src/">

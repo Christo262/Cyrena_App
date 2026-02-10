@@ -73,7 +73,6 @@ namespace Cyrena.Desktop.Services
                 _window.SetMaximized(true);
             _window.SetHeight(_options.Height);
             _window.SetWidth(_options.Width);
-            _window.Center();
             _restored = true;
         }
 

@@ -2,6 +2,6 @@
 {
     public interface IProjectLoader
     {
-        Task<IDeveloperContext> LoadProjectAsync(string projectId);
+        Task<IDeveloperContext> LoadProjectAsync(string projectId, Action<IDeveloperContextBuilder> options);
     }
 }

@@ -3,10 +3,13 @@ using Cyrena.Blazor.Components.Shared;
 using Cyrena.Blazor.Extensions;
 using Cyrena.Blazor.Plugins;
 using Cyrena.Contracts;
+using Cyrena.Events;
+using Cyrena.Extensions;
 using Cyrena.Models;
 using Cyrena.Net.Models;
 using Cyrena.Net.Plugins;
 using Cyrena.Persistence.Contracts;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 
 namespace Cyrena.Blazor.Services
@@ -74,6 +77,9 @@ namespace Cyrena.Blazor.Services
             builder.Plugins.AddFromType<BlazorCreatePlugin>();
             builder.Plugins.AddFromType<DefaultStructurePlugin>();
             builder.Plugins.AddFromType<DotnetActions>();
+            builder.AddEventHandler<FileCreatedEvent, BlazorProjectFileWatcher>();
+            builder.AddEventHandler<FileDeletedEvent, BlazorProjectFileWatcher>();
+            builder.AddEventHandler<FileRenamedEvent, BlazorProjectFileWatcher>();
             return Task.FromResult(plan);
         }
     }

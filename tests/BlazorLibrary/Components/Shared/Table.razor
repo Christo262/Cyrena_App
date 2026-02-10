@@ -8,12 +8,26 @@
 
     [Parameter]
     public RenderFragment<T> RowTemplate { get; set; }
+
+    [Parameter]
+    public string FilterText { get; set; } = string.Empty;
+
+    [Parameter]
+    public Func<T, string> SortKeySelector { get; set; }
+
+    private IEnumerable<T> FilteredItems => string.IsNullOrWhiteSpace(FilterText)
+        ? Items
+        : Items.Where(item => item.ToString()!.Contains(FilterText, StringComparison.OrdinalIgnoreCase));
+
+    private IEnumerable<T> SortedItems => SortKeySelector == null
+        ? FilteredItems
+        : FilteredItems.OrderBy(SortKeySelector);
 }
 
 <table class="table">
     @if (Items != null && RowTemplate != null)
     {
-        foreach (var item in Items)
+        foreach (var item in SortedItems)
         {
             <tr>
                 @RowTemplate(item)
@@ -21,3 +35,4 @@
         }
     }
 </table>
+<link href="/css/table.css" rel="stylesheet" />

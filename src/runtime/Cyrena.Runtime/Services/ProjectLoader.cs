@@ -17,7 +17,7 @@ namespace Cyrena.Runtime.Services
             _services = services;
         }
 
-        public async Task<IDeveloperContext> LoadProjectAsync(string projectId)
+        public async Task<IDeveloperContext> LoadProjectAsync(string projectId, Action<IDeveloperContextBuilder> options)
         {
             var project = await _projects.FindAsync(x => x.Id == projectId);
             if (project == null)
@@ -40,15 +40,27 @@ namespace Cyrena.Runtime.Services
                 throw new NullReferenceException($"Unable to construct connection for project {project.Name}");
             var devBuilder = new DeveloperContextBuilder(kernelBuilder, project);
             var plan = await provider.InitializeAsync(devBuilder);
+            devBuilder.AddProjectFileWatcher();
             var extensions = _services.GetServices<IDeveloperContextExtension>();
             foreach (var extension in extensions.OrderBy(x => x.Priority))
                 await extension.ExtendAsync(devBuilder);
+            options.Invoke(devBuilder);
             var context = new DeveloperContext(project, plan, connection);
             kernelBuilder.Services.AddSingleton<IDeveloperContext>(context);
             context.KernelHistory = devBuilder.KernelHistory;
             context.DisplayHistory = devBuilder.DisplayHistory;
             var kernel = kernelBuilder.Build();
             context.Kernel = kernel;
+
+            var startups = context.Kernel.Services.GetServices<IStartupTask>();
+            foreach(var startup in startups.OrderBy(x => x.Order))
+                try
+                {
+                    await startup.RunAsync();
+                }catch (Exception ex)
+                {
+                    context.LogError(ex.Message);
+                }
             return context;
         }
     }
