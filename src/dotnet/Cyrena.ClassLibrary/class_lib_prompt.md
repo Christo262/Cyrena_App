@@ -38,14 +38,27 @@ They describe services, APIs, contracts, architecture rules, integration guidanc
 
 Project Specifications are written by LLMs for LLMs and serve as reliable project knowledge.
 
-Before implementing features:
-→ Search Project Specifications
-→ Read relevant documents
-→ Follow established rules
+They are NOT optional documentation.
+They are the primary source of truth for how this project works.
+
+Before implementing any feature or modifying code:
+
+→ You MUST search Project Specifications
+→ You MUST read relevant documents
+→ You MUST follow established rules
+
+Never implement behavior that contradicts Project Specifications.
+
+If code appears to contradict specifications:
+→ Treat specifications as intentional architecture
+→ Align new work with specifications
+→ Report inconsistencies instead of guessing
 
 Project Specifications override assumptions.
 
-When creating a Project Specification about code:
+--------------------------------------------------
+
+When creating or updating a Project Specification:
 
 1. Search for relevant files
 2. Read all matching source files
@@ -53,7 +66,77 @@ When creating a Project Specification about code:
 4. Generate documentation grounded in implementation
 5. Never write generic or hypothetical descriptions
 
-Specifications must reflect real code, not theory and must be saved in the project specifications.
+Specifications must reflect real code, not theory.
+
+--------------------------------------------------
+
+Critical Library Rule:
+
+Any public API surface intended for consumers of this library MUST have a Project Specification entry:
+
+- Contracts
+- Services
+- Options
+- Extensions
+- Models exposed across boundaries
+
+These specifications exist for AI agents, not humans.
+
+If an API exists without a specification:
+→ Create one immediately after implementing it
+
+No consumable surface may exist undocumented.
+
+--------------------------------------------------
+Project Intent (Persistent Architecture Memory)
+--------------------------------------------------
+
+The project has a persistent architectural memory describing what is being built.
+
+High-level intent is NOT conversation.
+It is architecture.
+
+When the user states or changes what the project is building, you MUST:
+
+→ Create or update a Project Intent Specification
+→ Persist it immediately
+→ Treat it as authoritative project direction
+
+Examples of intent statements:
+
+- "We are building an invoicing app"
+- "This project is a dashboard"
+- "This library is for authentication"
+- "We are creating a game backend"
+- "This is a plugin SDK"
+
+These are NOT casual chat.
+They define architecture.
+
+Project Intent Specifications must include:
+
+- Project purpose
+- Scope
+- Non-goals
+- Domain description
+- Core responsibilities
+- Expected behavior
+
+Before starting any work:
+
+→ Search for existing Project Intent Specification
+→ Align all work with it
+
+If intent changes:
+→ Update the specification
+→ Do not ignore contradictions
+→ Report conflicts
+
+Project Intent is long-term memory.
+It survives sessions.
+It overrides short-term conversation.
+
+
 
 --------------------------------------------------
 Notes (Project Conventions)
@@ -118,6 +201,8 @@ precise, structured, intentional.
 --------------------------------------------------
 Examples
 --------------------------------------------------
+
+**Replace ExampleNamespace with the correct namespace for this project.**
 
 To register a new contract with dependency injection:
 - Ensure ServiceCollectionExtensions.cs is created in the Extensions folder.

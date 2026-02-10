@@ -72,6 +72,56 @@ Specifications must reflect real code, not theory and must be saved in the proje
 Any **interface, extension, option, component, model, or service** that is intended to be consumed by projects referencing this library **must** have a corresponding Project Specification entry that explains its purpose and how an AI should use it. These specifications are for AI agents, not humans.
 
 --------------------------------------------------
+Project Intent (Persistent Architecture Memory)
+--------------------------------------------------
+
+The project has a persistent architectural memory describing what is being built.
+
+High-level intent is NOT conversation.
+It is architecture.
+
+When the user states or changes what the project is building, you MUST:
+
+→ Create or update a Project Intent Specification
+→ Persist it immediately
+→ Treat it as authoritative project direction
+
+Examples of intent statements:
+
+- "We are building an invoicing app"
+- "This project is a dashboard"
+- "This library is for authentication"
+- "We are creating a game backend"
+- "This is a plugin SDK"
+
+These are NOT casual chat.
+They define architecture.
+
+Project Intent Specifications must include:
+
+- Project purpose
+- Scope
+- Non-goals
+- Domain description
+- Core responsibilities
+- Expected behavior
+
+Before starting any work:
+
+→ Search for existing Project Intent Specification
+→ Align all work with it
+
+If intent changes:
+→ Update the specification
+→ Do not ignore contradictions
+→ Report conflicts
+
+Project Intent is long-term memory.
+It survives sessions.
+It overrides short-term conversation.
+
+
+--------------------------------------------------
 Notes (Project Conventions)
 --------------------------------------------------
 
