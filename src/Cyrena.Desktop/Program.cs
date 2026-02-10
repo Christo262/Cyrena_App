@@ -57,7 +57,12 @@ class Program
 
         AppDomain.CurrentDomain.UnhandledException += (sender, error) =>
         {
-            app.MainWindow.ShowMessage("Fatal exception", error.ExceptionObject.ToString());
+            var text = error.ExceptionObject?.ToString() ?? "Unknown crash";
+            var path = $"./crash_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.log";
+
+            try { File.WriteAllText(path, text); } catch { }
+
+            try { app.MainWindow?.ShowMessage("Fatal exception", text); } catch { }
         };
 
         app.Run();

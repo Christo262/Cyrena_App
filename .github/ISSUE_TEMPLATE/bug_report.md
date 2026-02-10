@@ -1,38 +1,62 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Create a report to help us improve Cyréna
 title: ''
 labels: ''
 assignees: ''
+---
+
+⚠️ Before submitting:  
+If possible, please attach your **Chat Export** and **crash log** (if one was generated).  
+These are extremely helpful for diagnosing issues.  
+Crash logs are saved in the working directory as: `crash_{date}.txt`
 
 ---
 
-**Describe the bug**
+## Describe the bug
 A clear and concise description of what the bug is.
 
-**To Reproduce**
+---
+
+## To Reproduce
 Steps to reproduce the behavior:
+
 1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+2. Click on '...'
+3. Do '...'
+4. Observe error
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+---
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+## Expected behavior
+What you expected to happen.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+---
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+## What actually happened
+What Cyréna did instead.
 
-**Additional context**
-Add any other context about the problem here.
+---
+
+## Attachments (important)
+
+Please attach:
+
+- ✅ Chat export (.txt)  
+- ✅ Crash log file (if Cyréna crashed)  
+- ✅ Screenshots (optional)
+
+You can drag files directly into this issue.
+
+---
+
+## Environment
+
+- OS: (Windows / macOS / Linux + version)
+- Cyréna version:
+- Model used (if relevant):
+
+---
+
+## Additional context
+Anything else that might help us understand the issue.
