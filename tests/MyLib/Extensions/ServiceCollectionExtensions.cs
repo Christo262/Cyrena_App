@@ -1,10 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using ExampleNamespace.Contracts;
-using ExampleNamespace.Services;
-using ExampleNamespace.Options;
+using MyLib.Contracts;
+using MyLib.Options;
 
-namespace ExampleNamespace.Extensions
+namespace MyLib.Extensions
 {
     public static class ServiceCollectionExtensions
     {

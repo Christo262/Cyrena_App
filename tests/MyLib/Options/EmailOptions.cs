@@ -1,6 +1,6 @@
 using System;
 
-namespace ExampleNamespace.Options
+namespace MyLib.Options
 {
     public class EmailOptions
     {
