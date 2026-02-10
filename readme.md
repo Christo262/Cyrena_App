@@ -20,6 +20,7 @@ It contains important safety notes.
 - 📸 [Screenshots](./docs/screenshots.md)
 - 🧠 [Architecture Overview](./docs/code_overview.md)
 - 🤝 [Contributing](./contributing.md)
+- 👉 [Getting Started Video](https://streamable.com/218db1)
 
 ---
 
