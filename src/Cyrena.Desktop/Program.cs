@@ -31,6 +31,7 @@ class Program
             .AddTavily()
             .AddBlazorDevelopment()
             .AddClassLibraryDevelopment()
+            .AddPlatformIO()
             .AddArduinoIDE();
 
         var settings = cyrena.GetOption<ISettingsService>();

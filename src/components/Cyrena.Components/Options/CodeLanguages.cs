@@ -21,7 +21,7 @@ namespace Cyrena.Options
                 {"csproj", "xml" },
                 {"xml", "xml" },
                 {"json", "json" },
-                {"ino", "cpp" }
+                {"ino", "cpp" },
             };
         }
 

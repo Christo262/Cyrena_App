@@ -25,6 +25,7 @@
   </Folder>
   <Folder Name="/src/embed/">
     <Project Path="src/embed/Cyrena.ArduinoIDE/Cyrena.ArduinoIDE.csproj" Id="72878ba6-fd88-47b9-9668-51248b24e807" />
+    <Project Path="src/embed/Cyrena.PlatformIO/Cyrena.PlatformIO.csproj" Id="88de2f81-46d5-46a1-801a-6100bd55eb9a" />
   </Folder>
   <Folder Name="/src/persistence/">
     <Project Path="src/persistence/Cyrena.Persistence.Core/Cyrena.Persistence.Core.csproj" Id="ce98ccdb-4675-4713-ae9c-536a5ad67df0" />

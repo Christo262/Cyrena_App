@@ -1,0 +1,17 @@
+﻿
+
+<div class="row m-0">
+    @foreach (var item in Controller.Environments)
+    {
+        <div class="col-md-4">
+            <div class="p-2 rounded border clickable @(Controller.Current == item ? "border-primary":"")" @onclick="() => SetEnvironment(item)">
+                <h4 class="m-0">@item.Name</h4>
+                <p class="small m-0">
+                    Framework: @item.Framework <br />
+                    Board: @item["board"]<br />
+                    Platform: @item["platform"]
+                </p>
+            </div>
+        </div>
+    }
+</div>
