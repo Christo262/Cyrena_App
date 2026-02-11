@@ -21,6 +21,7 @@
     <ProjectReference Include="..\dotnet\Cyrena.Blazor\Cyrena.Blazor.csproj" />
     <ProjectReference Include="..\dotnet\Cyrena.ClassLibrary\Cyrena.ClassLibrary.csproj" />
     <ProjectReference Include="..\embed\Cyrena.ArduinoIDE\Cyrena.ArduinoIDE.csproj" />
+    <ProjectReference Include="..\embed\Cyrena.PlatformIO\Cyrena.PlatformIO.csproj" />
     <ProjectReference Include="..\persistence\Cyrena.Persistence.File\Cyrena.Persistence.File.csproj" />
     <ProjectReference Include="..\runtime\Cyrena.Runtime.Ollama\Cyrena.Runtime.Ollama.csproj" />
     <ProjectReference Include="..\runtime\Cyrena.Runtime.OpenAI\Cyrena.Runtime.OpenAI.csproj" />

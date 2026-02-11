@@ -24,7 +24,7 @@ namespace Cyrena.Runtime.Plugins
         {
             _context.LogInfo("Reading project plan");
             var plan = new ProjectPlanWithNotes(_context.ProjectPlan);
-            var notes = await _notes.FindManyAsync(x => true);
+            var notes = await _notes.FindManyAsync(x => x.ProjectId == _context.Project.Id);
             plan.Notes = notes.Select(x => new NoteRecord(x.Id, x.Subject, x.Content));
             return plan;
         }

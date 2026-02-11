@@ -247,5 +247,49 @@ namespace Cyrena.Extensions
             plan.Files.RemoveAll(f =>
                 !File.Exists(Path.Combine(plan.RootDirectory, f.RelativePath)));
         }
+
+        public static bool TryFindFileByName(this ProjectPlan plan, string name, out ProjectFile? file, bool recursive = true)
+        {
+            var easy = plan.Files.FirstOrDefault(x =>
+                string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+
+            if (easy != null)
+            {
+                file = easy;
+                return true;
+            }
+
+            if (recursive)
+                foreach (var item in plan.Folders)
+                {
+                    if (plan.TryFindFileByName(item, name, out file))
+                        return true;
+                }
+
+            file = null;
+            return false;
+        }
+
+        public static bool TryFindFileByName(this ProjectPlan plan, ProjectFolder folder, string name, out ProjectFile? file, bool recursive = true)
+        {
+            var easy = folder.Files.FirstOrDefault(x =>
+                string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+
+            if (easy != null)
+            {
+                file = easy;
+                return true;
+            }
+
+            if (recursive)
+                foreach (var item in folder.Folders)
+                {
+                    if (plan.TryFindFileByName(item, name, out file))
+                        return true;
+                }
+
+            file = null;
+            return false;
+        }
     }
 }
