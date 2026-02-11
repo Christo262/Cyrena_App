@@ -29,7 +29,7 @@ namespace Cyrena.Models
         {
             try
             {
-                var path = Path.Combine(dir, "cyrena.cfg");
+                var path = Path.Combine(dir, Project.CyrenaDirectory, "plan");
                 if (File.Exists(path))
                 {
                     var json = File.ReadAllText(path);
@@ -55,7 +55,7 @@ namespace Cyrena.Models
 
         public static void Save(ProjectPlan plan)
         {
-            var path = Path.Combine(plan.RootDirectory, "cyrena.cfg");
+            var path = Path.Combine(plan.RootDirectory, Project.CyrenaDirectory, "plan");
             File.WriteAllText(path, plan.ToString());
         }
     }

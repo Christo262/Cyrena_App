@@ -6,15 +6,15 @@ using System.ComponentModel;
 
 namespace Cyrena.ArduinoIDE.Plugins
 {
-    internal class ArduinoCreatePlugins
+    internal class Arduino
     {
         private readonly IDeveloperContext _context;
-        public ArduinoCreatePlugins(IDeveloperContext context)
+        public Arduino(IDeveloperContext context)
         {
             _context = context;
         }
 
-        [KernelFunction]
+        [KernelFunction("create_cpp")]
         [Description(@"Creates a new C++ source file (.cpp) in the project.
 
 Use this when the project needs a new implementation file.
@@ -36,7 +36,7 @@ If the file already exists, the existing file is returned and no new file is cre
             return new ToolResult<ProjectFile>(nf);
         }
 
-        [KernelFunction]
+        [KernelFunction("create_h")]
         [Description(@"Creates a new C++ header file (.h) in the project.
 
 Use this when the project needs a new header or interface file.

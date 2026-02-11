@@ -5,16 +5,16 @@ namespace Cyrena.Spec.Contracts
 {
     public interface ISpecsService
     {
-        IReadOnlyList<Article> Articles { get; }
-        IEnumerable<ArticleSummary> Search(string[] keywords, int maxResults);
-        string Read(string id);
-        ToolResult<NewArticle> Create(string title, string[] keywords, string summary, string content, string? id = null);
-        ToolResult<NewArticle> Update(string id, string? title, string[]? keywords, string? summary, string? content);
-        ToolResult<NewArticle> CreateOrUpdateForFile(string id, string? title, string[]? keywords, string? summary, string? content);
-        ToolResult Delete(string id);
+        IQueryable<Article> Articles { get; }
+        Task<IEnumerable<ArticleSummary>> Search(string[] keywords, int maxResults);
+        Task<string> Read(string id);
+        Task<ToolResult<NewArticle>> Create(string title, string[] keywords, string summary, string content, string? id = null);
+        Task<ToolResult<NewArticle>> Update(string id, string? title, string[]? keywords, string? summary, string? content);
+        Task<ToolResult<NewArticle>> CreateOrUpdateForFile(string id, string? title, string[]? keywords, string? summary, string? content);
+        Task<ToolResult> Delete(string id);
 
-        void Update(Article article);
-        void Create(Article article);
-        void Delete(Article article);
+        Task Update(Article article);
+        Task Create(Article article);
+        Task Delete(Article article);
     }
 }

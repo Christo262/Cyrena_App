@@ -35,9 +35,9 @@ namespace Cyrena.Blazor.Services
             var plan = builder.LoadBlazorDefaultPlan();
             var prompt = File.ReadAllText("./blazor_prompt.md");
             builder.KernelHistory.AddSystemMessage(prompt);
-            builder.Plugins.AddFromType<BlazorCreatePlugin>();
-            builder.Plugins.AddFromType<DefaultStructurePlugin>();
-            builder.Plugins.AddFromType<DotnetActions>();
+            builder.Plugins.AddFromType<BlazorCreate>();
+            builder.Plugins.AddFromType<DotnetCreate>();
+            builder.Plugins.AddFromType<Dotnet>();
             builder.AddEventHandler<FileCreatedEvent, BlazorProjectFileWatcher>();
             builder.AddEventHandler<FileDeletedEvent, BlazorProjectFileWatcher>();
             builder.AddEventHandler<FileRenamedEvent, BlazorProjectFileWatcher>();

@@ -77,7 +77,7 @@ namespace Cyrena.ArduinoIDE.Services
             plan.IndexFiles("cpp", "cpp_");
             plan.IndexFiles("h", "h_");
 
-            builder.Plugins.AddFromType<ArduinoCreatePlugins>();
+            builder.Plugins.AddFromType<Arduino>();
             var prompt = File.ReadAllText("./arduino_ide_prompt.md");
             var boardCtx = new StringBuilder();
             boardCtx.AppendLine($"Board: {builder.Project.Properties[ArduinoProject.BoardProp]}");

@@ -7,15 +7,15 @@ using System.Text;
 
 namespace Cyrena.Runtime.Plugins
 {
-    internal class FilesPlugin
+    internal class FileActions
     {
         private readonly IDeveloperContext _context;
-        public FilesPlugin(IDeveloperContext context)
+        public FileActions(IDeveloperContext context)
         {
             _context = context;
         }
 
-        [KernelFunction]
+        [KernelFunction("read_file")]
         [Description("Reads the text of a file.")]
         public string ReadFileContent(
             [Description("The id of the file.")] string fileId)
@@ -40,7 +40,7 @@ namespace Cyrena.Runtime.Plugins
             }
         }
 
-        [KernelFunction]
+        [KernelFunction("read_lines")]
         [Description("Reads the text of a file and returns a structured list of lines in the file as well as the index number of each line.")]
         public ToolResult<ProjectFileLines> ReadFileLines(
             [Description("The id of the file.")] string fileId)
@@ -60,7 +60,7 @@ namespace Cyrena.Runtime.Plugins
             }
         }
 
-        [KernelFunction]
+        [KernelFunction("write_content")]
         [Description("Write text to a file. If the file already exists, the content is overwritten.")]
         public ToolResult<ProjectFileContent> WriteFileContent(
             [Description("The id of the file to write to.")] string fileId,
@@ -83,7 +83,7 @@ namespace Cyrena.Runtime.Plugins
             }
         }
 
-        [KernelFunction]
+        [KernelFunction("write_line")]
         [Description("Replaces a line of text in a file.")]
         public ToolResult<ProjectFileLines> ReplaceFileLine(
             [Description("The id of the file to write to.")] string fileId,
@@ -107,7 +107,7 @@ namespace Cyrena.Runtime.Plugins
             }
         }
 
-        [KernelFunction]
+        [KernelFunction("append_line")]
         [Description("Appends a line of text to the end of a file.")]
         public ToolResult<ProjectFileContent> AppendFileLine(
             [Description("The id of the file to write to.")] string fileId,
@@ -133,7 +133,7 @@ namespace Cyrena.Runtime.Plugins
             }
         }
 
-        [KernelFunction]
+        [KernelFunction("delete")]
         [Description("Deletes a file from the project.")]
         public ToolResult DeleteFile([Description("The id of the file to delete.")] string fileId)
         {

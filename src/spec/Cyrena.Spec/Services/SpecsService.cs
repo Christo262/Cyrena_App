@@ -1,30 +1,25 @@
 ﻿using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Models;
+using Cyrena.Persistence.Contracts;
 using Cyrena.Spec.Contracts;
 using Cyrena.Spec.Models;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Cyrena.Spec.Services
 {
     internal class SpecsService : ISpecsService
     {
-        private readonly string _base;
         private readonly IDeveloperContext _context;
-        public SpecsService(IDeveloperContext context)
+        private readonly IStore<Article> _store;
+        public SpecsService(IDeveloperContext context, IStore<Article> store)
         {
             _context = context;
-            _base = Path.Combine(context.Project.RootDirectory, "specs");
-            _articles = new List<Article>();
-            IndexDirectory(_base);
+            _store = store;
         }
 
-        public IReadOnlyList<Article> Articles => _articles;
-
-        public IEnumerable<ArticleSummary> Search(string[] keywords, int maxResults)
+        public IQueryable<Article> Articles => _store.QueryableData;
+        public async Task<IEnumerable<ArticleSummary>> Search(string[] keywords, int maxResults)
         {
             _context.LogInfo("Searching specifications");
             var normalized = keywords
@@ -33,8 +28,9 @@ namespace Cyrena.Spec.Services
                 .ToArray();
 
             var results = new List<ArticleSummary>();
+            var articles = await _store.FindManyAsync(x => true);
 
-            foreach (var a in _articles)
+            foreach (var a in articles)
             {
                 int score = 0;
 
@@ -75,9 +71,9 @@ namespace Cyrena.Spec.Services
                 .Take(maxResults);
         }
 
-        public string Read(string id)
+        public async Task<string> Read(string id)
         {
-            var article = _articles.FirstOrDefault(a => a.Id == id);
+            var article = await _store.FindAsync(x => x.Id == id);
             if (article == null)
                 return $"[NOTFOUND]Document with id {id} not found.[/ERROR]";
             _context.LogInfo($"Reading spec {article.Title}");
@@ -104,18 +100,6 @@ namespace Cyrena.Spec.Services
                 sb.AppendLine();
             }
 
-            if (!string.IsNullOrEmpty(article.FilePath))
-            {
-                var path = Path.Combine(_base, article.FilePath);
-                if (File.Exists(path))
-                {
-                    sb.AppendLine("[CONTENT]");
-                    sb.AppendLine(File.ReadAllText(path));
-                    sb.AppendLine("[/CONTENT]");
-                    sb.AppendLine();
-                }
-            }
-
             if (!string.IsNullOrEmpty(article.Link))
             {
                 sb.AppendLine($"[LINK]{article.Link}[/LINK]");
@@ -125,21 +109,21 @@ namespace Cyrena.Spec.Services
             return sb.ToString();
         }
 
-        public ToolResult<NewArticle> CreateOrUpdateForFile(string id, string? title, string[]? keywords, string? summary, string? content)
+        public async Task<ToolResult<NewArticle>> CreateOrUpdateForFile(string id, string? title, string[]? keywords, string? summary, string? content)
         {
             if (!_context.ProjectPlan.TryFindFile(id, out var file))
                 return new ToolResult<NewArticle>(false, $"Unable to find file with id {id}");
-            var article = _articles.FirstOrDefault(a => a.Id == id);
+            var article = await _store.FindAsync(x => x.Id == id);
             if (article == null)
             {
                 if (title == null || keywords == null || summary == null || content == null)
                     return new ToolResult<NewArticle>(false, "Requires title, keywords, summary & content in order to create.");
-                return Create(title, keywords, summary, content, id);
+                return await Create(title, keywords, summary, content, id);
             }
-            return Update(id, title, keywords, summary, content);
+            return await Update(id, title, keywords, summary, content);
         }
 
-        public ToolResult<NewArticle> Create(string title, string[] keywords, string summary, string content, string? id = null)
+        public async Task<ToolResult<NewArticle>> Create(string title, string[] keywords, string summary, string content, string? id = null)
         {
             _context.LogInfo($"Create specification: {title}");
             if(string.IsNullOrEmpty(id))
@@ -151,18 +135,15 @@ namespace Cyrena.Spec.Services
                 Keywords = keywords.ToList(),
                 Summary = summary,
                 Content = content,
-                SpecPath = Path.Combine(_base, $"{id}.spec")
             };
-            Dir();
-            var path = Path.Combine(_base, $"{article.Id}.spec");
-            File.WriteAllText(path, article.ToString());
+            await _store.AddAsync(article);
             var model = new NewArticle(article.Id, article.Title, article.Summary);
             return new ToolResult<NewArticle>(model);
         }
 
-        public ToolResult<NewArticle> Update(string id, string? title, string[]? keywords, string? summary, string? content)
+        public async Task<ToolResult<NewArticle>> Update(string id, string? title, string[]? keywords, string? summary, string? content)
         {
-            var article = _articles.FirstOrDefault(a => a.Id == id);
+            var article = await _store.FindAsync(x => x.Id == id);
             if (article == null) return new ToolResult<NewArticle>(false, "Unable to find document");
 
             _context.LogInfo($"Updating specification: {article.Title}");
@@ -171,71 +152,33 @@ namespace Cyrena.Spec.Services
             if (!string.IsNullOrEmpty(content)) article.Content = content;
             if (keywords != null && keywords.Length > 0) article.Keywords = keywords.ToList();
 
-            File.WriteAllText(article.SpecPath, article.ToString());
+            await _store.UpdateAsync(article);
             return new ToolResult<NewArticle>(new NewArticle(article.Id, article.Title, article.Summary));
         }
 
-        public ToolResult Delete(string id)
+        public async Task<ToolResult> Delete(string id)
         {
-            var article = _articles.FirstOrDefault(b => b.Id == id);
+            var article = await _store.FindAsync(x => x.Id == id);
             if (article == null) return new ToolResult(true, "Document not found.");
             _context.LogInfo($"Deleting specification: {article.Title}");
-            if (File.Exists(article.SpecPath))
-                File.Delete(article.SpecPath);
-            _articles.Remove(article);
+            await _store.DeleteAsync(article);
             return new ToolResult(true, "Document Removed");
         }
 
-        private List<Article> _articles;
-        private void IndexDirectory(string directory)
+        public async Task Update(Article article)
         {
-            if (!Directory.Exists(directory)) return;
-            var files = Directory.GetFiles(directory, "*.spec");
-            foreach (var file in files)
-            {
-                try
-                {
-                    var json = File.ReadAllText(file);
-                    var article = JsonConvert.DeserializeObject<Article>(json);
-                    if (article != null && !_articles.Any(x => x.Id == article.Id))
-                    {
-                        article.SpecPath = file;
-                        _articles.Add(article);
-                    }
-                }
-                catch { }
-            }
-            var dirs = Directory.GetDirectories(directory);
-            foreach (var dir in dirs)
-                IndexDirectory(dir);
+            await _store.UpdateAsync(article);
         }
 
-        public void Update(Article article)
-        {
-            File.WriteAllText(article.SpecPath, article.ToString());
-        }
-
-        public void Create(Article article)
+        public async Task Create(Article article)
         {
             article.Id = Guid.NewGuid().ToString();
-            Dir();
-            var path = Path.Combine(_base, $"{article.Id}.spec");
-            File.WriteAllText(path, article.ToString());
-            article.SpecPath = path;
-            _articles.Add(article);
+            await _store.AddAsync(article);
         }
 
-        public void Delete(Article article)
+        public async Task Delete(Article article)
         {
-            if (File.Exists(article.SpecPath))
-                File.Delete(article.SpecPath);
-            _articles.Remove(article);
-        }
-
-        private void Dir()
-        {
-            if (!Directory.Exists(_base))
-                Directory.CreateDirectory(_base);
+            await _store.DeleteAsync(article);
         }
 
         static string Normalize(string s)

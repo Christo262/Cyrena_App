@@ -91,8 +91,8 @@ namespace Cyrena.ClassLibrary.Services
             var prompt = File.ReadAllText("./class_lib_prompt.md");
             builder.KernelHistory.AddSystemMessage(prompt);
 
-            builder.Plugins.AddFromType<DefaultStructurePlugin>();
-            builder.Plugins.AddFromType<DotnetActions>();
+            builder.Plugins.AddFromType<DotnetCreate>();
+            builder.Plugins.AddFromType<Dotnet>();
 
             builder.AddEventHandler<FileCreatedEvent, LibProjectFileWatcher>();
             builder.AddEventHandler<FileDeletedEvent, LibProjectFileWatcher>();

@@ -6,29 +6,36 @@ using System.Diagnostics;
 
 namespace Cyrena.Net.Plugins
 {
-    public class DotnetActions
+    public class Dotnet
     {
         private readonly IDeveloperContext _context;
-        public DotnetActions(IDeveloperContext context)
+        public Dotnet(IDeveloperContext context)
         {
             _context = context;
         }
 
-        [KernelFunction]
-        [Description("Gets the root namespace and target framework of the project.")]
-        public ToolResult<string> GetRootNamespaceAndTargetFramework()
+        [KernelFunction("get_root_namespace")]
+        [Description("Gets the root namespace all models, interfaces, services, options, etc. must start with.")]
+        public string RootNamespace()
         {
             var ns = _context.Project.Properties["namespace"];
-            var tf = _context.Project.Properties["targetFramework"];
-            if (string.IsNullOrEmpty(ns) || string.IsNullOrEmpty(tf))
-                return new ToolResult<string>(false, "Project configuration is incomplete.");
+            if (string.IsNullOrEmpty(ns))
+                return $"[ERROR]Project Configuration Incomplete[/ERROR]";
+            return ns;
+        }
 
-            var str = $"Namespace: {ns}\r\nTarget Framework: {tf}";
-            return new ToolResult<string>(str, true);
+        [KernelFunction("get_target_framework")]
+        [Description("Gets the target framework of the current project. Example for .NET 10: net10.0")]
+        public string GetTargetFramework()
+        {
+            var ns = _context.Project.Properties["targetFramework"];
+            if (string.IsNullOrEmpty(ns))
+                return $"[ERROR]Project Configuration Incomplete[/ERROR]";
+            return ns;
         }
 
 #warning TODO this is a bad idea, need to whitelist commands it can run. Maybe a config file with actual actions that can be done
-        [KernelFunction]
+        [KernelFunction("run_command")]
         [Description("Runs a dotnet CLI command in the project directory and returns output and errors.")]
         public ToolResult<string[]> RunDotnetCommand(
             [Description("Arguments passed to dotnet CLI, for example: \"build\", \"test\", \"publish -c Release\"")]

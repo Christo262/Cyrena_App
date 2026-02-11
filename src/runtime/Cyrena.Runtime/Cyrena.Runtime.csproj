@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\persistence\Cyrena.Persistence.Core\Cyrena.Persistence.Core.csproj" />
+    <ProjectReference Include="..\..\persistence\Cyrena.Persistence.File\Cyrena.Persistence.File.csproj" />
   </ItemGroup>
 
 </Project>
