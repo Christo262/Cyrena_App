@@ -10,21 +10,15 @@ namespace Cyrena.Runtime.Services
 {
     internal class DefaultBuilderExtension : IDeveloperContextExtension
     {
-        private readonly IStore<Note> _notes;
-        public DefaultBuilderExtension(IStore<Note> notes)
-        {
-            _notes = notes;
-        }
-
         public int Priority => 0;
 
         public Task ExtendAsync(IDeveloperContextBuilder builder)
         {
-            builder.Plugins.AddFromType<ProjectPlugin>();
-            builder.Plugins.AddFromType<FilesPlugin>();
-            builder.Services.AddSingleton<IStore<Note>>(_notes);
-            builder.Plugins.AddFromType<NotesPlugin>();
-            builder.Plugins.AddFromType<DateTimePlugin>();
+            builder.AddStore<Note>("project_notes");
+            builder.Plugins.AddFromType<ProjectInformation>();
+            builder.Plugins.AddFromType<FileActions>();
+            builder.Plugins.AddFromType<ProjectNotes>();
+            builder.Plugins.AddFromType<Plugins.DateTime>();
 
             builder.Services.AddSingleton<EventQueue>();
             builder.Services.AddSingleton<IEventPublisher, EventPublisher>();

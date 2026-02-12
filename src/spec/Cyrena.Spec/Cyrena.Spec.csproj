@@ -17,6 +17,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\components\Cyrena.Components\Cyrena.Components.csproj" />
+    <ProjectReference Include="..\..\persistence\Cyrena.Persistence.Core\Cyrena.Persistence.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Contracts\" />
   </ItemGroup>
 
 </Project>

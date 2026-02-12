@@ -39,7 +39,10 @@ namespace Cyrena.Runtime.Services
             if (connection == null)
                 throw new NullReferenceException($"Unable to construct connection for project {project.Name}");
             var devBuilder = new DeveloperContextBuilder(kernelBuilder, project);
+            if (!Directory.Exists(Path.Combine(project.RootDirectory, Project.CyrenaDirectory)))
+                Directory.CreateDirectory(Path.Combine(project.RootDirectory, Project.CyrenaDirectory));
             var plan = await provider.InitializeAsync(devBuilder);
+            devBuilder.UseFilePersistence();
             devBuilder.AddProjectFileWatcher();
             var extensions = _services.GetServices<IDeveloperContextExtension>();
             foreach (var extension in extensions.OrderBy(x => x.Priority))

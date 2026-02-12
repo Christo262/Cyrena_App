@@ -8,17 +8,17 @@ using System.ComponentModel;
 
 namespace Cyrena.Runtime.Plugins
 {
-    internal class ProjectPlugin
+    internal class ProjectInformation
     {
         private readonly IDeveloperContext _context;
         private readonly IStore<Note> _notes;
-        public ProjectPlugin(IDeveloperContext context, IStore<Note> notes)
+        public ProjectInformation(IDeveloperContext context, IStore<Note> notes)
         {
             _context = context;
             _notes = notes;
         }
 
-        [KernelFunction]
+        [KernelFunction("get_plan")]
         [Description("Gets all folders and files in the project and any notes about the project.")]
         public async Task<ProjectPlanWithNotes> GetProjectPlan()
         {

@@ -141,7 +141,7 @@ namespace Cyrena.PlatformIO.Services
             var prompt = File.ReadAllText("./platformio_prompt.md");
             builder.KernelHistory.AddSystemMessage(prompt);
             builder.Services.AddSingleton<IEnvironmentController>(environmentController);
-            builder.Plugins.AddFromType<StandardStructurePlugin>();
+            builder.Plugins.AddFromType<Platform>();
 
             builder.AddEventHandler<FileCreatedEvent, PioFileWatcher>();
             builder.AddEventHandler<FileDeletedEvent, PioFileWatcher>();

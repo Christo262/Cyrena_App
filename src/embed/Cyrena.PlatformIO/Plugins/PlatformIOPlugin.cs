@@ -7,17 +7,17 @@ using System.ComponentModel;
 
 namespace Cyrena.PlatformIO.Plugins
 {
-    internal class StandardStructurePlugin
+    internal class Platform
     {
         private readonly IDeveloperContext _context;
         private readonly IEnvironmentController _env;
-        public StandardStructurePlugin(IDeveloperContext context, IEnvironmentController env)
+        public Platform(IDeveloperContext context, IEnvironmentController env)
         {
             _context = context;
             _env = env;
         }
 
-        [KernelFunction]
+        [KernelFunction("get_environment_info")]
         [Description("Gets information about the current PlatformIO environment you are working on.")]
         public Dictionary<string, string?> GetPlatformIOEnvironment()
         {
@@ -30,7 +30,7 @@ namespace Cyrena.PlatformIO.Plugins
             return model;
         }
 
-        [KernelFunction]
+        [KernelFunction("create_h")]
         [Description("Creates a new header file (*.h) in the project's include folder.")]
         public ToolResult<ProjectFile> Create_Include_Header(
             [Description("Name of the file, example 'my_class'.")]string name)
@@ -38,17 +38,17 @@ namespace Cyrena.PlatformIO.Plugins
             return CreateFile("include", "h", name);
         }
 
-        [KernelFunction]
+        [KernelFunction("create_c")]
         [Description("Creates a new c file (*.c) in the project's src folder.")]
-        public ToolResult<ProjectFile> Create_Src_C_File(
+        public ToolResult<ProjectFile> CreateCFile(
             [Description("Name of the file, example 'my_class'.")] string name)
         {
             return CreateFile("src", "c", name);
         }
 
-        [KernelFunction]
+        [KernelFunction("create_cpp")]
         [Description("Creates a new C++ file (*.cpp) in the project's src folder.")]
-        public ToolResult<ProjectFile> Create_Src_Cpp_File(
+        public ToolResult<ProjectFile> CreateCppFile(
             [Description("Name of the file, example 'my_class'.")] string name)
         {
             return CreateFile("src", "cpp", name);

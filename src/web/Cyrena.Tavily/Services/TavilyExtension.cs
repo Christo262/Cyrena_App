@@ -22,7 +22,7 @@ namespace Cyrena.Tavily.Services
             if(options == null || string.IsNullOrEmpty(options.ApiKey) || !options.Enable)
                 return Task.CompletedTask;
             builder.Services.AddSingleton(options);
-            builder.Plugins.AddFromType<TavilyPlugin>();
+            builder.Plugins.AddFromType<Internet>();
             return Task.CompletedTask;
         }
     }

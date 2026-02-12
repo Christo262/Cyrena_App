@@ -11,17 +11,17 @@ using System.Text;
 
 namespace Cyrena.Runtime.Plugins
 {
-    internal class NotesPlugin
+    internal class ProjectNotes
     {
         private readonly IStore<Note> _store;
         private readonly IDeveloperContext _context;
-        public NotesPlugin(IDeveloperContext context, IStore<Note> store)
+        public ProjectNotes(IDeveloperContext context, IStore<Note> store)
         {
             _context = context;
             _store = store;
         }
 
-        [KernelFunction]
+        [KernelFunction("list_subjects")]
         [Description("Lists all long-term project note subjects. Notes store durable rules, decisions, and conventions that persist across AI tasks.")]
         public async Task<ToolResult<NoteSubject[]>> ListAllSubjectsOfProjectNotes()
         {
@@ -30,7 +30,7 @@ namespace Cyrena.Runtime.Plugins
             return new ToolResult<NoteSubject[]>(subs.ToArray());
         }
 
-        [KernelFunction]
+        [KernelFunction("read")]
         [Description("Reads a single project note by id. Notes contain persistent knowledge such as architecture rules or conventions.")]
         public async Task<ToolResult<Note>> ReadProjectNote([Description("The unique identifier of the note to read.")] string id)
         {
@@ -40,7 +40,7 @@ namespace Cyrena.Runtime.Plugins
             return new ToolResult<Note>(note);
         }
 
-        [KernelFunction]
+        [KernelFunction("create")]
         [Description("Creates a new long-term project note. Only store durable facts, rules, or decisions that should persist across future tasks.")]
         public async Task<ToolResult<NoteSubject>> CreateProjectNote(
             [Description("A short stable subject that identifies the memory category. Subjects act as keys and should describe lasting project concepts.")] string subject,
@@ -58,7 +58,7 @@ namespace Cyrena.Runtime.Plugins
             return new ToolResult<NoteSubject>(new NoteSubject(model.Id, model.Subject));
         }
 
-        [KernelFunction]
+        [KernelFunction("delete")]
         [Description("Deletes a project note. Use when stored memory is outdated or no longer valid.")]
         public async Task<ToolResult> DeleteProjectNote([Description("The unique identifier of the note to delete.")] string id)
         {
@@ -71,7 +71,7 @@ namespace Cyrena.Runtime.Plugins
             return new ToolResult(true, "Note deleted.");
         }
 
-        [KernelFunction]
+        [KernelFunction("update")]
         [Description("Updates an existing project note. Use this to refine or replace long-term memory rather than creating duplicate notes.")]
         public async Task<ToolResult<Note>> UpdateProjectNote(
             [Description("The unique identifier of the note to update.")] string id,

@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace Cyrena.Runtime.Plugins
 {
-    internal class DateTimePlugin
+    internal class DateTime
     {
         public class AiDate : JsonStringObject
         {
@@ -40,29 +40,29 @@ namespace Cyrena.Runtime.Plugins
             public AiTime Time { get; set; } = new AiTime();
         }
 
-        [KernelFunction]
+        [KernelFunction("current_date")]
         [Description("Gets the current date.")]
         public AiDate GetCurrentDate()
         {
-            var dt = DateTime.Now;
+            var dt = System.DateTime.Now;
             return new AiDate(dt.Year, dt.Month, dt.Day);
         }
 
-        [KernelFunction]
+        [KernelFunction("current_date_time")]
         [Description("Gets the current date and time.")]
         public AiDateTime GetCurrentDateAndTime()
         {
-            var dt = DateTime.Now;
+            var dt = System.DateTime.Now;
             var date = new AiDate(dt.Year, dt.Month, dt.Day);
             var time = new AiTime(dt.Hour, dt.Minute, dt.Second);
             return new AiDateTime() { Date = date, Time = time };
         }
 
-        [KernelFunction]
+        [KernelFunction("current_time")]
         [Description("Gets the current time.")]
         public AiTime GetCurrentTime()
         {
-            var dt = DateTime.Now;
+            var dt = System.DateTime.Now;
             var time = new AiTime(dt.Hour, dt.Minute, dt.Second);
             return time;
         }

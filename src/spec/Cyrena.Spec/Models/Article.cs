@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Cyrena.Spec.Models
 {
-    public class Article : JsonStringObject
+    public class Article : JsonStringObject, IEntity
     {
         public Article()
         {
@@ -25,15 +25,5 @@ namespace Cyrena.Spec.Models
         /// If the documentation is online
         /// </summary>
         public string? Link { get; set; }
-        /// <summary>
-        /// If documentation is in a corresponding file. Must be relative path from spec folder, i.e. http_apis/users.spec, or overview.spec
-        /// </summary>
-        public string? FilePath { get; set; }
-
-        /// <summary>
-        /// Leave alone, spec service will assign this value
-        /// </summary>
-        [JsonIgnore]
-        internal string SpecPath { get; set; } = default!;
     }
 }

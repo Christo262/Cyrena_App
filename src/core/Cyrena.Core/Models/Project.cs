@@ -4,6 +4,7 @@ namespace Cyrena.Models
 {
     public class Project : Entity
     {
+        public const string CyrenaDirectory = ".cyrena";
         public Project()
         {
             Properties = new DataPropertyCollection();

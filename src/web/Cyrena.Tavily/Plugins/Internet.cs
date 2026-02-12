@@ -7,12 +7,12 @@ using System.Net.Http.Json;
 
 namespace Cyrena.Tavily.Plugins
 {
-    internal class TavilyPlugin
+    internal class Internet
     {
         private readonly HttpClient _http;
         private readonly TavilyOptions _options;
         private readonly IDeveloperContext _context;
-        public TavilyPlugin(TavilyOptions options, IDeveloperContext context)
+        public Internet(TavilyOptions options, IDeveloperContext context)
         {
             _options = options;
             _context = context;
@@ -23,7 +23,7 @@ namespace Cyrena.Tavily.Plugins
             _http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _options.ApiKey);
         }
 
-        [KernelFunction]
+        [KernelFunction("search")]
         [Description("Performs a web search.")]
         public async Task<SearchResponse> WebSearchAsync(
             [Description("The query to search for.")]string query, 
@@ -59,7 +59,7 @@ namespace Cyrena.Tavily.Plugins
             }
         }
 
-        [KernelFunction]
+        [KernelFunction("extract")]
         [Description("Extracts content from the provided URLs in markdown format")]
         public async Task<ExtractResponse> WebExtractAsync(
             [Description("An array of URLs to extract content from. Required.")]string[] urls, 

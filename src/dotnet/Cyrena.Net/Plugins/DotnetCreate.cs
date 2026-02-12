@@ -6,15 +6,15 @@ using System.ComponentModel;
 
 namespace Cyrena.Net.Plugins
 {
-    public class DefaultStructurePlugin
+    public class DotnetCreate
     {
         private readonly IDeveloperContext _context;
-        public DefaultStructurePlugin(IDeveloperContext context)
+        public DotnetCreate(IDeveloperContext context)
         {
             _context = context;
         }
 
-        [KernelFunction]
+        [KernelFunction("interface")]
         [Description("Creates a new interface in the Contracts folder with some starter code.")]
         public ToolResult<ProjectFile> CreateInterface(
             [Description("The name of the interface, for example, 'ISomeService'.")] string name)
@@ -32,7 +32,7 @@ namespace Cyrena.Net.Plugins
             return new ToolResult<ProjectFile>(nf);
         }
 
-        [KernelFunction]
+        [KernelFunction("service")]
         [Description("Creates a new class in the Services folder with some starter code.")]
         public ToolResult<ProjectFile> CreateService(
             [Description("The name of the service, for example, 'SomeService'.")] string name)
@@ -50,7 +50,7 @@ namespace Cyrena.Net.Plugins
             return new ToolResult<ProjectFile>(nf);
         }
 
-        [KernelFunction]
+        [KernelFunction("model")]
         [Description("Creates a new class in the Models folder with some starter code.")]
         public ToolResult<ProjectFile> CreateModel(
             [Description("The name of the model, for example, 'MyModel'.")] string name)
@@ -68,7 +68,7 @@ namespace Cyrena.Net.Plugins
             return new ToolResult<ProjectFile>(nf);
         }
 
-        [KernelFunction]
+        [KernelFunction("option")]
         [Description("Creates a new class in the Options folder with some starter code.")]
         public ToolResult<ProjectFile> CreateOption(
     [Description("The name of the option, for example, 'MyOptions'.")] string name)
@@ -87,7 +87,7 @@ namespace Cyrena.Net.Plugins
         }
 
 
-        [KernelFunction]
+        [KernelFunction("extension")]
         [Description("Creates a new class in the Extensions folder with some starter code.")]
         public ToolResult<ProjectFile> CreateExtension(
             [Description("The name of the extension, for example, 'MyModelExtensions'.")] string name)

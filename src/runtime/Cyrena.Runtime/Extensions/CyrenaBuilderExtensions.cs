@@ -12,8 +12,6 @@ namespace Cyrena.Extensions
         public static CyrenaBuilder AddRuntime(this CyrenaBuilder builder, string settingsDir)
         {
             builder.AddScopedStore<Project>("projects");
-            builder.AddScopedStore<Note>("project_notes");
-
             builder.Services.AddScoped<IProjectLoader, ProjectLoader>();
             builder.Services.AddScoped<IDeveloperContextExtension, DefaultBuilderExtension>();
 

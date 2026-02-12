@@ -8,15 +8,15 @@ using System.Numerics;
 
 namespace Cyrena.Blazor.Plugins
 {
-    public class BlazorCreatePlugin
+    public class BlazorCreate
     {
         private readonly IDeveloperContext _context;
-        public BlazorCreatePlugin(IDeveloperContext context)
+        public BlazorCreate(IDeveloperContext context)
         {
             _context = context;
         }
 
-        [KernelFunction]
+        [KernelFunction("page_component")]
         [Description("Creates a new blazor page in the Components/Pages folder with some starter code.")]
         public ToolResult<ProjectFile> CreateBlazorPage(
             [Description("The name of the page, for example, 'Index'.")] string name,
@@ -38,7 +38,7 @@ namespace Cyrena.Blazor.Plugins
             return new ToolResult<ProjectFile>(nf);
         }
 
-        [KernelFunction]
+        [KernelFunction("shared_component")]
         [Description("Creates a new blazor component in the Components/Shared folder with some starter code.")]
         public ToolResult<ProjectFile> CreateBlazorSharedComponent(
             [Description("The name of the component, for example, 'MyForm'.")] string name)
@@ -57,7 +57,7 @@ namespace Cyrena.Blazor.Plugins
             return new ToolResult<ProjectFile>(nf);
         }
 
-        [KernelFunction]
+        [KernelFunction("layout_component")]
         [Description("Creates a new blazor layout in the Components/Layout folder with some starter code.")]
         public ToolResult<ProjectFile> CreateBlazorLayout(
         [Description("The name of the layout, for example, 'MainLayout'.")] string name)
@@ -76,7 +76,7 @@ namespace Cyrena.Blazor.Plugins
             return new ToolResult<ProjectFile>(nf);
         }
 
-        [KernelFunction]
+        [KernelFunction("root_component")]
         [Description("Creates a new blazor component in the Components folder with some starter code.")]
         public ToolResult<ProjectFile> CreateBlazorRootComponent(
             [Description("The name of the component, for example, 'MyApp'.")] string name)
@@ -96,7 +96,7 @@ namespace Cyrena.Blazor.Plugins
 
         
 
-        [KernelFunction]
+        [KernelFunction("code_behind")]
         [Description("Creates a code-behind file for a component with some starter code. For example, Index.razor will get a Index.razor.cs file.")]
         public ToolResult<ProjectFile> CreateComponentCodeBehind(
             [Description("The id of the component to create code-behind for.")] string fileId)
@@ -124,7 +124,7 @@ namespace Cyrena.Blazor.Plugins
             return new ToolResult<ProjectFile>(nf);
         }
 
-        [KernelFunction]
+        [KernelFunction("stylesheet")]
         [Description("Creates a new css file in the wwwroot/css folder with some starter code.")]
         public ToolResult<ProjectFile> CreateStylesheet(
             [Description("The name of the css file, for example, 'my-styles'.")] string name)
@@ -141,7 +141,7 @@ namespace Cyrena.Blazor.Plugins
             return new ToolResult<ProjectFile>(model);
         }
 
-        [KernelFunction]
+        [KernelFunction("javascript")]
         [Description("Creates a new javascript file in the wwwroot/js folder with some starter code.")]
         public ToolResult<ProjectFile> CreateJavaScript(
             [Description("The name of the javascript file, for example, 'my-scripts'.")] string name)
