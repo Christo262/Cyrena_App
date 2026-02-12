@@ -20,10 +20,10 @@ class Program
         var cyrena = CyrenaBuilder.Create(appBuilder.Services)
             .UseFilePersistence(fs =>
             {
-                fs.BaseDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "cyrena_app");
+                fs.BaseDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena");
                 fs.FileExtension = "json";
             })
-            .AddRuntime(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "cyrena_app"))
+            .AddRuntime(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena"))
             .AddComponents()
             .AddOllama()
             .AddOpenAI()
