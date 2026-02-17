@@ -1,0 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace {namespace}.Extensions
+{
+    public static class {name}
+    {
+    }
+}

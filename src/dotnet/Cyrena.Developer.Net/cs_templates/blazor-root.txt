@@ -1,0 +1,7 @@
+@namespace {namespace}.Components
+
+<h4>{name}</h4>
+
+@code {
+
+}

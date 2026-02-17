@@ -1,0 +1,11 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace {namespace}.Attributes
+{
+    [AttributeUsage(AttributeTargets.Class)]
+    public class {name} : Attribute
+    {
+    }
+}

@@ -1,0 +1,10 @@
+using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
+using {namespace}.Models;
+
+namespace {namespace}.Controllers;
+
+public class {name} : Controller
+{
+	
+}

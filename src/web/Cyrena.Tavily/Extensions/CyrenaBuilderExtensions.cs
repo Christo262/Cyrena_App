@@ -11,7 +11,7 @@ namespace Cyrena.Extensions
     {
         public static CyrenaBuilder AddTavily(this CyrenaBuilder builder)
         {
-            builder.Services.AddScoped<IDeveloperContextExtension, TavilyExtension>();
+            builder.AddAssistantPlugin<TavilyExtension>();
             builder.AddSettingsComponent<TavilySettings>();
 
             return builder;

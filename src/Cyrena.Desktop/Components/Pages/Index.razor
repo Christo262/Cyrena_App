@@ -1,63 +1,27 @@
 @page "/"
-@inherits CyrenaComponentBase
+@using Cyrena.Desktop.Components.Shared
 
-<div class="p-4 h-100">
-    <div class="row m-0 h-100">
-        <div class="col-md-8 h-100 d-flex flex-column">
-            <h6>Projects</h6>
-            <div class="p-2 border rounded bg-black flex-grow-1 overflow-auto">
-                @if (_projects == null || _projects.Count() == 0)
-                {
-                    <p class="text-center text-muted m-3 small">No Projects</p>
-                }
-                else
-                {
-                    @foreach (var item in _projects)
-                    {
-                        <div class="bg-dark py-2 row m-0 mb-3">
-                            <div class="col">
-                                <p class="m-0 text-truncate">@item.Name</p>
-                                <p class="small m-0 text-muted text-truncate">@item.Description</p>
-                            </div>
-                            <div class="col-3 p-0 pe-1 text-end justify-content-center align-self-center">
-                                <div class="dropdown">
-                                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li>
-                                            <a href="develop/@item.Id" class="dropdown-item"><i class="bi bi-file-code"></i> Project Mode</a>
-                                        </li>
-                                        <li>
-                                            <a href="mini/@item.Id" class="dropdown-item"><i class="bi bi-chat-dots"></i> Assistant Mode</a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <button type="button" @onclick="() => Edit(item)" class="dropdown-item"><i class="bi bi-pen"></i> Edit</button>
-                                        </li>
-                                        <li>
-                                            <button type="button" class="dropdown-item" @onclick="() => Delete(item)"><i class="bi bi-trash"></i> Delete</button>
-                                        </li>
-                                    </ul>
-                                </div>
+<div class="h-100 row m-0">
+    <div class="col-md-8 m-auto">
 
-
-                            </div>
-                        </div>
-                    }
-                }
-            </div>
+        <div class="text-center">
+            <img src="images/rene_f.png" height="200" />
         </div>
 
-        <div class="col-md-4 h-100 d-flex flex-column">
-            <h6>Create</h6>
-            <div class="p-2 border rounded bg-black flex-grow-1 overflow-auto">
-                <CreateOptions OnAfterCreate="Refresh" />
-            </div>
+        <p class="lead text-center">How can I help you?</p>
 
-            <div class="text-end mt-1">
-                <Tooltip Title="Settings">
-                    <a href="settings" class="btn btn-sm btn-secondary"><i class="bi bi-gear"></i></a>
-                </Tooltip>
+        <div class="my-2">
+            <Shortcuts></Shortcuts>
+        </div>
+
+        <div class="d-flex flex-row p-2 rounded-pill border border-primary">
+            <textarea @bind="_input" class="form-control rounded-pill border-0 me-1" 
+                      @ref="_area"
+                      rows="1"
+                      @oninput="AutoGrow" @onkeydown="ComposerKeyDown"></textarea>
+
+            <div class="ms-2 justify-content-center align-self-center">
+                <button type="button" class="btn btn-sm btn-primary rounded-pill" @onclick="Send"><i class="bi bi-arrow-up"></i></button>
             </div>
         </div>
     </div>

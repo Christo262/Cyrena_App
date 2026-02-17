@@ -1,0 +1,13 @@
+@page "/settings"
+@inject ComponentOptions _options
+
+
+<h3>Settings</h3>
+<hr />
+
+@foreach (var item in _options.GetSettingsComponents())
+{
+    <div class="p-2 rounded border mb-2">
+        @this.Render(item)
+    </div>
+}

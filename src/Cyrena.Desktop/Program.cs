@@ -1,8 +1,9 @@
 ﻿using Cyrena.Contracts;
 using Cyrena.Desktop.Components;
+using Cyrena.Desktop.Components.Shared;
+using Cyrena.Desktop.Models;
 using Cyrena.Desktop.Services;
 using Cyrena.Extensions;
-using Cyrena.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Photino.Blazor;
 
@@ -17,45 +18,38 @@ class Program
         appBuilder.Services
             .AddLogging();
 
-        var cyrena = CyrenaBuilder.Create(appBuilder.Services)
-            .UseFilePersistence(fs =>
-            {
-                fs.BaseDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena");
-                fs.FileExtension = "json";
-            })
-            .AddRuntime(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena"))
+        appBuilder.RootComponents.Add<App>("app");
+        var builder = appBuilder.Services.AddCyrenaRuntime()
             .AddComponents()
             .AddOllama()
             .AddOpenAI()
-            .AddSpecifications()
             .AddTavily()
-            .AddBlazorDevelopment()
-            .AddClassLibraryDevelopment()
-            .AddPlatformIO()
-            .AddArduinoIDE();
-
-        var settings = cyrena.GetOption<ISettingsService>();
-        var winCurr = new CurrentWindow(settings);
-        cyrena.Services.AddSingleton<ICurrentWindow>(winCurr);
-        cyrena.Build();
-
-        appBuilder.RootComponents.Add<App>("app");
-        appBuilder.Services.Configure<App>(a =>
-        {
-
-        });
+            .AddDeveloperRuntime()
+            .AddDotnetDevelopment();
+        var files = new FileDialog();
+        builder.Services.AddSingleton<IFileDialog>(files);  
+        builder.AddSettingsComponent<Defaults>();
+        builder.Build();
         var app = appBuilder.Build();
-
-        // customize window
+        files.SetWindow(app.MainWindow);
+        var settings = builder.GetFeatureOption<ISettingsService>();    
+        var photino = settings.Read<WindowOptions>(WindowOptions.Key) ?? new WindowOptions();   
         app.MainWindow
             .SetIconFile("favicon.ico")
             .SetTitle("Cyréna")
             .Load("index.html")
             .Center();
 
-        app.MainWindow.Height = 740;
-        app.MainWindow.Width = 1000;
-        winCurr.SetWindow(app.MainWindow);
+        app.MainWindow.Height = photino.Height;
+        app.MainWindow.Width = photino.Width;
+
+        app.MainWindow.WindowSizeChanged += (sender, args) =>
+        {
+            var m = settings.Read<WindowOptions>(WindowOptions.Key) ?? new WindowOptions();
+            m.Height = args.Height;
+            m.Width = args.Width;
+            settings.Save(WindowOptions.Key, m);
+        };
 
         AppDomain.CurrentDomain.UnhandledException += (sender, error) =>
         {

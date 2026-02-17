@@ -12,7 +12,7 @@ namespace Cyrena.Extensions
         public static CyrenaBuilder UseFilePersistence(this CyrenaBuilder builder, Action<FilePersistenceOptions> options)
         {
             var p = new FilePersistenceBuilder(builder.Services);
-            builder.AddOption<ICyrenaPersistenceBuilder>("Cyrena.persistence", p);
+            builder.AddFeatureOption<ICyrenaPersistenceBuilder>(p);
             builder.Services.AddSingleton<IPersistenceFS, PersistenceFS>();
             builder.Services.Configure(options);
             return builder;

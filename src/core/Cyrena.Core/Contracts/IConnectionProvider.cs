@@ -1,5 +1,5 @@
-﻿using Microsoft.SemanticKernel;
-using Cyrena.Models;
+﻿using Cyrena.Models;
+using Microsoft.SemanticKernel;
 
 namespace Cyrena.Contracts
 {
@@ -7,6 +7,6 @@ namespace Cyrena.Contracts
     {
         Task<IEnumerable<ConnectionInfo>> ListConnectionsAsync();
         Task<bool> HasConnectionAsync(string id);
-        Task<IConnection> CreateAsync(IKernelBuilder builder, string connectionId);
+        Task AttachAsync(IKernelBuilder builder, string connectionId);
     }
 }

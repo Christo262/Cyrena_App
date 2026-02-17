@@ -13,9 +13,11 @@
 
   <ItemGroup>
     <PackageReference Include="BootstrapBlazor" Version="10.3.0" />
+    <PackageReference Include="BootstrapBlazor.Html2Pdf" Version="10.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.2" />
     <PackageReference Include="BlazorMonaco" Version="3.4.0" />
     <PackageReference Include="Markdig" Version="0.44.0" />
+    <PackageReference Include="PdfPig" Version="0.1.13" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Cyrena.Developer</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\Cyrena.Core\Cyrena.Core.csproj" />
+    <ProjectReference Include="..\..\persistence\Cyrena.Persistence.Core\Cyrena.Persistence.Core.csproj" />
+  </ItemGroup>
+
+</Project>

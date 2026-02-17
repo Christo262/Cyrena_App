@@ -11,6 +11,9 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Cyrena.Desktop/Cyrena.Desktop.csproj" />
+    <Project Path="src/Cyrena.Mobile/Cyrena.Mobile.csproj" Id="9d562cfd-6c1d-44e3-bf4e-947a364d72af">
+      <Deploy Solution="Debug|*" />
+    </Project>
   </Folder>
   <Folder Name="/src/components/">
     <Project Path="src/components/Cyrena.Components/Cyrena.Components.csproj" />
@@ -18,10 +21,13 @@
   <Folder Name="/src/core/">
     <Project Path="src/core/Cyrena.Core/Cyrena.Core.csproj" Id="e480a90d-03ab-4e4a-819e-b60f31560803" />
   </Folder>
+  <Folder Name="/src/developer/">
+    <Project Path="src/developer/Cyrena.Developer.Core/Cyrena.Developer.Core.csproj" Id="5153c9f9-8a9d-4203-b4d2-ccc2c6e4ad1a" />
+    <Project Path="src/developer/Cyrena.Developer.Docs/Cyrena.Developer.Docs.csproj" Id="42ee5696-582e-46bf-9b1d-6d4fc7854a9d" />
+    <Project Path="src/developer/Cyrena.Developer.Runtime/Cyrena.Developer.Runtime.csproj" Id="7276365a-d394-4b3a-a007-848308c08338" />
+  </Folder>
   <Folder Name="/src/dotnet/">
-    <Project Path="src/dotnet/Cyrena.Blazor/Cyrena.Blazor.csproj" />
-    <Project Path="src/dotnet/Cyrena.ClassLibrary/Cyrena.ClassLibrary.csproj" Id="0186df65-ce36-4f33-b54c-46d0aa35d6a0" />
-    <Project Path="src/dotnet/Cyrena.Net/Cyrena.Net.csproj" Id="c25a0215-1dde-4b07-854f-c8173856610b" />
+    <Project Path="src/dotnet/Cyrena.Developer.Net/Cyrena.Developer.Net.csproj" Id="897815fd-9d4c-4107-8fc8-2bdaab7b15d3" />
   </Folder>
   <Folder Name="/src/embed/">
     <Project Path="src/embed/Cyrena.ArduinoIDE/Cyrena.ArduinoIDE.csproj" Id="72878ba6-fd88-47b9-9668-51248b24e807" />
@@ -36,15 +42,8 @@
     <Project Path="src/runtime/Cyrena.Runtime.OpenAI/Cyrena.Runtime.OpenAI.csproj" Id="9b0cc0d4-2e15-437c-90b4-2fb1d8b9b669" />
     <Project Path="src/runtime/Cyrena.Runtime/Cyrena.Runtime.csproj" Id="5eb6171f-3aea-4340-aaa9-2f70da7f0d79" />
   </Folder>
-  <Folder Name="/src/spec/">
-    <Project Path="src/spec/Cyrena.Spec/Cyrena.Spec.csproj" Id="4a0a21e3-203b-40a6-a12d-ffd48e802fde" />
-  </Folder>
   <Folder Name="/src/web/">
     <Project Path="src/web/Cyrena.Tavily/Cyrena.Tavily.csproj" Id="a52527de-2b8d-4184-949d-49f7669e0409" />
   </Folder>
-  <Folder Name="/tests/">
-    <Project Path="tests/BlazorLibrary/BlazorLibrary.csproj" Id="10dffb49-0579-40e8-930f-c3fb997c2ffc" />
-    <Project Path="tests/MyLib/MyLib.csproj" Id="e0420b61-1310-4ad8-86d1-b4b427e8a6dc" />
-    <Project Path="tests/SimpleBlazor/SimpleBlazor.csproj" Id="3ec7d4bc-cb08-4725-bc7e-a72a5dcc7042" />
-  </Folder>
+  <Folder Name="/tests/" />
 </Solution>

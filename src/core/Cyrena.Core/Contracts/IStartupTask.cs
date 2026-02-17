@@ -1,7 +1,7 @@
 ﻿namespace Cyrena.Contracts
 {
     /// <summary>
-    /// For services or actions that need to happen before <see cref="IDeveloperContext"/> is used
+    /// For services or actions that need to happen directly after <see cref="IServiceProvider"/> is built
     /// </summary>
     public interface IStartupTask
     {

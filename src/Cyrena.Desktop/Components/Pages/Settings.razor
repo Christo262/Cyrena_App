@@ -1,18 +1,13 @@
-﻿@page "/settings"
+@page "/settings"
+@inject ComponentOptions _options
 
-<div class="d-flex">
-    <Tooltip Title="Back">
-        <a href="" class="btn btn-sm btn-secondary me-3 mt-1 ms-1"><i class="bi bi-arrow-left"></i></a>
-    </Tooltip>
-    <h3 class="m-0">Settings</h3>
-</div>
+
+<h3>Settings</h3>
 <hr />
 
-<div class="container">
-    @foreach (var item in _options.GetSettingsComponents())
-    {
-        <div class="border rounded p-2 mb-3">
-            @this.Render(item)
-        </div>
-    }
-</div>
+@foreach(var item in _options.GetSettingsComponents())
+{
+    <div class="p-2 rounded border mb-2">
+        @this.Render(item)
+    </div>
+}

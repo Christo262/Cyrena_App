@@ -1,0 +1,59 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Cyrena.Developer</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="blazor-app-prompt.md" />
+    <None Remove="class-library-prompt.md" />
+    <None Remove="cs_templates\blazor-layout.txt" />
+    <None Remove="cs_templates\blazor-page.txt" />
+    <None Remove="cs_templates\blazor-root.txt" />
+    <None Remove="cs_templates\blazor-shared.txt" />
+    <None Remove="cs_templates\contract.txt" />
+    <None Remove="cs_templates\controller.txt" />
+    <None Remove="cs_templates\extension.txt" />
+    <None Remove="cs_templates\model.txt" />
+    <None Remove="cs_templates\option.txt" />
+    <None Remove="cs_templates\razor-partial.txt" />
+    <None Remove="cs_templates\service.txt" />
+    <None Remove="cs_templates\view.txt" />
+    <None Remove="dotnet-prompt.md" />
+    <None Remove="mvc-app-prompt.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="blazor-app-prompt.md" />
+    <EmbeddedResource Include="class-library-prompt.md" />
+    <EmbeddedResource Include="cs_templates\attribute.txt" />
+    <EmbeddedResource Include="cs_templates\blazor-layout.txt" />
+    <EmbeddedResource Include="cs_templates\blazor-page.txt" />
+    <EmbeddedResource Include="cs_templates\blazor-root.txt" />
+    <EmbeddedResource Include="cs_templates\blazor-shared.txt" />
+    <EmbeddedResource Include="cs_templates\contract.txt" />
+    <EmbeddedResource Include="cs_templates\controller.txt" />
+    <EmbeddedResource Include="cs_templates\extension.txt" />
+    <EmbeddedResource Include="cs_templates\model.txt" />
+    <EmbeddedResource Include="cs_templates\option.txt" />
+    <EmbeddedResource Include="cs_templates\razor-partial.txt" />
+    <EmbeddedResource Include="cs_templates\service.txt" />
+    <EmbeddedResource Include="cs_templates\view.txt" />
+    <EmbeddedResource Include="dotnet-prompt.md" />
+    <EmbeddedResource Include="mvc-app-prompt.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\components\Cyrena.Components\Cyrena.Components.csproj" />
+    <ProjectReference Include="..\..\developer\Cyrena.Developer.Core\Cyrena.Developer.Core.csproj" />
+    <ProjectReference Include="..\..\developer\Cyrena.Developer.Docs\Cyrena.Developer.Docs.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.3" />
+  </ItemGroup>
+
+</Project>

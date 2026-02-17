@@ -59,5 +59,8 @@ namespace Cyrena.Runtime.Ollama.Models
                 MinP = (float)value / 100f;
             }
         }
+
+        public bool SupportsImage { get; set; }
+        public bool SupportsFile { get; set; }
     }
 }

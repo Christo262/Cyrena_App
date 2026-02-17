@@ -9,7 +9,7 @@ namespace Cyrena.PlatformIO.Components.Shared
     public partial class Configure : IResultDialog
     {
         [Parameter] public Project Model { get; set; } = default!;
-        [Inject] private ICurrentWindow _win { get; set; } = default!;
+        [Inject] private IFileDialog _win { get; set; } = default!;
 
         private EditContext _context = default!;
 
@@ -34,10 +34,10 @@ namespace Cyrena.PlatformIO.Components.Shared
         {
             try
             {
-                var files = await _win.ShowFileSelect("Choose ini file", "ini", [".ini"]);
-                if (files.Length > 0)
+                var files = await _win.OpenAsync("Choose ini file", ("ini", [".ini"]));
+                if (files != null)
                 {
-                    var info = new FileInfo(files[0]);
+                    var info = new FileInfo(files);
                     Model.RootDirectory = info.DirectoryName ?? string.Empty;
                 }
             }

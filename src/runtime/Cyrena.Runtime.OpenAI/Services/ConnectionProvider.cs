@@ -1,6 +1,8 @@
 ﻿using Cyrena.Contracts;
 using Cyrena.Models;
+using Cyrena.Options;
 using Cyrena.Runtime.OpenAI.Options;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 
 namespace Cyrena.Runtime.OpenAI.Services
@@ -13,7 +15,7 @@ namespace Cyrena.Runtime.OpenAI.Services
             _settings = settings;
         }
 
-        public Task<IConnection> CreateAsync(IKernelBuilder builder, string connectionId)
+        public Task AttachAsync(IKernelBuilder builder, string connectionId)
         {
             var options = _settings.Read<OpenAIOptions>(OpenAIOptions.Key);
             if (options == null || string.IsNullOrEmpty(options.ApiKey) || string.IsNullOrEmpty(options.ModelId))
@@ -22,8 +24,8 @@ namespace Cyrena.Runtime.OpenAI.Services
                 throw new InvalidOperationException("Invalid ConnectionId");
 
             builder.AddOpenAIChatCompletion(options.ModelId, options.ApiKey);
-            var connection = new OpenAIConnection();
-            return Task.FromResult<IConnection>(connection);
+            builder.Services.AddSingleton<IConnection, OpenAIConnection>();
+            return Task.CompletedTask;
         }
 
         public Task<bool> HasConnectionAsync(string id)
