@@ -44,32 +44,35 @@
                             {
                                 @foreach(var item in _groups.Where(x => !string.IsNullOrEmpty(x)))
                                 {
-                                    <li class="dropdown">
-                                        <button class="btn submenu-link dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                                            @item
-                                        </button>
-                                        <ul class="dropdown-menu w-100">
-                                            @foreach(var m in _chats.Where(x => x[ChatConfiguration.Group] == item))
-                                            {
-                                                <li>
-                                                    <ContextMenuZone>
-                                                        <ContextMenuTrigger>
-                                                            <NavLink Match="NavLinkMatch.All" href="@($"converse/{m.Id}")" class="nav-link" title="@m.Title">
-                                                                <div class="submenu-link">
-                                                                    <i class="menu-icon @m[ChatConfiguration.Icon]"></i>
-                                                                    <span class="menu-text @(IsActive(m) ? "text-primary" : "")">@(m.Title ?? "New Chat")</span>
-                                                                </div><i class="arrow"></i>
-                                                            </NavLink>
-                                                        </ContextMenuTrigger>
-                                                        <ContextMenu>
-                                                            <ContextMenuItem Icon="bi bi-pen" Text="Edit" OnClick="(s, e) => EditAsync(m)"></ContextMenuItem>
-                                                            <ContextMenuItem Icon="bi bi-trash" Text="Delete" OnClick="(s, e) => Delete(m)"></ContextMenuItem>
-                                                        </ContextMenu>
-                                                    </ContextMenuZone>
-                                                </li>
-                                            }
-                                        </ul>
+                                    <li>
+                                        <div class="submenu-link mt-3 border-top">
+                                            <i class="menu-icon"></i>
+                                            <span class="menu-text">@item</span>
+                                        </div><i class="arrow"></i>
                                     </li>
+                                    @foreach (var m in _chats.Where(x => x[ChatConfiguration.Group] == item))
+                                    {
+                                        <li>
+                                            <ContextMenuZone>
+                                                <ContextMenuTrigger>
+                                                    <NavLink Match="NavLinkMatch.All" href="@($"converse/{m.Id}")" class="nav-link" title="@m.Title">
+                                                        <div class="submenu-link">
+                                                            <i class="menu-icon @m[ChatConfiguration.Icon]"></i>
+                                                            <span class="menu-text @(IsActive(m) ? "text-primary" : "")">@(m.Title ?? "New Chat")</span>
+                                                        </div><i class="arrow"></i>
+                                                    </NavLink>
+                                                </ContextMenuTrigger>
+                                                <ContextMenu>
+                                                    @if (_controller.KernelActive(m.Id))
+                                                    {
+                                                        <ContextMenuItem Icon="bi bi-database-down" Text="Unload" OnClick="(s, e) => Unload(m)"></ContextMenuItem>
+                                                    }
+                                                    <ContextMenuItem Icon="bi bi-pen" Text="Edit" OnClick="(s, e) => EditAsync(m)"></ContextMenuItem>
+                                                    <ContextMenuItem Icon="bi bi-trash" Text="Delete" OnClick="(s, e) => Delete(m)"></ContextMenuItem>
+                                                </ContextMenu>
+                                            </ContextMenuZone>
+                                        </li>
+                                    }
                                 }
                             }
                         }
