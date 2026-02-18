@@ -24,8 +24,11 @@ class Program
             .AddOllama()
             .AddOpenAI()
             .AddTavily()
+            .AddApiReferencePages()
             .AddDeveloperRuntime()
-            .AddDotnetDevelopment();
+            .AddDotnetDevelopment()
+            .AddPlatformIO()
+            .AddArduinoIDE();
         var files = new FileDialog();
         builder.Services.AddSingleton<IFileDialog>(files);  
         builder.AddSettingsComponent<Defaults>();

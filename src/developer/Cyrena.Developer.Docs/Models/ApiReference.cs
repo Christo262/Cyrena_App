@@ -1,10 +1,12 @@
 ﻿using Cyrena.Models;
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace Cyrena.Developer.Docs.Models
 {
     public class ApiReference : Entity, IJsonSerializable
     {
+        [Required]
         public string? Title { get; set; }
         public string[] Keywords { get; set; } = [];
         public string? Summary { get; set; }

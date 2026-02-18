@@ -1,0 +1,51 @@
+@page "/api-references/{KernelId}"
+
+<div class="mh-100 overlfow-auto">
+    <div class="d-flex flex-row p-2">
+        <Tooltip Title="Back">
+            <a href="converse/@KernelId" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-arrow-left"></i></a>
+        </Tooltip>
+        <h6 class="ms-3 mt-2">API References</h6>
+        <div class="ms-auto"></div>
+        <Tooltip Title="Import">
+            <button type="button" @onclick="Import" class="btn btn-sm btn-primary me-1"><i class="bi bi-box-arrow-in-down"></i></button>
+        </Tooltip>
+        <Tooltip Title="Create">
+            <a href="api-reference-create/@KernelId" class="btn btn-sm btn-info me-1"><i class="bi bi-plus"></i></a>
+        </Tooltip>
+    </div>
+    <div class="container">
+        @foreach (var item in _models)
+        {
+            <div class="my-2 rounded border p-2">
+                <div class="row m-0">
+                    <div class="col-md-6">
+                        <p class="m-0 lead">@item.Title</p>
+                        <p class="small m-0 text-muted">
+                            @item.Summary
+                        </p>
+
+                    </div>
+                    <div class="col-md-4 justify-content-center align-self-center">
+                        <p class="small m-0 text-truncate">
+                            @string.Join(", ", item.Keywords)
+                        </p>
+                    </div>
+                    <div class="col-md-2 justify-content-center align-self-center">
+                        <p class="m-0">
+                            <Tooltip Title="Edit">
+                                <a href="api-reference-edit/@item.Id/@KernelId" class="btn btn-sm btn-info me-1"><i class="bi bi-pen"></i></a>
+                            </Tooltip>
+                            <Tooltip Title="Export">
+                                <button type="button" @onclick="() => Export(item)" class="btn btn-sm btn-secondary me-1"><i class="bi bi-box-arrow-down"></i></button>
+                            </Tooltip>
+                            <Tooltip Title="Delete">
+                                <button type="button" @onclick="() => Delete(item)" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                            </Tooltip>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

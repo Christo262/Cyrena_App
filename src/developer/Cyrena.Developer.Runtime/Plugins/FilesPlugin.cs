@@ -31,7 +31,7 @@ namespace Cyrena.Developer.Plugins
             {
                 if (!_plan.Plan.TryFindFile(fileId, out var file))
                     return "[ERROR]File not found[/ERROR]";
-                _context.LogInfo($"Reading file {file!.Name}");
+                _context.LogInfo($"Reading file {file!.RelativePath}");
                 if (!_plan.Plan.TryReadFileContent(file!, out var fileContent))
                     return "[ERROR]Unable to read file[/ERROR]";
                 var sb = new StringBuilder();
@@ -56,7 +56,7 @@ namespace Cyrena.Developer.Plugins
             {
                 if (!_plan.Plan.TryFindFile(fileId, out var file))
                     return new ToolResult<DevelopFileLines>(false, $"File with id {fileId} not found.");
-                _context.LogInfo($"Reading file {file!.Name}");
+                _context.LogInfo($"Reading file {file!.RelativePath}");
                 if (!_plan.Plan.TryReadFileLines(file!, out var fileContent))
                     return new ToolResult<DevelopFileLines>(false, $"Unable to read file with id {fileId}.");
                 return new ToolResult<DevelopFileLines>(fileContent!);
@@ -79,7 +79,7 @@ namespace Cyrena.Developer.Plugins
                     return new ToolResult<DevelopFileContent>(false, $"File with id {fileId} not found.");
                 if (file!.ReadOnly)
                     return new ToolResult<DevelopFileContent>(false, "File is READ ONLY");
-                _context.LogInfo($"Writing file {file!.Name}");
+                _context.LogInfo($"Writing file {file!.RelativePath}");
                 _plan.Plan.TryReadFileContent(file!, out var fileContent);
                 _version.Backup(fileContent);
                 if (!_plan.Plan.TryWriteFileContent(file!, content, out var newContent))
@@ -105,7 +105,7 @@ namespace Cyrena.Developer.Plugins
                     return new ToolResult<DevelopFileLines>(false, $"File with id {fileId} not found.");
                 if (file!.ReadOnly)
                     return new ToolResult<DevelopFileLines>(false, "File is READ ONLY");
-                _context.LogInfo($"Writing file {file!.Name}");
+                _context.LogInfo($"Writing file {file!.RelativePath}");
                 _plan.Plan.TryReadFileContent(file!, out var fileContent);
                 _version.Backup(fileContent);
                 if (!_plan.Plan.TryWriteFileLine(file!, index, text, out var newContent))
@@ -130,7 +130,7 @@ namespace Cyrena.Developer.Plugins
                     return new ToolResult<DevelopFileContent>(false, $"File with id {fileId} not found.");
                 if (!_plan.Plan.TryReadFileContent(file!, out var fileContent))
                     return new ToolResult<DevelopFileContent>(false, $"Unable to read file with id {fileId}.");
-                _context.LogInfo($"Writing file {file!.Name}");
+                _context.LogInfo($"Writing file {file!.RelativePath}");
                 _plan.Plan.TryReadFileContent(file!, out var ext_content);
                 _version.Backup(ext_content);
                 var sb = new StringBuilder();
@@ -156,7 +156,7 @@ namespace Cyrena.Developer.Plugins
                     return new ToolResult(true, "File does not exist.");
                 if (file!.ReadOnly)
                     return new ToolResult(false, "File is READ ONLY");
-                _context.LogInfo($"Deleting file {file!.Name}");
+                _context.LogInfo($"Deleting file {file!.RelativePath}");
                 _plan.Plan.TryReadFileContent(file!, out var ext_content);
                 _version.Backup(ext_content);
                 _plan.Plan.RemoveFile(file!);

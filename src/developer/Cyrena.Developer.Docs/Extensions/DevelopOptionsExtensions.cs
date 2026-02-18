@@ -1,4 +1,5 @@
-﻿using Cyrena.Developer.Docs.Models;
+﻿using Cyrena.Developer.Docs.Components.Shared;
+using Cyrena.Developer.Docs.Models;
 using Cyrena.Developer.Docs.Plugins;
 using Cyrena.Developer.Options;
 using Microsoft.SemanticKernel;
@@ -11,6 +12,8 @@ namespace Cyrena.Extensions
         {
             options.Persistence.AddSingletonStore<ApiReference>("api_references");
             options.Plugins.AddFromType<APIReferences>();
+
+            options.KernelBuilder.AddToolbarComponent<ToolbarIcon>(Contracts.ToolbarAlignment.End);
         }
     }
 }

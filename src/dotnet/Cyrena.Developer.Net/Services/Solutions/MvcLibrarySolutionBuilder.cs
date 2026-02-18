@@ -14,19 +14,19 @@ using Cyrena.Extensions;
 
 namespace Cyrena.Developer.Services
 {
-    internal class ClassLibrarySolutionBuilder : ICodeBuilder
+    internal class MvcLibrarySolutionBuilder : ICodeBuilder
     {
         private readonly IServiceProvider _services;
         private readonly IStore<ProjectModel> _store;
         private readonly IKernelController _kernel;
-        public ClassLibrarySolutionBuilder(IServiceProvider services, IStore<ProjectModel> store, IKernelController kernel)
+        public MvcLibrarySolutionBuilder(IServiceProvider services, IStore<ProjectModel> store, IKernelController kernel)
         {
             _services = services;
             _store = store;
             _kernel = kernel;
         }
 
-        public string Id => DotnetOptions.CsClassLibrary;
+        public string Id => DotnetOptions.CsMvcLib;
 
         public async Task<DevelopPlan> ConfigureAsync(DevelopOptions options)
         {
@@ -48,7 +48,7 @@ namespace Cyrena.Developer.Services
                     ProjectName = Path.GetFileName(proj),
                     ProjectDirectory = options.ChatConfiguration[DevelopOptions.RootDirectory]!,
                     ProjectTypeId = Id,
-                    ProjectTypeName = "Class Library"
+                    ProjectTypeName = ".NET MVC Library"
                 };
                 await _store.AddAsync(proj_model);
             }
@@ -57,8 +57,9 @@ namespace Cyrena.Developer.Services
             var project = new ProjectViewModel(proj_model);
             sln_model.Projects.Add(project);
             project.Plan = new DevelopPlan(project.ProjectDirectory);
-
             project.Plan.IndexDefaultCSharpProject();
+            project.Plan.IndexMvcProjectType();
+
             project[DotnetOptions.CSharp.Namespace] = csproj.RootNamespace;
             project[DotnetOptions.CSharp.TargetFrameworks] = csproj.TargetFrameworks;
 
@@ -69,8 +70,10 @@ namespace Cyrena.Developer.Services
             options.Services.AddSingleton(_store);
             options.Services.AddSingleton<ISolutionController, SolutionController>();
             options.Plugins.AddFromType<Dotnet>();
+            options.Plugins.AddFromType<MVC>();
+            options.Plugins.AddFromType<Www>();
             options.AddApiReferencing();
-            options.KernelBuilder.AddStartupTask<ClassLibraryPromptStartupTask>();
+            options.KernelBuilder.AddStartupTask<MVCLibraryPromptStartupTask>();
             options.Services.AddSingleton<DotnetFileWatcher>();
             return project.Plan;
         }
@@ -85,7 +88,7 @@ namespace Cyrena.Developer.Services
             var dialog = services.GetRequiredService<DialogService>();
             var rf = await dialog.ShowModal<DotnetCsConfig>(new ResultDialogOption()
             {
-                Title = "Class Library",
+                Title = ".NET MVC Library",
                 Size = Size.Medium,
                 ComponentParameters = new()
                 {
@@ -99,11 +102,11 @@ namespace Cyrena.Developer.Services
         }
     }
 
-    internal class ClassLibraryPromptStartupTask : IStartupTask
+    internal class MVCLibraryPromptStartupTask : IStartupTask
     {
         private readonly IChatMessageService _chat;
         private readonly DotnetFileWatcher _watcher;
-        public ClassLibraryPromptStartupTask(IChatMessageService chat, DotnetFileWatcher watcher)
+        public MVCLibraryPromptStartupTask(IChatMessageService chat, DotnetFileWatcher watcher)
         {
             _chat = chat;
             _watcher = watcher;
@@ -114,14 +117,14 @@ namespace Cyrena.Developer.Services
         public async Task RunAsync(CancellationToken cancellationToken = default)
         {
             _watcher.Start();
-            var prompt = ReadClassLibraryPrompt();
+            var prompt = ReadAppPrompt();
             await _chat.AddSystemMessage(prompt);
         }
 
-        private string ReadClassLibraryPrompt()
+        private string ReadAppPrompt()
         {
             var assembly = typeof(PromptStartupTask).Assembly;
-            var resourceName = "Cyrena.Developer.class-library-prompt.md";
+            var resourceName = "Cyrena.Developer.mvc-lib-prompt.md";
 
             using var stream = assembly.GetManifestResourceStream(resourceName);
             if (stream == null)

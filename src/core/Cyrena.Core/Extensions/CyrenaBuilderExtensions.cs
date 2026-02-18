@@ -65,7 +65,7 @@ namespace Cyrena.Extensions
         public static void AddAssistantPlugin<TAssistantPlugin>(this CyrenaBuilder builder)
             where TAssistantPlugin : class, IAssistantPlugin
         {
-            builder.Services.AddSingleton<IAssistantPlugin, TAssistantPlugin>();
+            builder.Services.AddScoped<IAssistantPlugin, TAssistantPlugin>();
         }
     }
 }

@@ -21,9 +21,9 @@ namespace Cyrena.Desktop.Services
             return ffs.FirstOrDefault();
         }
 
-        public async Task<string?> ShowSaveFile(string title, (string filter, string[] types)? ftr)
+        public async Task<string?> ShowSaveFile(string title, (string filter, string[] types)? ftr, string? defaultPath = null)
         {
-            var output = await _window.ShowSaveFileAsync(title, null, ftr == null ? null : [ftr.Value]);
+            var output = await _window.ShowSaveFileAsync(title, defaultPath, ftr == null ? null : [ftr.Value]);
             return output;
         }
     }

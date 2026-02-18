@@ -15,16 +15,12 @@ namespace Cyrena.Runtime.Services
         private readonly IServiceProvider _services;
         private readonly ConcurrentDictionary<string, Kernel> _instances;
         private readonly ControllerPipeline _pipe;
-        private readonly Timer _timer;
-        private readonly TimeSpan _timeout;
         private readonly IStore<ChatConfiguration> _store;
         public KernelController(IServiceProvider services, IStore<ChatConfiguration> store)
         {
             _instances = new ConcurrentDictionary<string, Kernel>();
             _services = services;
             _pipe = new ControllerPipeline();
-            _timer = new Timer(OnTimerCallback, null, 0, 30000);
-            _timeout = TimeSpan.FromMinutes(10);
             _store = store;
         }
 
@@ -33,9 +29,7 @@ namespace Cyrena.Runtime.Services
             if (_instances.ContainsKey(config.Id))
             {
                 var ext = _instances.GetValueOrDefault(config.Id);
-                var usr = ext!.Services.GetRequiredService<UsageState>();
-                usr.LastUsed = DateTime.Now;
-                return ext;
+                return ext!;
             }
 
             var modes = _services.GetServices<IAssistantMode>();
@@ -65,7 +59,8 @@ namespace Cyrena.Runtime.Services
             builder.Services.AddSingleton<IChatMessageService, ChatMessageService>();
             await mode.ConfigureAsync(config, builder);
 
-            var plugins = _services.GetServices<IAssistantPlugin>().Where(x => x.Modes.Length == 0 || x.Modes.Contains(mode.Id));
+            using var sp = _services.CreateScope();
+            var plugins = sp.ServiceProvider.GetServices<IAssistantPlugin>().Where(x => x.Modes.Length == 0 || x.Modes.Contains(mode.Id));
             foreach (var plugin in plugins.OrderByDescending(x => x.Priority))
                 await plugin.LoadAsync(config, builder);
 
@@ -130,9 +125,19 @@ namespace Cyrena.Runtime.Services
             }
         }
 
+        public void Unload(ChatConfiguration config)
+        {
+            if(_instances.TryRemove(config.Id, out var kernel))
+            {
+                _pipe.InvokeUnload(config);
+                DisposeKernel(kernel);
+            }
+        }
+
         public IDisposable OnChatDelete(Action<ChatConfiguration> cb) => _pipe.WatchConfigDelete(cb);
         public IDisposable OnChatCreate(Action<ChatConfiguration> cb) => _pipe.WatchConfigCreate(cb);
         public IDisposable OnChatUpdate(Action<ChatConfiguration> cb) => _pipe.WatchConfigUpdate(cb);
+        public IDisposable OnChatUnload(Action<ChatConfiguration> cb) => _pipe.WatchConfigUnload(cb);
 
         public void Dispose()
         {
@@ -141,7 +146,6 @@ namespace Cyrena.Runtime.Services
                 if(_instances.TryRemove(_instances.First().Key, out var kernel))
                     DisposeKernel(kernel);
             }
-            _timer.Dispose();
         }
 
         private void DisposeKernel(Kernel kernel)
@@ -153,23 +157,18 @@ namespace Cyrena.Runtime.Services
                     disposable.Dispose();
                     break;
             }
+        }       
+
+        public Kernel? GetKernel(string id)
+        {
+            if (_instances.TryGetValue(id, out var kernel))
+                return kernel;
+            return null;
         }
 
-        private void OnTimerCallback(object? state)
+        public bool KernelActive(string id)
         {
-            List<string> disposables = new List<string>();
-            foreach(var item in _instances)
-            {
-                var usr = item.Value.GetRequiredService<UsageState>();
-                if(usr.LastUsed.Add(_timeout) < DateTime.Now && usr.CanDispose)
-                    disposables.Add(item.Key);
-            }
-
-            foreach(var item in disposables)
-            {
-                if(_instances.TryRemove(item, out var kernel))
-                    DisposeKernel(kernel);
-            }
+            return _instances.ContainsKey(id);
         }
 
         internal class ControllerPipeline : EventPipeline
@@ -177,10 +176,12 @@ namespace Cyrena.Runtime.Services
             public IDisposable WatchConfigCreate(Action<ChatConfiguration> callback) => this.ConfigurePipe("k_create", callback);
             public IDisposable WatchConfigDelete(Action<ChatConfiguration> callback) => this.ConfigurePipe("k_delete", callback);
             public IDisposable WatchConfigUpdate(Action<ChatConfiguration> callback) => this.ConfigurePipe("k_update", callback);
+            public IDisposable WatchConfigUnload(Action<ChatConfiguration> callback) => this.ConfigurePipe("k_unload", callback);
 
             public void InvokeCreate(ChatConfiguration config) => InvokePipeline("k_create", config);
             public void InvokeDelete(ChatConfiguration config) => InvokePipeline("k_delete", config);
             public void InvokeUpdate(ChatConfiguration config) => InvokePipeline("k_update", config);
+            public void InvokeUnload(ChatConfiguration config) => InvokePipeline("k_unload", config);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Cyrena.Extensions;
+﻿using Cyrena.Developer.Models;
+using Cyrena.Developer.Extensions;
+using Cyrena.Extensions;
 using Cyrena.Models;
 using System;
 using System.Collections.Generic;
@@ -8,7 +10,7 @@ namespace Cyrena.PlatformIO.Extensions
 {
     public static class ProjectPlanExtensions
     {
-        public static void IndexPlatformIODefaultPlan(this ProjectPlan plan)
+        public static void IndexPlatformIODefaultPlan(this DevelopPlan plan)
         {
             var src = plan.GetOrCreateFolder("src", "src");
             plan.IndexFiles(src, "c", "c_");
@@ -52,7 +54,7 @@ namespace Cyrena.PlatformIO.Extensions
             plan.IndexFiles(data, "json", "data_json_"); //some basic data stuff
         }
 
-        public static void IndexPlatformIOEspIdf(this ProjectPlan plan)
+        public static void IndexPlatformIOEspIdf(this DevelopPlan plan)
         {
             plan.IndexFiles("txt", "txt_", true);
             plan.IndexFiles("csv", "csv_"); //partitions.csv

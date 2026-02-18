@@ -13,7 +13,7 @@ using Microsoft.SemanticKernel;
 
 namespace Cyrena.Developer.Services
 {
-    internal class SolutionBuilder : ISolutionBuilder
+    internal class SolutionBuilder : ICodeBuilder
     {
         private readonly IServiceProvider _services;
         private readonly IStore<ProjectModel> _store;
@@ -95,6 +95,7 @@ namespace Cyrena.Developer.Services
             options.Plugins.AddFromType<DotnetSolution>();
             options.Plugins.AddFromType<Dotnet>();
             options.Plugins.AddFromType<Blazor>();
+            options.Plugins.AddFromType<MVC>();
             options.Plugins.AddFromType<Www>();
             options.KernelBuilder.AddStartupTask<PromptStartupTask>();
             options.AddApiReferencing();

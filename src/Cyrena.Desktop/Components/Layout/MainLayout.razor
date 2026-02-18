@@ -24,11 +24,15 @@
                                             <NavLink Match="NavLinkMatch.All" href="@($"converse/{item.Id}")" class="nav-link">
                                                 <div class="submenu-link">
                                                     <i class="menu-icon @item[ChatConfiguration.Icon]"></i>
-                                                    <span class="menu-text">@(item.Title ?? "New Chat")</span>
+                                                    <span class="menu-text @(IsActive(item) ? "text-primary" : "")">@(item.Title ?? "New Chat")</span>
                                                 </div><i class="arrow"></i>
                                             </NavLink>
                                         </ContextMenuTrigger>
                                         <ContextMenu>
+                                            @if (_controller.KernelActive(item.Id))
+                                            {
+                                                <ContextMenuItem Icon="bi bi-database-down" Text="Unload" OnClick="(s, e) => Unload(item)"></ContextMenuItem>
+                                            }
                                             <ContextMenuItem Icon="bi bi-pen" Text="Edit" OnClick="(s, e) => EditAsync(item)"></ContextMenuItem>
                                             <ContextMenuItem Icon="bi bi-trash" Text="Delete" OnClick="(s,e) => Delete(item)"></ContextMenuItem>
                                         </ContextMenu>
@@ -50,10 +54,10 @@
                                                 <li>
                                                     <ContextMenuZone>
                                                         <ContextMenuTrigger>
-                                                            <NavLink Match="NavLinkMatch.All" href="@($"converse/{m.Id}")" class="nav-link">
+                                                            <NavLink Match="NavLinkMatch.All" href="@($"converse/{m.Id}")" class="nav-link" title="@m.Title">
                                                                 <div class="submenu-link">
                                                                     <i class="menu-icon @m[ChatConfiguration.Icon]"></i>
-                                                                    <span class="menu-text">@(m.Title ?? "New Chat")</span>
+                                                                    <span class="menu-text @(IsActive(m) ? "text-primary" : "")">@(m.Title ?? "New Chat")</span>
                                                                 </div><i class="arrow"></i>
                                                             </NavLink>
                                                         </ContextMenuTrigger>
@@ -82,7 +86,7 @@
             <a href="settings" class="btn btn-outline-light btn-sm rounded-pill"><i class="bi bi-gear"></i></a>
         </header>
 
-        <main class="layout-main" style="padding:0">
+        <main class="layout-main overflow-auto" style="padding:0">
             @Body
         </main>
     </section>

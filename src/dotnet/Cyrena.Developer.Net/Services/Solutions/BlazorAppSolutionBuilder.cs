@@ -14,7 +14,7 @@ using Microsoft.SemanticKernel;
 
 namespace Cyrena.Developer.Services
 {
-    internal class BlazorAppSolutionBuilder : ISolutionBuilder
+    internal class BlazorAppSolutionBuilder : ICodeBuilder
     {
         private readonly IServiceProvider _services;
         private readonly IStore<ProjectModel> _store;
@@ -59,6 +59,8 @@ namespace Cyrena.Developer.Services
             project.Plan = new DevelopPlan(project.ProjectDirectory);
             project.Plan.IndexDefaultCSharpProject();
             project.Plan.IndexBlazorProjectType();
+            project[DotnetOptions.CSharp.Namespace] = csproj.RootNamespace;
+            project[DotnetOptions.CSharp.TargetFrameworks] = csproj.TargetFrameworks;
 
             var project_types = _services.GetServices<IDotnetProjectType>();
             options.ChatConfiguration[DotnetOptions.LastProject] = project.Id;

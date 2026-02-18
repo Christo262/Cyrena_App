@@ -9,6 +9,7 @@
         public const string CsBlazorLibrary = "cs-blazor-lib";
         public const string CsBlazorApp = "cs-blazor-app";
         public const string CsMvcApp = "cs-mvc-app";
+        public const string CsMvcLib = "cs-mvc-lib";
 
         public const string ProjectFilePath = "proj.path";
 

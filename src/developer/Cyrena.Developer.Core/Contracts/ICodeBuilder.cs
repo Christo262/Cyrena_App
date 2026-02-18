@@ -7,7 +7,7 @@ namespace Cyrena.Developer.Contracts
     /// <summary>
     /// Use this to create project plans, different project types, add plugins
     /// </summary>
-    public interface ISolutionBuilder
+    public interface ICodeBuilder
     {
         /// <summary>
         /// Sets <see cref="Cyrena.Models.ChatConfiguration"/> project type identifier

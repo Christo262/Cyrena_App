@@ -1,0 +1,10 @@
+﻿@inherits KernelComponentBase
+
+<div style="width:200px">
+    <select @bind="_name" @bind:after="OnChange" disabled="@_its.Inferring" class="form-control form-control-sm">
+        @foreach (var item in _environment.Environments)
+        {
+            <option value="@item.Name">@item.Name</option>
+        }
+    </select>
+</div>

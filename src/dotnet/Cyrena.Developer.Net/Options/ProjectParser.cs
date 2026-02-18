@@ -59,6 +59,9 @@ namespace Cyrena.Developer.Options
 
                 // Extract NuGet packages
                 projectInfo.NuGetPackages = ExtractNuGetPackages(root);
+
+                // Extract Framework references
+                projectInfo.FrameworkReferences = ExtractFrameworkReferences(root);
             }
             catch (Exception ex)
             {
@@ -144,6 +147,26 @@ namespace Cyrena.Developer.Options
         }
 
         /// <summary>
+        /// Extracts framework references
+        /// </summary>
+        private static List<string> ExtractFrameworkReferences(XElement root)
+        {
+            var frameworkRefs = new List<string>();
+
+            var frameworkReferences = root.Descendants("FrameworkReference");
+            foreach (var frameworkRef in frameworkReferences)
+            {
+                var includeAttr = frameworkRef.Attribute("Include");
+                if (includeAttr != null && !string.IsNullOrWhiteSpace(includeAttr.Value))
+                {
+                    frameworkRefs.Add(includeAttr.Value.Trim());
+                }
+            }
+
+            return frameworkRefs;
+        }
+
+        /// <summary>
         /// Checks if a project is SDK-style (without parsing full details)
         /// </summary>
         /// <param name="csprojPath">Path to the .csproj file</param>
@@ -197,6 +220,17 @@ namespace Cyrena.Developer.Options
         {
             var projectInfo = ParseProject(csprojPath);
             return projectInfo.NuGetPackages;
+        }
+
+        /// <summary>
+        /// Gets the list of framework references
+        /// </summary>
+        /// <param name="csprojPath">Path to the .csproj file</param>
+        /// <returns>List of framework reference names</returns>
+        public static List<string> GetFrameworkReferences(string csprojPath)
+        {
+            var projectInfo = ParseProject(csprojPath);
+            return projectInfo.FrameworkReferences;
         }
     }
 }

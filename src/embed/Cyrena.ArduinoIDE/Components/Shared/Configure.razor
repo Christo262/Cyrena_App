@@ -5,37 +5,32 @@
     <ValidationSummary />
 
     <div class="mb-3">
-        <label class="form-label">Project Name</label>
-        <InputText @bind-Value="Model.Name" class="form-control" />
+        <label class="form-label">Title</label>
+        <InputText @bind-Value="_model.Title" class="form-control" />
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Project Description</label>
-        <InputTextArea @bind-Value="Model.Description" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Root Directory</label>
+        <label class="form-label">.ino File</label>
         <div class="input-group">
-            <InputText @bind-Value="Model.RootDirectory" class="form-control" />
+            <InputText @bind-Value="_model.InoPath" class="form-control" />
             <button class="btn btn-outline-secondary" type="button" @onclick="PickProject"><i class="bi bi-folder-symlink"></i></button>
         </div>
     </div>
 
-    <ConnectionSelector @bind-Value="Model.ConnectionId" />
+    <ConnectionSelector @bind-Value="_model.ConnectionId" />
 
     <div class="mb-3">
         <label class="form-label">Board</label>
-        <InputText @bind-Value="Model.Board" placeholder="Arduino Uno R3" class="form-control" />
+        <InputText @bind-Value="_model.Board" placeholder="eg. Arduino Uno R3" class="form-control" />
     </div>
 
     <div class="mb-3">
         <label class="form-label">RAM</label>
-        <InputText @bind-Value="Model.Ram" placeholder="2KB" class="form-control" />
+        <InputText @bind-Value="_model.RamKb" placeholder="eg. 2KB" class="form-control" />
     </div>
 
     <div class="mb-3">
         <label class="form-label">Clock Speed</label>
-        <InputText @bind-Value="Model.Clock" placeholder="16MHZ" class="form-control" />
+        <InputText @bind-Value="_model.ClockMhz" placeholder="eg. 16MHZ" class="form-control" />
     </div>
 </EditForm>

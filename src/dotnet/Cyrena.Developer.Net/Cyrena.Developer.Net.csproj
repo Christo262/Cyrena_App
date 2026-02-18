@@ -24,6 +24,7 @@
     <None Remove="cs_templates\view.txt" />
     <None Remove="dotnet-prompt.md" />
     <None Remove="mvc-app-prompt.md" />
+    <None Remove="mvc-lib-prompt.md" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,6 +45,7 @@
     <EmbeddedResource Include="cs_templates\view.txt" />
     <EmbeddedResource Include="dotnet-prompt.md" />
     <EmbeddedResource Include="mvc-app-prompt.md" />
+    <EmbeddedResource Include="mvc-lib-prompt.md" />
   </ItemGroup>
 
   <ItemGroup>

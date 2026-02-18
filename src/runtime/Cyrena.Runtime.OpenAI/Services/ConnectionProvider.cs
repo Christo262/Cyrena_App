@@ -22,8 +22,11 @@ namespace Cyrena.Runtime.OpenAI.Services
                 throw new InvalidOperationException("OpenAI Configuration Incomplete");
             if (connectionId != OpenAIOptions.Key)
                 throw new InvalidOperationException("Invalid ConnectionId");
-
-            builder.AddOpenAIChatCompletion(options.ModelId, options.ApiKey);
+            var http = new HttpClient()
+            {
+                Timeout = TimeSpan.FromMinutes(5)
+            };
+            builder.AddOpenAIChatCompletion(options.ModelId, options.ApiKey, httpClient:http);
             builder.Services.AddSingleton<IConnection, OpenAIConnection>();
             return Task.CompletedTask;
         }

@@ -35,6 +35,15 @@ namespace Cyrena.Desktop.Components.Layout
                 });
             });
             _controller.OnChatUpdate((_) => this.InvokeAsync(Refresh));
+            _controller.OnChatUnload((config) =>
+            {
+                this.InvokeAsync(async () =>
+                {
+                    if (_nav.Uri.EndsWith(config.Id))
+                        _nav.NavigateTo("");
+                    await Refresh();
+                });
+            });
             await Refresh();
         }
 
@@ -43,6 +52,12 @@ namespace Cyrena.Desktop.Components.Layout
             _chats = await _store.FindManyAsync(x => true, new OrderBy<ChatConfiguration>(x => x.LastModified, SortDirection.Descending));
             _groups = _chats.Select(x => x[ChatConfiguration.Group]).Distinct();
             this.StateHasChanged();
+        }
+
+        private Task Unload(ChatConfiguration config)
+        {
+            _controller.Unload(config);
+            return Task.CompletedTask;
         }
 
         private async Task Delete(ChatConfiguration config)
@@ -71,6 +86,8 @@ namespace Cyrena.Desktop.Components.Layout
             }
             await asst.EditAsync(config, _services);
         }
+
+        private bool IsActive(ChatConfiguration config) => _controller.KernelActive(config.Id);
 
         private bool _side { get; set; }
         private void ToggleSide() => _side = !_side;

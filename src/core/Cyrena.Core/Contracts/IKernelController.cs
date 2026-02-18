@@ -21,9 +21,15 @@ namespace Cyrena.Contracts
         Task Delete(ChatConfiguration config);
         Task<Kernel> Create(ChatConfiguration config);
         Task UpdateAsync(ChatConfiguration config, bool reload = false);
+        Kernel? GetKernel(string id);
+        bool KernelActive(string id);
+        void Unload(ChatConfiguration config);
 
         IDisposable OnChatDelete(Action<ChatConfiguration> cb);
         IDisposable OnChatCreate(Action<ChatConfiguration> cb);
         IDisposable OnChatUpdate(Action<ChatConfiguration> cb);
+        IDisposable OnChatUnload(Action<ChatConfiguration> cb);
+
+        //TODO Unload
     }
 }

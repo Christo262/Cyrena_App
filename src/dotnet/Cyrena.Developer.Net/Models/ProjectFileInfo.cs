@@ -50,6 +50,11 @@
         public List<NuGetPackage> NuGetPackages { get; set; } = new List<NuGetPackage>();
 
         /// <summary>
+        /// List of framework references
+        /// </summary>
+        public List<string> FrameworkReferences { get; set; } = new List<string>();
+
+        /// <summary>
         /// Gets package names as a simple string array
         /// </summary>
         public string[] GetPackageNames()
@@ -80,8 +85,14 @@
             string packageInfo = NuGetPackages.Count > 0
                 ? $"{NuGetPackages.Count} packages"
                 : "No packages";
+            string frameworkInfo = FrameworkReferences.Count > 0
+                ? $"{FrameworkReferences.Count} framework refs"
+                : "";
 
-            return $"{FileName} - {sdkInfo}, {namespaceInfo}, {targetInfo}, {packageInfo}";
+            var parts = new[] { sdkInfo, namespaceInfo, targetInfo, packageInfo, frameworkInfo }
+                .Where(s => !string.IsNullOrWhiteSpace(s));
+
+            return $"{FileName} - {string.Join(", ", parts)}";
         }
     }
 

@@ -34,7 +34,7 @@ namespace Cyrena.Developer.Services
             if (string.IsNullOrEmpty(config[DevelopOptions.RootDirectory]) || !Directory.Exists(config[DevelopOptions.RootDirectory]))
                 throw new InvalidOperationException($"{DevelopOptions.RootDirectory} not set, unable to configure");
 
-            var sln_builder = _services.GetServices<ISolutionBuilder>().FirstOrDefault(x => x.Id == config[DevelopOptions.BuilderId]);
+            var sln_builder = _services.GetServices<ICodeBuilder>().FirstOrDefault(x => x.Id == config[DevelopOptions.BuilderId]);
             if (sln_builder == null)
                 throw new NullReferenceException($"Unable to find solution builder with id {config[DevelopOptions.BuilderId]}");
 
@@ -60,7 +60,7 @@ namespace Cyrena.Developer.Services
         {
             if (string.IsNullOrWhiteSpace(config[DevelopOptions.BuilderId]))
                 return Task.CompletedTask;
-            var sln_builder = _services.GetServices<ISolutionBuilder>().FirstOrDefault(x => x.Id == config[DevelopOptions.BuilderId]);
+            var sln_builder = _services.GetServices<ICodeBuilder>().FirstOrDefault(x => x.Id == config[DevelopOptions.BuilderId]);
             if(sln_builder == null)
                 return Task.CompletedTask;
             return sln_builder.DeleteAsync(config);
@@ -70,7 +70,7 @@ namespace Cyrena.Developer.Services
         {
             if (string.IsNullOrWhiteSpace(config[DevelopOptions.BuilderId]))
                 return Task.CompletedTask;
-            var sln_builder = _services.GetServices<ISolutionBuilder>().FirstOrDefault(x => x.Id == config[DevelopOptions.BuilderId]);
+            var sln_builder = _services.GetServices<ICodeBuilder>().FirstOrDefault(x => x.Id == config[DevelopOptions.BuilderId]);
             if (sln_builder == null)
                 return services.GetRequiredService<DialogService>().ShowModal("Error", "Unable to find handler for this project type.", new ResultDialogOption()
                 {
