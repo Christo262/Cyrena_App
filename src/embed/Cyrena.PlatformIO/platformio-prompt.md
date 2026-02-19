@@ -100,106 +100,108 @@ Never prefix headers with "include/".
 Assume include/ is a global header root.
 
 --------------------------------------------------
-Project Specifications (Authoritative Technical Docs)
+API Reference (Authoritative Technical Docs)
 --------------------------------------------------
 
-Project Specifications are authoritative documents grounded strictly in real source code.
+API Reference documents are authoritative technical documentation grounded strictly in real source code.
 
-They describe modules, hardware usage, interfaces, memory usage patterns, and firmware behavior.
+They describe services, APIs, contracts, architecture rules, integration guidance, and system behavior.
 
-They are written by LLMs for LLMs and serve as reliable firmware knowledge.
+API Reference documents are written by LLMs for LLMs and serve as reliable project knowledge.
 
 They are NOT optional documentation.
-They are the primary source of truth for how this firmware works.
+They are the primary source of truth for how this solution works.
 
-Before implementing features:
+Before implementing any feature or modifying code:
 
-→ You MUST search Project Specifications  
+→ You MUST search API Reference  
 → You MUST read relevant documents  
 → You MUST follow established rules  
 
-Never implement behavior that contradicts Project Specifications.
+Never implement behavior that contradicts API Reference.
 
-If code appears to contradict specifications:
-
-→ Treat specifications as intentional architecture  
-→ Align new work with specifications  
+If code appears to contradict the reference:
+→ Treat API Reference as intentional architecture  
+→ Align new work with API Reference  
 → Report inconsistencies instead of guessing  
 
-Specifications override assumptions.
+API Reference overrides assumptions.
 
 --------------------------------------------------
 
-When creating or updating a Project Specification:
+When creating or updating an API Reference document:
 
-1. Search relevant files.
-2. Read real source code.
-3. Extract actual behavior.
-4. Document the real implementation.
-5. Never invent hypothetical behavior.
-6. Save the specification in the project specifications store.
+1. Search for relevant files.
+2. Read all matching source files.
+3. Extract real signatures and behavior.
+4. Generate documentation grounded strictly in implementation.
+5. Never write generic or hypothetical descriptions.
+6. Save the documentation in the API Reference store.
 
-Specifications must reflect real firmware.
-
-Critical Rule:
-
-Any significant module, hardware interface, communication protocol, state machine, or cross-file contract must have a corresponding Project Specification entry.
-
-Specifications exist for AI agents, not humans.
+API Reference must reflect real code, not theory.
 
 --------------------------------------------------
-Project Notes (Persistent Architecture Memory)
+
+Critical Project Rule:
+
+Any public API surface intended for consumers of this solution MUST have a corresponding API Reference entry:
+
+- Attributes
+- Contracts
+- Services
+- Options
+- Extensions
+- Models exposed across boundaries
+- Public Blazor components
+
+These reference documents exist for AI agents, not humans.
+
+If a consumable API exists without reference documentation:
+→ Create one immediately after implementing it.
+
+No consumer-facing surface may exist undocumented.
+
+--------------------------------------------------
+Sticky Notes (Persistent Architecture Memory)
 --------------------------------------------------
 
-Project Notes store durable embedded rules and hardware decisions.
+Sticky Notes store durable architectural decisions, domain direction, and conventions.
 
-They are long-term memory for this firmware project.
+They are long-term memory for this solution.
 
-Examples of durable knowledge:
-
-- Pin assignments
-- Timing assumptions
-- Memory constraints
-- Wiring decisions
-- Communication protocols
-- Electrical limitations
-- Safety constraints
-- Board-specific quirks
-
-When the user defines what the firmware is building, this is not conversation.
+When the user states what the solution is building or changes its purpose, this is not conversation.
 
 It is architecture.
 
+Such statements MUST be persisted in Sticky Notes immediately.
+
 Examples:
 
-- "This is a motor controller"
-- "This is robotics firmware"
-- "This is a sensor logger"
-- "This is an LED animation engine"
-- "This is a communication device"
+- "This solution is for authentication"
+- "We are building a payment SDK"
+- "This solution handles caching"
+- "This is a plugin framework"
 
-Such statements MUST be persisted in Project Notes immediately.
+Sticky Notes must capture:
 
-Project Notes must capture:
-
-- Firmware purpose
+- Solution purpose
 - Scope
 - Non-goals
 - Core responsibilities
-- Hardware constraints
-- Safety constraints
+- Expected behavior
+- Architectural constraints
 
-Before starting any task:
+Before starting any work:
 
-→ Review all Project Notes  
+→ Review all Sticky Notes  
 → Align all work with them  
 
 If architectural direction changes:
 
-→ Update Project Notes  
-→ Report conflicts with existing code or specifications  
+→ Update Sticky Notes  
+→ Report conflicts with existing code or API Reference  
 
-Project Notes override short-term conversation.
+Sticky Notes override short-term conversation.
 
 --------------------------------------------------
 External Library Rule

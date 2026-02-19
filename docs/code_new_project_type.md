@@ -3,237 +3,75 @@
 ## Overview
 
 To support a new project type, create a Razor Class Library that contains the services, components, and prompts required for that project.  
-Use the `Cyrena.Blazor` project as a structural reference.
+Use the `Cyrena.ArduinoIDE` project as a structural reference.
 
 Each project type is implemented as a self-contained extension layer that teaches Cyréna how to understand, configure, and index that ecosystem.
 
+**Please Note**: .NET Project support works slightly different and requires additional implements. [.NET Support](./dotnet-support.md).
+
 ---
 
-## 1. Project Configurator
+## Develop Plan
 
-The configurator defines how a project type is created, edited, initialized, and integrated into Cyréna.  
-See: `Cyrena.Contracts.IProjectConfigurator`.
+Each project type must have a strict development plan. The AI should not be allowed to deviate from it, the
+less the AI has to decide, the more stable the assistance becomes.
 
-Below is a simplified example for a .NET class library:
+Arduino IDE projects typically are incredibly simple:
+- *Root Dir*
+	- sketch.ino
+	- some.h
+	- some.cpp
+	
+This makes creating a Develop Plan easier.
+
+**Cyrena.Developer.Contracts.ICodeBuilder**: This interface must be implemented in order to configure
+a new supported project.
 
 ```csharp
-namespace Cyrena.ClassLibrary.Services
-{
-    internal class LibraryConfigurator : IProjectConfigurator
+internal class ArduinoIDECodeBuilder : ICodeBuilder
     {
-        private readonly DialogService _dialog;
-        private readonly IStore<Project> _store;
-
-        public LibraryConfigurator(DialogService dialog, IStore<Project> store)
+        private readonly IKernelController _kernel;
+        public ArduinoIDECodeBuilder(IKernelController kernel)
         {
-            _dialog = dialog;
-            _store = store;
+            _kernel = kernel;
         }
 
-        public string ProjectType => "dotnet-class-lib"; // MUST be unique
-        public string Name => "Class Library";
-        public string? Description => "Build a .NET class library";
-        public string? Icon => "bi bi-collection"; // Bootstrap Icons
-        public string Category => ".NET C#";
+        public string Id => ArduinoOptions.BuilderId;
 
-        // Creates a new project instance
-        public async Task<bool> CreateNewAsync()
+        public Task<DevelopPlan> ConfigureAsync(DevelopOptions options)
         {
-            var project = new ClassLibraryProject();
-
-            var rf = await _dialog.ShowModal<ClassLibraryConfig>(new ResultDialogOption()
-            {
-                Title = "Class Library",
-                Size = BootstrapBlazor.Components.Size.Medium,
-                ButtonYesText = "Submit",
-                ButtonNoText = "Cancel",
-                ComponentParameters = new()
-                {
-                    {"Model", project }
-                }
-            });
-
-            if (rf == DialogResult.Yes)
-            {
-                await _store.AddAsync(project);
-                return true;
-            }
-
-            return false;
-        }
-
-        // Edits an existing project configuration
-        public async Task EditAsync(Project project)
-        {
-            var model = new ClassLibraryProject(project);
-
-            var rf = await _dialog.ShowModal<ClassLibraryConfig>(new ResultDialogOption()
-            {
-                Title = "Class Library",
-                Size = BootstrapBlazor.Components.Size.Medium,
-                ButtonYesText = "Submit",
-                ButtonNoText = "Cancel",
-                ComponentParameters = new()
-                {
-                    {"Model", model }
-                }
-            });
-
-            if (rf == DialogResult.Yes)
-                await _store.UpdateAsync(project);
-        }
-
-        // Initializes indexing, plugins, and system prompt
-        public Task<ProjectPlan> InitializeAsync(IDeveloperContextBuilder builder)
-        {
-            var plan = new ProjectPlan(builder.Project.RootDirectory);
-
-            plan.IndexFiles("csproj", "app_", true);
-
-            var contracts = plan.GetOrCreateFolder("contracts", "Contracts");
-            plan.IndexFiles(contracts, "cs", "contracts_");
-
-            var models = plan.GetOrCreateFolder("models", "Models");
-            plan.IndexFiles(models, "cs", "models_");
-
-            var services = plan.GetOrCreateFolder("services", "Services");
-            plan.IndexFiles(services, "cs", "services_");
-
-            var extensions = plan.GetOrCreateFolder("extensions", "Extensions");
-            plan.IndexFiles(extensions, "cs", "extensions_");
-
-            var options = plan.GetOrCreateFolder("options", "Options");
-            plan.IndexFiles(options, "cs", "options_");
-
-            ProjectPlan.Save(plan);
-
-            var prompt = File.ReadAllText("./class_lib_prompt.md");
-            builder.KernelHistory.AddSystemMessage(prompt);
-
-            builder.Plugins.AddFromType<DefaultStructurePlugin>();
-            builder.Plugins.AddFromType<DotnetActions>();
-
-            builder.AddEventHandler<FileCreatedEvent, LibProjectFileWatcher>();
-            builder.AddEventHandler<FileDeletedEvent, LibProjectFileWatcher>();
-            builder.AddEventHandler<FileRenamedEvent, LibProjectFileWatcher>();
-
+            options.Plugins.AddFromType<Arduino>();
+            options.KernelBuilder.AddStartupTask<PromptStartupTask>();
+            var plan = new DevelopPlan(options.ChatConfiguration[DevelopOptions.RootDirectory]!);
+            plan.IndexFiles("ino", "ino_");
+            plan.IndexFiles("h", "h_");
+            plan.IndexFiles("cpp", "cpp_");
             return Task.FromResult(plan);
         }
-    }
-}
-```
 
----
-
-## 2. File Change Event Handling
-
-Due to OS-level watcher limitations, file filtering cannot always be perfect.  
-Instead, event handlers validate whether a file is relevant before updating the UI.
-
-```csharp
-using Cyrena.ClassLibrary.Extensions;
-using Cyrena.Contracts;
-using Cyrena.Events;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace Cyrena.ClassLibrary.Services
-{
-    internal class LibProjectFileWatcher :
-        IEventHandler<FileCreatedEvent>,
-        IEventHandler<FileDeletedEvent>,
-        IEventHandler<FileRenamedEvent>
-    {
-        private readonly IDeveloperContext _ctx;
-
-        public LibProjectFileWatcher(IDeveloperContext ctx)
+        public Task DeleteAsync(ChatConfiguration config)
         {
-            _ctx = ctx;
-        }
-
-        public Task HandleAsync(FileCreatedEvent e, CancellationToken ct)
-        {
-            if (_ctx.IsTrackedFile(e.FullPath))
-                _ctx.Kernel.Services.GetRequiredService<IDeveloperWindow>().FilesChanged();
-
             return Task.CompletedTask;
         }
 
-        public Task HandleAsync(FileDeletedEvent e, CancellationToken ct)
+        public async Task EditAsync(ChatConfiguration config, IServiceProvider services)
         {
-            if (_ctx.IsTrackedFile(e.FullPath))
-                _ctx.Kernel.Services.GetRequiredService<IDeveloperWindow>().FilesChanged();
-
-            return Task.CompletedTask;
-        }
-
-        public Task HandleAsync(FileRenamedEvent e, CancellationToken ct)
-        {
-            if (_ctx.IsTrackedFile(e.FullPath))
-                _ctx.Kernel.Services.GetRequiredService<IDeveloperWindow>().FilesChanged();
-
-            return Task.CompletedTask;
+            var dialog = services.GetRequiredService<DialogService>();
+            var rf = await dialog.ShowModal<Configure>(new ResultDialogOption()
+            {
+                Title = "Arduino IDE",
+                Size = Size.Medium,
+                ComponentParameters = new()
+                {
+                    {nameof(Configure.Model), config }
+                },
+                ButtonYesText = "Save",
+                ButtonNoText = "Cancel",
+            });
+            if (rf == DialogResult.Yes)
+                await _kernel.UpdateAsync(config, true);
         }
     }
-}
 ```
+This servicecs configures the prompt, additional functions required to adhere to the plan and any additional UI configs or services that is required on the instance of Kernel.
 
----
-
-## 3. Prompt Design
-
-Each project type must provide a dedicated prompt file.
-
-Do not hardcode prompts in source.  
-Always load from a `.md` file to allow easy iteration and customization.
-
-Example:
-
-```
-Cyrena.ClassLibrary/class_lib_prompt.md
-```
-
-Prompts should enforce strict structure.  
-The less the model has to infer architecture, the more reliable the output.
-
-Focus the prompt on:
-
-- structure rules
-- conventions
-- allowed operations
-- implementation scope
-
-Avoid ambiguity.
-
----
-
-## 4. Registering the Project Type
-
-Register the configurator using a builder extension:
-
-```csharp
-public static class CyrenaBuilderExtensions
-{
-    public static CyrenaBuilder AddClassLibraryDevelopment(this CyrenaBuilder builder)
-    {
-        builder.Services.AddScoped<IProjectConfigurator, LibraryConfigurator>();
-        return builder;
-    }
-}
-```
-
-Then enable it in:
-
-```
-Cyrena.Desktop.Program.cs
-```
-
----
-
-At this point the project type is fully integrated:
-
-✔ configurator  
-✔ indexing plan  
-✔ prompt  
-✔ file event handling  
-✔ UI integration  
-✔ builder registration

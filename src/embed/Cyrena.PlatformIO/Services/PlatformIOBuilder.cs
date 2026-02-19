@@ -45,6 +45,7 @@ namespace Cyrena.PlatformIO.Services
             options.Plugins.AddFromType<Cyrena.PlatformIO.Plugins.Platform>();
             options.KernelBuilder.AddStartupTask<PromptStartupTask>();
             options.KernelBuilder.AddToolbarComponent<Cyrena.PlatformIO.Components.Shared.Toolbar>(ToolbarAlignment.Start);
+            options.AddApiReferencing();
             return Task.FromResult(plan);
         }
 
