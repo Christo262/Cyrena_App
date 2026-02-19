@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Cyrena.Contracts;
+using Microsoft.AspNetCore.Components;
 using System.Reflection;
 
 namespace Cyrena.Options

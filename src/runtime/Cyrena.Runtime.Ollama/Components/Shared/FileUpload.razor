@@ -1,0 +1,15 @@
+@inherits CapabilityComponentBase
+
+<Tooltip Title="Attach File">
+    <button type="button" @onclick="TriggerFileUpload" disabled="@_its.Inferring" class="btn btn-secondary btn-sm rounded-pill">
+        <i class="bi bi-paperclip"></i>
+    </button>
+</Tooltip>
+
+   
+    <!-- Hidden File Input -->
+    <InputFile @ref="_fileInput" 
+               OnChange="HandleFilesSelected" 
+               multiple 
+               accept="@_accepts"
+               style="display: none;" />

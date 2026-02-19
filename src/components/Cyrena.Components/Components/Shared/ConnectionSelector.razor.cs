@@ -2,9 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Cyrena.Contracts;
 using Cyrena.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Cyrena.Components.Shared
 {

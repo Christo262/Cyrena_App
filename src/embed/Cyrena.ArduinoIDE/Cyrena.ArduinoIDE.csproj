@@ -7,18 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="arduino-ide-prompt.md">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\components\Cyrena.Components\Cyrena.Components.csproj" />
+    <ProjectReference Include="..\..\developer\Cyrena.Developer.Core\Cyrena.Developer.Core.csproj" />
     <ProjectReference Include="..\..\persistence\Cyrena.Persistence.Core\Cyrena.Persistence.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="arduino_ide_prompt.md">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,15 @@
+@inherits KernelComponentBase
+
+<div class="dropdown ms-1">
+    <button class="btn btn-secondary btn-sm" @onclick="Toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-git"></i>
+    </button>
+    <ul class="dropdown-menu">
+        @foreach(var item in _models)
+        {
+            <li>
+                <a class="dropdown-item" href="develop-file-viewer/@item.Id/@_chat.Config.Id">@item.Name</a>
+            </li>
+        }
+    </ul>
+</div>

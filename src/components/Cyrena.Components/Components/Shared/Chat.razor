@@ -1,73 +1,120 @@
-﻿@inherits DevelopComponentBase
+﻿@inherits KernelComponentBase
+@using Microsoft.Extensions.DependencyInjection
+@using Cyrena.Extensions
+@using Microsoft.SemanticKernel
 
-    <div class="p-0 d-flex flex-column h-100 mh-100 rounded" style="background-color: #1f1f1f">
-        <div class="p-3 flex-grow-1 overflow-auto" style="min-height: 0;" @ref="_scrollHost">
-            @if (Context.DisplayHistory.Count == 0)
+<div class="p-0 d-flex flex-column h-100 mh-100 rounded" style="background-color: #1f1f1f">
+    <div class="p-3 flex-grow-1 overflow-auto" style="min-height: 0;" @ref="_scrollHost">
+        @if (_msg.DisplayHistory.Count == 0)
+        {
+            <div class="text-muted">
+                <div class="fw-semibold mb-1">Start chatting</div>
+                <div>Type a message below. Use Shift+Enter for a new line.</div>
+            </div>
+        }
+        else
+        {
+            for (int i = 0; i < _msg.DisplayHistory.Count; i++)
             {
-                <div class="text-muted">
-                    <div class="fw-semibold mb-1">Start chatting</div>
-                    <div>Type a message below. Use Shift+Enter for a new line.</div>
-                </div>
-            }
-            else
-            {
-                for (int i = 0; i < Context.DisplayHistory.Count; i++)
-                {
-                    if (Context.DisplayHistory[i].Role == Context.ErrorRole)
-                    {
-                        <div class="d-flex mb-3 justify-content-start">
-                            <div class="text-danger small" style="white-space: pre-wrap;">@((MarkupString)Context.DisplayHistory[i].Content)</div>
-                        </div>
-                    }
-                    else if (Context.DisplayHistory[i].Role == Context.InfoRole)
-                    {
-                        <div class="d-flex mb-3 justify-content-start">
-                            <div class="text-muted small" style="white-space: pre-wrap;">@((MarkupString)Context.DisplayHistory[i].Content)</div>
-                        </div>
-                    }
-                    else
-                    {
-                        var isUser = Context.DisplayHistory[i].Role == Microsoft.SemanticKernel.ChatCompletion.AuthorRole.User;
-                        <div class="d-flex mb-3 @(isUser ? "justify-content-end" : "justify-content-start")">
-                            <div class="chat-bubble @(isUser ? "chat-bubble-user" : "chat-bubble-assistant") px-3 py-2">
-                                @if (!isUser)
-                                {
-                                    <div class="small opacity-75 mb-1">
-                                        Cyréna
-                                    </div>
-                                }
-                                <div>@((MarkupString)Markdig.Markdown.ToHtml(Context.DisplayHistory[i].Content, _mdp))</div>
-                            </div>
-                        </div>
-                    }
-                }
-
-
-
-                @if (!string.IsNullOrEmpty(_stream))
+                if (_msg.DisplayHistory[i].Role == _msg.Options.LogError)
                 {
                     <div class="d-flex mb-3 justify-content-start">
-                        <div class="chat-bubble chat-bubble-assistant px-3 py-2">
-                            <div class="small opacity-75 mb-1">
-                                Cyréna
-                            </div>
-                            <div>@((MarkupString)Markdig.Markdown.ToHtml(_stream, _mdp))</div>
+                        <div class="text-danger small" style="white-space: pre-wrap;">@((MarkupString)_msg.DisplayHistory[i].Content)</div>
+                    </div>
+                }
+                else if (_msg.DisplayHistory[i].Role == _msg.Options.LogWarn)
+                {
+                    <div class="d-flex mb-3 justify-content-start">
+                        <div class="text-warning small" style="white-space: pre-wrap;">@((MarkupString)_msg.DisplayHistory[i].Content)</div>
+                    </div>
+                }
+                else if (_msg.DisplayHistory[i].Role == _msg.Options.LogSuccess)
+                {
+                    <div class="d-flex mb-3 justify-content-start">
+                        <div class="text-success small" style="white-space: pre-wrap;">@((MarkupString)_msg.DisplayHistory[i].Content)</div>
+                    </div>
+                }
+                else if (_msg.DisplayHistory[i].Role == _msg.Options.LogInfo)
+                {
+                    <div class="d-flex mb-3 justify-content-start">
+                        <div class="text-muted small" style="white-space: pre-wrap;">@((MarkupString)_msg.DisplayHistory[i].Content)</div>
+                    </div>
+                }
+                else
+                {
+                    var isUser = _msg.DisplayHistory[i].Role == Microsoft.SemanticKernel.ChatCompletion.AuthorRole.User;
+                    <div class="d-flex mb-3 @(isUser ? "justify-content-end" : "justify-content-start")">
+                        <div class="chat-bubble @(isUser ? "chat-bubble-user" : "chat-bubble-assistant") px-3 py-2 @(_msg.DisplayHistory[i].Items.Count > 1 ? "chat-bubble-has-items" : "")">
+                            @if (_msg.DisplayHistory[i].Items.Count > 1)
+                            {
+                                <div class="row m-0 mb-1">
+                                    @foreach(var item in _msg.DisplayHistory[i].Items.OfType<InfoMessageContentItem>())
+                                    {
+                                        <div class="col-md-3">
+                                            <div class="p-1 d-flex">
+                                                <p class="small text-muted m-0 text-truncate">@item.FileName</p>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            <div>@((MarkupString)Markdig.Markdown.ToHtml(_msg.DisplayHistory[i].Content, _mdp))</div>
                         </div>
                     </div>
                 }
             }
+
+
+
+            @if (!string.IsNullOrEmpty(_stream))
+            {
+                <div class="d-flex mb-3 justify-content-start">
+                    <div class="chat-bubble chat-bubble-assistant px-3 py-2">
+                        <div>@((MarkupString)Markdig.Markdown.ToHtml(_stream, _mdp))</div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <div class="p-2 pb-0 border-top">
+        @if (_items.Any())
+        {
+            <div class="row m-0">
+                @foreach(var item in _items)
+                {
+                    <div class="col-md-4">
+                        <div class="p-1 d-flex">
+                            <p class="small text-muted m-0 text-truncate justify-content-center align-self-center">@item.Name</p>
+                            <button type="button" class="btn btn-sm btn-outline-danger border-0" @onclick="() => RemoveAdditionalItem(item)"><i class="bi bi-x"></i></button>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <div class="p-2 rounded-pill border border-primary">
+            <div class="d-flex flex-row">
+                <textarea @ref="_area" @bind:event="oninput" disabled="@_its.Inferring" rows="1" class="form-control auto-grow rounded-pill border-0 me-1" @onkeydown="ComposerKeyDown" @bind="_input"></textarea>
+
+                <div class="ms-2 justify-content-center align-self-center d-flex flex-row">
+                    @if (_caps.Any())
+                    {
+                        @foreach (var item in _caps)
+                        {
+                            @this.Render(item.Component, new()
+                            {
+                                { nameof(CapabilityComponentBase.Kernel), Kernel},
+                                        { nameof(CapabilityComponentBase.OnItemsAdded), EventCallback.Factory.Create<AdditionalMessageContent[]>(this, OnItemsAdded)}
+                            })
+                                        }
+                    }
+                    <button type="button" class="btn btn-sm btn-primary rounded-pill ms-1" disabled="@(_its.Inferring || string.IsNullOrEmpty(_input))" @onclick="Send"><i class="bi bi-arrow-up"></i></button>
+                </div>
+            </div>
         </div>
 
-        <div class="p-3 border-top">
-            <BootstrapInputGroup>
-                <textarea value="@_input"
-                          class="form-control auto-grow"
-                          disabled="@Context.Handling"
-                          @ref="_area"
-                          rows="1"
-                          @oninput="AutoGrow"
-                          @onkeydown="ComposerKeyDown" />
-                <Button Icon="bi bi-arrow-up-circle-fill" OnClick="Send" IsDisabled="Context.Handling"></Button>
-            </BootstrapInputGroup>
-        </div>
+        <ChatToolbar Kernel="Kernel" />
+       
     </div>
+</div>

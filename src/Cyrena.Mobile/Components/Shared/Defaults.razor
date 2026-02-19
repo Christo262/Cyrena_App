@@ -1,0 +1,19 @@
+@inject ISettingsService _settings
+
+<h4>Default AI Connection</h4>
+<hr />
+
+<ConnectionSelector @bind-Value="@_model.DefaultConnectionId" @bind-Value:after="OnValueChanged"></ConnectionSelector>
+
+@code {
+    private MobileOptions _model = default!;
+    protected override void OnInitialized()
+    {
+        _model = _settings.Read<MobileOptions>(MobileOptions.Key) ?? new MobileOptions();
+    }
+
+    private void OnValueChanged()
+    {
+        _settings.Save<MobileOptions>(MobileOptions.Key, _model);
+    }
+}

@@ -12,10 +12,9 @@ namespace Cyrena.Runtime.OpenAI.Components.Shared
 
         private OpenAIOptions? _model;
 
-        public override void OnFirstRender()
+        protected override void OnInitialized()
         {
             _model = _settings.Read<OpenAIOptions>(OpenAIOptions.Key) ?? new OpenAIOptions();
-            this.StateHasChanged();
         }
 
         private async Task Save()

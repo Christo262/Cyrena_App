@@ -1,7 +1,0 @@
-@namespace {root}.Components.Shared
-
-<h4>{name}</h4>
-
-@code {
-
-}

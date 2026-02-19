@@ -9,25 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="favicon.ico" />
+    <Content Include="favicon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Photino.Blazor" Version="4.0.13" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\components\Cyrena.Components\Cyrena.Components.csproj" />
-    <ProjectReference Include="..\dotnet\Cyrena.Blazor\Cyrena.Blazor.csproj" />
-    <ProjectReference Include="..\dotnet\Cyrena.ClassLibrary\Cyrena.ClassLibrary.csproj" />
-    <ProjectReference Include="..\embed\Cyrena.ArduinoIDE\Cyrena.ArduinoIDE.csproj" />
-    <ProjectReference Include="..\embed\Cyrena.PlatformIO\Cyrena.PlatformIO.csproj" />
-    <ProjectReference Include="..\persistence\Cyrena.Persistence.File\Cyrena.Persistence.File.csproj" />
-    <ProjectReference Include="..\runtime\Cyrena.Runtime.Ollama\Cyrena.Runtime.Ollama.csproj" />
-    <ProjectReference Include="..\runtime\Cyrena.Runtime.OpenAI\Cyrena.Runtime.OpenAI.csproj" />
-    <ProjectReference Include="..\runtime\Cyrena.Runtime\Cyrena.Runtime.csproj" />
-    <ProjectReference Include="..\spec\Cyrena.Spec\Cyrena.Spec.csproj" />
-    <ProjectReference Include="..\web\Cyrena.Tavily\Cyrena.Tavily.csproj" />
+    <PackageReference Include="BootstrapBlazor" Version="10.3.0" />
+    <PackageReference Include="PdfPig" Version="0.1.13" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,7 +27,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\Shared\" />
+    <ProjectReference Include="..\components\Cyrena.Components\Cyrena.Components.csproj" />
+    <ProjectReference Include="..\developer\Cyrena.Developer.Runtime\Cyrena.Developer.Runtime.csproj" />
+    <ProjectReference Include="..\dotnet\Cyrena.Developer.Net\Cyrena.Developer.Net.csproj" />
+    <ProjectReference Include="..\embed\Cyrena.ArduinoIDE\Cyrena.ArduinoIDE.csproj" />
+    <ProjectReference Include="..\embed\Cyrena.PlatformIO\Cyrena.PlatformIO.csproj" />
+    <ProjectReference Include="..\runtime\Cyrena.Runtime.Ollama\Cyrena.Runtime.Ollama.csproj" />
+    <ProjectReference Include="..\runtime\Cyrena.Runtime.OpenAI\Cyrena.Runtime.OpenAI.csproj" />
+    <ProjectReference Include="..\runtime\Cyrena.Runtime\Cyrena.Runtime.csproj" />
+    <ProjectReference Include="..\web\Cyrena.Tavily\Cyrena.Tavily.csproj" />
   </ItemGroup>
 
 </Project>

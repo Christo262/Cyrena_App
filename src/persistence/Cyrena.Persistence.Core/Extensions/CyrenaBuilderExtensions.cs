@@ -8,14 +8,14 @@ namespace Cyrena.Extensions
     {
         public static CyrenaBuilder AddScopedStore<TEntity>(this CyrenaBuilder builder, string collectionName) where TEntity : class, IEntity
         {
-            var p = builder.GetOption<ICyrenaPersistenceBuilder>();
+            var p = builder.GetFeatureOption<ICyrenaPersistenceBuilder>();
             p.AddScopedStore<TEntity>(collectionName);
             return builder;
         }
 
         public static CyrenaBuilder AddSingletonStore<TEntity>(this CyrenaBuilder builder, string collectionName) where TEntity : class, IEntity
         {
-            var p = builder.GetOption<ICyrenaPersistenceBuilder>();
+            var p = builder.GetFeatureOption<ICyrenaPersistenceBuilder>();
             p.AddSingletonStore<TEntity>(collectionName);
             return builder;
         }

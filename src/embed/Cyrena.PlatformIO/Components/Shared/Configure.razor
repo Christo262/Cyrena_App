@@ -5,22 +5,17 @@
     <ValidationSummary />
 
     <div class="mb-3">
-        <label class="form-label">Project Name</label>
-        <InputText @bind-Value="Model.Name" class="form-control" />
+        <label class="form-label">Title</label>
+        <InputText @bind-Value="_model.Title" class="form-control" />
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Project Description</label>
-        <InputTextArea @bind-Value="Model.Description" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Root Directory</label>
+        <label class="form-label">.ini File</label>
         <div class="input-group">
-            <InputText @bind-Value="Model.RootDirectory" class="form-control" />
+            <InputText @bind-Value="_model.IniFilePath" class="form-control" />
             <button class="btn btn-outline-secondary" type="button" @onclick="PickProject"><i class="bi bi-folder-symlink"></i></button>
         </div>
     </div>
 
-    <ConnectionSelector @bind-Value="Model.ConnectionId" />
+    <ConnectionSelector @bind-Value="_model.ConnectionId" />
 </EditForm>

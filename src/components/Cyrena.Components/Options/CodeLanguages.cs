@@ -2,7 +2,7 @@
 
 namespace Cyrena.Options
 {
-    internal class CodeLanguages
+    public class CodeLanguages
     {
         private readonly Dictionary<string, string> _langs;
         public CodeLanguages()

@@ -1,62 +1,70 @@
 ﻿using BootstrapBlazor.Components;
 using Cyrena.Contracts;
-using Cyrena.Extensions;
+using Cyrena.Desktop.Models;
 using Cyrena.Models;
-using Cyrena.Persistence;
 using Cyrena.Persistence.Contracts;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.JSInterop;
 
 namespace Cyrena.Desktop.Components.Pages
 {
     public partial class Index
     {
-        [Inject] private IStore<Project> _store { get; set; } = default!;
-        [Inject] private IServiceProvider _services { get; set; } = default!;
+        [Inject] private ISettingsService _settings { get; set; } = default!;
+        [Inject] private IKernelController _kernels { get; set; } = default!;
+        [Inject] private NavigationManager _nav { get; set; } = default!;
         [Inject] private ToastService _toasts { get; set; } = default!;
-        [Inject] private DialogService _dialog { get; set;  } = default!;
-        [Inject] private NavigationManager _nav { get; set;  } = default!;
+        [Inject] private IJSRuntime _js { get; set; } = default!;
 
-        private IEnumerable<Project>? _projects { get; set; }
+        private ChatConfiguration? _model;
+        private string? _input { get; set; }
 
-        public override async Task OnFirstRenderAsync()
+        protected override void OnInitialized()
         {
-            _projects = await _store.FindManyAsync(x => true, new OrderBy<Project>(x => x.LastModified, SortDirection.Descending));
-            this.StateHasChanged();
-        }
-
-        private async Task Refresh()
-        {
-            _projects = await _store.FindManyAsync(x => true, new OrderBy<Project>(x => x.LastModified, SortDirection.Descending));
-            this.StateHasChanged();
-        }
-
-        private async Task Edit(Project project)
-        {
-            var cfgs = _services.GetServices<IProjectConfigurator>();
-            var cfg = cfgs.FirstOrDefault(x => x.ProjectType == project.Type);
-            if(cfg == null)
+            var options = _settings.Read<WindowOptions>(WindowOptions.Key);
+            if (options == null || string.IsNullOrEmpty(options.DefaultConnectionId))
+                return;
+            _model = new ChatConfiguration()
             {
-                await _toasts.Error("Configurator Missing", "Configuration service for this project type not found.");
+                Id = Guid.NewGuid().ToString(),
+                AssistantModeId = IAssistantMode.AssistantModeDefault,
+                ConnectionId = options.DefaultConnectionId,
+            };
+            _model[ChatConfiguration.Icon] = "bi bi-chat-left-quote";
+        }
+
+        private async Task Send()
+        {
+            if (string.IsNullOrEmpty(_input) || _model == null)
+                return;
+            try
+            {
+                var kernel = await _kernels.Create(_model);
+                var chat = kernel.Services.GetRequiredService<IChatMessageService>();
+                kernel.Services.GetRequiredService<IIterationService>().Iterate(chat.Options.User, _input, kernel);
+                _nav.NavigateTo($"converse/{_model.Id}");
+            }catch(Exception ex)
+            {
+                await _toasts.Error("Error", ex.Message);
+            }
+        }
+
+        private async Task ComposerKeyDown(KeyboardEventArgs e)
+        {
+            if (e.Key == "Enter" && !e.ShiftKey)
+            {
+                await Send();
                 return;
             }
-            await cfg.EditAsync(project);
         }
 
-        private async Task Delete(Project project)
+        private ElementReference _area;
+        private async Task AutoGrow(ChangeEventArgs e)
         {
-            var rf = await _dialog.ShowModal("Delete Project", $"Are you sure you want to delete {project.Name}?");
-            if(rf == DialogResult.Yes)
-            {
-                await _store.DeleteAsync(project);
-                await Refresh();
-            }
-        }
-
-        private Task OnClickNavigate(string url)
-        {
-            _nav.NavigateTo(url);
-            return Task.CompletedTask;
+            _input = e.Value?.ToString() ?? "";
+            await _js.InvokeVoidAsync("autoGrow", _area, 5);
         }
     }
 }

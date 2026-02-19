@@ -1,12 +1,14 @@
-<Router AppAssembly="typeof(Program).Assembly">
+@inject CyrenaOptions _options
+
+<Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="@(_options.GetFeatureAssemblies("blazor"))">
     <Found Context="routeData">
         <BootstrapBlazorRoot>
-            <RouteView RouteData="routeData" DefaultLayout="typeof(ZeroLayout)" />
+            <RouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)" />
         </BootstrapBlazorRoot>
     </Found>
     <NotFound>
         <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(ZeroLayout)">
+        <LayoutView Layout="@typeof(MainLayout)">
             <p role="alert">Sorry, there's nothing at this address.</p>
         </LayoutView>
     </NotFound>

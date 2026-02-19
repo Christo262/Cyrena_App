@@ -1,0 +1,10 @@
+@inherits KernelComponentBase
+
+<div style="width:150px">
+    <select @bind="_sln_id" @bind:after="OnValueChange" disabled="@_its.Inferring" class="form-control form-control-sm">
+        @foreach (var item in _sln.GetValidProjects())
+        {
+            <option value="@item.Id">@item.ProjectName</option>
+        }
+    </select>
+</div>

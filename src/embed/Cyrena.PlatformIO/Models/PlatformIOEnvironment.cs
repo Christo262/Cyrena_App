@@ -4,27 +4,23 @@ namespace Cyrena.PlatformIO.Models
 {
     public sealed class PlatformIOEnvironment
     {
-        private readonly List<DataProperty> _properties = new();
+        private readonly Dictionary<string, string?> _properties = new();
 
         public string Name { get; set; } = default!;
 
-        public IReadOnlyList<DataProperty> Properties => _properties;
+        public IReadOnlyDictionary<string, string?> Properties => _properties;
 
         public string? this[string key]
         {
             get
             {
-                return _properties.FirstOrDefault(x => x.Id == key)?.Value;
+                if (!_properties.ContainsKey(key))
+                    return null;
+                return _properties[key];
             }
             set
             {
-                var p = _properties.FirstOrDefault(x => x.Id == key);
-                if (p == null)
-                {
-                    p = new DataProperty { Id = key };
-                    _properties.Add(p);
-                }
-                p.Value = value;
+                _properties[key] = value;
             }
         }
 

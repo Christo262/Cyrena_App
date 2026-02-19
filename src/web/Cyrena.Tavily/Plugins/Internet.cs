@@ -4,6 +4,7 @@ using Cyrena.Tavily.Models;
 using Cyrena.Tavily.Options;
 using System.ComponentModel;
 using System.Net.Http.Json;
+using Cyrena.Extensions;
 
 namespace Cyrena.Tavily.Plugins
 {
@@ -11,8 +12,8 @@ namespace Cyrena.Tavily.Plugins
     {
         private readonly HttpClient _http;
         private readonly TavilyOptions _options;
-        private readonly IDeveloperContext _context;
-        public Internet(TavilyOptions options, IDeveloperContext context)
+        private readonly IChatMessageService _context;
+        public Internet(TavilyOptions options, IChatMessageService context)
         {
             _options = options;
             _context = context;
@@ -46,7 +47,7 @@ namespace Cyrena.Tavily.Plugins
             };
             try
             {
-                _context.LogInfo($"Searching {query}");
+                await _context.LogInfo($"Searching {query}");
                 using var response = await _http.PostAsJsonAsync("/search", request);
                 var model = await response.Content.ReadFromJsonAsync<SearchResponse>();
                 var content = await response.Content.ReadAsStringAsync();
@@ -72,7 +73,7 @@ namespace Cyrena.Tavily.Plugins
             };
             try
             {
-                _context.LogInfo($"Extracting web results");
+                await _context.LogInfo($"Extracting web results");
                 using var response = await _http.PostAsJsonAsync("/extract", request);
                 var model = await response.Content.ReadFromJsonAsync<ExtractResponse>();
                 if(model != null)

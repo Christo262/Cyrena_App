@@ -1,0 +1,16 @@
+
+<EditForm EditContext="_context">
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
+
+    <div class="mb-3">
+        <label class="form-label">AI Connection</label>
+        <select @bind="_model.ConnectionId" class="form-control">
+            <option value="">--Select--</option>
+            @foreach (var item in _models)
+            {
+                <option value="@item.Id">@item.Name</option>
+            }
+        </select>
+    </div>
+</EditForm>

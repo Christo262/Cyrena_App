@@ -68,4 +68,18 @@
         </p>
     </div>
 
+    <div class="form-check mb-3">
+        <InputCheckbox @bind-Value="Model.SupportsImage" class="form-check-input"></InputCheckbox>
+        <label class="form-check-label">
+            Supports Images
+        </label>
+    </div>
+
+    <div class="form-check mb-3">
+        <InputCheckbox @bind-Value="Model.SupportsFile" class="form-check-input"></InputCheckbox>
+        <label class="form-check-label">
+            Supports Files
+        </label>
+    </div>
+
 </EditForm>

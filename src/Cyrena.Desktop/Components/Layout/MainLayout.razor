@@ -1,0 +1,96 @@
+@inherits LayoutComponentBase
+
+<section class="layout has-sidebar is-page @(_side ? "is-collapsed":"")" style="--bb-layout-footer-height: 0px;">
+    <aside class="layout-side">
+        <div class="layout-menu">
+            <div class="scroll" style="--bb-scroll-width: 5px; --bb-scroll-hover-width: 5px;">
+                <nav class="menu is-vertical">
+                    <ul class="submenu">
+                        <li>
+                            <NavLink Match="NavLinkMatch.All" href="" class="nav-link">
+                                <div class="submenu-link">
+                                    <i class="menu-icon bi bi-chat-dots"></i><!--!-->
+                                    <span class="menu-text">New Chat</span>
+                                </div><i class="arrow"></i>
+                            </NavLink>
+                        </li>
+                        @if(_chats is not null)
+                        {
+                            foreach (var item in _chats.Where(x => x[ChatConfiguration.Group] is null))
+                            {
+                                <li>
+                                    <ContextMenuZone>
+                                        <ContextMenuTrigger>
+                                            <NavLink Match="NavLinkMatch.All" href="@($"converse/{item.Id}")" class="nav-link">
+                                                <div class="submenu-link">
+                                                    <i class="menu-icon @item[ChatConfiguration.Icon]"></i>
+                                                    <span class="menu-text @(IsActive(item) ? "text-primary" : "")">@(item.Title ?? "New Chat")</span>
+                                                </div><i class="arrow"></i>
+                                            </NavLink>
+                                        </ContextMenuTrigger>
+                                        <ContextMenu>
+                                            @if (_controller.KernelActive(item.Id))
+                                            {
+                                                <ContextMenuItem Icon="bi bi-database-down" Text="Unload" OnClick="(s, e) => Unload(item)"></ContextMenuItem>
+                                            }
+                                            <ContextMenuItem Icon="bi bi-pen" Text="Edit" OnClick="(s, e) => EditAsync(item)"></ContextMenuItem>
+                                            <ContextMenuItem Icon="bi bi-trash" Text="Delete" OnClick="(s,e) => Delete(item)"></ContextMenuItem>
+                                        </ContextMenu>
+                                    </ContextMenuZone>
+                                </li>
+                            }
+
+                            @if(_groups != null)
+                            {
+                                @foreach(var item in _groups.Where(x => !string.IsNullOrEmpty(x)))
+                                {
+                                    <li>
+                                        <div class="submenu-link mt-3 border-top">
+                                            <i class="menu-icon"></i>
+                                            <span class="menu-text">@item</span>
+                                        </div><i class="arrow"></i>
+                                    </li>
+                                    @foreach (var m in _chats.Where(x => x[ChatConfiguration.Group] == item))
+                                    {
+                                        <li>
+                                            <ContextMenuZone>
+                                                <ContextMenuTrigger>
+                                                    <NavLink Match="NavLinkMatch.All" href="@($"converse/{m.Id}")" class="nav-link" title="@m.Title">
+                                                        <div class="submenu-link">
+                                                            <i class="menu-icon @m[ChatConfiguration.Icon]"></i>
+                                                            <span class="menu-text @(IsActive(m) ? "text-primary" : "")">@(m.Title ?? "New Chat")</span>
+                                                        </div><i class="arrow"></i>
+                                                    </NavLink>
+                                                </ContextMenuTrigger>
+                                                <ContextMenu>
+                                                    @if (_controller.KernelActive(m.Id))
+                                                    {
+                                                        <ContextMenuItem Icon="bi bi-database-down" Text="Unload" OnClick="(s, e) => Unload(m)"></ContextMenuItem>
+                                                    }
+                                                    <ContextMenuItem Icon="bi bi-pen" Text="Edit" OnClick="(s, e) => EditAsync(m)"></ContextMenuItem>
+                                                    <ContextMenuItem Icon="bi bi-trash" Text="Delete" OnClick="(s, e) => Delete(m)"></ContextMenuItem>
+                                                </ContextMenu>
+                                            </ContextMenuZone>
+                                        </li>
+                                    }
+                                }
+                            }
+                        }
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </aside>
+    <section class="layout-right">
+        <header class="layout-header">
+            <button @onclick="ToggleSide" class="btn btn-sm btn-outline-primary me-1 border-0"><i class="bi bi-layout-sidebar-inset"></i></button>
+            Cyréna
+            <div class="ms-auto"></div>
+            <a href="settings" class="btn btn-outline-light btn-sm rounded-pill"><i class="bi bi-gear"></i></a>
+        </header>
+
+        <main class="layout-main overflow-auto" style="padding:0">
+            @Body
+        </main>
+    </section>
+</section>

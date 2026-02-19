@@ -1,0 +1,27 @@
+@inherits KernelComponentBase
+@using Microsoft.Extensions.DependencyInjection
+@using Cyrena.Extensions
+
+@if (_tb.Any())
+{
+    <div class="d-flex flex-row mt-1 mb-2">
+        @foreach (var item in _tb.Where(x => x.Alignment == ToolbarAlignment.Start))
+        {
+            @this.Render(item.Component, new() { { nameof(KernelComponentBase.Kernel), Kernel } })
+        }
+        <div class="ms-auto"></div>
+        @foreach (var item in _tb.Where(x => x.Alignment == ToolbarAlignment.End))
+        {
+            @this.Render(item.Component, new() { { nameof(KernelComponentBase.Kernel), Kernel } })
+        }
+    </div>
+}
+
+@code {
+    private IEnumerable<Cyrena.Contracts.IToolbarComponent> _tb = default!;
+
+    protected override void OnInitialized()
+    {
+        _tb = Kernel.Services.GetServices<Cyrena.Contracts.IToolbarComponent>();
+    }
+}

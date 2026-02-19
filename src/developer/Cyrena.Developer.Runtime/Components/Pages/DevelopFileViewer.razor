@@ -1,0 +1,31 @@
+@page "/develop-file-viewer/{FileId}/{KernelId}"
+
+@using BlazorMonaco
+@using BlazorMonaco.Editor
+@using BlazorMonaco.Languages
+
+
+@if(_kernel != null)
+{
+    <div class="mb-2 d-flex flex-row px-2">
+        <Tooltip Title="Back">
+            <a class="btn btn-sm btn-outline-primary me-1" href="converse/@KernelId"><i class="bi bi-arrow-left"></i></a>
+        </Tooltip>
+
+        <div class="ms-auto"></div>
+
+        @if(_original != null)
+        {
+            <Tooltip Title="Revert">
+                <button type="button" @onclick="Revert" class="btn btn-sm btn-info me-1"><i class="bi bi-arrow-counterclockwise"></i></button>
+            </Tooltip>
+
+            <Tooltip Title="Keep">
+                <button type="button" @onclick="Keep" class="btn btn-sm btn-success"><i class="bi bi-check2-circle"></i></button>
+            </Tooltip>
+        }
+    </div>
+
+    <StandaloneDiffEditor @ref="_diffEditor" Id="@FileId" ConstructionOptions="DiffEditorConstructionOptions"
+                          OnDidInit="EditorOnDidInit" />
+}

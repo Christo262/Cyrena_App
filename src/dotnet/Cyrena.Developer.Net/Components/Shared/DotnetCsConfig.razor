@@ -1,0 +1,21 @@
+﻿@using Cyrena.Components.Shared
+
+<EditForm EditContext="_context">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-2">
+        <label class="form-label">Title</label>
+        <InputText @bind-Value="_model.Title" class="form-control" />
+    </div>
+
+    <ConnectionSelector @bind-Value="_model.ConnectionId" />
+
+    <div class="mb-2">
+        <label class="form-label">Project File</label>
+        <div class="input-group">
+            <InputText @bind-Value="_model.ProjectFilePath" class="form-control" />
+            <button class="btn btn-secondary" type="button" @onclick="ChooseProj"><i class="bi bi-file"></i></button>
+        </div>
+    </div>
+</EditForm>

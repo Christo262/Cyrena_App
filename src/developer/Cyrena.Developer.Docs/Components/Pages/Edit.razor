@@ -1,0 +1,66 @@
+@page "/api-reference-edit/{RefId}/{KernelId}"
+@page "/api-reference-create/{KernelId}"
+@using Cyrena.Components.Shared
+
+@if (_model != null)
+{
+    <EditForm Model="_model" OnValidSubmit="SaveAsync" class="h-100">
+        <DataAnnotationsValidator />
+        <div class="row m-0 h-100">
+            <div class="col-md-12">
+                <div class="d-flex flex-row">
+                    <Tooltip Title="Back">
+                        <a href="api-references/@KernelId" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-arrow-left"></i></a>
+                    </Tooltip>
+                    <h6 class="ms-3 mt-2">Edit API References</h6>
+                    <div class="ms-auto"></div>
+                </div>
+                <ValidationSummary />
+            </div>
+
+            <div class="col-md-4">
+                <div class="mb-3">
+                    <label class="form-label">
+                        Title
+                    </label>
+                    <InputText @bind-Value="_model.Title" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Summary
+                    </label>
+                    <InputTextArea @bind-Value="_model.Summary" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Keywords
+                    </label>
+                    <InputTextArea @bind-Value="_keywords" class="form-control" />
+                    <p class="small m-0 text-muted">
+                        <span class="text-danger">*</span> Enter keywords comma separated
+                    </p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Link
+                    </label>
+                    <InputText @bind-Value="_model.Link" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-8">
+                <CodeInput @bind-Value="_model.Content" Language="markdown"/>
+            </div>
+
+            <div class="col-md-12 mt-2">
+                <ValidationSummary />
+                <p class="text-center">
+                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="button" @onclick="Cancel" class="btn btn-danger">Cancel</button>
+                </p>
+            </div>
+        </div>
+    </EditForm>
+}

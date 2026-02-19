@@ -1,4 +1,7 @@
 ﻿using Cyrena.Contracts;
+using Cyrena.Developer.Contracts;
+using Cyrena.Developer.Extensions;
+using Cyrena.Developer.Models;
 using Cyrena.Extensions;
 using Cyrena.Models;
 using Microsoft.SemanticKernel;
@@ -8,10 +11,12 @@ namespace Cyrena.ArduinoIDE.Plugins
 {
     internal class Arduino
     {
-        private readonly IDeveloperContext _context;
-        public Arduino(IDeveloperContext context)
+        private readonly IChatMessageService _context;
+        private readonly IDevelopPlanService _plan;
+        public Arduino(IChatMessageService context, IDevelopPlanService plan)
         {
             _context = context;
+            _plan = plan;
         }
 
         [KernelFunction("create_cpp")]
@@ -23,17 +28,16 @@ Input should be a base name only (for example: ""display"").
 Do not include file extensions or paths.
 
 If the file already exists, the existing file is returned and no new file is created.")]
-        public ToolResult<ProjectFile> CreateCppFile(
+        public ToolResult<DevelopFile> CreateCppFile(
             [Description("The name of the file, for example, 'display'.")] string name)
         {
             name = Path.GetFileNameWithoutExtension(name);
             var id = $"cpp_{name}";
-            if (_context.ProjectPlan.TryFindFile(id, out var file))
-                return new ToolResult<ProjectFile>(file!, true, "File already exists.");
+            if (_plan.Plan.TryFindFile(id, out var file))
+                return new ToolResult<DevelopFile>(file!, true, "File already exists.");
             _context.LogInfo($"Creating CPP file {name}");
-            var nf = _context.ProjectPlan.CreateFile(id, $"{name}.cpp", null);
-            ProjectPlan.Save(_context.ProjectPlan);
-            return new ToolResult<ProjectFile>(nf);
+            var nf = _plan.Plan.CreateFile(id, $"{name}.cpp", null);
+            return new ToolResult<DevelopFile>(nf);
         }
 
         [KernelFunction("create_h")]
@@ -45,17 +49,16 @@ Input should be a base name only (for example: ""display"").
 Do not include file extensions or paths.
 
 If the file already exists, the existing file is returned and no new file is created.")]
-        public ToolResult<ProjectFile> CreateCppHeader(
+        public ToolResult<DevelopFile> CreateCppHeader(
             [Description("The name of the file, for example, 'display'.")] string name)
         {
             name = Path.GetFileNameWithoutExtension(name);
             var id = $"h_{name}";
-            if (_context.ProjectPlan.TryFindFile(id, out var file))
-                return new ToolResult<ProjectFile>(file!, true, "File already exists.");
+            if (_plan.Plan.TryFindFile(id, out var file))
+                return new ToolResult<DevelopFile>(file!, true, "File already exists.");
             _context.LogInfo($"Creating header file {name}");
-            var nf = _context.ProjectPlan.CreateFile(id, $"{name}.h", null);
-            ProjectPlan.Save(_context.ProjectPlan);
-            return new ToolResult<ProjectFile>(nf);
+            var nf = _plan.Plan.CreateFile(id, $"{name}.h", null);
+            return new ToolResult<DevelopFile>(nf);
         }
     }
 }

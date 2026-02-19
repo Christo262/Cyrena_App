@@ -5,6 +5,8 @@ using Cyrena.Models;
 using Cyrena.Persistence.Contracts;
 using Cyrena.Runtime.Ollama.Models;
 using Cyrena.Extensions;
+using Cyrena.Options;
+using Cyrena.Runtime.Ollama.Components.Shared;
 
 namespace Cyrena.Runtime.Ollama.Services
 {
@@ -16,7 +18,7 @@ namespace Cyrena.Runtime.Ollama.Services
             _store = store;
         }
 
-        public async Task<IConnection> CreateAsync(IKernelBuilder builder, string connectionId)
+        public async Task AttachAsync(IKernelBuilder builder, string connectionId)
         {
             var connection = await _store.FindAsync(x => x.Id == connectionId);
             if (connection == null)
@@ -28,7 +30,9 @@ namespace Cyrena.Runtime.Ollama.Services
             };
             builder.AddOllamaChatCompletion(connection.ModelId!, http);
             builder.Services.AddSingleton<OllamaConnectionInfo>(connection);
-            return new OllamaConnection();
+            builder.Services.AddSingleton<IConnection, OllamaConnection>();
+            if (connection.SupportsFile || connection.SupportsImage)
+                builder.AddCapability<FileUpload>();
         }
 
         public async Task<bool> HasConnectionAsync(string id)
