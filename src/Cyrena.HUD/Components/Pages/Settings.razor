@@ -1,0 +1,19 @@
+@page "/settings"
+@inject ComponentOptions _options
+
+
+<div class="bg-body p-2 rounded shadow">
+    <h3>Settings</h3>
+    <hr />
+
+<div class="row m-0">
+    <div class="col-md-8 m-auto">
+            @foreach (var item in _options.GetSettingsComponents())
+            {
+                <div class="rounded p-2 mb-3">
+                    @this.Render(item)
+                </div>
+            }
+    </div>
+</div>
+</div>

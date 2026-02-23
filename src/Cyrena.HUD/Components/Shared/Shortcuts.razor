@@ -1,0 +1,16 @@
+
+<div class="row m-0">
+    @foreach (var item in _models)
+    {
+        <div class="col-md-4">
+            <div class="p-2 border rounded clickable border-3 mb-2 border-@item.Color" @onclick="() => item.OnClick()">
+                <p class="m-0">
+                    <i class="@item.Icon"></i> @item.Title
+                </p>
+                <p class="small text-truncate">
+                    @item.Description
+                </p>
+            </div>
+        </div>
+    }
+</div>

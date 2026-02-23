@@ -1,0 +1,81 @@
+@using Cyrena.HUD.Options
+@inject ISettingsService _settings
+@inject MainWindow _window
+
+<h4>HUD Settings</h4>
+<hr />
+
+<ConnectionSelector @bind-Value="@_model.DefaultConnectionId" @bind-Value:after="OnValueChanged"></ConnectionSelector>
+
+<div class="card border-secondary">
+    <div class="card-body">
+        <h5 class="card-title">Toggle Key</h5>
+
+        <div class="mb-3">
+            <input class="form-control bg-dark text-light border-secondary"
+                   placeholder="Press hotkey..."
+                   value="@_display"
+                   @onkeydown="CaptureKey" />
+        </div>
+
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary btn-sm"
+                    @onclick="Save">
+                Save
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private WindowOptions _model = default!;
+    private string _display = "";
+
+    protected override void OnInitialized()
+    {
+        _model = _settings.Read<WindowOptions>(WindowOptions.Key) ?? new WindowOptions();
+        _display = _model.Display;
+    }
+
+    private void OnValueChanged()
+    {
+        _settings.Save<WindowOptions>(WindowOptions.Key, _model);
+    }
+
+    private void CaptureKey(KeyboardEventArgs e)
+    {
+        if (e.Key.Length == 1)
+        {
+            _model.VirtualKey = (uint)char.ToUpper(e.Key[0]);
+        }
+        else
+        {
+            _model.VirtualKey = e.Key switch
+            {
+                "Escape" => 0x1B,
+                "Space" => 0x20,
+                "Enter" => 0x0D,
+                "Tab" => 0x09,
+                "ArrowUp" => 0x26,
+                "ArrowDown" => 0x28,
+                "ArrowLeft" => 0x25,
+                "ArrowRight" => 0x27,
+                _ => 0
+            };
+        }
+
+        _model.Ctrl = e.CtrlKey;
+        _model.Alt = e.AltKey;
+        _model.Shift = e.ShiftKey;
+        _model.Win = e.MetaKey;
+        _model.KeyName = e.Key;
+
+        _display = _model.Display;
+    }
+
+    private void Save()
+    {
+        _settings.Save(WindowOptions.Key, _model);
+        _window.OnHotkeySet();
+    }
+}

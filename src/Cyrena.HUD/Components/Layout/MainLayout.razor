@@ -1,0 +1,93 @@
+@inherits LayoutComponentBase
+
+<AppBar />
+
+<div class="mt-5 flex-fill overflow-auto">
+    <div class="d-flex flex-row h-100 overflow-auto">
+        <div style="width:350px" class="h-100 mx-2">
+            <div class="p-2 rounded bg-body shadow border border-light">
+                <p>Chats</p>
+                <hr />
+
+                <NavLink Match="NavLinkMatch.All" class="btn btn-outline-dark w-100 text-start border-0" href=""><i class="bi bi-plus"></i> New Chat</NavLink>
+
+                @if(_chats is not null)
+                {
+                    foreach (var item in _chats.Where(x => x[ChatConfiguration.Group] is null))
+                    {                    
+                        <ContextMenuZone>
+                            <ContextMenuTrigger>
+                                @if (IsActive(item))
+                                {
+                                    <NavLink Match="NavLinkMatch.All" class="btn btn-outline-dark w-100 text-start mt-1 border-0 d-flex" href="@($"converse/{item.Id}")">
+                                        <i class="@item[ChatConfiguration.Icon] me-1"></i> 
+                                        @(item.Title ?? "New Chat")
+
+                                        <i class="bi bi-database-check ms-auto"></i>
+                                    </NavLink>
+                                }
+                                else
+                                {
+                                    <NavLink Match="NavLinkMatch.All" class="btn btn-outline-dark w-100 text-start mt-1 border-0" href="@($"converse/{item.Id}")"><i class="@item[ChatConfiguration.Icon]"></i> @(item.Title ?? "New Chat")</NavLink>
+                                }
+                            </ContextMenuTrigger>
+                            <ContextMenu>
+                                @if (_controller.KernelActive(item.Id))
+                                {
+                                    <ContextMenuItem Icon="bi bi-database-down" Text="Unload" OnClick="(s, e) => Unload(item)"></ContextMenuItem>
+                                }
+                                <ContextMenuItem Icon="bi bi-pen" Text="Edit" OnClick="(s, e) => EditAsync(item)"></ContextMenuItem>
+                                <ContextMenuItem Icon="bi bi-trash" Text="Delete" OnClick="(s, e) => Delete(item)"></ContextMenuItem>
+                            </ContextMenu>
+                        </ContextMenuZone>
+                    }
+                }
+            </div>
+
+            @if(_groups is not null)
+            {
+                @foreach (var g in _groups.Where(x => !string.IsNullOrEmpty(x)))
+                {
+                    <div class="p-2 rounded bg-body shadow border mt-2 border-light">
+                        <p>@g</p>
+                        <hr />
+                        @if (_chats is not null)
+                        {
+                            foreach (var item in _chats.Where(x => x[ChatConfiguration.Group] == g))
+                            {
+                                <ContextMenuZone>
+                                    <ContextMenuTrigger>
+                                        @if (IsActive(item))
+                                        {
+                                            <NavLink Match="NavLinkMatch.All" class="btn btn-outline-dark w-100 text-start mt-1 border-0 d-flex" href="@($"converse/{item.Id}")">
+                                                <i class="@item[ChatConfiguration.Icon] me-1"></i>
+                                                @(item.Title ?? "New Chat")
+
+                                                <i class="bi bi-database-check ms-auto"></i>
+                                            </NavLink>
+                                        }
+                                        else
+                                        {
+                                            <NavLink Match="NavLinkMatch.All" class="btn btn-outline-dark w-100 text-start mt-1 border-0" href="@($"converse/{item.Id}")"><i class="@item[ChatConfiguration.Icon]"></i> @(item.Title ?? "New Chat")</NavLink>
+                                        }
+                                    </ContextMenuTrigger>
+                                    <ContextMenu>
+                                        @if (_controller.KernelActive(item.Id))
+                                        {
+                                            <ContextMenuItem Icon="bi bi-database-down" Text="Unload" OnClick="(s, e) => Unload(item)"></ContextMenuItem>
+                                        }
+                                        <ContextMenuItem Icon="bi bi-pen" Text="Edit" OnClick="(s, e) => EditAsync(item)"></ContextMenuItem>
+                                        <ContextMenuItem Icon="bi bi-trash" Text="Delete" OnClick="(s, e) => Delete(item)"></ContextMenuItem>
+                                    </ContextMenu>
+                                </ContextMenuZone>
+                            }
+                        }
+                    </div>
+                }
+            }
+        </div>
+        <div class="flex-grow-1 container ms-0 overflow-auto bg-body rounded border-light">
+            @Body
+        </div>
+    </div>
+</div>

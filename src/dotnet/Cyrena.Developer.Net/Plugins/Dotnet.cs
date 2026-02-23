@@ -6,6 +6,7 @@ using Cyrena.Extensions;
 using Cyrena.Models;
 using Microsoft.SemanticKernel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace Cyrena.Developer.Plugins
@@ -107,6 +108,57 @@ namespace Cyrena.Developer.Plugins
             var folder = _plan.Plan.GetOrCreateFolder(folder_id, folder_name);
             file = _plan.Plan.CreateFile(folder, id, $"{name}.{ext}", template);
             return new ToolResult<DevelopFile>(file!);
+        }
+
+        [KernelFunction("build")]
+        [Description("Runs dotnet build in the project directory and returns output and errors.")]
+        public ToolResult<string[]> RunDotnetBuild()
+        {
+            const string arguments = "build";
+            _chat.LogInfo($"Running dotnet {arguments} ...");
+
+            var info = new ProcessStartInfo("dotnet", arguments)
+            {
+                WorkingDirectory = _plan.Plan.RootDirectory,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using var process = Process.Start(info);
+            if (process == null)
+                return new ToolResult<string[]>(false, "Unable to start dotnet. Verify installation.");
+
+            var logs = new List<string>();
+            var errors = new List<string>();
+
+            process.OutputDataReceived += (_, e) =>
+            {
+                if (e.Data != null)
+                {
+                    logs.Add(e.Data);
+                    _chat.LogInfo($"\t{e.Data}");
+                }
+            };
+            process.ErrorDataReceived += (_, e) =>
+            {
+                if (e.Data != null)
+                {
+                    errors.Add(e.Data);
+                    _chat.LogError($"\t{e.Data}");
+                }
+            };
+
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+            process.WaitForExit();
+            process.WaitForExit(); // flush buffers
+
+            if (process.ExitCode != 0)
+                return new ToolResult<string[]>(errors.Concat(logs).ToArray(), false, $"dotnet {arguments} failed");
+
+            return new ToolResult<string[]>(logs.ToArray(), true, $"dotnet {arguments} succeeded");
         }
 
         public static string ReadTemplate(string name)

@@ -1,0 +1,18 @@
+@inject MainWindow _main
+@inject NavigationManager _nav
+
+<div class="container ps-1 bg-body rounded border border-secondary shadow pe-0">
+    <div class="d-flex">
+        <div class="p-1">
+            <img src="images/rene.png" alt="Rene" class="rounded" style="height:35px"/>
+        </div>
+        <p class="m-0 lead py-2">
+            Cyréna
+        </p>
+        <div class="ms-auto"></div>
+
+        <button class="btn btn-outline-dark rounded-0 border-0" type="button" @onclick="() => _main.Minimize()"><i class="bi bi-fullscreen-exit"></i></button>
+        <button type="button" class="btn btn-outline-dark rounded-0 border-0" @onclick="@(() => _nav.NavigateTo("settings"))"><i class="bi bi-gear"></i></button>
+        <button class="btn btn-danger rounded-0 rounded-end" type="button" @onclick="() => _main.Close()"><i class="bi bi-x-lg"></i></button>
+    </div>
+</div>
