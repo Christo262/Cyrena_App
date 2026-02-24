@@ -31,7 +31,7 @@ namespace Cyrena.Developer.Models
                 Id = Guid.NewGuid().ToString(),
                 AssistantModeId = DevelopOptions.AssistantModeId,
             };
-            model[DevelopOptions.BuilderId] = DotnetOptions.CsBlazorApp;
+            model[DevelopOptions.BuilderId] = DotnetOptions.CsClassLibrary;
             model[ChatConfiguration.Icon] = Icon;
             model[ChatConfiguration.Group] = ".NET Development";
             var rf = await _dialog.ShowModal<DotnetCsConfig>(new ResultDialogOption()

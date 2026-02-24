@@ -11,23 +11,27 @@ namespace Cyrena.Components.Shared
         [Parameter] public string? Value { get; set; }
         [Parameter] public EventCallback<string> ValueChanged { get; set; }
 
+        private IEnumerable<IConnectionProvider> _providers = default!;
         private List<ConnectionInfo> _models { get; set; } = new();
 
-        protected override async Task OnAfterRenderAsync(bool firstRender)
+        protected override void OnInitialized()
         {
-            if (!firstRender) return;
-            var providers = _services.GetServices<IConnectionProvider>();
-            foreach(var item in providers)
-            {
-                var infos = await item.ListConnectionsAsync();
-                _models.AddRange(infos);
-            }
-            this.StateHasChanged();
+            _providers = _services.GetServices<IConnectionProvider>();
         }
 
         private void OnValueChanged()
         {
             ValueChanged.InvokeAsync(Value);
+        }
+
+        private async Task Populate()
+        {
+            _models.Clear();
+            foreach (var item in _providers)
+            {
+                var infos = await item.ListConnectionsAsync();
+                _models.AddRange(infos);
+            }
         }
     }
 }
