@@ -1,5 +1,8 @@
-﻿using Cyrena.Extensions;
+﻿using CommunityToolkit.Maui;
+using Cyrena.Contracts;
+using Cyrena.Extensions;
 using Cyrena.Mobile.Components.Shared;
+using Cyrena.Mobile.Services;
 using Microsoft.Extensions.Logging;
 
 namespace Cyrena.Mobile
@@ -11,6 +14,7 @@ namespace Cyrena.Mobile
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -18,17 +22,17 @@ namespace Cyrena.Mobile
 
             builder.Services.AddMauiBlazorWebView();
             var cyrena = builder.Services.AddCyrenaRuntime()
-           .AddComponents()
-           .AddOllama()
-           .AddOpenAI()
-           .AddTavily();
-
+               .AddComponents()
+               .AddOllama()
+               .AddOpenAI()
+               .AddTavily();
+            builder.Services.AddSingleton<IFileDialog, FileDialog>();
             cyrena.AddSettingsComponent<Defaults>();
             cyrena.Build();
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();
