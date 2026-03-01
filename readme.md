@@ -114,7 +114,7 @@ Different domains, same discipline.
 Every action runs through a controlled loop:
 
 1. Read project plan
-2. Search specifications
+2. Search *API References*
 3. Review project notes
 4. Inspect relevant files
 5. Implement minimal change
