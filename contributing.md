@@ -49,12 +49,12 @@ If you add new behavior, test it by running real workflows inside the app.
 ## Contribution Workflow
 
 1. Fork the repository
-2. Create a feature branch from `main`
+2. Create a feature branch from `master`
 3. Implement your change
 4. Test locally
 5. Submit a pull request
 
-Please do not commit directly to `main`.
+Please do not commit directly to `master`.
 
 Each pull request should focus on a single logical change. Smaller PRs are easier to review and merge.
 
