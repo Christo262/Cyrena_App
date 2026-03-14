@@ -3,7 +3,7 @@
 @using BlazorMonaco.Languages
 
 <div class="monaco-input">
-    <StandaloneCodeEditor @ref="_code" Id="@_id" ConstructionOptions="EditorConstructionOptions" OnKeyDown="OnKeydown" />
+    <StandaloneCodeEditor @ref="_code" Id="@_id" ConstructionOptions="EditorConstructionOptions" OnDidChangeModelContent="OnModelContentChanged" />
 </div>
 
 
@@ -26,7 +26,7 @@
         };
     }
 
-    private async Task OnKeydown(KeyboardEvent e)
+    private async Task OnModelContentChanged(ModelContentChangedEvent e)
     {
         Value = await _code.GetValue();
         await ValueChanged.InvokeAsync(Value);
