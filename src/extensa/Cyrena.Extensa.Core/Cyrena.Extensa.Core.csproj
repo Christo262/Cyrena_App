@@ -4,11 +4,11 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>Cyrena</RootNamespace>
+    <RootNamespace>Cyrena.Extensa</RootNamespace>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Version>1.0.0</Version>
     <Authors>Vaya Nova</Authors>
-    <Description>Core models, interfaces &amp; services</Description>
+    <Description>Core models, interfaces &amp; services to develop extensions for Cyrena</Description>
     <PackageIcon>cyrena.png</PackageIcon>
   </PropertyGroup>
 
@@ -20,11 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SemanticKernel" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
-    <PackageReference Include="Microsoft.Extensions.Options" />
-    <PackageReference Include="Newtonsoft.Json" />
+    <ProjectReference Include="..\..\core\Cyrena.Core\Cyrena.Core.csproj" />
   </ItemGroup>
 
   <Target Name="PostPack" AfterTargets="Pack">

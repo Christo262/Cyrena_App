@@ -13,18 +13,42 @@
         <InputText @bind-Value="Model.ModelId" class="form-control" />
     </div>
     <div class="mb-2">
-        <label class="form-label">Name</label>
+        <label class="form-label">Display Name</label>
         <InputText @bind-Value="Model.Name" class="form-control" />
     </div>
-
-    <Slider @bind-Value="@Model.NumPredict" ShowLabel="true" Max="16*1024" Min="1024" Step="1024"
-            DisplayText="@($"Tokens: {Model.NumPredict}")"></Slider>
+    <div class="mb-2">
+        <label class="form-label">Tokens</label>
+        <select @bind="Model.NumPredict" class="form-control">
+@*             <option value="-1">Unlimited</option> BUG in SK/OllamaSharp*@ 
+            <option value="50">50</option>
+            <option value="128">128</option>
+            <option value="256">256</option>
+            <option value="512">512</option>
+            <option value="1024">1,024</option>
+            <option value="2048">2,048</option>
+            <option value="4096">4,096</option>
+            <option value="8192">8,192</option>
+            <option value="16384">16,384</option>
+            <option value="32768">32,768</option>
+        </select>
+    </div>
     <p class="small text-muted">
-        Maximum number of tokens to predict when generating text. (Default: 2048)
+        Maximum number of tokens to predict when generating text. (Default: 128)
     </p>
 
-    <Slider @bind-Value="@Model.NumContext" ShowLabel="true" Max="16*1024" Min="1024" Step="1024"
-            DisplayText="@($"Context: {Model.NumContext}")"></Slider>
+    <div class="mb-2">
+        <label class="form-label">Context Length</label>
+        <select @bind="Model.NumContext" class="form-control">
+            <option value="@(1024*2)">@(1024*2)</option>
+            <option value="@(1024 * 4)">@(1024 * 4)</option>
+            <option value="@(1024 * 8)">@(1024 * 8)</option>
+            <option value="@(1024 * 16)">@(1024 * 16)</option>
+            <option value="@(1024 * 32)">@(1024 * 32)</option>
+            <option value="@(1024 * 64)">@(1024 * 64)</option>
+            <option value="@(1024 * 128)">@(1024 * 128)</option>
+            <option value="@(1024 * 256)">@(1024 * 256)</option>
+        </select>
+    </div>
     <p class="small text-muted">
         Sets the size of the context window used to generate the next token. (Default: 4096)
     </p>

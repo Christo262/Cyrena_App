@@ -189,12 +189,23 @@ namespace Cyrena.Developer.Extensions
                 lines = null;
                 return false;
             }
-            og!.Lines[index] = line;
+
+            // Validate index
+            if (index < 0 || index >= og!.Lines.Count)
+            {
+                lines = null;
+                return false;
+            }
+
+            og.Lines[index] = line;
             var content = og.ToString();
-            File.WriteAllText(Path.Combine(plan.RootDirectory, file.RelativePath), content);
+            var path = Path.Combine(plan.RootDirectory, file.RelativePath);
+
+            File.WriteAllText(path, content);
             lines = og;
             return true;
         }
+
 
         public static void IndexFiles(this DevelopPlan plan, DevelopFolder folder, string extension, string id_prefix, bool readOnly = false)
         {

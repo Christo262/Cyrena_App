@@ -1,7 +1,9 @@
 <Solution>
   <Folder Name="/sln/">
     <File Path="contributing.md" />
+    <File Path="Directory.Packages.props" />
     <File Path="license.md" />
+    <File Path="nuget.config" />
     <File Path="readme.md" />
   </Folder>
   <Folder Name="/sln/docs/">
@@ -34,6 +36,10 @@
   <Folder Name="/src/embed/">
     <Project Path="src/embed/Cyrena.ArduinoIDE/Cyrena.ArduinoIDE.csproj" Id="72878ba6-fd88-47b9-9668-51248b24e807" />
     <Project Path="src/embed/Cyrena.PlatformIO/Cyrena.PlatformIO.csproj" Id="88de2f81-46d5-46a1-801a-6100bd55eb9a" />
+  </Folder>
+  <Folder Name="/src/extensa/">
+    <Project Path="src/extensa/Cyrena.Extensa.Core/Cyrena.Extensa.Core.csproj" Id="cd2ba511-0d80-4544-b5d4-46d4c735cdfb" />
+    <Project Path="src/extensa/Cyrena.Extensa.Runtime/Cyrena.Extensa.Runtime.csproj" Id="251829e2-237b-49a7-be18-eb994e7df6f8" />
   </Folder>
   <Folder Name="/src/persistence/">
     <Project Path="src/persistence/Cyrena.Persistence.Core/Cyrena.Persistence.Core.csproj" Id="ce98ccdb-4675-4713-ae9c-536a5ad67df0" />

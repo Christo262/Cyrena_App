@@ -15,9 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Photino.Blazor" Version="4.0.13" />
-    <PackageReference Include="BootstrapBlazor" Version="10.3.0" />
-    <PackageReference Include="PdfPig" Version="0.1.13" />
+    <PackageReference Include="Photino.Blazor" />
+    <PackageReference Include="BootstrapBlazor" />
+    <PackageReference Include="PdfPig" />
   </ItemGroup>
 
   <ItemGroup>

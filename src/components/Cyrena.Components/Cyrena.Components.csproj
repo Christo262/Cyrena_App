@@ -5,23 +5,43 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Cyrena</RootNamespace>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Version>1.0.0</Version>
+    <Authors>Vaya Nova</Authors>
+    <Description>Key components and shared components</Description>
+    <PackageIcon>cyrena.png</PackageIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\cyrena.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BootstrapBlazor" Version="10.3.0" />
-    <PackageReference Include="BootstrapBlazor.Html2Pdf" Version="10.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.3" />
-    <PackageReference Include="BlazorMonaco" Version="3.4.0" />
-    <PackageReference Include="Markdig" Version="0.44.0" />
-    <PackageReference Include="PdfPig" Version="0.1.13" />
+    <PackageReference Include="BootstrapBlazor" />
+    <PackageReference Include="BootstrapBlazor.Html2Pdf" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+    <PackageReference Include="BlazorMonaco" />
+    <PackageReference Include="Markdig" />
+    <PackageReference Include="PdfPig" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\core\Cyrena.Core\Cyrena.Core.csproj" />
   </ItemGroup>
+
+  <Target Name="PostPack" AfterTargets="Pack">
+    <ItemGroup>
+      <NugetPackages Include="bin\Debug\$(PackageId).$(PackageVersion).nupkg" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(NugetPackages)" DestinationFolder="../../../packages" SkipUnchangedFiles="true" />
+  </Target>
 
 </Project>

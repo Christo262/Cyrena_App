@@ -1,6 +1,5 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 
@@ -38,8 +37,15 @@ namespace Cyrena.HUD
                     return;
                 }
             }
-
+            this.DispatcherUnhandledException += App_DispatcherUnhandledException;
             base.OnStartup(e);
+        }
+
+        private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            var text = e.Exception.ToString() ?? "Unknown crash";
+            var path = $"./crash_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.log";
+            try { File.WriteAllText(path, text); } catch { }
         }
 
         protected override void OnExit(ExitEventArgs e)

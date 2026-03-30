@@ -5,16 +5,16 @@ namespace Cyrena.Developer.Docs.Models
 {
     public class ApiReferenceSummary : IJsonSerializable
     {
-        public ApiReferenceSummary(string id, string? title, string? description)
+        public ApiReferenceSummary(string id, string? title, string? summary)
         {
             Id = id;
             Title = title;
-            Description = description;
+            Summary = summary;
         }
 
         public string Id { get; set; }
         public string? Title { get; set; }
-        public string? Description { get; set; }
+        public string? Summary { get; set; }
         public string ToJson()
         {
             return JsonConvert.SerializeObject(this, Formatting.Indented);

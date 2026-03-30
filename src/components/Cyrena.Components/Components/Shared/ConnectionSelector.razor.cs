@@ -19,6 +19,13 @@ namespace Cyrena.Components.Shared
             _providers = _services.GetServices<IConnectionProvider>();
         }
 
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (!firstRender) return;
+            await Populate();
+            this.StateHasChanged();
+        }
+
         private void OnValueChanged()
         {
             ValueChanged.InvokeAsync(Value);

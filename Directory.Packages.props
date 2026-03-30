@@ -1,0 +1,43 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+
+  <!--Third-party-->
+  <ItemGroup>
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageVersion Include="Markdig" Version="0.44.0" />
+    <PackageVersion Include="PdfPig" Version="0.1.13" />
+    <PackageVersion Include="LinqKit.Core" Version="1.2.4" />
+  </ItemGroup>
+
+  <!--FE-->
+  <ItemGroup>
+    <PackageVersion Include="Photino.Blazor" Version="4.0.13" />
+    <PackageVersion Include="CommunityToolkit.Maui" Version="14.0.0" />
+    <PackageVersion Include="BootstrapBlazor" Version="10.3.0" />
+    <PackageVersion Include="BootstrapBlazor.Html2Pdf" Version="10.0.2" />
+    <PackageVersion Include="BlazorMonaco" Version="3.4.0" />
+  </ItemGroup>
+  
+  <!--Microsoft-->
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.SemanticKernel" Version="1.74.0" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="10.0.3" />
+    <PackageVersion Include="Microsoft.SemanticKernel.Connectors.Ollama" Version="1.74.0-alpha" />
+    <PackageVersion Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.74.0" />
+    <PackageVersion Include="Microsoft.Maui.Controls" Version="10.0.30" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="10.0.30" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="10.0.41" />
+  </ItemGroup>
+
+  <!--System-->
+  <ItemGroup>
+    <PackageVersion Include="System.Security.Cryptography.ProtectedData" Version="10.0.3" />
+  </ItemGroup>
+</Project>

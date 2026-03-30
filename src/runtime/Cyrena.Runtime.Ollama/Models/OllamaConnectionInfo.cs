@@ -13,7 +13,7 @@ namespace Cyrena.Runtime.Ollama.Models
         [Required]
         public string Name { get; set; } = default!;
         public float Temperature { get; set; } = 0.2f;
-        public int NumPredict { get; set; } = 2048;
+        public int NumPredict { get; set; } = 128;
         public int NumContext { get; set; } = 4096;
         public int TopK { get; set; } = 40;
         public float TopP { get; set; } = 0.9f;

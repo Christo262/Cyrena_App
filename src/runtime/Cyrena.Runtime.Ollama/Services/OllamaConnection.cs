@@ -7,6 +7,7 @@ using Cyrena.Models;
 using Cyrena.Runtime.Ollama.Models;
 using System.Text;
 using Cyrena.Extensions;
+using OllamaSharp;
 
 namespace Cyrena.Runtime.Ollama.Services
 {
@@ -32,14 +33,14 @@ namespace Cyrena.Runtime.Ollama.Services
             {
                 FunctionChoiceBehavior = FunctionChoiceBehavior.None(), //Doesnt actually do anything for this release
                 Temperature = _options.Temperature,
-                NumPredict = _options.NumPredict,
                 ExtensionData = new Dictionary<string, object>(),
                 TopK = _options.TopK,
                 TopP = _options.TopP,
-                Stop = ["<end/>"]
+                Stop = ["<end/>"],
             };
             settings.ExtensionData["num_ctx"] = _options.NumContext;
             settings.ExtensionData["min_p"] = _options.MinP;
+            settings.ExtensionData["num_predict"] = _options.NumPredict;
             if (!string.IsNullOrEmpty(_options.Thinking))
                 settings.ExtensionData["think"] = _options.Thinking;
 

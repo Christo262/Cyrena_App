@@ -22,10 +22,10 @@ namespace Cyrena.Developer.Docs.Plugins
         [KernelFunction("search")]
         [Description("Search API References for authoritative technical documentation about this project. Use this before implementing features to understand APIs, architecture rules, integration contracts, and established behavior.")]
         public async Task<IEnumerable<ApiReferenceSearch>> Search(
-            [Description("Keywords describing what specification you are looking for (interfaces, services, architecture, styling, integration, etc.).")] string[] keywords,
+            [Description("Keywords describing what API reference you are looking for (interfaces, services, architecture, styling, integration, etc.).")] string[] keywords,
             [Description("Maximum number of results to return. Default 10.")] int maxResults = 10)
         {
-            await _context.LogInfo("Searching specifications");
+            await _context.LogInfo("Searching API References...");
             var normalized = keywords
                 .Select(Normalize)
                 .Distinct()
@@ -75,15 +75,23 @@ namespace Cyrena.Developer.Docs.Plugins
                 .Take(maxResults);
         }
 
+        [KernelFunction("all")]
+        [Description("List all API References available.")]
+        public async Task<IEnumerable<ApiReferenceSummary>> ListAll()
+        {
+            var refs = await _store.FindManyAsync(x => true);
+            return refs.Select(x => new ApiReferenceSummary(x.Id, x.Title, x.Summary));
+        }
+
         [KernelFunction("read")]
-        [Description("Read a API Reference document. These documents contain grounded technical specifications about real project code and represent authoritative implementation knowledge.")]
+        [Description("Read a API Reference document. These documents contain grounded technical information about real project code and represent authoritative implementation knowledge.")]
         public async Task<string> Read(
-            [Description("The id of the specification document to read.")] string id)
+            [Description("The id of the reference document to read.")] string id)
         {
             var article = await _store.FindAsync(x => x.Id == id);
             if (article == null)
                 return $"[NOTFOUND]Document with id {id} not found.[/NOTFOUND]";
-            await _context.LogInfo($"Reading spec {article.Title}");
+            await _context.LogInfo($"Reading API Reference {article.Title}");
             var sb = new StringBuilder();
             sb.AppendLine("[DOCUMENT START]");
             if (!string.IsNullOrEmpty(article.Title))
@@ -117,11 +125,11 @@ namespace Cyrena.Developer.Docs.Plugins
         }
 
         [KernelFunction("create")]
-        [Description(@"Create a new Project Specification document.
+        [Description(@"Create a new API Reference document.
 
-                A Project Specification is authoritative technical documentation grounded in actual source code.
+                A API Reference is authoritative technical documentation grounded in actual source code.
 
-                When creating a specification about code:
+                When creating a API reference about code:
                 1. Read all relevant source files first.
                 2. Base the document only on real implementation.
                 3. Never write generic or hypothetical descriptions.
@@ -130,11 +138,11 @@ namespace Cyrena.Developer.Docs.Plugins
 
                 This document becomes authoritative project knowledge.")]
         public async Task<ToolResult<ApiReferenceSummary>> Create(
-            [Description("Title of the specification document. Mandatory.")] string title,
-            [Description("Keywords used to search for this specification in the future. Mandatory.")] string[] keywords,
-            [Description("Brief summary of what the specification contains. Mandatory.")] string summary,
+            [Description("Title of the API reference document. Mandatory.")] string title,
+            [Description("Keywords used to search for this reference in the future. Mandatory.")] string[] keywords,
+            [Description("Brief summary of what the reference contains. Mandatory.")] string summary,
             [Description("Grounded technical content in plaintext or markdown. Do not include Title, Summary or Keywords here. Mandatory.")] string content,
-            [Description("If the specification is related directly to a file, provide the fileId for linkage. Optional.")] string? fileId = null)
+            [Description("If the reference is related directly to a file, provide the fileId for linkage. Optional.")] string? fileId = null)
         {
             if(string.IsNullOrEmpty(fileId))
                 fileId = Guid.NewGuid().ToString();
@@ -151,12 +159,12 @@ namespace Cyrena.Developer.Docs.Plugins
         }
 
         [KernelFunction("update")]
-        [Description(@"Update an existing Project Specification.
+        [Description(@"Update an existing API Reference.
 
 Updates must remain grounded in source code.
-If implementation changes, the specification must be revised to match reality.")]
+If implementation changes, the reference must be revised to match reality.")]
         public async Task<ToolResult<ApiReferenceSummary>> UpdateProjectSpecification(
-            [Description("The id of the specification to update. Mandatory.")] string id,
+            [Description("The id of the API reference to update. Mandatory.")] string id,
             [Description("New title. Leave null or empty if unchanged. Optional.")] string? title = null,
             [Description("Updated search keywords. Leave null if unchanged. Optional.")] string[]? keywords = null,
             [Description("Updated summary. Leave null or empty if unchanged. Optional.")] string? summary = null,
@@ -165,7 +173,7 @@ If implementation changes, the specification must be revised to match reality.")
             var article = await _store.FindAsync(x => x.Id == id);
             if (article == null) return new ToolResult<ApiReferenceSummary>(false, "Unable to find document");
 
-            await _context.LogInfo($"Updating specification: {article.Title}");
+            await _context.LogInfo($"Updating API Reference: {article.Title}");
             if (!string.IsNullOrEmpty(title)) article.Title = title;
             if (!string.IsNullOrEmpty(summary)) article.Summary = summary;
             if (!string.IsNullOrEmpty(content)) article.Content = content;
@@ -173,6 +181,17 @@ If implementation changes, the specification must be revised to match reality.")
 
             await _store.UpdateAsync(article);
             return new ToolResult<ApiReferenceSummary>(new ApiReferenceSummary(article.Id, article.Title, article.Summary));
+        }
+
+        [KernelFunction("delete")]
+        [Description(@"Delete a outdated or redundant API Reference document.")]
+        public async Task<ToolResult> DeleteApiReference([Description("The id of the specification to update. Mandatory.")] string id)
+        {
+            var article = await _store.FindAsync(x => x.Id == id);
+            if (article == null) return new ToolResult(true, "Unable to find document");
+            await _context.LogInfo($"Deleting API Reference: {article.Title}");
+            await _store.DeleteAsync(article);
+            return new ToolResult(true, $"API Reference {id} deleted");
         }
 
         static string Normalize(string s)
