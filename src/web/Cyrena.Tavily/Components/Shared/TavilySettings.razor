@@ -7,17 +7,23 @@
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <div class="mb-3">
-        <label class="form-label">API Key</label>
-        <InputText @bind-Value="_model.ApiKey" type="password" class="form-control" />
+    <div class="row m-0">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label">API Key</label>
+                <InputText @bind-Value="_model.ApiKey" type="password" class="form-control" />
+            </div>
+        </div>
+        <div class="col-md-6 justify-content-center align-self-center">
+            <div class="form-check">
+                <InputCheckbox @bind-Value="_model.Enable" class="form-check-input" />
+                <label class="form-check-label">Enable</label>
+            </div>
+        </div>
+        <div class="col-md-12 text-end">
+            <input type="submit" value="Save" class="btn btn-primary btn-sm" />
+        </div>
     </div>
-
-    <div class="form-check mb-3">
-        <InputCheckbox @bind-Value="_model.Enable" class="form-check-input" />
-        <label class="form-check-label">Enable</label>
-    </div>
-
-    <input type="submit" value="Save" class="btn btn-primary btn-sm" />
 </EditForm>
 
 @code {
