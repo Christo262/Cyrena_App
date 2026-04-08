@@ -3,6 +3,7 @@ using Cyrena.Extensions;
 using Cyrena.HUD.Components.Shared;
 using Cyrena.HUD.Options;
 using Cyrena.HUD.Services;
+using Cyrena.Options;
 using Microsoft.AspNetCore.Components.WebView;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
@@ -16,6 +17,7 @@ namespace Cyrena.HUD
     {
         private HotkeyService? _hotkeyService;
         private readonly ISettingsService _settings;
+        private readonly CyrenaBuilder _builder;
         public MainWindow()
         {
             InitializeComponent();
@@ -29,23 +31,32 @@ namespace Cyrena.HUD
             serviceCollection.AddBlazorWebViewDeveloperTools();
 #endif
             serviceCollection.AddSingleton(this);
-            var builder = serviceCollection.AddCyrenaRuntime()
+            _builder = serviceCollection.AddCyrenaRuntime()
                 .AddComponents()
+                .AddExtensa(e =>
+                {
+                    e.ExtensionInfoFileName = "extension.json";
+                    e.ExtensionsDirectory = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena", "extensions");
+                    e.InstallationsDirectory = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena", "install");
+                })
+                .AddExtensaComponents()
                 .AddOllama()
-                .AddOpenAI()
-                .AddTavily()
-                .AddApiReferencePages()
-                .AddDeveloperRuntime()
-                .AddDotnetDevelopment()
-                .AddPlatformIO()
-                .AddArduinoIDE();
+                .AddOpenAI();
+
+            //Platform Specific Implementation
             var files = new FileDialog();
-            builder.Services.AddSingleton<IFileDialog>(files);
-            builder.AddSettingsComponent<Defaults>();
-            builder.Build();
+            _builder.Services.AddSingleton<IFileDialog>(files);
+            //
+
+            _builder.AddSettingsComponent<Defaults>();
+            _builder.Build();
             var sp = serviceCollection.BuildServiceProvider();
             Resources.Add("services", sp);
             _settings = sp.GetRequiredService<ISettingsService>();
+
+            //TODO: need to move this out of constructor
+            foreach (var item in _builder.RunActions)
+                item.Invoke(sp, _builder.GetLifetimeCT());
         }
 
         private void OnBlazorWebViewInitialized(object? sender, BlazorWebViewInitializedEventArgs e)

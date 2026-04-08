@@ -23,10 +23,10 @@ namespace Cyrena.Runtime.Services
 
         public int Priority => 10;
 
-        public Task LoadAsync(ChatConfiguration config, IKernelBuilder builder)
+        public Task LoadAsync(CyrenaKernelBuilder builder)
         {
             builder.Plugins.AddFromType<Cyrena.Runtime.Plugins.DateTime>();
-            var config_service = new ChatConfigurationService(_store, config);
+            var config_service = new ChatConfigurationService(_store, builder.ChatConfiguration);
             builder.Services.AddSingleton<IChatConfigurationService>(config_service);
 
             return Task.CompletedTask;

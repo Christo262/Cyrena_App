@@ -1,4 +1,5 @@
 ﻿using Cyrena.Contracts;
+using Cyrena.Models;
 using Cyrena.Options;
 using Cyrena.Persistence.File.Options;
 using Cyrena.Persistence.Options;
@@ -17,7 +18,7 @@ namespace Cyrena.Extensions
         /// <param name="path">Path to storage folder, i.e. {root_dir}/.cyrena</param>
         /// <param name="extension"></param>
         /// <returns><see cref="ICyrenaPersistenceBuilder"/></returns>
-        public static ICyrenaPersistenceBuilder AddFilePersistence(this IKernelBuilder builder, string path, string extension = "json")
+        public static ICyrenaPersistenceBuilder AddFilePersistence(this CyrenaKernelBuilder builder, string path, string extension = "json")
         {
             builder.Services.Configure<FilePersistenceOptions>(fs =>
             {
@@ -26,6 +27,7 @@ namespace Cyrena.Extensions
             });
             builder.Services.AddSingleton<IPersistenceFS, PersistenceFS>();
             var p = new FilePersistenceBuilder(builder.Services);
+            builder.AddFeatureOption<ICyrenaPersistenceBuilder>(p);
             return p;
         }
     }

@@ -1,0 +1,58 @@
+@page "/manage-extensions"
+
+<div class="container">
+    <h4 class="mt-2">Installed Extensions</h4>
+    <hr />
+
+    <div class="row m-0">
+        @foreach(var item in _registry.Extensions)
+        {
+            <div class="col-md-4">
+                <div class="p-2 rounded border mb-2 d-flex flex-column" style="height:200px;overflow:auto">
+                    <h6 class="m-0">@item.Name</h6>
+                    <p class="small m-0 flex-fill overflow-auto">
+                        @item.Description
+                    </p>
+
+
+                    @if (item.Errors.Any())
+                    {
+                        foreach(var error in item.Errors)
+                        {
+                            <p class="small m-0 text-danger">@error.Message</p>
+                        }
+                    }
+
+                    <div class="row m-0">
+                        <div class="col-6 justify-content-center align-self-center">
+                            <p class="m-0">
+                                <span class="badge text-bg-primary me-1">@item.Version</span>      <span class="badge text-bg-info">@item.Status</span>
+                            </p>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-end">
+                                @if (item.Status != ExtensionStatus.Runtime)
+                                {
+                                    if (_uninstalls.Contains(item.Id))
+                                    {
+                                        <Tooltip Title="Cancel Uninstall">
+                                            <button type="button" class="btn btn-sm btn-primary" @onclick="() => CancelUninstall(item.Id)"><i class="bi bi-x"></i> Cancel</button>
+                                        </Tooltip>
+                                    }
+                                    else
+                                    {
+                                        <Tooltip Title="Uninstall">
+                                            <button type="button" class="btn btn-sm btn-danger" @onclick="() => MarkUninstall(item)"><i class="bi bi-trash"></i> Uninstall</button>
+                                        </Tooltip>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                </div>
+            </div>
+        }
+    </div>
+</div>

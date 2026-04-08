@@ -6,6 +6,7 @@ using Cyrena.Models;
 using Cyrena.Persistence;
 using Cyrena.Persistence.Contracts;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Cyrena.Desktop.Components.Layout
@@ -20,6 +21,11 @@ namespace Cyrena.Desktop.Components.Layout
 
         private IEnumerable<ChatConfiguration>? _chats { get; set; }
         private IEnumerable<string?>? _groups { get; set; }
+
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+        }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {

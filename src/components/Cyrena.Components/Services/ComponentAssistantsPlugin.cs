@@ -21,11 +21,11 @@ namespace Cyrena.Services
 
         public int Priority => 10;
 
-        public Task LoadAsync(ChatConfiguration config, IKernelBuilder builder)
+        public Task LoadAsync(CyrenaKernelBuilder builder)
         {
             builder.Services.AddSingleton(_dialog);
             builder.Services.AddSingleton(_toasts);
-            builder.AddToolbarComponent<ExportChat>(ToolbarAlignment.End);
+            builder.KernelBuilder.AddToolbarComponent<ExportChat>(ToolbarAlignment.End);
             return Task.CompletedTask;
         }
     }

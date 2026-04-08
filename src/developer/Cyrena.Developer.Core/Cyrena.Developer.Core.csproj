@@ -5,11 +5,31 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Cyrena.Developer</RootNamespace>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Version>1.0.0</Version>
+    <Authors>Vaya Nova</Authors>
+    <Description>Core models &amp; contracts for coding with Cyréna</Description>
+    <PackageIcon>cyrena.png</PackageIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\cyrena.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\core\Cyrena.Core\Cyrena.Core.csproj" />
     <ProjectReference Include="..\..\persistence\Cyrena.Persistence.Core\Cyrena.Persistence.Core.csproj" />
   </ItemGroup>
+
+  <Target Name="PostPack" AfterTargets="Pack">
+    <ItemGroup>
+      <NugetPackages Include="bin\Debug\$(PackageId).$(PackageVersion).nupkg" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(NugetPackages)" DestinationFolder="../../../sdk" SkipUnchangedFiles="true" />
+  </Target>
 
 </Project>

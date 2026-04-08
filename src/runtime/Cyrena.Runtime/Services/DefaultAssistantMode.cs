@@ -14,20 +14,18 @@ namespace Cyrena.Runtime.Services
     internal class DefaultAssistantMode : IAssistantMode
     {
         private readonly IStore<ChatMessage> _store;
-        private readonly DialogService _dialog;
         private readonly IKernelController _controller;
-        public DefaultAssistantMode(IStore<ChatMessage> store, DialogService dialog, IKernelController controller)
+        public DefaultAssistantMode(IStore<ChatMessage> store, IKernelController controller)
         {
             _store = store;
-            _dialog = dialog;
             _controller = controller;
         }
 
         public string Id => IAssistantMode.AssistantModeDefault;
 
-        public Task ConfigureAsync(ChatConfiguration config, IKernelBuilder builder)
+        public Task ConfigureAsync(CyrenaKernelBuilder builder)
         {
-            builder.AddStartupTask<HistoryStartupTask>();
+            builder.KernelBuilder.AddStartupTask<HistoryStartupTask>();
             builder.Services.Configure<ChatOptions>(o => { });
             return Task.CompletedTask;
         }
@@ -67,22 +65,9 @@ namespace Cyrena.Runtime.Services
             await _srv.LoadHistoryAsync();
             if(_srv.KernelHistory.Count == 0)
             {
-                var prompt = ReadPromptFromReferencedProject();
+                var prompt = Resources.Read(typeof(HistoryStartupTask).Assembly, "Cyrena.Runtime.Resources.prompt.md");
                 await _srv.AddSystemMessage(prompt);
             }
-        }
-
-        private string ReadPromptFromReferencedProject()
-        {
-            var assembly = typeof(HistoryStartupTask).Assembly;
-            var resourceNames = assembly.GetManifestResourceNames();
-            // Get the assembly of the referenced project
-
-            var resourceName = "Cyrena.Runtime.default-assistant-prompt.md";
-
-            using var stream = assembly.GetManifestResourceStream(resourceName);
-            using var reader = new StreamReader(stream);
-            return reader.ReadToEnd();
         }
     }
 }

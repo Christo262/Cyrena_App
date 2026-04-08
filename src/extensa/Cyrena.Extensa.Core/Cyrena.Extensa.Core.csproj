@@ -28,7 +28,7 @@
       <NugetPackages Include="bin\Debug\$(PackageId).$(PackageVersion).nupkg" />
     </ItemGroup>
 
-    <Copy SourceFiles="@(NugetPackages)" DestinationFolder="../../../packages" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(NugetPackages)" DestinationFolder="../../../sdk" SkipUnchangedFiles="true" />
   </Target>
 
 </Project>

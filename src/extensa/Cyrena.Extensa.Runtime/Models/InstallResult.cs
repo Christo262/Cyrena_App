@@ -1,4 +1,6 @@
-﻿namespace Cyrena.Extensa.Installer.Models
+﻿using Cyrena.Extensa.Models;
+
+namespace Cyrena.Extensa.Installer.Models
 {
     public class InstallResult
     {
@@ -10,5 +12,6 @@
         public bool Success { get; set; }   
         public IList<Exception> Errors { get; } 
         public bool RequireRestart { get; set; }
+        public ExtensionInfo? Info { get; set; }
     }
 }

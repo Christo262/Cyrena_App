@@ -28,7 +28,7 @@ namespace Cyrena.Developer.Services
 
         public string Id => DotnetOptions.CsClassLibrary;
 
-        public async Task<DevelopPlan> ConfigureAsync(DevelopOptions options)
+        public async Task<DevelopPlan> ConfigureAsync(CyrenaKernelBuilder options)
         {
             var proj = options.ChatConfiguration[DotnetOptions.ProjectFilePath];
             if (proj == null || !File.Exists(proj))
@@ -69,8 +69,8 @@ namespace Cyrena.Developer.Services
             options.Services.AddSingleton(_store);
             options.Services.AddSingleton<ISolutionController, SolutionController>();
             options.Plugins.AddFromType<Dotnet>();
-            options.AddApiReferencing();
-            options.KernelBuilder.AddStartupTask<ClassLibraryPromptStartupTask>();
+            var prompt = Resources.Read(typeof(DotnetExtension).Assembly, "Cyrena.Developer.Resources.class-library-prompt.md");
+            options.KernelBuilder.AddSystemPrompt(prompt);
             options.Services.AddSingleton<DotnetFileWatcher>();
             return project.Plan;
         }
@@ -96,38 +96,6 @@ namespace Cyrena.Developer.Services
             });
             if (rf == DialogResult.Yes)
                 await _kernel.UpdateAsync(config, true);
-        }
-    }
-
-    internal class ClassLibraryPromptStartupTask : IStartupTask
-    {
-        private readonly IChatMessageService _chat;
-        private readonly DotnetFileWatcher _watcher;
-        public ClassLibraryPromptStartupTask(IChatMessageService chat, DotnetFileWatcher watcher)
-        {
-            _chat = chat;
-            _watcher = watcher;
-        }
-
-        public int Order => 1;
-
-        public async Task RunAsync(CancellationToken cancellationToken = default)
-        {
-            _watcher.Start();
-            var prompt = ReadClassLibraryPrompt();
-            await _chat.AddSystemMessage(prompt);
-        }
-
-        private string ReadClassLibraryPrompt()
-        {
-            var assembly = typeof(PromptStartupTask).Assembly;
-            var resourceName = "Cyrena.Developer.class-library-prompt.md";
-
-            using var stream = assembly.GetManifestResourceStream(resourceName);
-            if (stream == null)
-                throw new FileNotFoundException(resourceName);
-            using var reader = new StreamReader(stream);
-            return reader.ReadToEnd();
         }
     }
 }

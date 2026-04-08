@@ -3,6 +3,7 @@
     <File Path="contributing.md" />
     <File Path="Directory.Packages.props" />
     <File Path="license.md" />
+    <File Path="model-reviews.md" />
     <File Path="nuget.config" />
     <File Path="readme.md" />
   </Folder>
@@ -16,7 +17,7 @@
     <Project Path="src/Cyrena.Desktop/Cyrena.Desktop.csproj" />
     <Project Path="src/Cyrena.HUD/Cyrena.HUD.csproj" Id="08dfc471-33df-45b6-bc2f-55006974a641" />
     <Project Path="src/Cyrena.Mobile/Cyrena.Mobile.csproj" Id="9d562cfd-6c1d-44e3-bf4e-947a364d72af">
-      <Deploy Solution="Debug|*" />
+      <Deploy />
     </Project>
   </Folder>
   <Folder Name="/src/components/">
@@ -38,6 +39,7 @@
     <Project Path="src/embed/Cyrena.PlatformIO/Cyrena.PlatformIO.csproj" Id="88de2f81-46d5-46a1-801a-6100bd55eb9a" />
   </Folder>
   <Folder Name="/src/extensa/">
+    <Project Path="src/extensa/Cyrena.Extensa.Components/Cyrena.Extensa.Components.csproj" Id="395c23d0-c966-4340-af0d-5d9307a0da4a" />
     <Project Path="src/extensa/Cyrena.Extensa.Core/Cyrena.Extensa.Core.csproj" Id="cd2ba511-0d80-4544-b5d4-46d4c735cdfb" />
     <Project Path="src/extensa/Cyrena.Extensa.Runtime/Cyrena.Extensa.Runtime.csproj" Id="251829e2-237b-49a7-be18-eb994e7df6f8" />
   </Folder>

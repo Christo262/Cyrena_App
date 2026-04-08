@@ -24,6 +24,8 @@ namespace Cyrena.Net.Models
 
         public string Icon => "bi bi-webcam";
         public string Color => "info";
+        public string Category => ".NET";
+        public string[] Tags => ["sln", "slnx"];
 
         public async Task OnClick()
         {

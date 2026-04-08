@@ -1,0 +1,20 @@
+{
+  "id": "cyrena.arduino-ide",
+  "name": "Arduino IDE",
+  "version": "1.0.0",
+  "entryAssemblyFile": "Cyrena.ArduinoIDE.dll",
+  "description": "Adds support to develop firmware using Arduino IDE.",
+  "icon": null,
+  "contentRootDirectory": null,
+  "dependencies": [
+    {
+      "id": "cyrena.developer",
+      "minVersion": "1.0.0"
+    },
+    {
+      "id": "cyrena.api_references",
+      "minVersion": "1.0.0"
+    }
+  ],
+  "requireFrameworkBuilder": true
+}

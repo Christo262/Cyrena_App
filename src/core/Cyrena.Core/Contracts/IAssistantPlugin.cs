@@ -21,6 +21,6 @@ namespace Cyrena.Contracts
         /// </summary>
         /// <param name="config"></param>
         /// <returns></returns>
-        Task LoadAsync(ChatConfiguration config, IKernelBuilder builder);
+        Task LoadAsync(CyrenaKernelBuilder builder);
     }
 }

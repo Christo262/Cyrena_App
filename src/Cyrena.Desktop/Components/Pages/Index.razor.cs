@@ -4,6 +4,7 @@ using Cyrena.Desktop.Models;
 using Cyrena.Models;
 using Cyrena.Persistence.Contracts;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;

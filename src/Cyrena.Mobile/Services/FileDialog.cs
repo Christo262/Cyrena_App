@@ -2,17 +2,53 @@
 
 namespace Cyrena.Mobile.Services
 {
-#warning TODO: MAUI file save APIs different
+    using Microsoft.Maui.Storage;
+
     internal class FileDialog : IFileDialog
     {
-        public Task<string?> OpenAsync(string title, (string filter, string[] types)? ftr)
+        public async Task<string?> OpenAsync(string title, (string filterName, string[] extensions)? ftr)
         {
-            throw new NotImplementedException();
+            var options = new PickOptions
+            {
+                PickerTitle = title,
+            };
+            if (ftr.HasValue)
+            {
+                options.FileTypes = new FilePickerFileType(
+                    new Dictionary<DevicePlatform, IEnumerable<string>>
+                    {
+                    { DevicePlatform.WinUI, ftr.Value.extensions.Select(e => $"*{e}") },
+                    { DevicePlatform.Android, ftr.Value.extensions },
+                    { DevicePlatform.iOS, ftr.Value.extensions },
+                    { DevicePlatform.MacCatalyst, ftr.Value.extensions },
+                    }
+                );
+            }
+            var result = await FilePicker.Default.PickAsync(options);
+            return result?.FullPath;
         }
 
-        public Task<string?> ShowSaveFile(string title, (string filter, string[] types)? ftr, string? defaultPath = null)
+        public async Task<string?> ShowSaveFileAsync(string title, (string filterName, string[] extensions)? ftr, string? defaultPath = null)
         {
-            throw new NotImplementedException();
+            var options = new PickOptions
+            {
+                PickerTitle = title,
+            };
+            if (ftr.HasValue)
+            {
+                options.FileTypes = new FilePickerFileType(
+                    new Dictionary<DevicePlatform, IEnumerable<string>>
+                    {
+                    { DevicePlatform.WinUI, ftr.Value.extensions.Select(e => $"*{e}") },
+                    { DevicePlatform.Android, ftr.Value.extensions },
+                    { DevicePlatform.iOS, ftr.Value.extensions },
+                    { DevicePlatform.MacCatalyst, ftr.Value.extensions },
+                    }
+                );
+            }
+            var result = await FilePicker.Default.PickAsync(options);
+            return result?.FullPath;
         }
     }
+
 }

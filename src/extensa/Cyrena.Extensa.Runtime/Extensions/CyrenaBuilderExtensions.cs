@@ -6,18 +6,17 @@ using Cyrena.Extensa.Loader.Models;
 using Cyrena.Extensa.Loader.Services;
 using Cyrena.Extensa.Models;
 using Cyrena.Extensa.Options;
-using Cyrena.Extensions;
 using Cyrena.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System.IO.Compression;
 using System.Reflection;
 
-namespace Cyrena.Extensa.Extensions
+namespace Cyrena.Extensions
 {
     public static class CyrenaBuilderExtensions
     {
-        public static void AddExtensa(this CyrenaBuilder builder, Action<ExtensaOptions> options)
+        public static CyrenaBuilder AddExtensa(this CyrenaBuilder builder, Action<ExtensaOptions> options)
         {
             var o = new ExtensaOptions();
             options(o);
@@ -45,6 +44,7 @@ namespace Cyrena.Extensa.Extensions
                 framework.LoadExtensions();
                 builder.Services.AddSingleton<IExtensionRegistry>(registry);
             });
+            return builder;
         }
 
         public static CyrenaBuilder AddExtension<TExtension>(this CyrenaBuilder builder, string id, string name, Version version, string? description = null)
@@ -62,7 +62,7 @@ namespace Cyrena.Extensa.Extensions
                     Name = name,
                     Version = version,
                     Description = description,
-                    Status = Extensa.Loader.Models.ExtensionStatus.Loaded
+                    Status = Extensa.Loader.Models.ExtensionStatus.Runtime
                 });
             });
             return builder;
@@ -120,7 +120,7 @@ namespace Cyrena.Extensa.Extensions
 
         private static void LoadManifestInfo(this CyrenaBuilder builder)
         {
-            var registry = new ExtensionRegistry();
+            var registry = builder.GetFeatureOption<IExtensionRegistry>();
             var options = builder.GetFeatureOption<ExtensaOptions>();
             if (!Directory.Exists(options.ExtensionsDirectory))
                 Directory.CreateDirectory(options.ExtensionsDirectory);
@@ -159,7 +159,6 @@ namespace Cyrena.Extensa.Extensions
                     registry.AddExtension(loadedExtension);
                 }
             }
-            builder.AddFeatureOption<IExtensionRegistry>(registry);
         }
 
         private static void LoadExtensions(this CyrenaBuilder builder)
@@ -204,8 +203,8 @@ namespace Cyrena.Extensa.Extensions
                         throw new Exception("Unable to construct entry point. (E_NULL)");
 
                     var sharedAssembly = AppDomain.CurrentDomain.GetAssemblies()
-                            .FirstOrDefault(a => a.GetName().Name == "Extensa.Core");
-                    var iExtensionType = sharedAssembly.GetType("Extensa.Contracts.IExtension");
+                            .FirstOrDefault(a => a.GetName().Name == "Cyrena.Extensa.Core");
+                    var iExtensionType = sharedAssembly.GetType("Cyrena.Extensa.Contracts.IExtension");
 
                     var context = new ExtensionLoadContext(target.Path, assemblies);
                     var assembly = context.LoadFromAssemblyPath(Path.Combine(target.Path, target.EntryAssembly));

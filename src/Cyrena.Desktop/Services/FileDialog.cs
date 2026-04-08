@@ -15,13 +15,13 @@ namespace Cyrena.Desktop.Services
             _window = window;
         }
 
-        public async Task<string?> OpenAsync(string title, (string filter, string[] types)? ftr)
+        public async Task<string?> OpenAsync(string title, (string filterName, string[] extensions)? ftr)
         {
             var ffs = await _window.ShowOpenFileAsync(title, null, false, ftr == null ? null : [ftr.Value]);
             return ffs.FirstOrDefault();
         }
 
-        public async Task<string?> ShowSaveFile(string title, (string filter, string[] types)? ftr, string? defaultPath = null)
+        public async Task<string?> ShowSaveFileAsync(string title, (string filterName, string[] extensions)? ftr, string? defaultPath = null)
         {
             var output = await _window.ShowSaveFileAsync(title, defaultPath, ftr == null ? null : [ftr.Value]);
             return output;

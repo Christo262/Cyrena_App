@@ -27,7 +27,7 @@ namespace Cyrena.PlatformIO.Services
 
         public string Id => PlatformIOOptions.BuilderId;
 
-        public Task<DevelopPlan> ConfigureAsync(DevelopOptions options)
+        public Task<DevelopPlan> ConfigureAsync(CyrenaKernelBuilder options)
         {
             var plan = new DevelopPlan(options.ChatConfiguration[DevelopOptions.RootDirectory]!);
             plan.IndexFiles("ini", "ini_", true);
@@ -43,9 +43,9 @@ namespace Cyrena.PlatformIO.Services
 
             options.Services.AddSingleton<IEnvironmentController>(environmentController);
             options.Plugins.AddFromType<Cyrena.PlatformIO.Plugins.Platform>();
-            options.KernelBuilder.AddStartupTask<PromptStartupTask>();
+            var prompt = Resources.Read(typeof(PlatformIOBuilder).Assembly, "Cyrena.PlatformIO.Resources.prompt.md");
+            options.KernelBuilder.AddSystemPrompt(prompt);
             options.KernelBuilder.AddToolbarComponent<Cyrena.PlatformIO.Components.Shared.Toolbar>(ToolbarAlignment.Start);
-            options.AddApiReferencing();
             return Task.FromResult(plan);
         }
 
@@ -70,40 +70,6 @@ namespace Cyrena.PlatformIO.Services
             });
             if (rf == DialogResult.Yes)
                 await _kernel.UpdateAsync(config, true);
-        }
-    }
-
-    internal class PromptStartupTask : IStartupTask
-    {
-        private readonly IChatMessageService _chat;
-        private readonly IChatConfigurationService _config;
-        private readonly IDevelopPlanService _plan;
-        public PromptStartupTask(IChatMessageService chat, IChatConfigurationService config, IDevelopPlanService plan)
-        {
-            _chat = chat;
-            _config = config;
-            _plan = plan;
-        }
-
-        public int Order => 1;
-
-        public async Task RunAsync(CancellationToken cancellationToken = default)
-        {
-            var prompt = ReadPrompt();
-            await _chat.AddSystemMessage(prompt);
-            
-        }
-
-        private string ReadPrompt()
-        {
-            var assembly = typeof(PromptStartupTask).Assembly;
-            var resourceName = "Cyrena.PlatformIO.platformio-prompt.md";
-
-            using var stream = assembly.GetManifestResourceStream(resourceName);
-            if (stream == null)
-                throw new FileNotFoundException(resourceName);
-            using var reader = new StreamReader(stream);
-            return reader.ReadToEnd();
         }
     }
 }

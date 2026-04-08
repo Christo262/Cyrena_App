@@ -1,4 +1,5 @@
 ﻿using Cyrena.Developer.Docs.Models;
+using Cyrena.Developer.Docs.Services;
 using Cyrena.Options;
 
 namespace Cyrena.Extensions
@@ -8,6 +9,7 @@ namespace Cyrena.Extensions
         public static CyrenaBuilder AddApiReferencePages(this CyrenaBuilder builder)
         {
             builder.AddFeatureAssembly<ApiReference>("blazor");
+            builder.AddAssistantPlugin<AssistantPlugin>();
             return builder;
         }
     }

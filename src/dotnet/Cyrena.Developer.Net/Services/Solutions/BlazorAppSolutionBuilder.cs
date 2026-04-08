@@ -28,7 +28,7 @@ namespace Cyrena.Developer.Services
 
         public string Id => DotnetOptions.CsBlazorApp;
 
-        public async Task<DevelopPlan> ConfigureAsync(DevelopOptions options)
+        public async Task<DevelopPlan> ConfigureAsync(CyrenaKernelBuilder options)
         {
             var proj = options.ChatConfiguration[DotnetOptions.ProjectFilePath];
             if (proj == null || !File.Exists(proj))
@@ -71,9 +71,10 @@ namespace Cyrena.Developer.Services
             options.Plugins.AddFromType<Dotnet>();
             options.Plugins.AddFromType<Blazor>();
             options.Plugins.AddFromType<Www>();
-            options.AddApiReferencing();
-            options.KernelBuilder.AddStartupTask<BlazorPromptStartupTask>();
             options.Services.AddSingleton<DotnetFileWatcher>();
+
+            var prompt = Resources.Read(typeof(DotnetExtension).Assembly, "Cyrena.Developer.Resources.blazor-app-prompt.md");
+            options.KernelBuilder.AddSystemPrompt(prompt);
             return project.Plan;
         }
 
@@ -98,38 +99,6 @@ namespace Cyrena.Developer.Services
             });
             if (rf == DialogResult.Yes)
                 await _kernel.UpdateAsync(config, true);
-        }
-    }
-
-    internal class BlazorPromptStartupTask : IStartupTask
-    {
-        private readonly IChatMessageService _chat;
-        private readonly DotnetFileWatcher _watcher;
-        public BlazorPromptStartupTask(IChatMessageService chat, DotnetFileWatcher watcher)
-        {
-            _chat = chat;
-            _watcher = watcher;
-        }
-
-        public int Order => 1;
-
-        public async Task RunAsync(CancellationToken cancellationToken = default)
-        {
-            _watcher.Start();
-            var prompt = ReadBlazorAppPrompt();
-            await _chat.AddSystemMessage(prompt);
-        }
-
-        private string ReadBlazorAppPrompt()
-        {
-            var assembly = typeof(PromptStartupTask).Assembly;
-            var resourceName = "Cyrena.Developer.blazor-app-prompt.md";
-
-            using var stream = assembly.GetManifestResourceStream(resourceName);
-            if (stream == null)
-                throw new FileNotFoundException(resourceName);
-            using var reader = new StreamReader(stream);
-            return reader.ReadToEnd();
         }
     }
 }

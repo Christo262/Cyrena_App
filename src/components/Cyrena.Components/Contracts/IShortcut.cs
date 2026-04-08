@@ -6,6 +6,8 @@
         string Description { get; }
         string Icon { get; }
         string Color { get; }
+        string Category { get; }
+        string[] Tags { get; }
 
         Task OnClick();
     }

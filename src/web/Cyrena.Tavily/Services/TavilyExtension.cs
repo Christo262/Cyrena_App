@@ -19,7 +19,7 @@ namespace Cyrena.Tavily.Services
 
         public string[] Modes => [];
 
-        public Task LoadAsync(ChatConfiguration config, IKernelBuilder builder)
+        public Task LoadAsync(CyrenaKernelBuilder builder)
         {
             var options = _settings.Read<TavilyOptions>(TavilyOptions.Key);
             if (options == null || string.IsNullOrEmpty(options.ApiKey) || !options.Enable)

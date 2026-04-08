@@ -57,12 +57,12 @@ namespace Cyrena.Runtime.Services
             var store = _services.GetRequiredService<IStore<ChatMessage>>();
             builder.Services.AddSingleton(store);
             builder.Services.AddSingleton<IChatMessageService, ChatMessageService>();
-            await mode.ConfigureAsync(config, builder);
+            var cyrenaKernelBuilder = new CyrenaKernelBuilder(config, builder);
+            await mode.ConfigureAsync(cyrenaKernelBuilder);
 
-            using var sp = _services.CreateScope();
-            var plugins = sp.ServiceProvider.GetServices<IAssistantPlugin>().Where(x => x.Modes.Length == 0 || x.Modes.Contains(mode.Id));
+            var plugins = _services.GetServices<IAssistantPlugin>().Where(x => x.Modes.Length == 0 || x.Modes.Contains(mode.Id));
             foreach (var plugin in plugins.OrderByDescending(x => x.Priority))
-                await plugin.LoadAsync(config, builder);
+                await plugin.LoadAsync(cyrenaKernelBuilder);
 
             var kernel = builder.Build();
             if(!_instances.TryAdd(config.Id, kernel))

@@ -5,6 +5,7 @@ using Cyrena.Desktop.Models;
 using Cyrena.Desktop.Services;
 using Cyrena.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Photino.Blazor;
 
 namespace Cyrena.Desktop;
@@ -16,23 +17,29 @@ class Program
     {
         var appBuilder = PhotinoBlazorAppBuilder.CreateDefault(args);
         appBuilder.Services
-            .AddLogging();
+            .AddLogging(l => l.AddConsole());
 
         appBuilder.RootComponents.Add<App>("app");
         var builder = appBuilder.Services.AddCyrenaRuntime()
             .AddComponents()
+            .AddExtensa(e =>
+            {
+                e.ExtensionInfoFileName = "extension.json";
+                e.ExtensionsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena", "extensions");
+                e.InstallationsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena", "install");
+            })
+            .AddExtensaComponents()
             .AddOllama()
-            .AddOpenAI()
-            .AddTavily()
-            .AddApiReferencePages()
-            .AddDeveloperRuntime()
-            .AddDotnetDevelopment()
-            .AddPlatformIO()
-            .AddArduinoIDE();
+            .AddOpenAI();
+
+        //Platform Specific Implementation
         var files = new FileDialog();
         builder.Services.AddSingleton<IFileDialog>(files);  
+        //
+
         builder.AddSettingsComponent<Defaults>();
         builder.Build();
+
         var app = appBuilder.Build();
         files.SetWindow(app.MainWindow);
         var settings = builder.GetFeatureOption<ISettingsService>();    
@@ -63,6 +70,9 @@ class Program
 
             try { app.MainWindow?.ShowMessage("Fatal exception", text); } catch { }
         };
+
+        foreach (var item in builder.RunActions)
+            item.Invoke(app.Services, builder.GetLifetimeCT());
 
         app.Run();
     }

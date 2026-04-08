@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.IO;
+using System.Reflection;
 using System.Runtime.Loader;
 
 namespace Cyrena.Extensa.Loader.Models
@@ -7,6 +8,7 @@ namespace Cyrena.Extensa.Loader.Models
     {
         private readonly string _extensionPath;
         private readonly List<Assembly> _assemblies;
+
         public ExtensionLoadContext(string extensionPath, List<Assembly> assemblies)
         {
             _extensionPath = extensionPath;
@@ -16,9 +18,34 @@ namespace Cyrena.Extensa.Loader.Models
 
         protected override Assembly? Load(AssemblyName assemblyName)
         {
+            // 1. Check if already loaded in default ALC
+            var defaultAssembly = AssemblyLoadContext.Default.Assemblies
+                .FirstOrDefault(a => a.GetName().Name == assemblyName.Name);
+            if (defaultAssembly != null)
+                return defaultAssembly;
+
+            // 2. Check if already loaded in this ALC
             var ext = _assemblies.FirstOrDefault(x => x.GetName().Name == assemblyName.Name);
-            if(ext != null) 
+            if (ext != null)
                 return ext;
+            // 3. Try to load from main app's directory
+            string mainAppAssemblyPath = Path.Combine(
+                AppContext.BaseDirectory,
+                $"{assemblyName.Name}.dll");
+            if (File.Exists(mainAppAssemblyPath))
+            {
+                var mainAppAssembly = LoadFromAssemblyPath(mainAppAssemblyPath);
+                _assemblies.Add(mainAppAssembly);
+                return mainAppAssembly;
+            }
+            if (File.Exists(mainAppAssemblyPath))
+            {
+                var mainAppAssembly = LoadFromAssemblyPath(mainAppAssemblyPath);
+                _assemblies.Add(mainAppAssembly);
+                return mainAppAssembly;
+            }
+
+            // 4. Try to load from extension folder
             string assemblyPath = Path.Combine(_extensionPath, $"{assemblyName.Name}.dll");
             if (File.Exists(assemblyPath))
             {
@@ -32,9 +59,29 @@ namespace Cyrena.Extensa.Loader.Models
 
         private Assembly? OnResolving(AssemblyLoadContext context, AssemblyName assemblyName)
         {
+            // 1. Check if already loaded in default ALC
+            var defaultAssembly = AssemblyLoadContext.Default.Assemblies
+                .FirstOrDefault(a => a.GetName().Name == assemblyName.Name);
+            if (defaultAssembly != null)
+                return defaultAssembly;
+
+            // 2. Check if already loaded in this ALC
             var ext = _assemblies.FirstOrDefault(x => x.GetName().Name == assemblyName.Name);
             if (ext != null)
                 return ext;
+
+            // 3. Try to load from main app's directory
+            string mainAppAssemblyPath = Path.Combine(
+                AppContext.BaseDirectory,
+                $"{assemblyName.Name}.dll");
+            if (File.Exists(mainAppAssemblyPath))
+            {
+                var mainAppAssembly = LoadFromAssemblyPath(mainAppAssemblyPath);
+                _assemblies.Add(mainAppAssembly);
+                return mainAppAssembly;
+            }
+
+            // 4. Try to load from extension folder
             string dependencyPath = Path.Combine(_extensionPath, $"{assemblyName.Name}.dll");
             if (File.Exists(dependencyPath))
             {

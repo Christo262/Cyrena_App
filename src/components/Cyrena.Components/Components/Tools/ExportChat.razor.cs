@@ -18,7 +18,7 @@ namespace Cyrena.Components.Tools
 
         private async Task ExportChatAsync()
         {
-            var path = await _file.ShowSaveFile("Export Chat", ("txt", [".txt"]));
+            var path = await _file.ShowSaveFileAsync("Export Chat", ("txt", [".txt"]));
             if (string.IsNullOrEmpty(path))
                 return;
             if (!path.EndsWith(".txt"))

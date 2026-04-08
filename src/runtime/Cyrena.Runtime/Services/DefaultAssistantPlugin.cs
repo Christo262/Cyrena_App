@@ -11,7 +11,7 @@ namespace Cyrena.Runtime.Services
         public string[] Modes => [IAssistantMode.AssistantModeDefault];
         public int Priority => 10;
 
-        public Task LoadAsync(ChatConfiguration config, IKernelBuilder builder)
+        public Task LoadAsync(CyrenaKernelBuilder builder)
         {
             builder.Plugins.AddFromType<Chat>();
             return Task.CompletedTask;

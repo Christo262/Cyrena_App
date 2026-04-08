@@ -1,5 +1,7 @@
+@using Cyrena.Extensa.Components.Shared
 @inherits LayoutComponentBase
 
+<Preload/>
 <section class="layout has-sidebar is-page @(_side ? "is-collapsed":"")" style="--bb-layout-footer-height: 0px;">
     <aside class="layout-side">
         <div class="layout-menu">
@@ -86,6 +88,8 @@
             <button @onclick="ToggleSide" class="btn btn-sm btn-outline-primary me-1 border-0"><i class="bi bi-layout-sidebar-inset"></i></button>
             Cyréna
             <div class="ms-auto"></div>
+            <a href="browse-extensions" class="btn btn-outline-light btn-sm rounded-pill me-1"><i class="bi bi-cloud-download"></i></a>
+            <a href="manage-extensions" class="btn btn-outline-light btn-sm rounded-pill me-1"><i class="bi bi-boxes"></i></a>
             <a href="settings" class="btn btn-outline-light btn-sm rounded-pill"><i class="bi bi-gear"></i></a>
         </header>
 

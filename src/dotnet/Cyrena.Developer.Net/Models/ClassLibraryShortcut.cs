@@ -23,6 +23,8 @@ namespace Cyrena.Developer.Models
         public string Description => "Develop a .NET C# Class Library.";
         public string Icon => "bi bi-collection";
         public string Color => "warning";
+        public string Category => ".NET";
+        public string[] Tags => ["C#", "csproj"];
 
         public async Task OnClick()
         {

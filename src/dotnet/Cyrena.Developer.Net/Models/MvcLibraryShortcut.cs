@@ -23,6 +23,8 @@ namespace Cyrena.Developer.Models
         public string Description => "Develop a Model-View-Controller shared library.";
         public string Icon => "bi bi-collection";
         public string Color => "secondary";
+        public string Category => ".NET";
+        public string[] Tags => ["C#", "csproj"];
 
         public async Task OnClick()
         {

@@ -26,7 +26,11 @@ namespace Cyrena.Mobile
                .AddOllama()
                .AddOpenAI()
                .AddTavily();
+
+            //Platform Specific Implementation
             builder.Services.AddSingleton<IFileDialog, FileDialog>();
+            //
+
             cyrena.AddSettingsComponent<Defaults>();
             cyrena.Build();
 

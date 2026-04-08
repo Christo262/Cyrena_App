@@ -27,8 +27,9 @@ namespace Cyrena.Developer.Services
 
         public string Id => DevelopOptions.AssistantModeId;
 
-        public async Task ConfigureAsync(ChatConfiguration config, IKernelBuilder builder)
+        public async Task ConfigureAsync(CyrenaKernelBuilder builder)
         {
+            var config = builder.ChatConfiguration;
             if (string.IsNullOrWhiteSpace(config[DevelopOptions.BuilderId]))
                 throw new InvalidOperationException($"{DevelopOptions.BuilderId} not set, unable to configure");
             if (string.IsNullOrEmpty(config[DevelopOptions.RootDirectory]) || !Directory.Exists(config[DevelopOptions.RootDirectory]))
@@ -44,16 +45,16 @@ namespace Cyrena.Developer.Services
                 o.AutoSave = false;
                 o.IncludeLogsInDisplay = true;
             });
-            builder.AddStartupTask<InstructStartupTask>();
+            builder.KernelBuilder.AddStartupTask<InstructStartupTask>();
             persistence.AddSingletonStore<StickyNote>("sticky_notes");
-            var options = new DevelopOptions(builder, persistence, config);
-            var plan = await sln_builder.ConfigureAsync(options);
+            //var options = new DevelopOptions(builder, persistence, config);
+            var plan = await sln_builder.ConfigureAsync(builder);
             var plan_service = new DevelopPlanService(plan);
             builder.Services.AddSingleton<IDevelopPlanService>(plan_service);
             builder.Services.AddSingleton<IVersionControl, VersionControl>();
             builder.Plugins.AddFromType<FileActions>();
             builder.Plugins.AddFromType<ProjectInformation>();
-            builder.AddToolbarComponent<VersionControlViewer>(ToolbarAlignment.Start);
+            builder.KernelBuilder.AddToolbarComponent<VersionControlViewer>(ToolbarAlignment.Start);
         }
 
         public Task DeleteAsync(ChatConfiguration config)
