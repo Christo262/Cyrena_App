@@ -1,7 +1,7 @@
 {
   "id": "cyrena.tavily",
   "name": "Tavily Web Search",
-  "version": "1.0.0",
+  "version": "0.3.0",
   "entryAssemblyFile": "Cyrena.Tavily.dll",
   "description": "Adds web search functionality for assistants using Tavily.",
   "icon": null,

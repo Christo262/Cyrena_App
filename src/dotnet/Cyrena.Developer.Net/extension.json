@@ -1,7 +1,7 @@
 {
   "id": "cyrena.dotnet",
   "name": ".NET Development",
-  "version": "1.0.0",
+  "version": "0.3.0",
   "entryAssemblyFile": "Cyrena.Developer.Net.dll",
   "description": "Develop .NET projects or solutions.",
   "icon": null,
@@ -9,11 +9,11 @@
   "dependencies": [
     {
       "id": "cyrena.developer",
-      "minVersion": "1.0.0"
+      "minVersion": "0.3.0"
     },
     {
       "id": "cyrena.api_references",
-      "minVersion": "1.0.0"
+      "minVersion": "0.3.0"
     }
   ],
   "requireFrameworkBuilder": true

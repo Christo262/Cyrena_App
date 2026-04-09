@@ -122,7 +122,7 @@ internal class PluginPackageService : IPluginPackageService
 
                 if (contentLength > 0)
                 {
-                    progress?.Report((double)totalBytesRead / contentLength);
+                    progress?.Report(((double)totalBytesRead / contentLength) * 100);
                 }
             }
         }

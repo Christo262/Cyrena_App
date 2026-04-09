@@ -30,8 +30,8 @@
     {
         <div class="p-2 rounded border my-2">
             <label class="form-label">Downloading: @_manager.Status.CurrentDownload</label>
-            <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="@_manager.Status.DownloadProgress" aria-valuemin="0" aria-valuemax="100">
-                <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: @_manager.Status.DownloadProgress%"></div>
+            <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="@((int)_manager.Status.DownloadProgress)" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: @((int)_manager.Status.DownloadProgress)%"></div>
             </div>
         </div>
     }
