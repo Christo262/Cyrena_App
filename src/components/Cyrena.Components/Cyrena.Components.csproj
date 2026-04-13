@@ -6,14 +6,22 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Cyrena</RootNamespace>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>1.0.0</Version>
+    <Version>0.3.0</Version>
     <Authors>Vaya Nova</Authors>
     <Description>Key components and shared components</Description>
     <PackageIcon>cyrena.png</PackageIcon>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <Title>Cyréna Components</Title>
+    <RepositoryUrl>https://github.com/Christo262/Cyrena_App</RepositoryUrl>
+    <PackageProjectUrl>https://cyrena.dev</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\..\..\cyrena.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\developer\Cyrena.Developer.Core\readme.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>

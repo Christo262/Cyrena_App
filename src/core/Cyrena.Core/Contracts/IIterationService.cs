@@ -9,6 +9,10 @@ namespace Cyrena.Contracts
     /// </summary>
     public interface IIterationService : IDisposable
     {
+        /// <summary>
+        /// Use to keep current input user is typing in memory
+        /// </summary>
+        string? Input { get; set; }
         bool Inferring { get; }
         /// <summary>
         /// <see cref="IConnection"/> invokes this

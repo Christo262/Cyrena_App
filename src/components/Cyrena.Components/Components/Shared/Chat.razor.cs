@@ -15,7 +15,7 @@ namespace Cyrena.Components.Shared
         [Inject] private IJSRuntime _js { get; set; } = default!;
 
         private ElementReference _scrollHost;
-        private string? _input { get; set; }
+        //private string? _input { get; set; } <= Replace with IIterationService.Input
         private Markdig.MarkdownPipeline _mdp = default!;
 
         private IIterationService _its = default!;
@@ -47,11 +47,11 @@ namespace Cyrena.Components.Shared
         private async Task Send()
         {
             if (_its.Inferring) return;
-            if (string.IsNullOrWhiteSpace(_input)) return;
+            if (string.IsNullOrWhiteSpace(_its.Input)) return;
 
-            var userText = _input.Trim();
+            var userText = _its.Input.Trim();
             _its.Iterate(AuthorRole.User, userText, Kernel, _items.ToArray());
-            _input = string.Empty; // Use empty string instead of null
+            _its.Input = string.Empty; // Use empty string instead of null
             _items.Clear();
             await InvokeAsync(StateHasChanged);
             await Task.Delay(100);
@@ -71,7 +71,7 @@ namespace Cyrena.Components.Shared
         public void OnHandleComplete()
         {
             _stream = null;
-            _input = null;
+            _its.Input = null;
             _items.Clear();
             this.InvokeAsync(async () =>
             {
@@ -126,7 +126,7 @@ namespace Cyrena.Components.Shared
         private ElementReference _area = default!;
         private async Task AutoGrow(ChangeEventArgs e)
         {
-            _input = e.Value?.ToString() ?? "";
+            _its.Input = e.Value?.ToString() ?? "";
             await _js.InvokeVoidAsync("autoGrow", _area, 5);
             StateHasChanged();
         }

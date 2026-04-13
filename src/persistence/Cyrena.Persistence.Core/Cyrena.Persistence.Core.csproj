@@ -4,7 +4,24 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Version>0.3.0</Version>
+    <Title>Cyréna Persistence</Title>
+    <Authors>Vaya Nova</Authors>
+    <Description>Use existing persistence framework within Cyréna for custom long-term storage.</Description>
+    <Title>Cyréna Persistence Core</Title>
+    <RepositoryUrl>https://github.com/Christo262/Cyrena_App</RepositoryUrl>
+    <PackageProjectUrl>https://cyrena.dev</PackageProjectUrl>
+    <PackageIcon>cyrena.png</PackageIcon>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\cyrena.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\core\Cyrena.Core\Cyrena.Core.csproj" />
@@ -13,5 +30,20 @@
   <ItemGroup>
     <PackageReference Include="LinqKit.Core" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <Target Name="PostPack" AfterTargets="Pack">
+    <ItemGroup>
+      <NugetPackages Include="bin\Debug\$(PackageId).$(PackageVersion).nupkg" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(NugetPackages)" DestinationFolder="../../../sdk" SkipUnchangedFiles="true" />
+  </Target>
 
 </Project>

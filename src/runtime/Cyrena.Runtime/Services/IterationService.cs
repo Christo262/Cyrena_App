@@ -15,6 +15,7 @@ namespace Cyrena.Runtime.Services
             _pipeline = new IterationPipeline();
         }
 
+        public string? Input { get; set; }
         public bool Inferring { get; private set; }
 
         public void InferenceEnd()

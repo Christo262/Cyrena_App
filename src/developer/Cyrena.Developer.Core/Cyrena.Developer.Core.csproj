@@ -6,10 +6,14 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Cyrena.Developer</RootNamespace>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>1.0.0</Version>
+    <Version>0.3.0</Version>
     <Authors>Vaya Nova</Authors>
     <Description>Core models &amp; contracts for coding with Cyréna</Description>
     <PackageIcon>cyrena.png</PackageIcon>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <Title>Cyréna Developer (Coding Assistant)</Title>
+    <RepositoryUrl>https://github.com/Christo262/Cyrena_App</RepositoryUrl>
+    <PackageProjectUrl>https://cyrena.dev</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +26,13 @@
   <ItemGroup>
     <ProjectReference Include="..\..\core\Cyrena.Core\Cyrena.Core.csproj" />
     <ProjectReference Include="..\..\persistence\Cyrena.Persistence.Core\Cyrena.Persistence.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <Target Name="PostPack" AfterTargets="Pack">

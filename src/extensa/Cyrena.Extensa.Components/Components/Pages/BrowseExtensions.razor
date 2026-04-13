@@ -57,7 +57,7 @@
             @foreach(var item in _models)
             {
                 <div class="col-md-4">
-                    <div class="p-2 rounded border mb-2">
+                    <div class="p-2 rounded border mb-2 d-flex flex-column" style="height:200px;overflow:auto">
                         @if (item.HasIcon)
                         {
                             <div class="text-center">
@@ -73,14 +73,16 @@
                             </div>
                         }
                         <h6 class="m-0 my-2 text-center">@item.Title</h6>
-                        <p class="small m-0">
-                            @item.Description
+                        <p class="small m-0 flex-fill overflow-auto">
+                            @item.Description <br />
+
+                            @foreach (var os in item.SupportedOperatingSystems)
+                            {
+                                <span class="badge text-bg-primary me-1">@os</span>
+                            }
                         </p>
 
-                        @foreach(var os in item.SupportedOperatingSystems)
-                        {
-                            <span class="badge text-bg-primary me-1">@os</span>
-                        }
+                        
 
                         <div class="text-end">
                             @if (CanDownload(item.Id))
