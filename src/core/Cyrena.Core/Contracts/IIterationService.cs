@@ -36,5 +36,6 @@ namespace Cyrena.Contracts
         IDisposable OnIterationEnd(Action<bool> callback);
         void Iterate(AuthorRole role, string message, Kernel kernel);
         void Iterate(AuthorRole role, string message, Kernel kernel, params AdditionalMessageContent[] items);
+        void Cancel();
     }
 }

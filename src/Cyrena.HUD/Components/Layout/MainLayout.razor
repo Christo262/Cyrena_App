@@ -7,7 +7,7 @@
 <div class="mt-5 flex-fill overflow-auto">
     <div class="d-flex flex-row h-100 overflow-auto">
         <div style="width:350px" class="h-100 mx-2">
-            <div class="p-2 rounded bg-body shadow border border-light">
+            <div class="p-2 rounded bg-body shadow border border-secondary">
                 <p>Chats</p>
                 <hr />
 
@@ -50,7 +50,7 @@
             {
                 @foreach (var g in _groups.Where(x => !string.IsNullOrEmpty(x)))
                 {
-                    <div class="p-2 rounded bg-body shadow border mt-2 border-light">
+                    <div class="p-2 rounded bg-body shadow border mt-2 border-secondary">
                         <p>@g</p>
                         <hr />
                         @if (_chats is not null)
@@ -88,7 +88,7 @@
                 }
             }
         </div>
-        <div class="flex-grow-1 container ms-0 overflow-auto bg-body rounded border-light">
+        <div class="flex-grow-1 container ms-0 overflow-auto bg-body rounded border border-secondary">
             @Body
         </div>
     </div>

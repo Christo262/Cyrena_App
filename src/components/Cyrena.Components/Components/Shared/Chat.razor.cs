@@ -58,6 +58,8 @@ namespace Cyrena.Components.Shared
             await _js.InvokeVoidAsync("autoGrow", _area, 5);
         }
 
+        private void Cancel() => _its.Cancel();
+
         public void OnDisplayHistoryChanged(ChatHistory hst)
         {
             _stream = null;

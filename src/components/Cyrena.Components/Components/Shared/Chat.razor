@@ -107,9 +107,16 @@
                                 { nameof(CapabilityComponentBase.Kernel), Kernel},
                                         { nameof(CapabilityComponentBase.OnItemsAdded), EventCallback.Factory.Create<AdditionalMessageContent[]>(this, OnItemsAdded)}
                             })
-                                        }
+                        }
                     }
-                    <button type="button" class="btn btn-sm btn-primary rounded-pill ms-1" disabled="@(_its.Inferring || string.IsNullOrEmpty(_its.Input))" @onclick="Send"><i class="bi bi-arrow-up"></i></button>
+                    @if (_its.Inferring)
+                    {
+                        <button type="button" class="btn btn-sm btn-danger rounded-pill ms-1" @onclick="Cancel"><i class="bi bi-stop"></i></button>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-sm btn-primary rounded-pill ms-1" disabled="@(_its.Inferring || string.IsNullOrEmpty(_its.Input))" @onclick="Send"><i class="bi bi-arrow-up"></i></button>
+                    }
                 </div>
             </div>
         </div>

@@ -69,9 +69,14 @@ namespace Cyrena.Runtime.Services
                     IConnection connection = kernel.Services.GetRequiredService<IConnection>();
                     await connection.HandleAsync(role, message, kernel, _token.Token);
                 }
+                catch (TaskCanceledException)
+                {
+                    InferenceEnd();
+                }
                 catch (Exception ex)
                 {
                     await kernel.GetRequiredService<IChatMessageService>().LogError(ex.Message);
+                    InferenceEnd();
                 }
             }, _token.Token);
         }
@@ -98,11 +103,22 @@ namespace Cyrena.Runtime.Services
                     IConnection connection = kernel.Services.GetRequiredService<IConnection>();
                     await connection.HandleAsync(role, message, kernel, _token.Token, items);
                 }
+                catch (TaskCanceledException)
+                {
+                    InferenceEnd();
+                }
                 catch (Exception ex)
                 {
                     await kernel.GetRequiredService<IChatMessageService>().LogError(ex.Message);
+                    InferenceEnd();
                 }
             }, _token.Token);
+        }
+
+        public void Cancel()
+        {
+            if (_token == null || _token.IsCancellationRequested) return;
+            _token.Cancel();
         }
 
         internal class IterationPipeline : EventPipeline
