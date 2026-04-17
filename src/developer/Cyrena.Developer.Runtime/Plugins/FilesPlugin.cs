@@ -23,9 +23,11 @@ namespace Cyrena.Developer.Plugins
         }
 
         [KernelFunction("read_file")]
-        [Description("Reads the text of a file.")]
+        [Description("Returns the full text content of the specified file.")]
         public string ReadFileContent(
-            [Description("The id of the file.")] string fileId)
+            [Description(
+        "The unique identifier of the target file within the current develop plan.")]
+    string fileId)
         {
             try
             {
@@ -48,9 +50,12 @@ namespace Cyrena.Developer.Plugins
         }
 
         [KernelFunction("read_lines")]
-        [Description("Reads the text of a file and returns a structured list of lines in the file as well as the index number of each line starting from 0 for first line.")]
+        [Description(
+            "Returns a structured list of the file’s lines, each paired with its zero‑based index (0 = first line).")]
         public ToolResult<DevelopFileLines> ReadFileLines(
-            [Description("The id of the file.")] string fileId)
+            [Description(
+        "The unique identifier of the target file within the current develop plan.")]
+    string fileId)
         {
             try
             {
@@ -68,10 +73,16 @@ namespace Cyrena.Developer.Plugins
         }
 
         [KernelFunction("write_content")]
-        [Description("Write text to a file. If the file already exists, the content is overwritten.")]
+        [Description(
+            "Writes the supplied text to the specified file, overwriting any existing content.")]
         public ToolResult<DevelopFileContent> WriteFileContent(
-            [Description("The id of the file to write to.")] string fileId,
-            [Description("The content to write.")] string? content)
+            [Description(
+        "The unique identifier of the target file within the current develop plan.")]
+    string fileId,
+
+            [Description(
+        "The complete file content to write (null will clear the file).")]
+    string? content)
         {
             try
             {
@@ -92,12 +103,22 @@ namespace Cyrena.Developer.Plugins
             }
         }
 
-        [KernelFunction("write_line")]
-        [Description("Replaces a line of text in a file.")]
+        [KernelFunction("replace_line")]
+        [Description(
+            "Replaces the content of an existing line in a file.")]
         public ToolResult<DevelopFileLines> ReplaceFileLine(
-            [Description("The id of the file to write to.")] string fileId,
-            [Description("The index number of the line to replace.")] int index,
-            [Description("The text to replace the line with.")] string text)
+            [Description(
+        "The unique identifier of the target file within the current develop plan.")]
+    string fileId,
+
+            [Description(
+        "Zero‑based line number that will be replaced. " +
+        "Use 0 for the first line.")]
+    int index,
+
+            [Description(
+        "The new line content (do not include line‑break characters).")]
+    string text)
         {
             try
             {
@@ -105,7 +126,7 @@ namespace Cyrena.Developer.Plugins
                     return new ToolResult<DevelopFileLines>(false, $"File with id {fileId} not found.");
                 if (file!.ReadOnly)
                     return new ToolResult<DevelopFileLines>(false, "File is READ ONLY");
-                _context.LogInfo($"Writing file {file!.RelativePath} line number {index}");
+                _context.LogInfo($"Writing file {file!.RelativePath} line number {index} (replace)");
                 _plan.Plan.TryReadFileContent(file!, out var fileContent);
                 _version.Backup(fileContent);
                 if (!_plan.Plan.TryWriteFileLine(file!, index, text, out var newContent))
@@ -119,10 +140,16 @@ namespace Cyrena.Developer.Plugins
         }
 
         [KernelFunction("append_line")]
-        [Description("Appends a line of text to the end of a file.")]
+        [Description(
+            "Appends a new line of text to the **end** of the specified file.")]
         public ToolResult<DevelopFileContent> AppendFileLine(
-            [Description("The id of the file to write to.")] string fileId,
-            [Description("The text to append.")] string text)
+            [Description(
+        "The unique identifier of the target file within the current develop plan.")]
+    string fileId,
+
+            [Description(
+        "The line content to append (do not include line‑break characters).")]
+    string text)
         {
             try
             {
@@ -145,10 +172,49 @@ namespace Cyrena.Developer.Plugins
                 return new ToolResult<DevelopFileContent>(false, $"Error: {ex.Message}");
             }
         }
+        [KernelFunction("insert_line")]
+        [Description("Inserts a new line of text after the line at the given zero‑based index.")]
+        public ToolResult<DevelopFileLines> InsertFileLine(
+            [Description("The unique identifier of the target file within the current plan.")]
+    string fileId,
+            [Description("Zero‑based line number after which the new text will be inserted. Use the current line count to append at the end of the file.")]
+    int index,
+            [Description("The line content to insert (do not include line‑break characters).")]
+    string text)
+        {
+            try
+            {
+                if (!_plan.Plan.TryFindFile(fileId, out var file))
+                    return new ToolResult<DevelopFileLines>(false,
+                        $"File with id {fileId} not found.");
+
+                if (file!.ReadOnly)
+                    return new ToolResult<DevelopFileLines>(false,
+                        $"File '{file.RelativePath}' is read‑only.");
+
+                _context.LogInfo($"Writing file {file.RelativePath} line number {index} (insert)");
+                _plan.Plan.TryReadFileContent(file, out var fileContent);
+                _version.Backup(fileContent);
+
+                if (!_plan.Plan.TryInsertLine(file, index, text, out var newContent))
+                    return new ToolResult<DevelopFileLines>(false,
+                        $"Failed to insert line at index {index} in file '{file.RelativePath}'.");
+
+                return new ToolResult<DevelopFileLines>(newContent!);
+            }
+            catch (Exception ex)
+            {
+                return new ToolResult<DevelopFileLines>(false,
+                    $"Unexpected error while inserting line: {ex.Message}");
+            }
+        }
 
         [KernelFunction("delete")]
-        [Description("Deletes a file from the project.")]
-        public ToolResult DeleteFile([Description("The id of the file to delete.")] string fileId)
+        [Description("Removes the specified file from the project.")]
+        public ToolResult DeleteFile(
+            [Description(
+        "The unique identifier of the target file within the current develop plan.")]
+    string fileId)
         {
             try
             {

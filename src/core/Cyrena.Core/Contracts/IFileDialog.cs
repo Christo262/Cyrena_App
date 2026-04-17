@@ -18,6 +18,8 @@
         /// <param name="defaultPath">Optional default file path.</param>
         /// <returns>The selected file path, or null if canceled.</returns>
         Task<string?> ShowSaveFileAsync(string title, (string filterName, string[] extensions)? ftr, string? defaultPath = null);
+
+        void ExploreFolder(string folderPath);
     }
 
 }

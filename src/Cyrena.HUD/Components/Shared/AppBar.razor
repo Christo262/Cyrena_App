@@ -11,10 +11,25 @@
         </p>
         <div class="ms-auto"></div>
 
-        <button type="button" @onclick="@(() => _nav.NavigateTo("browse-extensions"))" class="btn btn-outline-dark rounded-0 border-0"><i class="bi bi-cloud-download"></i></button>
-        <button type="button" @onclick="@(() => _nav.NavigateTo("manage-extensions"))" class="btn btn-outline-dark rounded-0 border-0"><i class="bi bi-boxes"></i></button>
-        <button class="btn btn-outline-dark rounded-0 border-0" type="button" @onclick="() => _main.Minimize()"><i class="bi bi-fullscreen-exit"></i></button>
-        <button type="button" class="btn btn-outline-dark rounded-0 border-0" @onclick="@(() => _nav.NavigateTo("settings"))"><i class="bi bi-gear"></i></button>
+        <div class="dropdown">
+            <button class="btn btn-outline-dark rounded-0 border-0 h-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-boxes"></i>
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <a class="dropdown-item" href="browse-extensions"><i class="bi bi-cloud-download"></i> Browse Extensions</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="manage-extensions"><i class="bi bi-boxes"></i> Installed Extensions</a>
+                </li>
+            </ul>
+        </div>
+        <Tooltip Title="Minimize">
+            <button class="btn btn-outline-dark rounded-0 border-0 h-100" type="button" @onclick="() => _main.Minimize()"><i class="bi bi-fullscreen-exit"></i></button>
+        </Tooltip>
+        <Tooltip Title="Settings">
+            <button type="button" class="btn btn-outline-dark rounded-0 border-0 h-100" @onclick="@(() => _nav.NavigateTo("settings"))"><i class="bi bi-gear"></i></button>
+        </Tooltip>
         <button class="btn btn-danger rounded-0 rounded-end" type="button" @onclick="() => _main.Close()"><i class="bi bi-x-lg"></i></button>
     </div>
 </div>

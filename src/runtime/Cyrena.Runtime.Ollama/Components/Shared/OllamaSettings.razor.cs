@@ -66,7 +66,10 @@ namespace Cyrena.Runtime.Ollama.Components.Shared
 
         private async Task DeleteAsync(OllamaConnectionInfo model)
         {
-            var res = await _dialog.ShowModal("Delete Ollama Connection", $"Are you sure you want to delete {model.Name}?");
+            var res = await _dialog.ShowModal("Delete Ollama Connection", $"Are you sure you want to delete {model.Name}?", new ResultDialogOption()
+            {
+                Size = Size.Medium
+            });
             if(res == DialogResult.Yes)
             {
                 await _store.DeleteAsync(model);

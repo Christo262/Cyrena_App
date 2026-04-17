@@ -1,7 +1,17 @@
 @page "/manage-extensions"
 
 <div class="container">
-    <h4 class="mt-2">Installed Extensions</h4>
+    <div class="d-flex flex-row">
+        <h4 class="mt-2">Installed Extensions</h4>
+
+        <div class="ms-auto justify-content-center align-self-center">
+            <Tooltip Title="Open Extensions Folder">
+                <button type="button" class="btn btn-sm btn-primary rounded-pill" @onclick="OpenExtensions">
+                    <i class="bi bi-folder2-open"></i>
+                </button>
+            </Tooltip>
+        </div>
+    </div>
     <hr />
 
     <div class="row m-0">
@@ -48,9 +58,7 @@
                                 }
                             </div>
                         </div>
-                    </div>
-
-                    
+                    </div>                    
                 </div>
             </div>
         }

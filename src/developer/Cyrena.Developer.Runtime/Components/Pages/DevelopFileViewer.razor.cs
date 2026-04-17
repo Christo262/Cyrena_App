@@ -18,38 +18,47 @@ namespace Cyrena.Developer.Components.Pages
         [Parameter] public string? FileId { get; set; }
         [Inject] private IKernelController _controller { get; set; } = default!;
         [Inject] private NavigationManager _nav { get; set; } = default!;
-        [Inject] private ToastService _toasts { get; set;  } = default!;
+        [Inject] private ToastService _toasts { get; set; } = default!;
         [Inject] private IJSRuntime _js { get; set; } = default!;
 
         private Kernel? _kernel { get; set; }
-        private DevelopFileContent? _original { get; set; }
+        private IReadOnlyList<DevelopFileVersion>? _originals { get; set; }
         private DevelopFileContent? _current { get; set; }
+        private int _selectedVersionIndex { get; set; }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (!firstRender) return;
-            if(string.IsNullOrEmpty(KernelId) || string.IsNullOrEmpty(FileId))
+            if (string.IsNullOrEmpty(KernelId) || string.IsNullOrEmpty(FileId))
             {
                 _nav.NavigateTo("");
                 return;
             }
 
             try
-            { 
+            {
                 _kernel = await _controller.LoadAsync(KernelId);
                 var versionControl = _kernel.Services.GetService<IVersionControl>();
                 if (versionControl == null)
                     throw new NullReferenceException("No version control service found.");
                 IDevelopPlanService plan = _kernel.GetRequiredService<IDevelopPlanService>();
-                _original = versionControl.GetBackups(FileId);
-                if(plan.Plan.TryFindFile(FileId, out var file))
+                _originals = versionControl.GetHistory(FileId);
+                if (plan.Plan.TryFindFile(FileId, out var file))
                 {
                     plan.Plan.TryReadFileContent(file!, out var co);
                     _current = co;
                 }
-                this.StateHasChanged();
 
-            }catch (Exception ex)
+                // Default to the latest version
+                if (_originals != null && _originals.Count > 0)
+                {
+                    _selectedVersionIndex = _originals.Count - 1;
+                    _og_target = _originals[_selectedVersionIndex];
+                }
+
+                this.StateHasChanged();
+            }
+            catch (Exception ex)
             {
                 await _toasts.Error("Error", ex.Message);
                 _nav.NavigateTo("");
@@ -59,16 +68,62 @@ namespace Cyrena.Developer.Components.Pages
         private StandaloneDiffEditor _diffEditor = default!;
         TextModel? originalModel = null;
         TextModel? modifiedModel = null;
+        private DevelopFileVersion? _og_target { get; set; }
+
+        private async Task OnVersionSelected(SelectedItem item)
+        {
+            if (_originals == null || _diffEditor == null) return;
+            if (!int.TryParse(item.Value, out var index)) return;
+
+            _selectedVersionIndex = index;
+            _og_target = _originals[index];
+
+            // Dispose and recreate the original model with the selected version's content
+            if (originalModel != null)
+                await originalModel.DisposeModel();
+
+            var ext = Path.GetExtension(_og_target.File.RelativePath);
+            var lang = _langs.GetFileLanguage(ext);
+            originalModel = await BlazorMonaco.Editor.Global.CreateModel(_js, _og_target.File.Content, lang, $"{FileId}-originalModel-{index}");
+
+            await _diffEditor.SetModel(new DiffEditorModel
+            {
+                Original = originalModel,
+                Modified = modifiedModel
+            });
+        }
+
+        private async Task OnVersionSelected()
+        {
+            if (_originals == null || _diffEditor == null) return;
+            
+            _og_target = _originals[_selectedVersionIndex];
+
+            // Dispose and recreate the original model with the selected version's content
+            if (originalModel != null)
+                await originalModel.DisposeModel();
+
+            var ext = Path.GetExtension(_og_target.File.RelativePath);
+            var lang = _langs.GetFileLanguage(ext);
+            originalModel = await BlazorMonaco.Editor.Global.CreateModel(_js, _og_target.File.Content, lang, $"{FileId}-originalModel-{_selectedVersionIndex}");
+
+            await _diffEditor.SetModel(new DiffEditorModel
+            {
+                Original = originalModel,
+                Modified = modifiedModel
+            });
+        }
+
         private async Task EditorOnDidInit()
         {
-            if (_original != null)
+            if (_originals != null && _originals.Count > 0)
             {
-                var ext = Path.GetExtension(_original.RelativePath);
+                _og_target = _originals[_selectedVersionIndex];
+                var ext = Path.GetExtension(_og_target.File.RelativePath);
                 var lang = _langs.GetFileLanguage(ext);
-                originalModel = await BlazorMonaco.Editor.Global.CreateModel(_js, _original.Content, lang, $"{FileId}-originalModel");
+                originalModel = await BlazorMonaco.Editor.Global.CreateModel(_js, _og_target.File.Content, lang, $"{FileId}-originalModel");
             }
 
-            // Get or create the modified model
             if (_current != null)
             {
                 var ext = Path.GetExtension(_current.RelativePath);
@@ -76,7 +131,6 @@ namespace Cyrena.Developer.Components.Pages
                 modifiedModel = await BlazorMonaco.Editor.Global.CreateModel(_js, _current.Content, lang, $"{FileId}-modifiedModel");
             }
 
-            // Set the editor model
             if (_diffEditor == null)
                 return;
             await _diffEditor.SetModel(new DiffEditorModel
@@ -97,14 +151,15 @@ namespace Cyrena.Developer.Components.Pages
 
         private void Revert()
         {
-            if (_original == null || _kernel == null) return;
+            if (_og_target == null || _kernel == null) return;
             IDevelopPlanService plan = _kernel.GetRequiredService<IDevelopPlanService>();
-            if (!plan.Plan.TryWriteFileContent(_original, _original.Content, out var _))
+            if (!plan.Plan.TryWriteFileContent(_og_target.File, _og_target.File.Content, out var _))
                 _toasts.Warning("Error", "Something went wrong trying to revert");
             else
             {
                 var versionControl = _kernel.Services.GetRequiredService<IVersionControl>();
-                versionControl.RemoveBackup(_original.Id);
+                versionControl.RollbackTo(_og_target);
+                _og_target = null;
                 _nav.NavigateTo($"converse/{KernelId}");
             }
         }
@@ -121,7 +176,7 @@ namespace Cyrena.Developer.Components.Pages
         {
             if (originalModel != null)
                 await originalModel.DisposeModel();
-            if(modifiedModel != null)
+            if (modifiedModel != null)
                 await modifiedModel.DisposeModel();
             if (_diffEditor != null)
                 await _diffEditor.DisposeEditor();

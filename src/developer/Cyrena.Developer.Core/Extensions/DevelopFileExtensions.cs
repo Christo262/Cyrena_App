@@ -206,6 +206,67 @@ namespace Cyrena.Developer.Extensions
             return true;
         }
 
+        /// <summary>
+        /// Tries to insert a line at <paramref name="index"/> in <paramref name="file"/>.
+        /// Returns true and the updated <see cref="DevelopFileLines"/> on success,
+        /// otherwise false (and <c>lines</c> is null).
+        /// </summary>
+        public static bool TryInsertLine(
+            this DevelopPlan plan,
+            DevelopFile file,
+            int index,
+            string line,
+            out DevelopFileLines? lines)
+        {
+            // 1️⃣ Read the current file lines
+            if (!plan.TryReadFileLines(file, out var original))
+            {
+                lines = null;
+                return false;
+            }
+
+            var og = original!; // TryReadFileLines succeeded, so not null
+
+            // 2️⃣ Validate the index (insertion allowed at the end)
+            if (index < 0 || index > og.Lines.Count)
+            {
+                lines = null;
+                return false;
+            }
+
+            // 3️⃣ Build a new dictionary with the line inserted
+            var newLines = new Dictionary<int, string>();
+
+            foreach (var kvp in og.Lines.OrderBy(k => k.Key))
+            {
+                // Shift down every line that is at or after the insertion point
+                int newKey = kvp.Key >= index ? kvp.Key + 1 : kvp.Key;
+                newLines[newKey] = kvp.Value;
+            }
+
+            // Insert the new line
+            newLines[index] = line;
+
+            // Replace the original collection
+            og.Lines = newLines;
+
+            // 4️⃣ Write the updated content back to the file
+            var path = Path.Combine(plan.RootDirectory, file.RelativePath);
+            try
+            {
+                File.WriteAllText(path, og.ToString()); // ToString() joins with \r\n
+            }
+            catch
+            {
+                lines = null;
+                return false;
+            }
+
+            // 5️⃣ Return the updated object
+            lines = og;
+            return true;
+        }
+
 
         public static void IndexFiles(this DevelopPlan plan, DevelopFolder folder, string extension, string id_prefix, bool readOnly = false)
         {

@@ -7,7 +7,7 @@ namespace Cyrena.Runtime.Ollama.Models
     public class OllamaConnectionInfo : Entity
     {
         [Required]
-        public string Endpoint { get; set; } = default!;
+        public string Endpoint { get; set; } = "http://localhost:11434";
         [Required]
         public string ModelId { get; set; } = default!;
         [Required]

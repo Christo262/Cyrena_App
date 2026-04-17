@@ -59,8 +59,4 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="scp -r bin\Debug\net10.0\ C:\Users\cilli\AppData\Local\.cyrena\extensions\cyrena.dotnet" />
-  </Target>
-
 </Project>

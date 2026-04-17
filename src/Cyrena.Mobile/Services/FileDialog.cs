@@ -6,6 +6,11 @@ namespace Cyrena.Mobile.Services
 
     internal class FileDialog : IFileDialog
     {
+        public void ExploreFolder(string folderPath)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<string?> OpenAsync(string title, (string filterName, string[] extensions)? ftr)
         {
             var options = new PickOptions

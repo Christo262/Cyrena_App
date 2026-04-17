@@ -1,5 +1,6 @@
 ﻿using Cyrena.Contracts;
 using Photino.NET;
+using System.Diagnostics;
 
 namespace Cyrena.Desktop.Services
 {
@@ -25,6 +26,34 @@ namespace Cyrena.Desktop.Services
         {
             var output = await _window.ShowSaveFileAsync(title, defaultPath, ftr == null ? null : [ftr.Value]);
             return output;
+        }
+
+        public void ExploreFolder(string folderPath)
+        {
+            if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
+                throw new NullReferenceException("Invalid folder path");
+
+            // Photino runs on .NET, so we can just use Process.Start with the right command
+            if (OperatingSystem.IsWindows())
+            {
+                // explorer.exe automatically opens the folder
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "explorer",
+                    Arguments = $"\"{folderPath}\"",
+                    UseShellExecute = true
+                });
+            }
+            else if (OperatingSystem.IsMacOS())
+            {
+                // macOS uses the `open` command
+                Process.Start("open", $"\"{folderPath}\"");
+            }
+            else if (OperatingSystem.IsLinux())
+            {
+                // Most Linux desktops understand `xdg-open`
+                Process.Start("xdg-open", $"\"{folderPath}\"");
+            }
         }
     }
 }

@@ -1,10 +1,24 @@
 ﻿using Cyrena.Contracts;
 using Microsoft.Win32;
+using System.Diagnostics;
+using System.IO;
 
 namespace Cyrena.HUD.Services
 {
     internal class FileDialog : IFileDialog
     {
+        public void ExploreFolder(string folderPath)
+        {
+            if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
+                throw new NullReferenceException("Invalid folder path");
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "explorer",
+                Arguments = $"\"{folderPath}\"",
+                UseShellExecute = true
+            });
+        }
+
         public Task<string?> OpenAsync(string title, (string filterName, string[] extensions)? ftr)
         {
             return Task.Run(() =>
