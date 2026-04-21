@@ -31,6 +31,7 @@ namespace Cyrena.Services
             builder.Services.AddSingleton(_dialog);
             builder.Services.AddSingleton(_toasts);
             builder.KernelBuilder.AddToolbarComponent<ExportChat>(ToolbarAlignment.End);
+            builder.KernelBuilder.AddToolbarComponent<ClearChat>(ToolbarAlignment.End);
             return Task.CompletedTask;
         }
     }

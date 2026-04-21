@@ -4,6 +4,7 @@ using Cyrena.Contracts;
 using Cyrena.Tavily.Options;
 using Cyrena.Tavily.Plugins;
 using Cyrena.Models;
+using Cyrena.Extensions;
 
 namespace Cyrena.Tavily.Services
 {
@@ -32,6 +33,8 @@ namespace Cyrena.Tavily.Services
                 return Task.CompletedTask;
             builder.Services.AddSingleton(options);
             builder.Plugins.AddFromType<Internet>();
+            var prompt = Resources.Read(typeof(TavilyExtension).Assembly, "Cyrena.Tavily.Resources.prompt.md");
+            builder.GetFeatureOption<IPromptManager>().AddPrompt(10, prompt);
             return Task.CompletedTask;
         }
     }

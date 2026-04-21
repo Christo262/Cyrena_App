@@ -144,15 +144,7 @@ API Reference must reflect real code, not theory.
 
 Critical Project Rule:
 
-Any public API surface intended for consumers of this solution MUST have a corresponding API Reference entry:
-
-- Attributes
-- Contracts
-- Services
-- Options
-- Extensions
-- Models exposed across boundaries
-- Public Blazor components
+Any public API surface intended for consumers of this solution MUST have a corresponding API Reference entry.
 
 These reference documents exist for AI agents, not humans.
 

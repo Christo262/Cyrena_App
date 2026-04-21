@@ -2,6 +2,7 @@
 using Cyrena.Options;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using System.Linq.Expressions;
 
 namespace Cyrena.Contracts
 {
@@ -66,6 +67,11 @@ namespace Cyrena.Contracts
         /// <param name="items"></param>
         /// <returns></returns>
         Task AddMessage(AuthorRole role, string? input, params AdditionalMessageContent[] items);
+        /// <summary>
+        /// Removes the persisted chat messages and clears in memory messages
+        /// </summary>
+        /// <returns></returns>
+        Task ClearHistoryAsync();
 
         void Stream(string? token);
     }

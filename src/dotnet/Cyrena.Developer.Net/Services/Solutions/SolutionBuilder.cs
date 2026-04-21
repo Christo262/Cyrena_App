@@ -98,7 +98,7 @@ namespace Cyrena.Developer.Services
             options.Plugins.AddFromType<MVC>();
             options.Plugins.AddFromType<Www>();
             var prompt = Resources.Read(typeof(DotnetExtension).Assembly, "Cyrena.Developer.Resources.dotnet-prompt.md");
-            options.KernelBuilder.AddSystemPrompt(prompt);
+            options.GetFeatureOption<IPromptManager>().AddPrompt(0, prompt);
             options.KernelBuilder.AddToolbarComponent<SolutionSelector>(ToolbarAlignment.Start);
             options.Services.AddSingleton<DotnetFileWatcher>();
             return active.Plan!;

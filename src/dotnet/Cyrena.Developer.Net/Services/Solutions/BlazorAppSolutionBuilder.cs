@@ -74,7 +74,7 @@ namespace Cyrena.Developer.Services
             options.Services.AddSingleton<DotnetFileWatcher>();
 
             var prompt = Resources.Read(typeof(DotnetExtension).Assembly, "Cyrena.Developer.Resources.blazor-app-prompt.md");
-            options.KernelBuilder.AddSystemPrompt(prompt);
+            options.GetFeatureOption<IPromptManager>().AddPrompt(0, prompt);
             return project.Plan;
         }
 

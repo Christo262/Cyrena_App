@@ -34,8 +34,26 @@ namespace Cyrena.Runtime.Services
             builder.Plugins.AddFromType<Cyrena.Runtime.Plugins.DateTime>();
             var config_service = new ChatConfigurationService(_store, builder.ChatConfiguration);
             builder.Services.AddSingleton<IChatConfigurationService>(config_service);
+            builder.KernelBuilder.AddStartupTask<HistoryStartupTask>();
 
             return Task.CompletedTask;
+        }
+    }
+
+    internal class HistoryStartupTask : IStartupTask
+    {
+        private readonly IChatMessageService _srv;
+
+        public HistoryStartupTask(IChatMessageService srv)
+        {
+            _srv = srv;
+        }
+
+        public int Order => 0;
+
+        public async Task RunAsync(CancellationToken cancellationToken = default)
+        {
+            await _srv.LoadHistoryAsync();
         }
     }
 }

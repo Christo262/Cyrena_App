@@ -17,15 +17,17 @@ namespace Cyrena.Runtime.Services
         private readonly ChatOptions _options;
         private readonly IStore<ChatMessage> _store;
         private readonly ChatConfiguration _config;
+        private readonly IPromptManager _prompts;
 
         private readonly ChatHistory _kernel;
         private readonly ChatHistory _display;
-        public ChatMessageService(IOptions<ChatOptions> options, ChatConfiguration config, IStore<ChatMessage> store)
+        public ChatMessageService(IOptions<ChatOptions> options, ChatConfiguration config, IStore<ChatMessage> store, IPromptManager prompts)
         {
             _options = options.Value;
             _pipeline = new ChatMessagePipeline();
             _store = store;
             _config = config;
+            _prompts = prompts;
 
             _kernel = new ChatHistory();
             _display = new ChatHistory();
@@ -34,7 +36,24 @@ namespace Cyrena.Runtime.Services
         public ChatOptions Options => _options;
         public IReadOnlyList<ChatMessageContent> KernelHistory => _kernel;
         public IReadOnlyList<ChatMessageContent> DisplayHistory => _display;
-        public ChatHistory GetKernelHistory() => _kernel;
+        public ChatHistory GetKernelHistory()
+        {
+            var history = new ChatHistory();
+            foreach (var item in _prompts.Prompts.OrderBy(x => x.Order))
+                history.AddSystemMessage(item.Content);
+            if (_prompts.ModifyKernelHistoryFunc == null)
+                history.AddRange(_kernel);
+            else
+                try
+                {
+                    history.AddRange(_prompts.ModifyKernelHistoryFunc(_kernel, _options));
+                }
+                catch (Exception ex)
+                {
+                    this.LogError(ex.Message);
+                }
+            return history;
+        }
 
         public IDisposable OnStreamToken(Action<string?> callback) => _pipeline.WatchStreamToken(callback);
         public IDisposable OnDisplayHistoryChanged(Action<ChatHistory> callback) => _pipeline.WatchDisplayHistoryUpdated(callback);
@@ -67,7 +86,7 @@ namespace Cyrena.Runtime.Services
             {
                 _kernel.Add(content);
                 _pipeline.InvokeKernelHistoryUpdated(_kernel);
-                if (_options.AutoSave && content.Role != _options.Tool)
+                if (_options.MessagePersistRoles.Contains(content.Role))
                     await _store.AddAsync(new ChatMessage(content, _config.Id));
             }
 
@@ -94,7 +113,7 @@ namespace Cyrena.Runtime.Services
                 if (items.Any())
                     foreach (var item in items)
                         content.Items.Add(item.Item);
-                if (_options.AutoSave && content.Role != _options.Tool)
+                if(_options.MessagePersistRoles.Contains(content.Role))
                     await _store.AddAsync(new ChatMessage(content, _config.Id, items));
             }
 
@@ -114,6 +133,15 @@ namespace Cyrena.Runtime.Services
                     _pipeline.InvokeDisplayHistoryUpdated(_display);
                 }
             }
+        }
+
+        public async Task ClearHistoryAsync()
+        {
+            await _store.DeleteManyAsync(x => x.ConversationId == _config.Id);
+            _kernel.Clear();
+            _display.Clear();
+            _pipeline.InvokeKernelHistoryUpdated(_kernel);
+            _pipeline.InvokeDisplayHistoryUpdated(_display);
         }
 
         public void Dispose()

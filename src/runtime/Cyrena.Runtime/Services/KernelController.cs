@@ -59,6 +59,8 @@ namespace Cyrena.Runtime.Services
             builder.Services.AddSingleton(store);
             builder.Services.AddSingleton<IChatMessageService, ChatMessageService>();
             var cyrenaKernelBuilder = new CyrenaKernelBuilder(config, builder);
+            IPromptManager promptManager = new PromptManager();
+            cyrenaKernelBuilder.AddFeatureOption<IPromptManager>(promptManager);
             await mode.ConfigureAsync(cyrenaKernelBuilder);
 
             IEnumerable<IAssistantPlugin> plugins = _services.GetServices<IAssistantPlugin>().Where(x => x.Modes.Length == 0 || x.Modes.Contains(mode.Id));
@@ -69,7 +71,7 @@ namespace Cyrena.Runtime.Services
                 if(config.PluginIds.Any(x => x == plugin.Id) || plugin.Required)
                     await plugin.LoadAsync(cyrenaKernelBuilder);
             }
-
+            cyrenaKernelBuilder.Services.AddSingleton<IPromptManager>(promptManager);
             var kernel = builder.Build();
             if (!_instances.TryAdd(config.Id, kernel))
             {

@@ -1,7 +1,7 @@
 {
   "id": "cyrena.developer",
   "name": "Coding Assistant",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "entryAssemblyFile": "Cyrena.Developer.Runtime.dll",
   "description": "Adds a coding assistant for further use in development plugins.",
   "icon": null,

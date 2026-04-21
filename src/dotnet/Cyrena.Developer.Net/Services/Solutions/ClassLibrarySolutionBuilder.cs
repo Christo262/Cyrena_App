@@ -70,7 +70,7 @@ namespace Cyrena.Developer.Services
             options.Services.AddSingleton<ISolutionController, SolutionController>();
             options.Plugins.AddFromType<Dotnet>();
             var prompt = Resources.Read(typeof(DotnetExtension).Assembly, "Cyrena.Developer.Resources.class-library-prompt.md");
-            options.KernelBuilder.AddSystemPrompt(prompt);
+            options.GetFeatureOption<IPromptManager>().AddPrompt(0, prompt);
             options.Services.AddSingleton<DotnetFileWatcher>();
             return project.Plan;
         }

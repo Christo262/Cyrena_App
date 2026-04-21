@@ -40,7 +40,7 @@ namespace Cyrena.ArduinoIDE.Services
             sb.AppendLine($"RAM: {options.ChatConfiguration[ArduinoOptions.Ram]}");
             sb.AppendLine($"Clock: {options.ChatConfiguration[ArduinoOptions.Clock]}");
             prompt = prompt.Replace("{BOARD_CONTEXT}", sb.ToString());
-            options.KernelBuilder.AddSystemPrompt(prompt);
+            options.GetFeatureOption<IPromptManager>().AddPrompt(0, prompt);
             return Task.FromResult(plan);
         }
 

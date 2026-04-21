@@ -17,6 +17,7 @@ namespace Cyrena.Options
             LogSuccess = new AuthorRole("LogSuccess");
             LogWarn = new AuthorRole("LogWarn");
             LogError = new AuthorRole("LogError");
+            MessagePersistRoles = [Assistant, User];
         }
 
         public ChatOptions(AuthorRole system, AuthorRole assistant, AuthorRole user, AuthorRole tool, AuthorRole info, AuthorRole success, AuthorRole warn, AuthorRole error)
@@ -29,6 +30,7 @@ namespace Cyrena.Options
             LogSuccess = success;
             LogWarn = warn;
             LogError = error;
+            MessagePersistRoles = [Assistant, User];
         }
 
         public AuthorRole System { get; }
@@ -44,9 +46,11 @@ namespace Cyrena.Options
         /// If logs should be displayed
         /// </summary>
         public bool IncludeLogsInDisplay { get; set; } = true;
+
         /// <summary>
-        /// Autosave messages enabled, default true. Tool calls will not be saved
+        /// Configure which messages from which roles will be saved. Leave empty if none will be saved.
+        /// Defaults to Assistant & User. Do not save System messages
         /// </summary>
-        public bool AutoSave { get; set; } = true;
+        public AuthorRole[] MessagePersistRoles { get; set; }
     }
 }
