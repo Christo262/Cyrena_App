@@ -99,7 +99,7 @@ namespace Cyrena.Extensa.Services
             StatusChanged?.Invoke(this, Status);
         }
 
-        public void EnqueueDownload(PluginServer server, string packageId)
+        public void EnqueueDownload(PluginServer server, string packageId, Version version)
         {
             if (_downloads.Any(x => x.PackageId == packageId))
                 return;
@@ -108,7 +108,8 @@ namespace Cyrena.Extensa.Services
             {
                 PackageId = packageId,
                 Server = server,
-                IsUpdate = _extensions.Extensions.Any(x => x.Id == packageId)
+                IsUpdate = _extensions.Extensions.Any(x => x.Id == packageId),
+                Version = version
             };
             if (!_downloads.Any(x => x.PackageId == packageId))
                 _downloads.Enqueue(q);
@@ -122,7 +123,7 @@ namespace Cyrena.Extensa.Services
             if (string.IsNullOrEmpty(item.ServerId)) return;
             var server = await _servers.GetServer(item.ServerId);
             if(server == null) return;
-            EnqueueDownload(server, item.Id);
+            EnqueueDownload(server, item.Id, item.Versions.OrderByDescending(x => x.Version).First().Version);
         }
 
         public bool IsQueued(string packageId)

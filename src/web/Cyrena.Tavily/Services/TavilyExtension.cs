@@ -19,6 +19,12 @@ namespace Cyrena.Tavily.Services
 
         public string[] Modes => [];
 
+        public string Id => "cyrena.tavily";
+
+        public bool Required => false;
+
+        public string Title => "Tavily Web Search";
+
         public Task LoadAsync(CyrenaKernelBuilder builder)
         {
             var options = _settings.Read<TavilyOptions>(TavilyOptions.Key);

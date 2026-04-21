@@ -15,7 +15,7 @@ namespace Cyrena.Runtime.OpenAI.Services
             _settings = settings;
         }
 
-        public Task AttachAsync(IKernelBuilder builder, string connectionId)
+        public Task<ConnectionInfo> AttachAsync(IKernelBuilder builder, string connectionId)
         {
             var options = _settings.Read<OpenAIOptions>(OpenAIOptions.Key);
             if (options == null || string.IsNullOrEmpty(options.ApiKey) || string.IsNullOrEmpty(options.ModelId))
@@ -28,7 +28,8 @@ namespace Cyrena.Runtime.OpenAI.Services
             };
             builder.AddOpenAIChatCompletion(options.ModelId, options.ApiKey, httpClient:http);
             builder.Services.AddSingleton<IConnection, OpenAIConnection>();
-            return Task.CompletedTask;
+            var info = new ConnectionInfo(OpenAIOptions.Key, "OpenAI", "OpenAI", options.ModelId, this, true, true);
+            return Task.FromResult(info);
         }
 
         public Task<bool> HasConnectionAsync(string id)
@@ -44,7 +45,7 @@ namespace Cyrena.Runtime.OpenAI.Services
             var options = _settings.Read<OpenAIOptions>(OpenAIOptions.Key);
             if(options == null || string.IsNullOrEmpty(options.ApiKey) || string.IsNullOrEmpty(options.ModelId)) 
                 return Task.FromResult(Enumerable.Empty<ConnectionInfo>());
-            var info = new ConnectionInfo(OpenAIOptions.Key, "OpenAI", "OpenAI", options.ModelId, this);
+            var info = new ConnectionInfo(OpenAIOptions.Key, "OpenAI", "OpenAI", options.ModelId, this, true, true);
             return Task.FromResult<IEnumerable<ConnectionInfo>>([info]);
         }
     }

@@ -7,5 +7,6 @@
 
         public double Progress { get; set; }
         public bool IsUpdate { get; set; }
+        public Version Version { get; set; } = Version.Parse("0.0.1");
     }
 }

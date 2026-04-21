@@ -41,7 +41,9 @@ namespace Cyrena.Mobile.Components.Pages
             {
                 var kernel = await _kernels.Create(_model);
                 var chat = kernel.Services.GetRequiredService<IChatMessageService>();
-                kernel.Services.GetRequiredService<IIterationService>().Iterate(chat.Options.User, _input, kernel);
+                var its = kernel.Services.GetRequiredService<IIterationService>();
+                its.Input = _input;
+                its.Iterate(chat.Options.User, kernel);
                 _nav.NavigateTo($"converse/{_model.Id}");
             }
             catch (Exception ex)

@@ -21,6 +21,7 @@ namespace Cyrena.Runtime.Services
         public void InferenceEnd()
         {
             Inferring = false;
+            Input = null;
             _pipeline.InvokeIteration(Inferring);
         }
 
@@ -47,8 +48,10 @@ namespace Cyrena.Runtime.Services
 
         private Task? _handle { get; set; }
         private CancellationTokenSource? _token { get; set; }
-        public void Iterate(AuthorRole role, string message, Kernel kernel)
+        public void Iterate(AuthorRole role, Kernel kernel)
         {
+            if (string.IsNullOrEmpty(Input))
+                return;
             if (_handle != null)
             {
                 if (_handle.IsCompleted == false)
@@ -67,7 +70,7 @@ namespace Cyrena.Runtime.Services
                 try
                 {
                     IConnection connection = kernel.Services.GetRequiredService<IConnection>();
-                    await connection.HandleAsync(role, message, kernel, _token.Token);
+                    await connection.HandleAsync(role, Input.Trim(), kernel, _token.Token);
                 }
                 catch (TaskCanceledException)
                 {
@@ -81,8 +84,10 @@ namespace Cyrena.Runtime.Services
             }, _token.Token);
         }
 
-        public void Iterate(AuthorRole role, string message, Kernel kernel, params AdditionalMessageContent[] items)
+        public void Iterate(AuthorRole role, Kernel kernel, params AdditionalMessageContent[] items)
         {
+            if (string.IsNullOrEmpty(Input))
+                return;
             if (_handle != null)
             {
                 if (_handle.IsCompleted == false)
@@ -101,7 +106,7 @@ namespace Cyrena.Runtime.Services
                 try
                 {
                     IConnection connection = kernel.Services.GetRequiredService<IConnection>();
-                    await connection.HandleAsync(role, message, kernel, _token.Token, items);
+                    await connection.HandleAsync(role, Input.Trim(), kernel, _token.Token, items);
                 }
                 catch (TaskCanceledException)
                 {

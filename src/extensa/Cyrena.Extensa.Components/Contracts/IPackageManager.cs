@@ -15,7 +15,7 @@ namespace Cyrena.Extensa.Contracts
 
         QueuedDownload? GetNextDownload();
         void ReportCurrentDownloadProgress(QueuedDownload? download, double progress);
-        void EnqueueDownload(PluginServer server, string packageId);
+        void EnqueueDownload(PluginServer server, string packageId, Version version);
         Task EnqueueDownloadAsync(Package item);
         bool IsQueued(string packageId);
     }

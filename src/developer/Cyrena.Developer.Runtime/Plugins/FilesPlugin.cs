@@ -105,37 +105,62 @@ namespace Cyrena.Developer.Plugins
 
         [KernelFunction("replace_line")]
         [Description(
-            "Replaces the content of an existing line in a file.")]
+    "Replaces a block of lines in a file starting at a given index.\n" +
+    "Provide the zero‑based start line, the number of lines to remove, " +
+    "and the new line(s) that should take their place (one line per entry).")]
         public ToolResult<DevelopFileLines> ReplaceFileLine(
-            [Description(
+    [Description(
         "The unique identifier of the target file within the current develop plan.")]
     string fileId,
 
-            [Description(
-        "Zero‑based line number that will be replaced. " +
-        "Use 0 for the first line.")]
-    int index,
+    [Description(
+        "Zero‑based line number where the replacement starts (0 = first line).")]
+    int startIndex,
 
-            [Description(
-        "The new line content (do not include line‑break characters).")]
-    string text)
+    [Description(
+        "How many existing lines should be removed starting at *startIndex*.")]
+    int count,
+
+    [Description(
+        "The new line(s) that will replace the removed block. " +
+        "Separate multiple lines with the literal '\\n' (the method will split on it).")]
+    string newLines)
         {
             try
             {
                 if (!_plan.Plan.TryFindFile(fileId, out var file))
-                    return new ToolResult<DevelopFileLines>(false, $"File with id {fileId} not found.");
+                    return new ToolResult<DevelopFileLines>(false,
+                        $"File with id {fileId} not found.");
+
                 if (file!.ReadOnly)
                     return new ToolResult<DevelopFileLines>(false, "File is READ ONLY");
-                _context.LogInfo($"Writing file {file!.RelativePath} line number {index} (replace)");
-                _plan.Plan.TryReadFileContent(file!, out var fileContent);
+
+                _context.LogInfo(
+                    $"Replacing {count} line(s) at index {startIndex} in {file.RelativePath}");
+
+                // Backup the current content for version‑control
+                _plan.Plan.TryReadFileContent(file, out var fileContent);
                 _version.Backup(fileContent);
-                if (!_plan.Plan.TryWriteFileLine(file!, index, text, out var newContent))
-                    return new ToolResult<DevelopFileLines>(false, $"Unable to replace file line");
-                return new ToolResult<DevelopFileLines>(newContent!);
+
+                // Split the incoming string into separate lines (the AI can send a
+                // single string with '\n' as delimiter)
+                var replacement = string.IsNullOrEmpty(newLines)
+                    ? Enumerable.Empty<string>()
+                    : newLines.Split('\n');
+
+                if (!_plan.Plan.TryReplaceLines(
+                        file, startIndex, count, replacement, out var updated))
+                {
+                    return new ToolResult<DevelopFileLines>(false,
+                        $"Unable to replace lines at index {startIndex} (count {count}).");
+                }
+
+                return new ToolResult<DevelopFileLines>(updated!);
             }
             catch (Exception ex)
             {
-                return new ToolResult<DevelopFileLines>(false, $"Error: {ex.Message}");
+                return new ToolResult<DevelopFileLines>(false,
+                    $"Error: {ex.Message}");
             }
         }
 

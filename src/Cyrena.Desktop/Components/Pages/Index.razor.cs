@@ -20,6 +20,7 @@ namespace Cyrena.Desktop.Components.Pages
         [Inject] private IJSRuntime _js { get; set; } = default!;
 
         private ChatConfiguration? _model;
+        private Modal? _config;
         private string? _input { get; set; }
 
         protected override void OnInitialized()
@@ -36,6 +37,12 @@ namespace Cyrena.Desktop.Components.Pages
             _model[ChatConfiguration.Icon] = "bi bi-chat-left-quote";
         }
 
+        private async Task Settings()
+        {
+            if (_config != null)
+                await _config.Show();
+        }
+
         private async Task Send()
         {
             if (string.IsNullOrEmpty(_input) || _model == null)
@@ -44,7 +51,9 @@ namespace Cyrena.Desktop.Components.Pages
             {
                 var kernel = await _kernels.Create(_model);
                 var chat = kernel.Services.GetRequiredService<IChatMessageService>();
-                kernel.Services.GetRequiredService<IIterationService>().Iterate(chat.Options.User, _input, kernel);
+                var its = kernel.Services.GetRequiredService<IIterationService>();
+                its.Input = _input;
+                its.Iterate(chat.Options.User, kernel);
                 _nav.NavigateTo($"converse/{_model.Id}");
             }catch(Exception ex)
             {

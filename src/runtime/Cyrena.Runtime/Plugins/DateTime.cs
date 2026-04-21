@@ -1,70 +1,52 @@
 ﻿using Cyrena.Models;
 using Microsoft.SemanticKernel;
+using Newtonsoft.Json;
 using System.ComponentModel;
 
 namespace Cyrena.Runtime.Plugins
 {
     internal class DateTime
     {
-        public class AiDate : JsonStringObject
+        internal class AiDateTime : IJsonSerializable
         {
-            public AiDate() { }
-            public AiDate(int year, int month, int day)
+            public AiDateTime(int year,int month, int day, int hour, int minute, int second, int timeZone)
             {
                 Year = year;
                 Month = month;
                 Day = day;
-            }
-            public int Year { get; set; }
-            public int Month { get; set; }
-            public int Day { get; set; }
-        }
-
-        public class AiTime : JsonStringObject
-        {
-            public AiTime() { }
-            public AiTime(int hour, int minute, int second)
-            {
                 Hour = hour;
                 Minute = minute;
                 Second = second;
+                TimeZone = timeZone;
             }
-            public int Hour { get; set; }
-            public int Minute { get; set; }
-            public int Second { get; set; }
+            public int Year;
+            public int Month;
+            public int Day;
+
+            public int Hour;
+            public int Minute;
+            public int Second;
+
+            public int TimeZone;
+
+            public string ToJson()
+            {
+                return JsonConvert.SerializeObject(this, Formatting.Indented);
+            }
+
+            public override string ToString()
+            {
+                return ToJson();
+            }
         }
 
-        public class AiDateTime : JsonStringObject
-        {
-            public AiDate Date { get; set; } = new AiDate();
-            public AiTime Time { get; set; } = new AiTime();
-        }
-
-        [KernelFunction("current_date")]
-        [Description("Gets the current date.")]
-        public AiDate GetCurrentDate()
-        {
-            var dt = System.DateTime.Now;
-            return new AiDate(dt.Year, dt.Month, dt.Day);
-        }
-
-        [KernelFunction("current_date_time")]
-        [Description("Gets the current date and time.")]
-        public AiDateTime GetCurrentDateAndTime()
-        {
-            var dt = System.DateTime.Now;
-            var date = new AiDate(dt.Year, dt.Month, dt.Day);
-            var time = new AiTime(dt.Hour, dt.Minute, dt.Second);
-            return new AiDateTime() { Date = date, Time = time };
-        }
-
-        [KernelFunction("current_time")]
-        [Description("Gets the current time.")]
-        public AiTime GetCurrentTime()
+        [KernelFunction("now")]
+        [Description("Gets the current date, time & time zone offset.")]
+        public AiDateTime DateTimeNow()
         {
             var dt = System.DateTime.Now;
-            var time = new AiTime(dt.Hour, dt.Minute, dt.Second);
-            return time;
+            var tz = TimeZoneInfo.Local;
+            return new AiDateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, tz.BaseUtcOffset.Hours);
         }
     }
 }

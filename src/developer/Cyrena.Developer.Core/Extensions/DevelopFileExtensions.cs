@@ -363,5 +363,76 @@ namespace Cyrena.Developer.Extensions
             file = null;
             return false;
         }
+
+        public static bool TryReplaceLines(
+    this DevelopPlan plan,
+    DevelopFile file,
+    int startIndex,          // zero‑based line that begins the range
+    int count,               // how many existing lines to remove
+    IEnumerable<string> replacement, // new lines that will take their place
+    out DevelopFileLines? lines)
+        {
+            // 1️⃣  Load the current lines
+            if (!plan.TryReadFileLines(file, out var original))
+            {
+                lines = null;
+                return false;
+            }
+
+            var og = original!;
+            var total = og.Lines.Count;
+
+            if (startIndex < 0 || startIndex > total)
+            {
+                lines = null;
+                return false;
+            }
+
+            if (count < 0)                                     // negative count makes no sense
+            {
+                lines = null;
+                return false;
+            }
+
+            var effectiveCount = Math.Min(count, total - startIndex);
+
+            var newLines = new Dictionary<int, string>();
+            int newKey = 0;
+
+            // a) lines before the range
+            foreach (var kvp in og.Lines.OrderBy(k => k.Key).Take(startIndex))
+            {
+                newLines[newKey++] = kvp.Value;
+            }
+
+            // b) replacement lines
+            foreach (var repl in replacement)
+            {
+                newLines[newKey++] = repl;
+            }
+
+            // c) lines after the removed range – they need to be shifted by
+            //    (replacement.Count - effectiveCount)
+            int shift = replacement.Count() - effectiveCount;
+            foreach (var kvp in og.Lines.OrderBy(k => k.Key).Skip(startIndex + effectiveCount))
+            {
+                newLines[newKey++] = kvp.Value;
+            }
+
+            og.Lines = newLines;
+            var path = Path.Combine(plan.RootDirectory, file.RelativePath);
+            try
+            {
+                File.WriteAllText(path, og.ToString());   // ToString() joins with \r\n
+            }
+            catch
+            {
+                lines = null;
+                return false;
+            }
+
+            lines = og;
+            return true;
+        }
     }
 }

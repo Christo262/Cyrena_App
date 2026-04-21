@@ -91,7 +91,7 @@ namespace Cyrena.Extensa.Services
                         foreach (var item in info.Dependencies)
                         {
                             if (!_registry.Extensions.Any(x => x.Id == item.Id && x.Version >= item.MinVersion))
-                                _manager.EnqueueDownload(next.Server, item.Id);
+                                _manager.EnqueueDownload(next.Server, item.Id, item.MinVersion);
                         }
                     }
                     else
@@ -99,6 +99,7 @@ namespace Cyrena.Extensa.Services
                         var ext = _registry.Extensions.FirstOrDefault(x => x.Id == next.PackageId);
                         if (ext != null)
                         {
+                            ext.Version = next.Version;
                             ext.Errors.Add(new Exception("Please restart application to complete installation."));
                         }
                     }

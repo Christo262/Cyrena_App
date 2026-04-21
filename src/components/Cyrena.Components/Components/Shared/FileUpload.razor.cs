@@ -1,6 +1,5 @@
 ﻿using Cyrena.Contracts;
 using Cyrena.Models;
-using Cyrena.Runtime.Ollama.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,21 +10,23 @@ using UglyToad.PdfPig;
 using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;
 
-namespace Cyrena.Runtime.Ollama.Components.Shared
+namespace Cyrena.Components.Shared
 {
     public partial class FileUpload
     {
+        [Parameter]
+        public EventCallback<AdditionalMessageContent[]> OnItemsAdded { get; set; }
         [Inject] private IJSRuntime _js { get; set; } = default!;
         private IIterationService _its { get; set; } = default!;
-        private OllamaConnectionInfo _info = default!;
+        private ConnectionInfo _info = default!;
         private string _accepts { get; set; } = default!;
         protected override void OnInitialized()
         {
             _its = Kernel.Services.GetRequiredService<IIterationService>();
-            _info = Kernel.Services.GetRequiredService<OllamaConnectionInfo>();
-            if (_info.SupportsImage)
-                _accepts += $"image/*{(_info.SupportsFile ? "," : "")}";
-            if (_info.SupportsFile)
+            _info = Kernel.Services.GetRequiredService<ConnectionInfo>();
+            if (_info.SupportImages)
+                _accepts += $"image/*{(_info.SupportFiles ? "," : "")}";
+            if (_info.SupportFiles)
                 _accepts += "text/*,application/pdf,application/json";
         }
 
@@ -86,7 +87,7 @@ namespace Cyrena.Runtime.Ollama.Components.Shared
                 textBuilder.AppendLine();
 
                 foreach (Page page in document.GetPages())
-                { 
+                {
                     textBuilder.AppendLine($"[Page {page.Number}]");
                     textBuilder.AppendLine(ContentOrderTextExtractor.GetText(page));
                     textBuilder.AppendLine();

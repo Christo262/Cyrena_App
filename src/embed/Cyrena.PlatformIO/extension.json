@@ -1,7 +1,7 @@
 {
   "id": "cyrena.platformio",
   "name": "Platform IO",
-  "version": "0.3.0",
+  "version": "0.3.2",
   "entryAssemblyFile": "Cyrena.PlatformIO.dll",
   "description": "Adds support to develop firmware using PlatformIO.",
   "icon": null,

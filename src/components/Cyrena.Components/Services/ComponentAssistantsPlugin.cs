@@ -4,7 +4,6 @@ using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Models;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.SemanticKernel;
 
 namespace Cyrena.Services
 {
@@ -20,6 +19,12 @@ namespace Cyrena.Services
         public string[] Modes => [];
 
         public int Priority => 10;
+
+        public string Id => "cyrena.components";
+
+        public bool Required => true;
+
+        public string Title => "UI Components";
 
         public Task LoadAsync(CyrenaKernelBuilder builder)
         {

@@ -17,7 +17,12 @@ class Program
     {
         var appBuilder = PhotinoBlazorAppBuilder.CreateDefault(args);
         appBuilder.Services
-            .AddLogging(l => l.AddConsole());
+            .AddLogging(l =>
+            {
+#if DEBUG
+                l.AddConsole();
+#endif
+            });
 
         appBuilder.RootComponents.Add<App>("app");
         var builder = appBuilder.Services.AddCyrenaRuntime()

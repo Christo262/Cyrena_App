@@ -23,6 +23,12 @@ namespace Cyrena.Runtime.Services
 
         public int Priority => 10;
 
+        public string Id => "cyrena.runtime";
+
+        public bool Required => true;
+
+        public string Title => "Runtime";
+
         public Task LoadAsync(CyrenaKernelBuilder builder)
         {
             builder.Plugins.AddFromType<Cyrena.Runtime.Plugins.DateTime>();

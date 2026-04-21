@@ -16,6 +16,12 @@ namespace Cyrena.Developer.Docs.Services
 
         public int Priority => 20;
 
+        public string Id => "cyrena.api_references";
+
+        public bool Required => true;
+
+        public string Title => "API References";
+
         public Task LoadAsync(CyrenaKernelBuilder builder)
         {
             var persistence = builder.GetFeatureOption<ICyrenaPersistenceBuilder>();    

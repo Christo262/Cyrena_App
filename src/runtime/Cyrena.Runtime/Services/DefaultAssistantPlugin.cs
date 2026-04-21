@@ -11,6 +11,12 @@ namespace Cyrena.Runtime.Services
         public string[] Modes => [IAssistantMode.AssistantModeDefault];
         public int Priority => 10;
 
+        public string Id => "cyrena.default";
+
+        public bool Required => true;
+
+        public string Title => "Default Assistant";
+
         public Task LoadAsync(CyrenaKernelBuilder builder)
         {
             builder.Plugins.AddFromType<Chat>();
