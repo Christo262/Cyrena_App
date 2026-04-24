@@ -63,7 +63,7 @@ namespace Cyrena.Components.Shared
             this.InvokeAsync(async () =>
             {
                 StateHasChanged();
-                await ScrollToBottomAsync(hst.Last().Role == AuthorRole.User);
+                await ScrollToBottomAsync(hst.LastOrDefault()?.Role == AuthorRole.User);
             });
         }
 

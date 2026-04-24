@@ -137,7 +137,7 @@ namespace Cyrena.Runtime.Services
 
         public async Task ClearHistoryAsync()
         {
-            await _store.DeleteManyAsync(x => x.ConversationId == _config.Id);
+            var count = await _store.DeleteManyAsync(x => x.ConversationId == _config.Id);
             _kernel.Clear();
             _display.Clear();
             _pipeline.InvokeKernelHistoryUpdated(_kernel);
