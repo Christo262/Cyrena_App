@@ -1,6 +1,6 @@
 ﻿# Cyréna
 
-Cyréna is an experimental **offline-first engineering assistant** that runs *alongside your IDE*, not inside it.
+Cyréna is an **offline-first engineering assistant** that runs *alongside your IDE*, not inside it.
 
 It operates as a structured agent inside real projects and helps with:
 
@@ -12,26 +12,23 @@ It operates as a structured agent inside real projects and helps with:
 
 This project started as a personal experiment to build the assistant I wanted for my own workflow.
 
-It is evolving into something larger.
-
-⚠️ **Please read this README in full before using Cyréna.**  
-It contains important safety notes.
+It has since become a core part of daily engineering — and is now evolving into something much larger.
 
 - 📸 [Screenshots](./docs/screenshots.md)
 - 🧠 [Architecture Overview](./docs/code_overview.md)
 - 🤝 [Contributing](./contributing.md)
-- 👉 [Getting Started Video](https://streamable.com/t4v75s)
+- 👉 [Getting Started Video](https://cyrena.dev/videos#getting_started)
 - 📸 [UI Overview](./docs/ui_overview.md)
 
 ---
 
 ## 🎬 Demo
 
-Here is Cyréna running a real prompt → build → repair loop:
+Here is Cyréna HUD running a real prompt → build → repair loop:
 
-👉 [Demo video](https://streamable.com/xet2ig)
+👉 [Demo video](https://cyrena.dev/videos#hud_working)
 
-This is not code generation —  
+This is not code generation —
 this is an engineering agent working inside a project.
 
 ---
@@ -53,24 +50,36 @@ The goal is predictable AI behavior inside real codebases.
 
 ---
 
+## 🧩 Extensions
+
+Cyréna is built on an **extension architecture**, making it a platform rather than a fixed tool.
+
+Extensions allow Cyréna to be tailored beyond software development — adapting to different domains, workflows, and use cases. If your workflow doesn't fit the defaults, you can build an extension that does.
+
+- **Developers** can build their own extensions to improve and personalise their workflow
+- **Non-developers** can benefit from extensions built for their domain
+- Extensions are first-class — the built-in domain support (see below) is itself implemented as extensions
+
+This is an open system. If you build something useful, contributions are welcome.
+
+---
+
 ## 🌍 Multi-Domain Support
 
-Cyréna is designed as a **platform**, not a single-language tool.
-
-Currently supported:
+Cyréna ships with built-in support for several development domains:
 
 - 📦 .NET
-	- C# Class Library
-	- Blazor App
-	- C# MVC App
-	- C# MVC Library *note*: It follows the structure of MVC App
+  - C# Class Library
+  - Blazor App
+  - C# MVC App
+  - C# MVC Library *(follows MVC App structure)*
 - 🔌 Arduino IDE firmware projects
 - 🔌 PlatformIO firmware projects
-	- Arduino & ESPIDF
+  - Arduino & ESPIDF
 
 Each domain has its own constraints and prompts, but shares the same core architecture.
 
-This proves the system is extensible.
+New domains can be added through extensions.
 
 ---
 
@@ -102,7 +111,7 @@ The agent cannot invent random folder layouts or escape the project boundary.
 
 This prevents entropy and keeps generated code maintainable.
 
-For Arduino projects, the flat sketch model is enforced.  
+For Arduino projects, the flat sketch model is enforced.
 For .NET projects & PlatformIO, structured folders are enforced.
 
 Different domains, same discipline.
@@ -120,13 +129,23 @@ Every action runs through a controlled loop:
 5. Implement minimal change
 6. Build / validate
 7. Repair if needed
-8. Summarize
+8. Summarise
 9. Persist knowledge
 
-Chat memory resets each iteration.  
+Chat memory resets each iteration.
 Structured knowledge survives.
 
 This avoids long-session drift.
+
+---
+
+## 🔄 Version Control & Rollbacks
+
+Cyréna maintains a rolling backup of up to 20 versions across sessions.
+
+This makes it easy to review and roll back to any of the last 20 states — not just the most recent one.
+
+Always review AI edits. Rollback is there when you need it.
 
 ---
 
@@ -151,7 +170,7 @@ Documentation is evolving — thank you for your patience.
 2. Open settings (gear icon)
 3. Add an Ollama connection
 4. Set model + tokens + context
-5. (Optional) Add Tavily API key
+5. *(Optional)* Add Tavily API key
 
 ### Setup OpenAI
 
@@ -201,46 +220,6 @@ Cyréna stands on the shoulders of great projects:
 
 ---
 
-# ⚠️ Experimental Status
-
-Cyréna is under active development.
-
-It is an autonomous agent capable of modifying real files.
-
-Use version control.  
-Use backups.  
-Review all changes.
-
-This is not production-hardened software yet.
-
----
-
-## Known Risks
-
-- Incorrect overwrites
-- Imperfect repair loops
-- No full rollback yet
-- Intent may drift
-
-Always review AI edits.
-
----
-
-## Safety Systems In Progress
-
-- [X] Diff keeper
-- [X] Revert mechanism
-- [ ] Safe execution guardrails
-- [X] Hard command sandbox: *note* only supports **dotnet build** for now
-
-Until complete:
-
-👉 Treat Cyréna as experimental  
-👉 Expect mistakes  
-👉 Verify output  
-
----
-
 ## Philosophy
 
 Cyréna is being built toward:
@@ -251,16 +230,12 @@ Cyréna is being built toward:
 - engineering safety
 - long-term project memory
 
-You are seeing the system mid-evolution.
-
 ---
 
 ## Disclaimer
 
-Cyréna is experimental software.
+Cyréna modifies real files in real projects.
 
-It may introduce errors or data loss.
-
-You are responsible for backups and review.
+Use version control. Review all changes. You are responsible for your codebase.
 
 Provided as-is. Use at your own risk.

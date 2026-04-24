@@ -15,7 +15,8 @@ A quick look at how different LLMs perform inside my custom desktop development�
 | Cloud    | **OpenAI – gpt‑5**             | –    | All scenarios | – | ⭐️ Outstanding overall; only occasional prompts needed for web‑search or newer .NET versions. |
 | Cloud    | **Ollama – qwen3‑coder:480B‑cloud**| 480 B| .NET (tried) | – | ⚠️ Very unstable – “feels threatened”, skips code, invents nonsense, rarely calls functions. |
 | Cloud    | **Ollama – deepseek‑v3.1:671B‑cloud**| 671 B| Cyréna (experimental) | – | 🐢 Extremely lazy – will not act unless forced to do a web query, then gives generic “I did the search”. |
-| Cloud    | **Ollama – minimax‑m2.7:cloud** | –    | Single‑project .NET | – | 👍 My favourite – works well when given very explicit, structured instructions (sticky notes, API‑reference overview). Great for function calling. |
+| Cloud    | **Ollama – minimax‑m2.7:cloud** | –    | Single‑project .NET | – | 👍 Works well when given very explicit, structured instructions (sticky notes, API‑reference overview). Great for function calling. |
+| Cloud    | **kimi‑k2.6**                   | –    | All dev tasks        | – | ⭐️ My favourite – takes time to understand the project and structure before making changes; never dives in blind. |
 
 ---
 
@@ -64,8 +65,13 @@ A quick look at how different LLMs perform inside my custom desktop development�
 * **Lazy** – responds to the prompt but then does nothing until you explicitly say “do the research”.  
 * Even after a web query it replies with a vague “I did the search” and provides no concrete results.
 
+#### **kimi‑k2.6**
+* **My current favourite** across dev tasks.
+* Stands out for taking time to understand the project and its structure before making any changes – it never just dives in blind.
+* This careful, context-first approach means fewer mistakes and less back-and-forth correcting misunderstood scope.
+
 #### **Ollama – minimax‑m2.7:cloud**
-* **My current favourite** for single‑project .NET development.  
+* Works well for single‑project .NET development.
 * Success hinges on **very explicit, structured prompts**:  
   * Use **sticky notes** to capture hard rules.  
   * Keep an **“Overview”** of the application in an “API References” sticky note.  
@@ -85,4 +91,3 @@ A quick look at how different LLMs perform inside my custom desktop development�
 	* Provide any relevant **API reference**.  
 	* End with a clear **action request**.
 4. **When a model omits code** (only happens with a certain few models), gently remind it: Please include the full implementation of the function; do not skip any lines.
-

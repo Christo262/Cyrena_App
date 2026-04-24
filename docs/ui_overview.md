@@ -4,13 +4,14 @@
 
 1. Navigate to launch window
 2. Settings
-3. General Chats, not for development
+3. Conversations/Chats
 4. Working Projects, categorised
 5. New chat text area
 	- Creates a new general chat not for development
 6. Create coding chats
+7. Install & Manage Extensions
 
-## Development
+## Development (.NET Solution)
 
 ![Working Window](../images/working_overview.png)
 
@@ -25,3 +26,5 @@
 	- Allows editing, exporting and importing and deleting
 5. Chat Export
 	- Prompts to save to text file
+
+*The Development Window changes depending on the project type you are working on with tailored toward the project/solution*
