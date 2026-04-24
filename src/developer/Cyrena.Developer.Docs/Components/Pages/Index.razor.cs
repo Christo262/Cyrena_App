@@ -60,7 +60,7 @@ namespace Cyrena.Developer.Docs.Components.Pages
         {
             try
             {
-                var path = await _files.ShowSaveFile("Choose location", ($".aiapi", [".aiapi"]));
+                var path = await _files.ShowSaveFileAsync("Choose location", ($".aiapi", [".aiapi"]));
                 if (string.IsNullOrEmpty(path)) return;
                 if (!path.EndsWith(".aiapi"))
                     path += ".aiapi";

@@ -28,6 +28,8 @@ namespace Cyrena.ArduinoIDE.Models
         public string Description => "Develop a Arduino IDE sketch";
         public string Icon => "bi bi-cpu";
         public string Color => "primary";
+        public string Category => "Embedded";
+        public string[] Tags => ["C++", "IoT", "Embedded"];
 
         public async Task OnClick()
         {

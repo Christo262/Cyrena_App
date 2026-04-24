@@ -15,16 +15,15 @@ namespace Cyrena.Components.Shared
         [Inject] private IJSRuntime _js { get; set; } = default!;
 
         private ElementReference _scrollHost;
-        private string? _input { get; set; }
         private Markdig.MarkdownPipeline _mdp = default!;
 
         private IIterationService _its = default!;
         private IChatMessageService _msg = default!;
-        private IEnumerable<ICapability> _caps = default!;
+        private ConnectionInfo _info = default!;
 
         protected override void OnInitialized()
         {
-            _caps = Kernel.Services.GetServices<ICapability>();
+            _info = Kernel.Services.GetRequiredService<ConnectionInfo>();   
             _its = Kernel.Services.GetRequiredService<IIterationService>();
             _msg = Kernel.Services.GetRequiredService<IChatMessageService>();
             _its_start = _its.OnIterationStart(OnIterationEvent);
@@ -47,16 +46,16 @@ namespace Cyrena.Components.Shared
         private async Task Send()
         {
             if (_its.Inferring) return;
-            if (string.IsNullOrWhiteSpace(_input)) return;
+            if (string.IsNullOrWhiteSpace(_its.Input)) return;
 
-            var userText = _input.Trim();
-            _its.Iterate(AuthorRole.User, userText, Kernel, _items.ToArray());
-            _input = string.Empty; // Use empty string instead of null
+            _its.Iterate(AuthorRole.User, Kernel, _items.ToArray());
             _items.Clear();
             await InvokeAsync(StateHasChanged);
             await Task.Delay(100);
             await _js.InvokeVoidAsync("autoGrow", _area, 5);
         }
+
+        private void Cancel() => _its.Cancel();
 
         public void OnDisplayHistoryChanged(ChatHistory hst)
         {
@@ -64,14 +63,14 @@ namespace Cyrena.Components.Shared
             this.InvokeAsync(async () =>
             {
                 StateHasChanged();
-                await ScrollToBottomAsync(hst.Last().Role == AuthorRole.User);
+                await ScrollToBottomAsync(hst.LastOrDefault()?.Role == AuthorRole.User);
             });
         }
 
         public void OnHandleComplete()
         {
             _stream = null;
-            _input = null;
+            _its.Input = null;
             _items.Clear();
             this.InvokeAsync(async () =>
             {
@@ -93,7 +92,17 @@ namespace Cyrena.Components.Shared
 
         public void OnIterationEvent(bool e)
         {
-            this.InvokeAsync(StateHasChanged);
+            this.InvokeAsync(async () =>
+            {
+                if (!_its.Inferring)
+                    _its.Input = null;
+                StateHasChanged();
+                if(!_its.Inferring)
+                {
+                    await _js.InvokeVoidAsync("autoGrow", _area, 5);
+                    await _area.FocusAsync();
+                }
+            });
         }
 
         private string? _stream;
@@ -126,7 +135,7 @@ namespace Cyrena.Components.Shared
         private ElementReference _area = default!;
         private async Task AutoGrow(ChangeEventArgs e)
         {
-            _input = e.Value?.ToString() ?? "";
+            _its.Input = e.Value?.ToString() ?? "";
             await _js.InvokeVoidAsync("autoGrow", _area, 5);
             StateHasChanged();
         }

@@ -38,7 +38,7 @@ namespace Cyrena.Runtime.Services
                 throw new NullReferenceException($"Unable to find assistant mode with id {config.AssistantModeId}");
             var connectionProviders = _services.GetServices<IConnectionProvider>();
             IConnectionProvider? connectionProvider = null;
-            foreach ( var provider in connectionProviders)
+            foreach (var provider in connectionProviders)
             {
                 if (await provider.HasConnectionAsync(config.ConnectionId))
                 {
@@ -48,24 +48,32 @@ namespace Cyrena.Runtime.Services
             }
             if (connectionProvider == null)
                 throw new InvalidOperationException($"Unable to find connection provider for {config.ConnectionId}");
-            var builder = Kernel.CreateBuilder();
+            IKernelBuilder builder = Kernel.CreateBuilder();
             builder.Services.AddSingleton(config);
-           await connectionProvider.AttachAsync(builder, config.ConnectionId);
+            var info = await connectionProvider.AttachAsync(builder, config.ConnectionId);
+            builder.Services.AddSingleton(info);
 
             builder.Services.AddSingleton<IIterationService, IterationService>();
 
             var store = _services.GetRequiredService<IStore<ChatMessage>>();
             builder.Services.AddSingleton(store);
             builder.Services.AddSingleton<IChatMessageService, ChatMessageService>();
-            await mode.ConfigureAsync(config, builder);
+            var cyrenaKernelBuilder = new CyrenaKernelBuilder(config, builder);
+            IPromptManager promptManager = new PromptManager();
+            cyrenaKernelBuilder.AddFeatureOption<IPromptManager>(promptManager);
+            await mode.ConfigureAsync(cyrenaKernelBuilder);
 
-            using var sp = _services.CreateScope();
-            var plugins = sp.ServiceProvider.GetServices<IAssistantPlugin>().Where(x => x.Modes.Length == 0 || x.Modes.Contains(mode.Id));
+            IEnumerable<IAssistantPlugin> plugins = _services.GetServices<IAssistantPlugin>().Where(x => x.Modes.Length == 0 || x.Modes.Contains(mode.Id));
+            if (!config.PluginIds.Any())
+                config.PluginIds = plugins.Select(x => x.Id).ToList();
             foreach (var plugin in plugins.OrderByDescending(x => x.Priority))
-                await plugin.LoadAsync(config, builder);
-
+            {
+                if(config.PluginIds.Any(x => x == plugin.Id) || plugin.Required)
+                    await plugin.LoadAsync(cyrenaKernelBuilder);
+            }
+            cyrenaKernelBuilder.Services.AddSingleton<IPromptManager>(promptManager);
             var kernel = builder.Build();
-            if(!_instances.TryAdd(config.Id, kernel))
+            if (!_instances.TryAdd(config.Id, kernel))
             {
                 DisposeKernel(kernel);
                 throw new Exception($"Unable to contain kernel instance");
@@ -97,7 +105,7 @@ namespace Cyrena.Runtime.Services
 
         public async Task<Kernel> Create(ChatConfiguration config)
         {
-            if(string.IsNullOrEmpty(config.Id))
+            if (string.IsNullOrEmpty(config.Id))
                 config.Id = Guid.NewGuid().ToString();
             await _store.AddAsync(config);
             var model = await LoadAsync(config);
@@ -114,7 +122,7 @@ namespace Cyrena.Runtime.Services
                 return;
             }
 
-            if(_instances.TryRemove(config.Id, out var kernel))
+            if (_instances.TryRemove(config.Id, out var kernel))
             {
                 //Make it look like a recreation
                 DisposeKernel(kernel);
@@ -127,7 +135,7 @@ namespace Cyrena.Runtime.Services
 
         public void Unload(ChatConfiguration config)
         {
-            if(_instances.TryRemove(config.Id, out var kernel))
+            if (_instances.TryRemove(config.Id, out var kernel))
             {
                 _pipe.InvokeUnload(config);
                 DisposeKernel(kernel);
@@ -141,9 +149,9 @@ namespace Cyrena.Runtime.Services
 
         public void Dispose()
         {
-            while(_instances.Count > 0)
+            while (_instances.Count > 0)
             {
-                if(_instances.TryRemove(_instances.First().Key, out var kernel))
+                if (_instances.TryRemove(_instances.First().Key, out var kernel))
                     DisposeKernel(kernel);
             }
         }
@@ -157,7 +165,7 @@ namespace Cyrena.Runtime.Services
                     disposable.Dispose();
                     break;
             }
-        }       
+        }
 
         public Kernel? GetKernel(string id)
         {

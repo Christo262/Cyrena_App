@@ -10,48 +10,49 @@
   <ItemGroup>
     <None Remove="blazor-app-prompt.md" />
     <None Remove="class-library-prompt.md" />
-    <None Remove="cs_templates\blazor-layout.txt" />
-    <None Remove="cs_templates\blazor-page.txt" />
-    <None Remove="cs_templates\blazor-root.txt" />
-    <None Remove="cs_templates\blazor-shared.txt" />
-    <None Remove="cs_templates\contract.txt" />
-    <None Remove="cs_templates\controller.txt" />
-    <None Remove="cs_templates\extension.txt" />
-    <None Remove="cs_templates\model.txt" />
-    <None Remove="cs_templates\option.txt" />
-    <None Remove="cs_templates\razor-partial.txt" />
-    <None Remove="cs_templates\service.txt" />
-    <None Remove="cs_templates\view.txt" />
+    <None Remove="Resources\templates\blazor-layout.txt" />
+    <None Remove="Resources\templates\blazor-page.txt" />
+    <None Remove="Resources\templates\blazor-root.txt" />
+    <None Remove="Resources\templates\blazor-shared.txt" />
+    <None Remove="Resources\templates\contract.txt" />
+    <None Remove="Resources\templates\controller.txt" />
+    <None Remove="Resources\templates\extension.txt" />
+    <None Remove="Resources\templates\model.txt" />
+    <None Remove="Resources\templates\option.txt" />
+    <None Remove="Resources\templates\razor-partial.txt" />
+    <None Remove="Resources\templates\service.txt" />
+    <None Remove="Resources\templates\view.txt" />
     <None Remove="dotnet-prompt.md" />
     <None Remove="mvc-app-prompt.md" />
     <None Remove="mvc-lib-prompt.md" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="blazor-app-prompt.md" />
-    <EmbeddedResource Include="class-library-prompt.md" />
-    <EmbeddedResource Include="cs_templates\attribute.txt" />
-    <EmbeddedResource Include="cs_templates\blazor-layout.txt" />
-    <EmbeddedResource Include="cs_templates\blazor-page.txt" />
-    <EmbeddedResource Include="cs_templates\blazor-root.txt" />
-    <EmbeddedResource Include="cs_templates\blazor-shared.txt" />
-    <EmbeddedResource Include="cs_templates\contract.txt" />
-    <EmbeddedResource Include="cs_templates\controller.txt" />
-    <EmbeddedResource Include="cs_templates\extension.txt" />
-    <EmbeddedResource Include="cs_templates\model.txt" />
-    <EmbeddedResource Include="cs_templates\option.txt" />
-    <EmbeddedResource Include="cs_templates\razor-partial.txt" />
-    <EmbeddedResource Include="cs_templates\service.txt" />
-    <EmbeddedResource Include="cs_templates\view.txt" />
-    <EmbeddedResource Include="dotnet-prompt.md" />
-    <EmbeddedResource Include="mvc-app-prompt.md" />
-    <EmbeddedResource Include="mvc-lib-prompt.md" />
+    <EmbeddedResource Include="Resources\blazor-lib-prompt.md" />
+    <EmbeddedResource Include="Resources\blazor-app-prompt.md" />
+    <EmbeddedResource Include="Resources\class-library-prompt.md" />
+    <EmbeddedResource Include="Resources\templates\attribute.txt" />
+    <EmbeddedResource Include="Resources\templates\blazor-layout.txt" />
+    <EmbeddedResource Include="Resources\templates\blazor-page.txt" />
+    <EmbeddedResource Include="Resources\templates\blazor-root.txt" />
+    <EmbeddedResource Include="Resources\templates\blazor-shared.txt" />
+    <EmbeddedResource Include="Resources\templates\contract.txt" />
+    <EmbeddedResource Include="Resources\templates\controller.txt" />
+    <EmbeddedResource Include="Resources\templates\extension.txt" />
+    <EmbeddedResource Include="Resources\templates\model.txt" />
+    <EmbeddedResource Include="Resources\templates\option.txt" />
+    <EmbeddedResource Include="Resources\templates\razor-partial.txt" />
+    <EmbeddedResource Include="Resources\templates\service.txt" />
+    <EmbeddedResource Include="Resources\templates\view.txt" />
+    <EmbeddedResource Include="Resources\dotnet-prompt.md" />
+    <EmbeddedResource Include="Resources\mvc-app-prompt.md" />
+    <EmbeddedResource Include="Resources\mvc-lib-prompt.md" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\components\Cyrena.Components\Cyrena.Components.csproj" />
     <ProjectReference Include="..\..\developer\Cyrena.Developer.Core\Cyrena.Developer.Core.csproj" />
-    <ProjectReference Include="..\..\developer\Cyrena.Developer.Docs\Cyrena.Developer.Docs.csproj" />
+    <ProjectReference Include="..\..\extensa\Cyrena.Extensa.Core\Cyrena.Extensa.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -7,13 +7,6 @@ namespace Cyrena.Extensions
 {
     public static class KernelBuilderExtensions
     {
-        public static void AddCapability<TComponent>(this IKernelBuilder builder)
-            where TComponent : CapabilityComponentBase
-        {
-            var cap = new Capability(typeof(TComponent));
-            builder.Services.AddSingleton<ICapability>(cap);
-        }
-
         public static void AddToolbarComponent<TComponent>(this IKernelBuilder builder, ToolbarAlignment alignment)
             where TComponent : KernelComponentBase
         {

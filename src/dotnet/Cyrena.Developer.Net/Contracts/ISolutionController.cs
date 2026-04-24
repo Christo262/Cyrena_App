@@ -7,9 +7,10 @@ namespace Cyrena.Developer.Contracts
     /// </summary>
     public interface ISolutionController : IDisposable
     {
-        Task SetTargetProject(ProjectViewModel current);
-        IEnumerable<ProjectViewModel> GetValidProjects();
-        ProjectViewModel Current { get; }
-        IDisposable OnProjectChange(Action<ProjectViewModel> cb);
+        Task SetTargetProject(ProjectModel current);
+        IEnumerable<ProjectModel> GetValidProjects();
+        void RefreshProjectPlans();
+        ProjectModel Current { get; }
+        IDisposable OnProjectChange(Action<ProjectModel> cb);
     }
 }

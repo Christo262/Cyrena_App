@@ -1,15 +1,51 @@
 
-<div class="row m-0">
-    @foreach (var item in _models)
+@* <div class="row m-0">
+    @foreach(var cat in _categories.OrderBy(x => x))
     {
-        <div class="col-md-4">
-            <div class="p-2 border rounded clickable border-3 mb-2 border-@item.Color" @onclick="() => item.OnClick()">
-                <p class="m-0">
-                    <i class="@item.Icon"></i> @item.Title
-                </p>
-                <p class="small text-truncate">
-                    @item.Description
-                </p>
+        @foreach (var item in _models.Where(x => x.Category == cat).OrderBy(x=> x.Title))
+        {
+            <div class="col-md-4">
+                <div class="p-2 border rounded clickable border-3 mb-2 border-@item.Color" @onclick="() => item.OnClick()">
+                    <p class="m-0">
+                        <i class="@item.Icon"></i> @item.Title
+                    </p>
+                    <p class="small text-truncate">
+                        @item.Description
+                    </p>
+                </div>
+            </div>
+        }
+    }
+</div> *@
+
+<div class="accordion accordion-flush" id="app-shortcuts">
+    
+
+    @foreach (var cat in _categories.OrderBy(x => x))
+    {
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#@cat.ToLower().Replace(" ", "_")" aria-expanded="false" aria-controls="flush-collapseOne">
+                    @cat
+                </button>
+            </h2>
+            <div id="@cat.ToLower().Replace(" ", "_")" class="accordion-collapse collapse" data-bs-parent="#app-shortcuts">
+                @foreach (var item in _models.Where(x => x.Category == cat).OrderBy(x => x.Title))
+                {
+                    <div class="p-2 border rounded mb-1 clickable" @onclick="() => item.OnClick()">
+                        <h6><i class="text-@item.Color @item.Icon"></i> @item.Title</h6>
+                        <p class="small text-truncate m-0">
+                            @item.Description
+                        </p>
+
+                        <p class="small m-0">
+                            @foreach(var t in item.Tags)
+                            {
+                                <span class="badge text-bg-dark me-1">@t</span>
+                            }
+                        </p>
+                    </div>
+                }
             </div>
         </div>
     }

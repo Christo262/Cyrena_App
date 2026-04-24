@@ -6,9 +6,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Cyrena.HUD.Components.Pages
 {
@@ -21,6 +18,7 @@ namespace Cyrena.HUD.Components.Pages
         [Inject] private IJSRuntime _js { get; set; } = default!;
 
         private ChatConfiguration? _model;
+        private Modal? _config;
         private string? _input { get; set; }
 
         protected override void OnInitialized()
@@ -45,13 +43,21 @@ namespace Cyrena.HUD.Components.Pages
             {
                 var kernel = await _kernels.Create(_model);
                 var chat = kernel.Services.GetRequiredService<IChatMessageService>();
-                kernel.Services.GetRequiredService<IIterationService>().Iterate(chat.Options.User, _input, kernel);
+                var its = kernel.Services.GetRequiredService<IIterationService>();
+                its.Input = _input;
+                its.Iterate(chat.Options.User, kernel);
                 _nav.NavigateTo($"converse/{_model.Id}");
             }
             catch (Exception ex)
             {
                 await _toasts.Error("Error", ex.Message);
             }
+        }
+
+        private async Task Settings()
+        {
+            if (_config != null)
+                await _config.Show();
         }
 
         private async Task ComposerKeyDown(KeyboardEventArgs e)

@@ -10,6 +10,7 @@ namespace Cyrena.Components.Shared
         [Inject] private IServiceProvider _services { get; set; } = default!;
         [Parameter] public string? Value { get; set; }
         [Parameter] public EventCallback<string> ValueChanged { get; set; }
+        [Parameter] public string? Label { get; set; } = "AI Connection";
 
         private IEnumerable<IConnectionProvider> _providers = default!;
         private List<ConnectionInfo> _models { get; set; } = new();

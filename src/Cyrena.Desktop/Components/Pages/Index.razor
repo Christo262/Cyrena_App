@@ -8,7 +8,7 @@
             <img src="images/rene_f.png" height="200" />
         </div>
 
-        @if(_model != null)
+        @if (_model != null)
         {
             <p class="lead text-center">How can I help you?</p>
 
@@ -22,7 +22,10 @@
                           rows="1"
                           @oninput="AutoGrow" @onkeydown="ComposerKeyDown"></textarea>
 
-                <div class="ms-2 justify-content-center align-self-center">
+                <div class="me-1 justify-content-center align-self-center">
+                    <button type="button" class="btn btn-sm btn-outline-info rounded-pill" @onclick="Settings"><i class="bi bi-gear"></i></button>
+                </div>
+                <div class="justify-content-center align-self-center">
                     <button type="button" class="btn btn-sm btn-primary rounded-pill" @onclick="Send"><i class="bi bi-arrow-up"></i></button>
                 </div>
             </div>
@@ -37,3 +40,17 @@
         }
     </div>
 </div>
+
+@if(_model != null)
+{
+    <Modal @ref="_config" IsKeyboard>
+        <ModalDialog Title="Configure Chat" ShowSaveButton="false" ShowCloseButton Size="Size.Medium">
+            <BodyTemplate>
+                <EditForm Model="_model">
+                    <ConnectionSelector @bind-Value="_model.ConnectionId" />
+                    <PluginSelector Chat="_model"/>
+                </EditForm>
+            </BodyTemplate>
+        </ModalDialog>
+    </Modal>
+}

@@ -1,43 +1,60 @@
 ﻿using Cyrena.Contracts;
 using Microsoft.Win32;
+using System.Diagnostics;
+using System.IO;
 
 namespace Cyrena.HUD.Services
 {
     internal class FileDialog : IFileDialog
     {
-        public Task<string?> OpenAsync(string title, (string filter, string[] types)? ftr)
+        public void ExploreFolder(string folderPath)
         {
-            OpenFileDialog dialog = new OpenFileDialog()
+            if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
+                throw new NullReferenceException("Invalid folder path");
+            Process.Start(new ProcessStartInfo
             {
-                Title = title,
-            };
-            if (ftr.HasValue)
-            {
-                
-                var f = $"{ftr.Value.filter}({string.Join(";",ftr.Value.types.Select(x => $"*{x}"))})|{string.Join(";", ftr.Value.types.Select(x => $"*{x}"))}";
-                dialog.Filter = f;
-            }
-            bool? result = dialog.ShowDialog();
-            if (result == true)
-                return Task.FromResult<string?>(dialog.FileName);
-            return Task.FromResult<string?>(null);
+                FileName = "explorer",
+                Arguments = $"\"{folderPath}\"",
+                UseShellExecute = true
+            });
         }
 
-        public Task<string?> ShowSaveFile(string title, (string filter, string[] types)? ftr, string? defaultPath = null)
+        public Task<string?> OpenAsync(string title, (string filterName, string[] extensions)? ftr)
         {
-            SaveFileDialog dialog = new SaveFileDialog
+            return Task.Run(() =>
             {
-                Title = title,
-            };
-            if(ftr.HasValue)
+                var dialog = new Microsoft.Win32.OpenFileDialog
+                {
+                    Title = title,
+                };
+                if (ftr.HasValue)
+                {
+                    var filter = $"{ftr.Value.filterName}|{string.Join(";", ftr.Value.extensions.Select(e => $"*{e}"))}";
+                    dialog.Filter = filter;
+                }
+                bool? result = dialog.ShowDialog();
+                return result == true ? dialog.FileName : null;
+            });
+        }
+
+        public Task<string?> ShowSaveFileAsync(string title, (string filterName, string[] extensions)? ftr, string? defaultPath = null)
+        {
+            return Task.Run(() =>
             {
-                var f = $"{ftr.Value.filter}({string.Join(";", ftr.Value.types.Select(x => $"*{x}"))})|{string.Join(";", ftr.Value.types.Select(x => $"*{x}"))}";
-                dialog.Filter = f;
-            }
-            bool? result = dialog.ShowDialog();
-            if(result ==  true)
-                return Task.FromResult<string?>(dialog.FileName);
-            return Task.FromResult<string?>(null);
+                var dialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    Title = title,
+                    FileName = defaultPath,
+                };
+                if (ftr.HasValue)
+                {
+                    var filter = $"{ftr.Value.filterName}|{string.Join(";", ftr.Value.extensions.Select(e => $"*{e}"))}";
+                    dialog.Filter = filter;
+                }
+                bool? result = dialog.ShowDialog();
+                return result == true ? dialog.FileName : null;
+            });
         }
     }
+
 }

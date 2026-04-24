@@ -1,6 +1,8 @@
+@using Cyrena.Extensa.Components.Shared
 @inherits LayoutComponentBase
 
-<section class="layout has-sidebar is-page @(_side ? "is-collapsed":"")" style="--bb-layout-footer-height: 0px;">
+<Preload />
+<section class="layout has-sidebar is-page @(_side ? "is-collapsed" : "")" style="--bb-layout-footer-height: 0px;">
     <aside class="layout-side">
         <div class="layout-menu">
             <div class="scroll" style="--bb-scroll-width: 5px; --bb-scroll-hover-width: 5px;">
@@ -14,7 +16,7 @@
                                 </div><i class="arrow"></i>
                             </NavLink>
                         </li>
-                        @if(_chats is not null)
+                        @if (_chats is not null)
                         {
                             foreach (var item in _chats.Where(x => x[ChatConfiguration.Group] is null))
                             {
@@ -34,15 +36,15 @@
                                                 <ContextMenuItem Icon="bi bi-database-down" Text="Unload" OnClick="(s, e) => Unload(item)"></ContextMenuItem>
                                             }
                                             <ContextMenuItem Icon="bi bi-pen" Text="Edit" OnClick="(s, e) => EditAsync(item)"></ContextMenuItem>
-                                            <ContextMenuItem Icon="bi bi-trash" Text="Delete" OnClick="(s,e) => Delete(item)"></ContextMenuItem>
+                                            <ContextMenuItem Icon="bi bi-trash" Text="Delete" OnClick="(s, e) => Delete(item)"></ContextMenuItem>
                                         </ContextMenu>
                                     </ContextMenuZone>
                                 </li>
                             }
 
-                            @if(_groups != null)
+                            @if (_groups != null)
                             {
-                                @foreach(var item in _groups.Where(x => !string.IsNullOrEmpty(x)))
+                                @foreach (var item in _groups.Where(x => !string.IsNullOrEmpty(x)))
                                 {
                                     <li>
                                         <div class="submenu-link mt-3 border-top">
@@ -86,7 +88,23 @@
             <button @onclick="ToggleSide" class="btn btn-sm btn-outline-primary me-1 border-0"><i class="bi bi-layout-sidebar-inset"></i></button>
             Cyréna
             <div class="ms-auto"></div>
-            <a href="settings" class="btn btn-outline-light btn-sm rounded-pill"><i class="bi bi-gear"></i></a>
+            <div class="dropdown">
+                <button class="btn btn-outline-light btn-sm me-1 rounded-pill" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-boxes"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a class="dropdown-item" href="browse-extensions"><i class="bi bi-cloud-download"></i> Browse Extensions</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="manage-extensions"><i class="bi bi-boxes"></i> Installed Extensions</a>
+                    </li>
+                </ul>
+            </div>
+
+            <Tooltip Title="Settings">
+                <a href="settings" class="btn btn-outline-light btn-sm rounded-pill"><i class="bi bi-gear"></i></a>
+            </Tooltip>
         </header>
 
         <main class="layout-main overflow-auto" style="padding:0">

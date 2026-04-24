@@ -20,7 +20,7 @@ namespace Cyrena.Contracts
         /// <param name="config"></param>
         /// <param name="builder"></param>
         /// <returns></returns>
-        Task ConfigureAsync(ChatConfiguration config, IKernelBuilder builder);
+        Task ConfigureAsync(CyrenaKernelBuilder builder);
         /// <summary>
         /// Called by <see cref="IKernelController"/> when a chat is deleted
         /// </summary>

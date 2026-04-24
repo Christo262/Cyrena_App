@@ -1,31 +1,29 @@
-﻿using BootstrapBlazor.Components;
-using Cyrena.Components.Tools;
+﻿using Cyrena.Components.Tools;
 using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Models;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.SemanticKernel;
 
 namespace Cyrena.Services
 {
     internal class ComponentAssistantsPlugin : IAssistantPlugin
     {
-        private readonly DialogService _dialog;
-        private readonly ToastService _toasts;
-        public ComponentAssistantsPlugin(DialogService dialog, ToastService toasts)
-        {
-            _dialog = dialog;
-            _toasts = toasts;
-        }
         public string[] Modes => [];
 
         public int Priority => 10;
 
-        public Task LoadAsync(ChatConfiguration config, IKernelBuilder builder)
+        public string Id => "cyrena.components";
+
+        public bool Required => true;
+
+        public string Title => "UI Components";
+
+        public Task LoadAsync(CyrenaKernelBuilder builder)
         {
-            builder.Services.AddSingleton(_dialog);
-            builder.Services.AddSingleton(_toasts);
-            builder.AddToolbarComponent<ExportChat>(ToolbarAlignment.End);
+            builder.Services.AddSingleton<IDisplayService, DisplayService>();
+            builder.KernelBuilder.AddToolbarComponent<ExportChat>(ToolbarAlignment.End);
+            builder.KernelBuilder.AddToolbarComponent<ClearChat>(ToolbarAlignment.End);
+            builder.KernelBuilder.AddToolbarComponent<DisplayServiceComponent>(ToolbarAlignment.End);
             return Task.CompletedTask;
         }
     }

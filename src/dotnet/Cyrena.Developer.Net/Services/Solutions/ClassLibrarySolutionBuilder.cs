@@ -17,18 +17,16 @@ namespace Cyrena.Developer.Services
     internal class ClassLibrarySolutionBuilder : ICodeBuilder
     {
         private readonly IServiceProvider _services;
-        private readonly IStore<ProjectModel> _store;
         private readonly IKernelController _kernel;
-        public ClassLibrarySolutionBuilder(IServiceProvider services, IStore<ProjectModel> store, IKernelController kernel)
+        public ClassLibrarySolutionBuilder(IServiceProvider services, IKernelController kernel)
         {
             _services = services;
-            _store = store;
             _kernel = kernel;
         }
 
         public string Id => DotnetOptions.CsClassLibrary;
 
-        public async Task<DevelopPlan> ConfigureAsync(DevelopOptions options)
+        public async Task<DevelopPlan> ConfigureAsync(CyrenaKernelBuilder options)
         {
             var proj = options.ChatConfiguration[DotnetOptions.ProjectFilePath];
             if (proj == null || !File.Exists(proj))
@@ -37,47 +35,36 @@ namespace Cyrena.Developer.Services
             options.ChatConfiguration["namespace"] = csproj.RootNamespace;
             options.ChatConfiguration[DevelopOptions.RootDirectory] = Path.GetDirectoryName(proj);
 
-            var proj_model = await _store.FindAsync(x => x.ConversationId == options.ChatConfiguration.Id);
-            if (proj_model == null)
+            var project = new ProjectModel()
             {
-                proj_model = new ProjectModel()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    ConversationId = options.ChatConfiguration.Id,
-                    ProjectFilePath = proj,
-                    ProjectName = Path.GetFileName(proj),
-                    ProjectDirectory = options.ChatConfiguration[DevelopOptions.RootDirectory]!,
-                    ProjectTypeId = Id,
-                    ProjectTypeName = "Class Library"
-                };
-                await _store.AddAsync(proj_model);
-            }
+                Id = Guid.NewGuid().ToString(),
+                ConversationId = options.ChatConfiguration.Id,
+                ProjectFilePath = proj,
+                ProjectName = Path.GetFileName(proj),
+                ProjectDirectory = options.ChatConfiguration[DevelopOptions.RootDirectory]!,
+                ProjectTypeId = Id,
+                ProjectTypeName = "Class Library"
+            };
 
             var sln_model = new SolutionViewModel(options.ChatConfiguration[DevelopOptions.RootDirectory]!);
-            var project = new ProjectViewModel(proj_model);
             sln_model.Projects.Add(project);
-            project.Plan = new DevelopPlan(project.ProjectDirectory);
-
-            project.Plan.IndexDefaultCSharpProject();
-            project[DotnetOptions.CSharp.Namespace] = csproj.RootNamespace;
-            project[DotnetOptions.CSharp.TargetFrameworks] = csproj.TargetFrameworks;
+            var idxer = new CSharpClassLibraryProjectType();
+            var plan = idxer.IndexPlan(project);
 
             var project_types = _services.GetServices<IDotnetProjectType>();
             options.ChatConfiguration[DotnetOptions.LastProject] = project.Id;
             options.Services.AddSingleton(sln_model);
             options.Services.AddSingleton(project_types);
-            options.Services.AddSingleton(_store);
             options.Services.AddSingleton<ISolutionController, SolutionController>();
             options.Plugins.AddFromType<Dotnet>();
-            options.AddApiReferencing();
-            options.KernelBuilder.AddStartupTask<ClassLibraryPromptStartupTask>();
-            options.Services.AddSingleton<DotnetFileWatcher>();
-            return project.Plan;
+            var prompt = Resources.Read(typeof(DotnetExtension).Assembly, "Cyrena.Developer.Resources.class-library-prompt.md");
+            options.GetFeatureOption<IPromptManager>().AddPrompt(0, prompt);
+            return plan;
         }
 
-        public async Task DeleteAsync(ChatConfiguration config)
+        public Task DeleteAsync(ChatConfiguration config)
         {
-            await _store.DeleteManyAsync(x => x.ConversationId == config.Id);
+            return Task.CompletedTask;
         }
 
         public async Task EditAsync(ChatConfiguration config, IServiceProvider services)
@@ -96,38 +83,6 @@ namespace Cyrena.Developer.Services
             });
             if (rf == DialogResult.Yes)
                 await _kernel.UpdateAsync(config, true);
-        }
-    }
-
-    internal class ClassLibraryPromptStartupTask : IStartupTask
-    {
-        private readonly IChatMessageService _chat;
-        private readonly DotnetFileWatcher _watcher;
-        public ClassLibraryPromptStartupTask(IChatMessageService chat, DotnetFileWatcher watcher)
-        {
-            _chat = chat;
-            _watcher = watcher;
-        }
-
-        public int Order => 1;
-
-        public async Task RunAsync(CancellationToken cancellationToken = default)
-        {
-            _watcher.Start();
-            var prompt = ReadClassLibraryPrompt();
-            await _chat.AddSystemMessage(prompt);
-        }
-
-        private string ReadClassLibraryPrompt()
-        {
-            var assembly = typeof(PromptStartupTask).Assembly;
-            var resourceName = "Cyrena.Developer.class-library-prompt.md";
-
-            using var stream = assembly.GetManifestResourceStream(resourceName);
-            if (stream == null)
-                throw new FileNotFoundException(resourceName);
-            using var reader = new StreamReader(stream);
-            return reader.ReadToEnd();
         }
     }
 }

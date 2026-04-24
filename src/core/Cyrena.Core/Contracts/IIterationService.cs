@@ -9,6 +9,10 @@ namespace Cyrena.Contracts
     /// </summary>
     public interface IIterationService : IDisposable
     {
+        /// <summary>
+        /// Use to keep current input user is typing in memory
+        /// </summary>
+        string? Input { get; set; }
         bool Inferring { get; }
         /// <summary>
         /// <see cref="IConnection"/> invokes this
@@ -30,7 +34,8 @@ namespace Cyrena.Contracts
         /// <param name="callback"></param>
         /// <returns></returns>
         IDisposable OnIterationEnd(Action<bool> callback);
-        void Iterate(AuthorRole role, string message, Kernel kernel);
-        void Iterate(AuthorRole role, string message, Kernel kernel, params AdditionalMessageContent[] items);
+        void Iterate(AuthorRole role, Kernel kernel);
+        void Iterate(AuthorRole role, Kernel kernel, params AdditionalMessageContent[] items);
+        void Cancel();
     }
 }

@@ -26,6 +26,8 @@ namespace Cyrena.Developer.Models
         public string Description => "Develop a Blazor Server or WASM app.";
         public string Icon => "bi bi-hdd-rack";
         public string Color => "danger";
+        public string Category => ".NET";
+        public string[] Tags => ["C#", "csproj"];
 
         public async Task OnClick()
         {

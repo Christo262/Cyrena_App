@@ -4,6 +4,7 @@ using Cyrena.Contracts;
 using Cyrena.Tavily.Options;
 using Cyrena.Tavily.Plugins;
 using Cyrena.Models;
+using Cyrena.Extensions;
 
 namespace Cyrena.Tavily.Services
 {
@@ -19,13 +20,21 @@ namespace Cyrena.Tavily.Services
 
         public string[] Modes => [];
 
-        public Task LoadAsync(ChatConfiguration config, IKernelBuilder builder)
+        public string Id => "cyrena.tavily";
+
+        public bool Required => false;
+
+        public string Title => "Tavily Web Search";
+
+        public Task LoadAsync(CyrenaKernelBuilder builder)
         {
             var options = _settings.Read<TavilyOptions>(TavilyOptions.Key);
             if (options == null || string.IsNullOrEmpty(options.ApiKey) || !options.Enable)
                 return Task.CompletedTask;
             builder.Services.AddSingleton(options);
             builder.Plugins.AddFromType<Internet>();
+            var prompt = Resources.Read(typeof(TavilyExtension).Assembly, "Cyrena.Tavily.Resources.prompt.md");
+            builder.GetFeatureOption<IPromptManager>().AddPrompt(10, prompt);
             return Task.CompletedTask;
         }
     }

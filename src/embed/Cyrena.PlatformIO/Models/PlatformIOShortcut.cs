@@ -26,6 +26,8 @@ namespace Cyrena.PlatformIO.Models
         public string Icon => "bi bi-cpu";
 
         public string Color => "danger";
+        public string Category => "Embedded";
+        public string[] Tags => ["C++", "C", "IoT", "Embedded", "ESP-IDF", "Arduino"];
 
         public async Task OnClick()
         {

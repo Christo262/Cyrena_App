@@ -6,10 +6,14 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Cyrena.Extensa</RootNamespace>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>1.0.0</Version>
+    <Version>0.3.2</Version>
     <Authors>Vaya Nova</Authors>
     <Description>Core models, interfaces &amp; services to develop extensions for Cyrena</Description>
     <PackageIcon>cyrena.png</PackageIcon>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <Title>Cyréna Extensa Core</Title>
+    <RepositoryUrl>https://github.com/Christo262/Cyrena_App</RepositoryUrl>
+    <PackageProjectUrl>https://cyrena.dev</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,12 +27,19 @@
     <ProjectReference Include="..\..\core\Cyrena.Core\Cyrena.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
   <Target Name="PostPack" AfterTargets="Pack">
     <ItemGroup>
       <NugetPackages Include="bin\Debug\$(PackageId).$(PackageVersion).nupkg" />
     </ItemGroup>
 
-    <Copy SourceFiles="@(NugetPackages)" DestinationFolder="../../../packages" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(NugetPackages)" DestinationFolder="../../../sdk" SkipUnchangedFiles="true" />
   </Target>
 
 </Project>

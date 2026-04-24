@@ -18,7 +18,7 @@ namespace Cyrena.Developer.Contracts
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
-        Task<DevelopPlan> ConfigureAsync(DevelopOptions options);
+        Task<DevelopPlan> ConfigureAsync(CyrenaKernelBuilder options);
         Task DeleteAsync(ChatConfiguration config);
         Task EditAsync(ChatConfiguration config, IServiceProvider services);
     }

@@ -8,15 +8,17 @@ namespace Cyrena.Developer.Services
     internal class CSharpClassLibraryProjectType : IDotnetProjectType
     {
         public string Id => DotnetOptions.CsClassLibrary;
-        public string ProjectTypeName => ".NET C# Class Library";
+        public string ProjectTypeName => "Class Library";
 
         public DevelopPlan IndexPlan(ProjectModel model)
         {
             ProjectFileInfo csproj = ProjectParser.ParseProject(model.ProjectFilePath);
             var plan = new DevelopPlan(model.ProjectDirectory);
             plan.IndexDefaultCSharpProject();
+            plan.IndexFiles("cs", "lib_cs_");
             model[DotnetOptions.CSharp.Namespace] = csproj.RootNamespace;
             model[DotnetOptions.CSharp.TargetFrameworks] = csproj.TargetFrameworks;
+            model.Plan = plan;
             return plan;
         }
 

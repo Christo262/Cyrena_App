@@ -6,10 +6,13 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Cyrena</RootNamespace>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>1.0.0</Version>
+    <Version>0.3.2</Version>
     <Authors>Vaya Nova</Authors>
-    <Description>Core models, interfaces &amp; services</Description>
+    <Description>Core models, interfaces &amp; services to develop extensions for Cyréna</Description>
     <PackageIcon>cyrena.png</PackageIcon>
+    <Title>Cyréna Core</Title>
+    <RepositoryUrl>https://github.com/Christo262/Cyrena_App</RepositoryUrl>
+    <PackageProjectUrl>https://cyrena.dev</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,7 +35,7 @@
       <NugetPackages Include="bin\Debug\$(PackageId).$(PackageVersion).nupkg" />
     </ItemGroup>
 
-    <Copy SourceFiles="@(NugetPackages)" DestinationFolder="../../../packages" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(NugetPackages)" DestinationFolder="../../../sdk" SkipUnchangedFiles="true" />
   </Target>
 
 </Project>

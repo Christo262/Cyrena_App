@@ -18,7 +18,7 @@ namespace Cyrena.Runtime.Ollama.Services
             _store = store;
         }
 
-        public async Task AttachAsync(IKernelBuilder builder, string connectionId)
+        public async Task<ConnectionInfo> AttachAsync(IKernelBuilder builder, string connectionId)
         {
             var connection = await _store.FindAsync(x => x.Id == connectionId);
             if (connection == null)
@@ -31,8 +31,8 @@ namespace Cyrena.Runtime.Ollama.Services
             builder.AddOllamaChatCompletion(connection.ModelId!, http);
             builder.Services.AddSingleton<OllamaConnectionInfo>(connection);
             builder.Services.AddSingleton<IConnection, OllamaConnection>();
-            if (connection.SupportsFile || connection.SupportsImage)
-                builder.AddCapability<FileUpload>();
+
+            return new ConnectionInfo(connection.Id, connection.Name, "Ollama", connection.ModelId, this, connection.SupportsImage, connection.SupportsFile);
         }
 
         public async Task<bool> HasConnectionAsync(string id)
@@ -44,7 +44,7 @@ namespace Cyrena.Runtime.Ollama.Services
         public async Task<IEnumerable<ConnectionInfo>> ListConnectionsAsync()
         {
             var items = await _store.FindManyAsync(x => true);
-            return items.Select(x => new ConnectionInfo(x.Id, x.Name, "Ollama", x.ModelId, this));
+            return items.Select(x => new ConnectionInfo(x.Id, x.Name, "Ollama", x.ModelId, this, x.SupportsImage, x.SupportsFile));
         }
     }
 }

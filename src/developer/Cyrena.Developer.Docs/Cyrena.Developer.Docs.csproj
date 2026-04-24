@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\components\Cyrena.Components\Cyrena.Components.csproj" />
+    <ProjectReference Include="..\..\extensa\Cyrena.Extensa.Core\Cyrena.Extensa.Core.csproj" />
     <ProjectReference Include="..\Cyrena.Developer.Core\Cyrena.Developer.Core.csproj" />
   </ItemGroup>
 

@@ -15,11 +15,13 @@ namespace Cyrena.Runtime.Services
             _pipeline = new IterationPipeline();
         }
 
+        public string? Input { get; set; }
         public bool Inferring { get; private set; }
 
         public void InferenceEnd()
         {
             Inferring = false;
+            Input = null;
             _pipeline.InvokeIteration(Inferring);
         }
 
@@ -46,8 +48,10 @@ namespace Cyrena.Runtime.Services
 
         private Task? _handle { get; set; }
         private CancellationTokenSource? _token { get; set; }
-        public void Iterate(AuthorRole role, string message, Kernel kernel)
+        public void Iterate(AuthorRole role, Kernel kernel)
         {
+            if (string.IsNullOrEmpty(Input))
+                return;
             if (_handle != null)
             {
                 if (_handle.IsCompleted == false)
@@ -66,17 +70,24 @@ namespace Cyrena.Runtime.Services
                 try
                 {
                     IConnection connection = kernel.Services.GetRequiredService<IConnection>();
-                    await connection.HandleAsync(role, message, kernel, _token.Token);
+                    await connection.HandleAsync(role, Input.Trim(), kernel, _token.Token);
+                }
+                catch (TaskCanceledException)
+                {
+                    InferenceEnd();
                 }
                 catch (Exception ex)
                 {
                     await kernel.GetRequiredService<IChatMessageService>().LogError(ex.Message);
+                    InferenceEnd();
                 }
             }, _token.Token);
         }
 
-        public void Iterate(AuthorRole role, string message, Kernel kernel, params AdditionalMessageContent[] items)
+        public void Iterate(AuthorRole role, Kernel kernel, params AdditionalMessageContent[] items)
         {
+            if (string.IsNullOrEmpty(Input))
+                return;
             if (_handle != null)
             {
                 if (_handle.IsCompleted == false)
@@ -95,13 +106,24 @@ namespace Cyrena.Runtime.Services
                 try
                 {
                     IConnection connection = kernel.Services.GetRequiredService<IConnection>();
-                    await connection.HandleAsync(role, message, kernel, _token.Token, items);
+                    await connection.HandleAsync(role, Input.Trim(), kernel, _token.Token, items);
+                }
+                catch (TaskCanceledException)
+                {
+                    InferenceEnd();
                 }
                 catch (Exception ex)
                 {
                     await kernel.GetRequiredService<IChatMessageService>().LogError(ex.Message);
+                    InferenceEnd();
                 }
             }, _token.Token);
+        }
+
+        public void Cancel()
+        {
+            if (_token == null || _token.IsCancellationRequested) return;
+            _token.Cancel();
         }
 
         internal class IterationPipeline : EventPipeline

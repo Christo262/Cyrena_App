@@ -65,7 +65,7 @@ namespace Cyrena.Persistence.File.Services
             var collection = _fs.Read<T>(_collectionName).AsQueryable();
             var cl = collection.Where(specification.ToExpression());
             int count = cl.Count();
-            foreach (var entity in collection)
+            foreach (var entity in cl)
                 _fs.Delete<T>(entity.Id, _collectionName);
             return Task.FromResult(count);
         }

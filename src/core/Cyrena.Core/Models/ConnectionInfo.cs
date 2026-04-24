@@ -2,5 +2,5 @@
 
 namespace Cyrena.Models
 {
-    public record ConnectionInfo(string Id, string Name, string Source, string ModelId, IConnectionProvider Provider);
+    public record ConnectionInfo(string Id, string Name, string Source, string ModelId, IConnectionProvider Provider, bool SupportImages, bool SupportFiles);
 }

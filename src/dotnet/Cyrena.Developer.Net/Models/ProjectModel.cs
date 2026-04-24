@@ -1,15 +1,17 @@
-﻿using Cyrena.Models;
+﻿using Cyrena.Developer.Options;
+using Cyrena.Models;
 using Newtonsoft.Json;
 
 namespace Cyrena.Developer.Models
 {
-    public class ProjectModel : Entity, IJsonSerializable
+    public class ProjectModel : IJsonSerializable
     {
         public ProjectModel()
         {
             Id = Guid.NewGuid().ToString();
             Properties = new Dictionary<string, string?>();
         }
+        public string Id { get; set; } = default!;
         public string ConversationId { get; set; } = default!;
         public string ProjectFilePath { get; set; } = default!;
         public string? ProjectName { get; set; }
@@ -32,6 +34,8 @@ namespace Cyrena.Developer.Models
             }
         }
 
+        public DevelopPlan? Plan { get; set; }
+
         public string ToJson()
         {
             return JsonConvert.SerializeObject(this, Formatting.Indented);
@@ -43,35 +47,33 @@ namespace Cyrena.Developer.Models
         }
     }
 
-    public class ProjectViewModel : ProjectModel
+    /// <summary>
+    /// Only used to simplify for AI
+    /// </summary>
+    public class ProjectViewModel : IJsonSerializable
     {
-        public ProjectViewModel() { }
-        public ProjectViewModel(ProjectModel project)
+        public ProjectViewModel(ProjectModel model)
         {
-            Id = project.Id;
-            ConversationId = project.ConversationId;
-            ProjectFilePath = project.ProjectFilePath;
-            ProjectName = project.ProjectName;
-            ProjectDirectory = project.ProjectDirectory;
-            ProjectTypeId = project.ProjectTypeId;
-            ProjectTypeName = project.ProjectTypeName;
-            Properties = project.Properties;
+            Id = model.Id;
+            ProjectName = model.ProjectName;
+            ProjectTypeName = model.ProjectTypeName;
+            TargetFrameworks = model[DotnetOptions.CSharp.TargetFrameworks];
+            RootNamespace = model[DotnetOptions.CSharp.Namespace];
         }
-        public DevelopPlan? Plan { get; set; }
+        public string Id { get; set; } = default!;
+        public string? ProjectName { get; set; }
+        public string? ProjectTypeName { get; set; }
+        public string? TargetFrameworks { get; set; }
+        public string? RootNamespace { get; set; }
 
-        public ProjectModel ToModel()
+        public string ToJson()
         {
-            return new ProjectModel()
-            {
-                Id = Id,
-                ConversationId = ConversationId,
-                ProjectFilePath = ProjectFilePath,
-                ProjectName = ProjectName,
-                ProjectDirectory = ProjectDirectory,
-                ProjectTypeId = ProjectTypeId,
-                ProjectTypeName = ProjectTypeName,
-                Properties = Properties
-            };
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
+
+        public override string ToString()
+        {
+            return ToJson();
         }
     }
 }

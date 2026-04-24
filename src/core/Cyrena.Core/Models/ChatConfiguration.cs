@@ -10,6 +10,7 @@
         public ChatConfiguration()
         {
             Properties = new Dictionary<string, string?>();
+            PluginIds = new List<string>();
         }
 
         /// <summary>
@@ -58,5 +59,10 @@
         /// Any additional information
         /// </summary>
         public Dictionary<string, string?> Properties { get; set; }
+
+        /// <summary>
+        /// Marks which plugins should be invoked. <see cref="Cyrena.Contracts.IAssistantPlugin"/>
+        /// </summary>
+        public List<string> PluginIds { get; set; }
     }
 }

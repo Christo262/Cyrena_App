@@ -9,7 +9,7 @@ namespace Cyrena.Extensions
         public static void AddStartupTask<TStartupTask>(this IKernelBuilder builder)
             where TStartupTask: class, IStartupTask
         {
-            builder.Services.AddScoped<IStartupTask, TStartupTask>();
+            builder.Services.AddSingleton<IStartupTask, TStartupTask>();
         }
     }
 }

@@ -14,21 +14,21 @@ namespace Cyrena.Runtime.Services
     internal class DefaultAssistantMode : IAssistantMode
     {
         private readonly IStore<ChatMessage> _store;
-        private readonly DialogService _dialog;
         private readonly IKernelController _controller;
-        public DefaultAssistantMode(IStore<ChatMessage> store, DialogService dialog, IKernelController controller)
+        public DefaultAssistantMode(IStore<ChatMessage> store, IKernelController controller)
         {
             _store = store;
-            _dialog = dialog;
             _controller = controller;
         }
 
         public string Id => IAssistantMode.AssistantModeDefault;
 
-        public Task ConfigureAsync(ChatConfiguration config, IKernelBuilder builder)
+        public Task ConfigureAsync(CyrenaKernelBuilder builder)
         {
-            builder.AddStartupTask<HistoryStartupTask>();
             builder.Services.Configure<ChatOptions>(o => { });
+            var prompts = builder.GetFeatureOption<IPromptManager>();
+            var prompt = Resources.Read(typeof(HistoryStartupTask).Assembly, "Cyrena.Runtime.Resources.prompt.md");
+            prompts.AddPrompt(0, prompt);
             return Task.CompletedTask;
         }
 
@@ -48,41 +48,6 @@ namespace Cyrena.Runtime.Services
             });
             if(rf == DialogResult.Yes)
                 await _controller.UpdateAsync(config, true);
-        }
-    }
-
-    internal class HistoryStartupTask : IStartupTask
-    {
-        private readonly IChatMessageService _srv;
-        
-        public HistoryStartupTask(IChatMessageService srv)
-        {
-            _srv = srv;
-        }
-
-        public int Order => 0;
-
-        public async Task RunAsync(CancellationToken cancellationToken = default)
-        {
-            await _srv.LoadHistoryAsync();
-            if(_srv.KernelHistory.Count == 0)
-            {
-                var prompt = ReadPromptFromReferencedProject();
-                await _srv.AddSystemMessage(prompt);
-            }
-        }
-
-        private string ReadPromptFromReferencedProject()
-        {
-            var assembly = typeof(HistoryStartupTask).Assembly;
-            var resourceNames = assembly.GetManifestResourceNames();
-            // Get the assembly of the referenced project
-
-            var resourceName = "Cyrena.Runtime.default-assistant-prompt.md";
-
-            using var stream = assembly.GetManifestResourceStream(resourceName);
-            using var reader = new StreamReader(stream);
-            return reader.ReadToEnd();
         }
     }
 }

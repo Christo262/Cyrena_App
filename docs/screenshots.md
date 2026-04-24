@@ -2,7 +2,7 @@
 
 ## Launch Window
 
-![Launch Window](../images/launch.jpg)
+![Launch Window](../images/home.png)
 
 ## Working
 

@@ -25,14 +25,22 @@ namespace Cyrena.ArduinoIDE.Services
 
         public string Id => ArduinoOptions.BuilderId;
 
-        public Task<DevelopPlan> ConfigureAsync(DevelopOptions options)
+        public Task<DevelopPlan> ConfigureAsync(CyrenaKernelBuilder options)
         {
             options.Plugins.AddFromType<Arduino>();
-            options.KernelBuilder.AddStartupTask<PromptStartupTask>();
+            
             var plan = new DevelopPlan(options.ChatConfiguration[DevelopOptions.RootDirectory]!);
             plan.IndexFiles("ino", "ino_");
             plan.IndexFiles("h", "h_");
             plan.IndexFiles("cpp", "cpp_");
+
+            var prompt = Resources.Read(typeof(ArduinoIDECodeBuilder).Assembly, "Cyrena.ArduinoIDE.Resources.prompt.md");
+            var sb = new StringBuilder();
+            sb.AppendLine($"Board: {options.ChatConfiguration[ArduinoOptions.BoardId]}");
+            sb.AppendLine($"RAM: {options.ChatConfiguration[ArduinoOptions.Ram]}");
+            sb.AppendLine($"Clock: {options.ChatConfiguration[ArduinoOptions.Clock]}");
+            prompt = prompt.Replace("{BOARD_CONTEXT}", sb.ToString());
+            options.GetFeatureOption<IPromptManager>().AddPrompt(0, prompt);
             return Task.FromResult(plan);
         }
 
@@ -57,42 +65,6 @@ namespace Cyrena.ArduinoIDE.Services
             });
             if (rf == DialogResult.Yes)
                 await _kernel.UpdateAsync(config, true);
-        }
-    }
-
-    internal class PromptStartupTask : IStartupTask
-    {
-        private readonly IChatMessageService _chat;
-        private readonly IChatConfigurationService _config;
-        public PromptStartupTask(IChatMessageService chat, IChatConfigurationService config)
-        {
-            _chat = chat;
-            _config = config;
-        }
-
-        public int Order => 1;
-
-        public async Task RunAsync(CancellationToken cancellationToken = default)
-        {
-            var prompt = ReadPrompt();
-            var sb = new StringBuilder();
-            sb.AppendLine($"Board: {_config.Config[ArduinoOptions.BoardId]}");
-            sb.AppendLine($"RAM: {_config.Config[ArduinoOptions.Ram]}");
-            sb.AppendLine($"Clock: {_config.Config[ArduinoOptions.Clock]}");
-            prompt = prompt.Replace("{BOARD_CONTEXT}", sb.ToString());
-            await _chat.AddSystemMessage(prompt);
-        }
-
-        private string ReadPrompt()
-        {
-            var assembly = typeof(PromptStartupTask).Assembly;
-            var resourceName = "Cyrena.ArduinoIDE.arduino-ide-prompt.md";
-
-            using var stream = assembly.GetManifestResourceStream(resourceName);
-            if (stream == null)
-                throw new FileNotFoundException(resourceName);
-            using var reader = new StreamReader(stream);
-            return reader.ReadToEnd();
         }
     }
 }
