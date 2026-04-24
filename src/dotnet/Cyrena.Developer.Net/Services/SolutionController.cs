@@ -23,9 +23,9 @@ namespace Cyrena.Developer.Services
             _pipe = new SolutionPipeline();
         }
 
-        private ProjectViewModel _current { get; set; } = default!;
+        private ProjectModel _current { get; set; } = default!;
 
-        public async Task SetTargetProject(ProjectViewModel current)
+        public async Task SetTargetProject(ProjectModel current)
         {
             if (current.Plan == null)
                 return;
@@ -36,24 +36,34 @@ namespace Cyrena.Developer.Services
             await _config.SaveConfigurationAsync();
         }
 
-        public IEnumerable<ProjectViewModel> GetValidProjects()
+        public IEnumerable<ProjectModel> GetValidProjects()
         {
             return _sln.Projects.Where(x => x.Plan != null);
         }
 
-        public IDisposable OnProjectChange(Action<ProjectViewModel> cb) => _pipe.WatchProjectChange(cb);
+        public IDisposable OnProjectChange(Action<ProjectModel> cb) => _pipe.WatchProjectChange(cb);
 
-        public ProjectViewModel Current => _current;
+        public ProjectModel Current => _current;
 
         public void Dispose()
         {
             _pipe.Dispose();
         }
 
+        public void RefreshProjectPlans()
+        {
+            foreach (var project in _sln.Projects)
+            {
+                var type = _project_types.FirstOrDefault(x => x.Id == project.ProjectTypeId);
+                if (type != null)
+                    type.IndexPlan(project);
+            }
+        }
+
         internal class SolutionPipeline : EventPipeline
         {
-            public IDisposable WatchProjectChange(Action<ProjectViewModel> callback) => this.ConfigurePipe("proj_change", callback);
-            public void InvokeProjectChange(ProjectViewModel proj) => this.InvokePipeline("proj_change", proj);
+            public IDisposable WatchProjectChange(Action<ProjectModel> callback) => this.ConfigurePipe("proj_change", callback);
+            public void InvokeProjectChange(ProjectModel proj) => this.InvokePipeline("proj_change", proj);
         }
     }
 }

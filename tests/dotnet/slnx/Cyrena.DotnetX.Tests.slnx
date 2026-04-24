@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="MyBlazorApp/MyBlazorApp.csproj" Id="d700f216-ec9a-451b-8100-9fda73a5f1e1" />
+  <Project Path="MyClassLibrary/MyClassLibrary.csproj" Id="10023a4a-a373-46a5-a9e5-a8f677002608" />
 </Solution>

@@ -18,6 +18,7 @@ namespace Cyrena.Developer.Services
             plan.IndexMvcProjectType();
             model[DotnetOptions.CSharp.Namespace] = csproj.RootNamespace;
             model[DotnetOptions.CSharp.TargetFrameworks] = csproj.TargetFrameworks;
+            model.Plan = plan;
             return plan;
         }
 

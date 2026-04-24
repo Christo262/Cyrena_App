@@ -1,5 +1,4 @@
-﻿using BootstrapBlazor.Components;
-using Cyrena.Components.Tools;
+﻿using Cyrena.Components.Tools;
 using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Models;
@@ -9,13 +8,6 @@ namespace Cyrena.Services
 {
     internal class ComponentAssistantsPlugin : IAssistantPlugin
     {
-        private readonly DialogService _dialog;
-        private readonly ToastService _toasts;
-        public ComponentAssistantsPlugin(DialogService dialog, ToastService toasts)
-        {
-            _dialog = dialog;
-            _toasts = toasts;
-        }
         public string[] Modes => [];
 
         public int Priority => 10;
@@ -28,10 +20,10 @@ namespace Cyrena.Services
 
         public Task LoadAsync(CyrenaKernelBuilder builder)
         {
-            builder.Services.AddSingleton(_dialog);
-            builder.Services.AddSingleton(_toasts);
+            builder.Services.AddSingleton<IDisplayService, DisplayService>();
             builder.KernelBuilder.AddToolbarComponent<ExportChat>(ToolbarAlignment.End);
             builder.KernelBuilder.AddToolbarComponent<ClearChat>(ToolbarAlignment.End);
+            builder.KernelBuilder.AddToolbarComponent<DisplayServiceComponent>(ToolbarAlignment.End);
             return Task.CompletedTask;
         }
     }

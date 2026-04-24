@@ -11,7 +11,6 @@ namespace Cyrena.Extensions
     {
         public static CyrenaBuilder AddDotnetDevelopment(this CyrenaBuilder builder)
         {
-            builder.AddSingletonStore<ProjectModel>("dotnet_projects");
             builder.Services.AddSingleton<ICodeBuilder, SolutionBuilder>();
             builder.Services.AddSingleton<ICodeBuilder, BlazorAppSolutionBuilder>();
             builder.Services.AddSingleton<ICodeBuilder, ClassLibrarySolutionBuilder>();

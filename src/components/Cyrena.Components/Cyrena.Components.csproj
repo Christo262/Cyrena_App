@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Cyrena</RootNamespace>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.3.2</Version>
+    <Version>0.3.5</Version>
     <Authors>Vaya Nova</Authors>
     <Description>Key components and shared components</Description>
     <PackageIcon>cyrena.png</PackageIcon>

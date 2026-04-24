@@ -1,7 +1,7 @@
 {
   "id": "cyrena.dotnet",
   "name": ".NET Development",
-  "version": "0.3.2",
+  "version": "0.3.4",
   "entryAssemblyFile": "Cyrena.Developer.Net.dll",
   "description": "Develop .NET projects or solutions.",
   "icon": null,

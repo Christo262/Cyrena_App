@@ -1,7 +1,7 @@
 {
   "id": "cyrena.arduino_ide",
   "name": "Arduino IDE",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "entryAssemblyFile": "Cyrena.ArduinoIDE.dll",
   "description": "Adds support to develop firmware using Arduino IDE.",
   "icon": null,
