@@ -7,7 +7,7 @@ using Cyrena.Persistence.Contracts;
 using Microsoft.SemanticKernel;
 using System.ComponentModel;
 
-namespace Cyrena.Coding.Plugins
+namespace Cyrena.Coding.Services
 {
     internal class ProjectInformation
     {

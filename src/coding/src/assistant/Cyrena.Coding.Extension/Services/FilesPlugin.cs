@@ -8,7 +8,7 @@ using Microsoft.SemanticKernel;
 using System.ComponentModel;
 using System.Text;
 
-namespace Cyrena.Coding.Plugins
+namespace Cyrena.Coding.Services
 {
     internal class FileActions
     {

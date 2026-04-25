@@ -7,7 +7,7 @@ using Microsoft.SemanticKernel;
 using System.ComponentModel;
 using System.Text;
 
-namespace Cyrena.APIReferences.Plugins
+namespace Cyrena.APIReferences.Services
 {
     internal class APIReferences
     {

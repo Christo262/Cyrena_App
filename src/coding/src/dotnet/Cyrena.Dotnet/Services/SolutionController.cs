@@ -1,4 +1,5 @@
-﻿using Cyrena.Contracts;
+﻿using Cyrena.Coding.Contracts;
+using Cyrena.Contracts;
 using Cyrena.Dotnet.Contracts;
 using Cyrena.Dotnet.Models;
 using Cyrena.Dotnet.Options;

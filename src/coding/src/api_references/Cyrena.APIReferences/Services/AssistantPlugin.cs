@@ -1,12 +1,11 @@
 ﻿using Cyrena.Contracts;
 using Cyrena.APIReferences.Components.Shared;
 using Cyrena.APIReferences.Models;
-using Cyrena.APIReferences.Plugins;
-using Cyrena.Developer.Options;
 using Cyrena.Extensions;
 using Cyrena.Models;
 using Cyrena.Persistence.Options;
 using Microsoft.SemanticKernel;
+using Cyrena.Coding.Options;
 
 namespace Cyrena.APIReferences.Services
 {
@@ -28,7 +27,7 @@ namespace Cyrena.APIReferences.Services
             persistence.AddSingletonStore<ApiReference>("api_references");
             builder.Plugins.AddFromType<APIReferences>();
 
-            builder.KernelBuilder.AddToolbarComponent<ToolbarIcon>(ToolbarAlignment.End);
+            builder.AddToolbarComponent<ToolbarIcon>(ToolbarAlignment.End);
             return Task.CompletedTask;
         }
     }
