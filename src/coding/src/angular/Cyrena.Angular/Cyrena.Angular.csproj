@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Cyrena.Coding.Core" />
+    <PackageReference Include="Cyrena.Components.Core" />
+    <PackageReference Include="Cyrena.Core" />
+    <PackageReference Include="Cyrena.Extensa.Core" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+  </ItemGroup>
+
+</Project>

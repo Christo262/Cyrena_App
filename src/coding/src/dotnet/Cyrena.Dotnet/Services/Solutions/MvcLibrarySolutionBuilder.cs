@@ -59,7 +59,7 @@ namespace Cyrena.Dotnet.Services
             options.Plugins.AddFromType<DotnetTools>();
             options.Plugins.AddFromType<MVC>();
             options.Plugins.AddFromType<Www>();
-            var prompt = Resources.Read(typeof(DotnetExtension).Assembly, "Cyrena.Developer.Resources.mvc-lib-prompt.md");
+            var prompt = Resources.Read(typeof(DotnetExtension).Assembly, "Cyrena.Dotnet.Resources.mvc-lib-prompt.md");
             options.GetFeatureOption<IPromptManager>().AddPrompt(0, prompt);
             return plan;
         }

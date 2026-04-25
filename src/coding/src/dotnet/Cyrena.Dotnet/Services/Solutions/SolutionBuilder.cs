@@ -86,7 +86,7 @@ namespace Cyrena.Dotnet.Services
             options.Plugins.AddFromType<Blazor>();
             options.Plugins.AddFromType<MVC>();
             options.Plugins.AddFromType<Www>();
-            var prompt = Resources.Read(typeof(DotnetExtension).Assembly, "Cyrena.Developer.Resources.dotnet-prompt.md");
+            var prompt = Resources.Read(typeof(DotnetExtension).Assembly, "Cyrena.Dotnet.Resources.dotnet-prompt.md");
             options.GetFeatureOption<IPromptManager>().AddPrompt(0, prompt);
             options.AddToolbarComponent<SolutionSelector>(ToolbarAlignment.Start);
             options.AddToolbarComponent<RefreshPlan>(ToolbarAlignment.Start);

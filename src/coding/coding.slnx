@@ -3,6 +3,9 @@
     <File Path="readme.md" />
   </Folder>
   <Folder Name="/src/" />
+  <Folder Name="/src/angular/">
+    <Project Path="src/angular/Cyrena.Angular/Cyrena.Angular.csproj" Id="85957293-b354-40e8-beb2-cff4c5aa6d49" />
+  </Folder>
   <Folder Name="/src/api_references/">
     <Project Path="src/api_references/Cyrena.APIReferences/Cyrena.APIReferences.csproj" Id="4cc6b0b4-2807-43c4-899d-fa5a039cd65c" />
   </Folder>

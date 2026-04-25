@@ -58,7 +58,7 @@ namespace Cyrena.Dotnet.Services
             options.Services.AddSingleton(project_types);
             options.Services.AddSingleton<ISolutionController, SolutionController>();
             options.Plugins.AddFromType<DotnetTools>();
-            var prompt = Resources.Read(typeof(DotnetExtension).Assembly, "Cyrena.Developer.Resources.class-library-prompt.md");
+            var prompt = Resources.Read(typeof(DotnetExtension).Assembly, "Cyrena.Dotnet.Resources.class-library-prompt.md");
             options.GetFeatureOption<IPromptManager>().AddPrompt(0, prompt);
             return plan;
         }

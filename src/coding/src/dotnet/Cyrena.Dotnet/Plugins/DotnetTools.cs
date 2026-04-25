@@ -164,7 +164,7 @@ namespace Cyrena.Dotnet.Plugins
         public static string ReadTemplate(string name)
         {
             var assembly = typeof(DotnetSolution).Assembly;
-            var resourceName = $"Cyrena.Developer.Resources.templates.{name}";
+            var resourceName = $"Cyrena.Dotnet.Resources.templates.{name}";
             using var stream = assembly.GetManifestResourceStream(resourceName);
             if (stream == null)
                 throw new NullReferenceException($"Unable to find {resourceName}");
