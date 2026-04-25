@@ -1,4 +1,4 @@
-﻿using Cyrena.Coding.Models;
+using Cyrena.Coding.Models;
 
 namespace Cyrena.Coding.Extensions
 {
@@ -25,7 +25,7 @@ namespace Cyrena.Coding.Extensions
         public static DevelopFolder CreateFolder(this DevelopPlan plan, DevelopFolder folder, string id, string name)
         {
             var ext = folder.Folders.FirstOrDefault(x => x.Id == id);
-            var path = Path.Combine(plan.RootDirectory, folder.Name, name);
+            var path = Path.Combine(plan.RootDirectory, folder.RelativePath, name);
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
             if (ext != null)
@@ -146,7 +146,7 @@ namespace Cyrena.Coding.Extensions
 
         public static DevelopFolder GetOrCreateFolder(this DevelopPlan plan, DevelopFolder parent, string id, string name)
         {
-            if (!plan.TryFindFolder(id, out var folder))
+            if (!parent.TryFindFolder(id, out var folder, false))
                 return plan.CreateFolder(parent, id, name);
             return folder!;
         }

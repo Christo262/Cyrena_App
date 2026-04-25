@@ -1,4 +1,4 @@
-﻿using Cyrena.Coding.Models;
+using Cyrena.Coding.Models;
 
 namespace Cyrena.Coding.Extensions
 {
@@ -15,11 +15,16 @@ namespace Cyrena.Coding.Extensions
         public static DevelopFile CreateFile(this DevelopPlan plan, string fileId, string fileName, string? content)
         {
             var ext = plan.Files.FirstOrDefault(f => f.Id == fileId);
+            if (ext != null)
+            {
+                var extPath = Path.Combine(plan.RootDirectory, ext.RelativePath);
+                if (!File.Exists(extPath))
+                    File.WriteAllText(extPath, content);
+                return ext;
+            }
             var path = Path.Combine(plan.RootDirectory, fileName);
             if (!File.Exists(path))
                 File.WriteAllText(path, content);
-            if (ext != null)
-                return ext;
             var model = new DevelopFile()
             {
                 Id = fileId,
@@ -42,11 +47,16 @@ namespace Cyrena.Coding.Extensions
         public static DevelopFile CreateFile(this DevelopPlan plan, DevelopFolder folder, string fileId, string fileName, string? content)
         {
             var ext = folder.Files.FirstOrDefault(f => f.Id == fileId);
+            if (ext != null)
+            {
+                var extPath = Path.Combine(plan.RootDirectory, ext.RelativePath);
+                if (!File.Exists(extPath))
+                    File.WriteAllText(extPath, content);
+                return ext;
+            }
             var path = Path.Combine(plan.RootDirectory, folder.RelativePath, fileName);
             if (!File.Exists(path))
                 File.WriteAllText(path, content);
-            if (ext != null)
-                return ext;
             var model = new DevelopFile()
             {
                 Id = fileId,
@@ -62,7 +72,6 @@ namespace Cyrena.Coding.Extensions
             var path = Path.Combine(plan.RootDirectory, file.RelativePath);
             if (!File.Exists(path))
             {
-                plan.RemoveFile(file);
                 content = null;
                 return false;
             }
@@ -76,7 +85,6 @@ namespace Cyrena.Coding.Extensions
             var path = Path.Combine(plan.RootDirectory, file.RelativePath);
             if (!File.Exists(path))
             {
-                plan.RemoveFile(file);
                 lines = null;
                 return false;
             }
@@ -276,7 +284,10 @@ namespace Cyrena.Coding.Extensions
             foreach (var file in files)
             {
                 var info = new FileInfo(file);
-                var name = info.Name.Replace($".{extension}", "");
+                var suffix = $".{extension}";
+                var name = info.Name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)
+                    ? info.Name[..^suffix.Length]
+                    : info.Name;
                 var id = $"{id_prefix}{name}";
                 if (!plan.TryFindFile(folder, id, out var _, false))
                 {
@@ -301,7 +312,10 @@ namespace Cyrena.Coding.Extensions
             foreach (var file in files)
             {
                 var info = new FileInfo(file);
-                var name = info.Name.Replace($".{extension}", "");
+                var suffix = $".{extension}";
+                var name = info.Name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)
+                    ? info.Name[..^suffix.Length]
+                    : info.Name;
                 var id = $"{id_prefix}{name}";
                 if (!plan.TryFindFile(id, out var _, false))
                 {
@@ -411,9 +425,7 @@ namespace Cyrena.Coding.Extensions
                 newLines[newKey++] = repl;
             }
 
-            // c) lines after the removed range – they need to be shifted by
-            //    (replacement.Count - effectiveCount)
-            int shift = replacement.Count() - effectiveCount;
+            // c) lines after the removed range
             foreach (var kvp in og.Lines.OrderBy(k => k.Key).Skip(startIndex + effectiveCount))
             {
                 newLines[newKey++] = kvp.Value;

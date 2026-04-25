@@ -4,6 +4,7 @@ using Cyrena.Coding.Models;
 using Cyrena.Contracts;
 using Cyrena.Dotnet.Contracts;
 using Cyrena.Dotnet.Options;
+using Cyrena.Dotnet.Services;
 using Cyrena.Extensions;
 using Cyrena.Models;
 using Microsoft.SemanticKernel;
@@ -29,7 +30,7 @@ namespace Cyrena.Dotnet.Plugins
             [Description("The name of the page, for example, 'Index'.")] string name,
             [Description("The url of the page that will be inserted in @page attribute.")] string? url)
         {
-            if(_sln.Current.ProjectTypeId != DotnetOptions.CsBlazorLibrary && _sln.Current.ProjectTypeId != DotnetOptions.CsBlazorApp)
+            if(_sln.Current.ProjectTypeId != BlazorClassLibrary.Id && _sln.Current.ProjectTypeId != BlazorApplication.Id)
                 return new ToolResult<DevelopFile>(false, "Not a blazor project.");
             name = Path.GetFileNameWithoutExtension(name);
             var id = $"components_pages_{name}";
@@ -51,7 +52,7 @@ namespace Cyrena.Dotnet.Plugins
         public ToolResult<DevelopFile> CreateBlazorSharedComponent(
             [Description("The name of the component, for example, 'MyForm'.")] string name)
         {
-            if (_sln.Current.ProjectTypeId != DotnetOptions.CsBlazorLibrary && _sln.Current.ProjectTypeId != DotnetOptions.CsBlazorApp)
+            if (_sln.Current.ProjectTypeId != BlazorClassLibrary.Id && _sln.Current.ProjectTypeId != BlazorApplication.Id)
                 return new ToolResult<DevelopFile>(false, "Not a blazor project.");
             name = Path.GetFileNameWithoutExtension(name);
             var id = $"components_shared_{name}";
@@ -71,7 +72,7 @@ namespace Cyrena.Dotnet.Plugins
         public ToolResult<DevelopFile> CreateBlazorLayout(
         [Description("The name of the layout, for example, 'MainLayout'.")] string name)
         {
-            if (_sln.Current.ProjectTypeId != DotnetOptions.CsBlazorLibrary && _sln.Current.ProjectTypeId != DotnetOptions.CsBlazorApp)
+            if (_sln.Current.ProjectTypeId != BlazorClassLibrary.Id && _sln.Current.ProjectTypeId != BlazorApplication.Id)
                 return new ToolResult<DevelopFile>(false, "Not a blazor project.");
             name = Path.GetFileNameWithoutExtension(name);
             var id = $"components_layout_{name}";
@@ -91,7 +92,7 @@ namespace Cyrena.Dotnet.Plugins
         public ToolResult<DevelopFile> CreateBlazorRootComponent(
             [Description("The name of the component, for example, 'MyApp'.")] string name)
         {
-            if (_sln.Current.ProjectTypeId != DotnetOptions.CsBlazorLibrary && _sln.Current.ProjectTypeId != DotnetOptions.CsBlazorApp)
+            if (_sln.Current.ProjectTypeId != BlazorClassLibrary.Id && _sln.Current.ProjectTypeId != BlazorApplication.Id)
                 return new ToolResult<DevelopFile>(false, "Not a blazor project.");
             name = Path.GetFileNameWithoutExtension(name);
             var id = $"components_{name}";

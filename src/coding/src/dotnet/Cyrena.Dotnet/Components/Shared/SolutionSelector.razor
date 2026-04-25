@@ -1,6 +1,6 @@
 @inherits KernelComponentBase
 
-<div style="width:150px" class="me-1">
+<div style="width:250px" class="me-1">
     <select @bind="_sln_id" @bind:after="OnValueChange" disabled="@_its.Inferring" class="form-control form-control-sm">
         @foreach (var item in _sln.GetValidProjects())
         {

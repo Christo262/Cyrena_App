@@ -1,4 +1,4 @@
-﻿using Cyrena.Coding.Contracts;
+using Cyrena.Coding.Contracts;
 using Cyrena.Contracts;
 using Cyrena.Dotnet.Contracts;
 using Cyrena.Dotnet.Models;
@@ -20,7 +20,7 @@ namespace Cyrena.Dotnet.Services
             _project_types = project_types;
             _plan = plan;
             _sln = sln;
-            _current = _sln.Projects.First(x => x.Id == _config.Config[DotnetOptions.LastProject]);
+            _current = _sln.Projects.FirstOrDefault(x => x.Id == _config.Config[DotnetOptions.LastProject])!;
             _pipe = new SolutionPipeline();
         }
 

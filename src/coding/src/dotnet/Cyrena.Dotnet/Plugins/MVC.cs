@@ -4,6 +4,7 @@ using Cyrena.Coding.Models;
 using Cyrena.Contracts;
 using Cyrena.Dotnet.Contracts;
 using Cyrena.Dotnet.Options;
+using Cyrena.Dotnet.Services;
 using Cyrena.Extensions;
 using Cyrena.Models;
 using Microsoft.SemanticKernel;
@@ -28,7 +29,7 @@ namespace Cyrena.Dotnet.Plugins
         public ToolResult<DevelopFile> CreateController(
             [Description("The name of the controller, i.e. 'AccountController'.")]string name)
         {
-            if (_sln.Current.ProjectTypeId != DotnetOptions.CsMvcApp && _sln.Current.ProjectTypeId != DotnetOptions.CsMvcLib)
+            if (_sln.Current.ProjectTypeId != MvcApplication.Id && _sln.Current.ProjectTypeId != MvcLibrary.Id)
                 return new ToolResult<DevelopFile>(false, "Not a MVC project.");
             name = Path.GetFileNameWithoutExtension(name);
             if (!name.EndsWith("Controller"))
@@ -50,7 +51,7 @@ namespace Cyrena.Dotnet.Plugins
             [Description("The file id of the controller to create the view for.")]string controllerFileId, 
             [Description("The name of the view, i.e. 'Index'.")]string name)
         {
-            if (_sln.Current.ProjectTypeId != DotnetOptions.CsMvcApp && _sln.Current.ProjectTypeId != DotnetOptions.CsMvcLib)
+            if (_sln.Current.ProjectTypeId != MvcApplication.Id && _sln.Current.ProjectTypeId != MvcLibrary.Id)
                 return new ToolResult<DevelopFile>(false, "Not a MVC project.");
             if (!_plan.Plan.TryFindFile(controllerFileId, out var controller))
                 return new ToolResult<DevelopFile>(false, "Unable to find controller");
@@ -73,7 +74,7 @@ namespace Cyrena.Dotnet.Plugins
         public ToolResult<DevelopFile> CreateShared(
             [Description("The name of the partial view, i.e. '_Layout'.")] string name)
         {
-            if (_sln.Current.ProjectTypeId != DotnetOptions.CsMvcApp && _sln.Current.ProjectTypeId != DotnetOptions.CsMvcLib)
+            if (_sln.Current.ProjectTypeId != MvcApplication.Id && _sln.Current.ProjectTypeId != MvcLibrary.Id)
                 return new ToolResult<DevelopFile>(false, "Not a MVC project.");
             name = Path.GetFileNameWithoutExtension(name);
             var id = $"views_shared_{name}";

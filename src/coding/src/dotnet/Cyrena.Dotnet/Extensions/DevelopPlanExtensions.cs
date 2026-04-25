@@ -1,4 +1,4 @@
-﻿using Cyrena.Coding.Extensions;
+using Cyrena.Coding.Extensions;
 using Cyrena.Coding.Models;
 using Cyrena.Dotnet.Models;
 
@@ -47,9 +47,9 @@ namespace Cyrena.Dotnet.Extensions
             plan.IndexFiles(layout, "css", "blazor_layout_css_");
 
             var shared = plan.GetOrCreateFolder(components, "shared", "Shared");
-            plan.IndexFiles(layout, "razor", "blazor_shared_");
-            plan.IndexFiles(layout, "cs", "blazor_shared_cs_");
-            plan.IndexFiles(layout, "css", "blazor_shared_css_");
+            plan.IndexFiles(shared, "razor", "blazor_shared_");
+            plan.IndexFiles(shared, "cs", "blazor_shared_cs_");
+            plan.IndexFiles(shared, "css", "blazor_shared_css_");
 
             plan.IndexFiles("cs", "blazor_cs_");
             plan.IndexFiles("json", "blazor_json_");

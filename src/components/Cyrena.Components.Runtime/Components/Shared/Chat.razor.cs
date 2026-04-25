@@ -1,4 +1,4 @@
-﻿using Markdig;
+using Markdig;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
@@ -21,9 +21,11 @@ namespace Cyrena.Components.Shared
         private IChatMessageService _msg = default!;
         private ConnectionInfo _info = default!;
 
+        private DotNetObjectReference<Chat>? _dotNetRef;
+
         protected override void OnInitialized()
         {
-            _info = Kernel.Services.GetRequiredService<ConnectionInfo>();   
+            _info = Kernel.Services.GetRequiredService<ConnectionInfo>();
             _its = Kernel.Services.GetRequiredService<IIterationService>();
             _msg = Kernel.Services.GetRequiredService<IChatMessageService>();
             _its_start = _its.OnIterationStart(OnIterationEvent);
@@ -40,6 +42,35 @@ namespace Cyrena.Components.Shared
         {
             if (!firstRender) return;
             await ScrollToBottomAsync(true);
+
+            _dotNetRef = DotNetObjectReference.Create(this);
+            await _js.InvokeVoidAsync("Cyrena.Runtime.registerChatPasteHandler", _area, _dotNetRef);
+        }
+
+        [JSInvokable]
+        public void OnImagePasted(string base64DataUrl, string mimeType)
+        {
+            if (string.IsNullOrEmpty(mimeType))
+                mimeType = "image/png";
+            var extension = mimeType switch
+            {
+                "image/png" => "png",
+                "image/jpeg" => "jpg",
+                "image/gif" => "gif",
+                "image/webp" => "webp",
+                _ => "png"
+            };
+
+            var base64Data = base64DataUrl.Contains(',')
+                ? base64DataUrl.Split(',')[1]
+                : base64DataUrl;
+
+            var bytes = Convert.FromBase64String(base64Data);
+            var imageContent = new ImageContent(bytes, mimeType);
+            var additionalContent = new AdditionalMessageContent($"pasted-image.{extension}", imageContent);
+
+            _items.Add(additionalContent);
+            InvokeAsync(StateHasChanged);
         }
 
         private List<AdditionalMessageContent> _items = new List<AdditionalMessageContent>();
@@ -146,6 +177,11 @@ namespace Cyrena.Components.Shared
         private IDisposable _dsp_st = default!;
         public void Dispose()
         {
+            if (_dotNetRef is not null)
+            {
+                _ = _js.InvokeVoidAsync("Cyrena.Runtime.unregisterChatPasteHandler", _area);
+                _dotNetRef.Dispose();
+            }
             _its_end.Dispose();
             _its_start.Dispose();
             _dsp_hst.Dispose();

@@ -24,7 +24,8 @@
     @if (!string.IsNullOrEmpty(_angularJsonPath))
     {
         <div class="alert alert-info">
-            <strong>Project Root:</strong> @_projectRoot
+            <strong>Project Root:</strong> 
+            <input type="text" class="form-control form-control-sm" value="@_projectRoot" disabled/>
         </div>
     }
 

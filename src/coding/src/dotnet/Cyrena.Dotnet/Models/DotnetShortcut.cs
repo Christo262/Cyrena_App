@@ -1,12 +1,11 @@
-﻿using BootstrapBlazor.Components;
+using BootstrapBlazor.Components;
 using Cyrena.Coding.Options;
 using Cyrena.Contracts;
 using Cyrena.Dotnet.Components.Shared;
 using Cyrena.Dotnet.Options;
 using Cyrena.Models;
 using Microsoft.AspNetCore.Components;
-
-namespace Cyrena.Net.Models
+namespace Cyrena.Dotnet.Models
 {
     internal class DotnetShortcut : IShortcut
     {

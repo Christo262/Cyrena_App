@@ -1,4 +1,4 @@
-﻿namespace Cyrena.Dotnet.Models
+namespace Cyrena.Dotnet.Models
 {
     /// <summary>
     /// Represents information extracted from a project file
@@ -45,6 +45,11 @@
         public string TargetFrameworks { get; set; } = string.Empty;
 
         /// <summary>
+        /// The output type of the project (e.g., "Exe", "WinExe", "Library")
+        /// </summary>
+        public string? OutputType { get; set; }
+
+        /// <summary>
         /// List of NuGet package references
         /// </summary>
         public List<NuGetPackage> NuGetPackages { get; set; } = new List<NuGetPackage>();
@@ -82,6 +87,9 @@
             string targetInfo = !string.IsNullOrWhiteSpace(TargetFrameworks)
                 ? $"Target: {TargetFrameworks}"
                 : "No target framework";
+            string outputInfo = !string.IsNullOrWhiteSpace(OutputType)
+                ? $"Output: {OutputType}"
+                : "";
             string packageInfo = NuGetPackages.Count > 0
                 ? $"{NuGetPackages.Count} packages"
                 : "No packages";
@@ -89,7 +97,7 @@
                 ? $"{FrameworkReferences.Count} framework refs"
                 : "";
 
-            var parts = new[] { sdkInfo, namespaceInfo, targetInfo, packageInfo, frameworkInfo }
+            var parts = new[] { sdkInfo, namespaceInfo, targetInfo, outputInfo, packageInfo, frameworkInfo }
                 .Where(s => !string.IsNullOrWhiteSpace(s));
 
             return $"{FileName} - {string.Join(", ", parts)}";

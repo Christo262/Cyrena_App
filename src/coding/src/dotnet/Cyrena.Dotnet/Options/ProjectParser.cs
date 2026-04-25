@@ -1,4 +1,4 @@
-﻿using Cyrena.Dotnet.Models;
+using Cyrena.Dotnet.Models;
 using System.Xml.Linq;
 
 namespace Cyrena.Dotnet.Options
@@ -62,6 +62,9 @@ namespace Cyrena.Dotnet.Options
 
                 // Extract Framework references
                 projectInfo.FrameworkReferences = ExtractFrameworkReferences(root);
+
+                // Extract OutputType
+                projectInfo.OutputType = ExtractOutputType(root);
             }
             catch (Exception ex)
             {
@@ -164,6 +167,19 @@ namespace Cyrena.Dotnet.Options
             }
 
             return frameworkRefs;
+        }
+
+        /// <summary>
+        /// Extracts the output type (e.g., "Exe", "WinExe", "Library")
+        /// </summary>
+        private static string? ExtractOutputType(XElement root)
+        {
+            var outputTypeElement = root.Descendants("OutputType").FirstOrDefault();
+            if (outputTypeElement != null && !string.IsNullOrWhiteSpace(outputTypeElement.Value))
+            {
+                return outputTypeElement.Value.Trim();
+            }
+            return null;
         }
 
         /// <summary>
