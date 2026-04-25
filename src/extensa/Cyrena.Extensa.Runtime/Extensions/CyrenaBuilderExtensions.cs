@@ -50,20 +50,17 @@ namespace Cyrena.Extensions
         public static CyrenaBuilder AddExtension<TExtension>(this CyrenaBuilder builder, string id, string name, Version version, string? description = null)
             where TExtension : class, IExtension, new()
         {
-            builder.BuildActions.Add(builder =>
-            {
-                var ext = new TExtension();
-                ext.BuildExtension(builder);
+            var ext = new TExtension();
+            ext.BuildExtension(builder);
 
-                var registry = builder.GetFeatureOption<IExtensionRegistry>();
-                registry.AddExtension(new Extensa.Loader.Models.LoadedExtension()
-                {
-                    Id = id,
-                    Name = name,
-                    Version = version,
-                    Description = description,
-                    Status = Extensa.Loader.Models.ExtensionStatus.Runtime
-                });
+            var registry = builder.GetFeatureOption<IExtensionRegistry>();
+            registry.AddExtension(new Extensa.Loader.Models.LoadedExtension()
+            {
+                Id = id,
+                Name = name,
+                Version = version,
+                Description = description,
+                Status = Extensa.Loader.Models.ExtensionStatus.Runtime
             });
             return builder;
         }

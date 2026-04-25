@@ -25,9 +25,6 @@ namespace Cyrena.Extensions
             builder.AddSingletonStore<ChatConfiguration>("chats");
 
             builder.Services.AddSingleton<IKernelController, KernelController>();
-
-            builder.AddAssistantMode<DefaultAssistantMode>();
-            builder.AddAssistantPlugin<DefaultAssistantPlugin>();
             builder.AddAssistantPlugin<AllAssistantsPlugin>();
 
             return builder;

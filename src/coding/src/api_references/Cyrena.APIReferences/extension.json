@@ -1,0 +1,16 @@
+{
+  "id": "cyrena.api_references",
+  "name": "API References",
+  "version": "0.4.0",
+  "entryAssemblyFile": "Cyrena.APIReferences.dll",
+  "description": "Adds ability to document & remember coding structures, services, etc.",
+  "icon": null,
+  "contentRootDirectory": null,
+  "dependencies": [
+    {
+      "id": "cyrena.developer",
+      "minVersion": "0.4.0"
+    }
+  ],
+  "requireFrameworkBuilder": true
+}

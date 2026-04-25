@@ -26,16 +26,13 @@ class Program
 
         appBuilder.RootComponents.Add<App>("app");
         var builder = appBuilder.Services.AddCyrenaRuntime()
-            .AddComponents()
-            .AddExtensa(e =>
-            {
-                e.ExtensionInfoFileName = "extension.json";
-                e.ExtensionsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena", "extensions");
-                e.InstallationsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena", "install");
-            })
-            .AddExtensaComponents()
-            .AddOllama()
-            .AddOpenAI();
+                        .AddExtensa(e =>
+                        {
+                            e.ExtensionInfoFileName = "extension.json";
+                            e.ExtensionsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena", "extensions");
+                            e.InstallationsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena", "install");
+                        })
+                        .AddExtension<CyrenaExtension>(CyrenaExtension.Id, CyrenaExtension.Name, CyrenaExtension.Version, CyrenaExtension.Description);
 
         //Platform Specific Implementation
         var files = new FileDialog();

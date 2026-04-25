@@ -1,0 +1,16 @@
+@inherits KernelComponentBase
+@using Cyrena.Dotnet.Contracts
+@using Microsoft.Extensions.DependencyInjection
+
+<Tooltip Title="Refresh Plan(s)">
+    <button type="button" class="btn btn-sm btn-primary rounded-pill me-1"><i class="bi bi-arrow-clockwise"></i></button>
+</Tooltip>
+
+@code {
+    private void Refresh()
+    {
+        var sln = Kernel.Services.GetService<ISolutionController>();
+        if (sln != null)
+            sln.RefreshProjectPlans();
+    }
+}

@@ -32,16 +32,13 @@ namespace Cyrena.HUD
 #endif
             serviceCollection.AddSingleton(this);
             _builder = serviceCollection.AddCyrenaRuntime()
-                .AddComponents()
-                .AddExtensa(e =>
-                {
-                    e.ExtensionInfoFileName = "extension.json";
-                    e.ExtensionsDirectory = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena", "extensions");
-                    e.InstallationsDirectory = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena", "install");
-                })
-                .AddExtensaComponents()
-                .AddOllama()
-                .AddOpenAI();
+                                .AddExtensa(e =>
+                                {
+                                    e.ExtensionInfoFileName = "extension.json";
+                                    e.ExtensionsDirectory = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena", "extensions");
+                                    e.InstallationsDirectory = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena", "install");
+                                })
+                                .AddExtension<CyrenaExtension>(CyrenaExtension.Id, CyrenaExtension.Name, CyrenaExtension.Version, CyrenaExtension.Description);
 
             //Platform Specific Implementation
             var files = new FileDialog();

@@ -1,0 +1,60 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\blazor-app-prompt.md" />
+    <None Remove="Resources\blazor-lib-prompt.md" />
+    <None Remove="Resources\class-library-prompt.md" />
+    <None Remove="Resources\dotnet-prompt.md" />
+    <None Remove="Resources\mvc-app-prompt.md" />
+    <None Remove="Resources\mvc-lib-prompt.md" />
+    <None Remove="Resources\templates\attribute.txt" />
+    <None Remove="Resources\templates\blazor-layout.txt" />
+    <None Remove="Resources\templates\blazor-page.txt" />
+    <None Remove="Resources\templates\blazor-root.txt" />
+    <None Remove="Resources\templates\blazor-shared.txt" />
+    <None Remove="Resources\templates\contract.txt" />
+    <None Remove="Resources\templates\controller.txt" />
+    <None Remove="Resources\templates\extension.txt" />
+    <None Remove="Resources\templates\model.txt" />
+    <None Remove="Resources\templates\option.txt" />
+    <None Remove="Resources\templates\razor-partial.txt" />
+    <None Remove="Resources\templates\service.txt" />
+    <None Remove="Resources\templates\view.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\blazor-app-prompt.md" />
+    <EmbeddedResource Include="Resources\blazor-lib-prompt.md" />
+    <EmbeddedResource Include="Resources\class-library-prompt.md" />
+    <EmbeddedResource Include="Resources\dotnet-prompt.md" />
+    <EmbeddedResource Include="Resources\mvc-app-prompt.md" />
+    <EmbeddedResource Include="Resources\mvc-lib-prompt.md" />
+    <EmbeddedResource Include="Resources\templates\attribute.txt" />
+    <EmbeddedResource Include="Resources\templates\blazor-layout.txt" />
+    <EmbeddedResource Include="Resources\templates\blazor-page.txt" />
+    <EmbeddedResource Include="Resources\templates\blazor-root.txt" />
+    <EmbeddedResource Include="Resources\templates\blazor-shared.txt" />
+    <EmbeddedResource Include="Resources\templates\contract.txt" />
+    <EmbeddedResource Include="Resources\templates\controller.txt" />
+    <EmbeddedResource Include="Resources\templates\extension.txt" />
+    <EmbeddedResource Include="Resources\templates\model.txt" />
+    <EmbeddedResource Include="Resources\templates\option.txt" />
+    <EmbeddedResource Include="Resources\templates\razor-partial.txt" />
+    <EmbeddedResource Include="Resources\templates\service.txt" />
+    <EmbeddedResource Include="Resources\templates\view.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Cyrena.Coding.Core" />
+    <PackageReference Include="Cyrena.Components.Core" />
+    <PackageReference Include="Cyrena.Extensa.Core" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+  </ItemGroup>
+
+</Project>

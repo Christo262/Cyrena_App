@@ -1,10 +1,8 @@
 ﻿using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Models;
-using Cyrena.Persistence.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace Cyrena.Runtime.Services
 {

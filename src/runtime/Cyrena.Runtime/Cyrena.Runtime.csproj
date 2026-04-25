@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -15,16 +15,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\persistence\Cyrena.Persistence.Core\Cyrena.Persistence.Core.csproj" />
     <ProjectReference Include="..\..\persistence\Cyrena.Persistence.File\Cyrena.Persistence.File.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Resources\prompt.md">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\prompt.md" />
   </ItemGroup>
 
 </Project>

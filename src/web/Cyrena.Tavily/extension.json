@@ -1,12 +1,16 @@
 {
   "id": "cyrena.tavily",
   "name": "Tavily Web Search",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "entryAssemblyFile": "Cyrena.Tavily.dll",
   "description": "Adds web search functionality for assistants using Tavily.",
   "icon": null,
   "contentRootDirectory": null,
   "dependencies": [
+    {
+      "id": "cyrena",
+      "minVersion": "0.4.0"
+    }
   ],
   "requireFrameworkBuilder": true
 }

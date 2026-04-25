@@ -24,11 +24,11 @@
                 </li>
             </ul>
         </div>
-        <Tooltip Title="Minimize">
-            <button class="btn btn-outline-dark rounded-0 border-0 h-100" type="button" @onclick="() => _main.Minimize()"><i class="bi bi-fullscreen-exit"></i></button>
-        </Tooltip>
         <Tooltip Title="Settings">
             <button type="button" class="btn btn-outline-dark rounded-0 border-0 h-100" @onclick="@(() => _nav.NavigateTo("settings"))"><i class="bi bi-gear"></i></button>
+        </Tooltip>
+        <Tooltip Title="Minimize">
+            <button class="btn btn-outline-dark rounded-0 border-0 h-100" type="button" @onclick="() => _main.Minimize()"><i class="bi bi-fullscreen-exit"></i></button>
         </Tooltip>
         <button class="btn btn-danger rounded-0 rounded-end" type="button" @onclick="() => _main.Close()"><i class="bi bi-x-lg"></i></button>
     </div>
