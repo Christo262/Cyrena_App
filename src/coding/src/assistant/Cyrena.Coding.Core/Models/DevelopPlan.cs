@@ -58,12 +58,6 @@ namespace Cyrena.Coding.Models
             }
         }
 
-        public static void Save(DevelopPlan plan)
-        {
-            var path = Path.Combine(plan.DataDirectory, "plan");
-            File.WriteAllText(path, plan.ToString());
-        }
-
         public string ToJson()
         {
             return JsonConvert.SerializeObject(this, Formatting.Indented);

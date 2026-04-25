@@ -11,7 +11,6 @@ using Cyrena.PlatformIO.Contracts;
 using Cyrena.PlatformIO.Extensions;
 using Cyrena.PlatformIO.Models;
 using Cyrena.PlatformIO.Options;
-using Cyrena.PlatformIO.Plugins;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 
@@ -42,7 +41,7 @@ namespace Cyrena.PlatformIO.Services
             plan.IndexPlatformIODefaultPlan();
 
             options.Services.AddSingleton<IEnvironmentController>(environmentController);
-            options.Plugins.AddFromType<Cyrena.PlatformIO.Plugins.Platform>();
+            options.Plugins.AddFromType<Platform>();
             var prompt = Resources.Read(typeof(PlatformIOBuilder).Assembly, "Cyrena.PlatformIO.Resources.prompt.md");
             options.GetFeatureOption<IPromptManager>().AddPrompt(0, prompt);
             options.KernelBuilder.AddToolbarComponent<Cyrena.PlatformIO.Components.Shared.Toolbar>(ToolbarAlignment.Start);

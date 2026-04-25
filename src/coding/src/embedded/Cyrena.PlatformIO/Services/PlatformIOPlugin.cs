@@ -7,9 +7,8 @@ using Cyrena.Models;
 using Cyrena.PlatformIO.Contracts;
 using Microsoft.SemanticKernel;
 using System.ComponentModel;
-using static System.Net.Mime.MediaTypeNames;
 
-namespace Cyrena.PlatformIO.Plugins
+namespace Cyrena.PlatformIO.Services
 {
     internal class Platform
     {

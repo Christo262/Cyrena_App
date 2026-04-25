@@ -1,0 +1,94 @@
+@implements IResultDialog
+@using Cyrena.Coding.Options
+@using Cyrena.Angular.Options
+@using Cyrena.Components.Shared
+@inject IJSRuntime JS
+@inject IFileDialog _files
+
+<div class="p-3">
+    <h5>Select Angular Project</h5>
+    <p class="text-muted">Select your <code>angular.json</code> file to establish the project root.</p>
+
+    <div class="mb-3">
+        <label class="form-label">angular.json Location</label>
+        <div class="input-group">
+            <input type="text" class="form-control" @bind="_angularJsonPath" placeholder="C:\MyProject\angular.json" readonly />
+            <Button OnClick="PickFile" Text="Browse..." />
+        </div>
+        @if (!string.IsNullOrEmpty(_error))
+        {
+            <div class="text-danger mt-2">@_error</div>
+        }
+    </div>
+
+    @if (!string.IsNullOrEmpty(_angularJsonPath))
+    {
+        <div class="alert alert-info">
+            <strong>Project Root:</strong> @_projectRoot
+        </div>
+    }
+
+    <div class="mb-3">
+        <label class="form-label">Title</label>
+        <InputText @bind-Value="Model.Title" class="form-control" />
+    </div>
+
+    <ConnectionSelector @bind-Value="Model.ConnectionId" />
+
+    <PluginSelector Chat="Model" />
+</div>
+
+@code {
+    [Parameter]
+    public ChatConfiguration Model { get; set; } = default!;
+
+    private string _angularJsonPath = string.Empty;
+    private string _projectRoot = string.Empty;
+    private string _error = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        _angularJsonPath = Model[AngularOptions.AngularJson] ?? string.Empty;
+        if (!string.IsNullOrEmpty(_angularJsonPath))
+            _projectRoot = Path.GetDirectoryName(_angularJsonPath) ?? string.Empty;
+    }
+
+    private async Task PickFile()
+    {
+        _error = string.Empty;
+        var result = await _files.OpenAsync("Choose angular.json file", ("json", [".json"]));
+
+        if (!string.IsNullOrEmpty(result))
+        {
+            var fileName = Path.GetFileName(result);
+            if (!fileName.Equals("angular.json", StringComparison.OrdinalIgnoreCase))
+            {
+                _error = "Please select an angular.json file.";
+                return;
+            }
+
+            _angularJsonPath = result;
+            _projectRoot = Path.GetDirectoryName(result) ?? string.Empty;
+            Model[AngularOptions.AngularJson] = result;
+            Model[DevelopOptions.RootDirectory] = _projectRoot;
+        }
+    }
+
+    public Task<bool> OnClosing(DialogResult result)
+    {
+        if (result != DialogResult.Yes)
+            return Task.FromResult(true); //Means it can close, user cancelled intention
+        if (string.IsNullOrEmpty(Model[AngularOptions.AngularJson]))
+        {
+            _error = "Please select an angular.json file.";
+            return Task.FromResult(false);
+        }
+        Model[DevelopOptions.RootDirectory] = Path.GetDirectoryName(Model[AngularOptions.AngularJson]);
+        return Task.FromResult(true);
+    }
+
+    public Task OnClose(DialogResult result)
+    {
+        return Task.CompletedTask;
+    }
+}

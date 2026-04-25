@@ -1,4 +1,5 @@
-﻿using Cyrena.Extensa.Models;
+using Cyrena.Extensa.Models;
+using Cyrena.Extensions;
 using Cyrena.Options;
 
 namespace Cyrena.Angular
@@ -7,7 +8,7 @@ namespace Cyrena.Angular
     {
         public override void BuildExtension(CyrenaBuilder builder)
         {
-            base.BuildExtension(builder);
+            builder.AddAngular();
         }
     }
 }
