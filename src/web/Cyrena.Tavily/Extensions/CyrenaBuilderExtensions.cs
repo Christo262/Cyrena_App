@@ -12,7 +12,7 @@ namespace Cyrena.Extensions
         public static CyrenaBuilder AddTavily(this CyrenaBuilder builder)
         {
             builder.AddAssistantPlugin<TavilyExtension>();
-            builder.AddSettingsComponent<TavilySettings>();
+            builder.AddSettingsComponent<TavilySettings>("Tavily");
 
             return builder;
         }

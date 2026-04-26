@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Cyrena</RootNamespace>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.4.1</Version>
+    <Version>0.4.2</Version>
     <Authors>Vaya Nova</Authors>
     <Description>Key components and shared components</Description>
     <PackageIcon>cyrena.png</PackageIcon>
@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <PackageReference Include="BootstrapBlazor" />
+    <PackageReference Include="BootstrapBlazor.BootstrapIcon" />
     <PackageReference Include="BootstrapBlazor.Html2Pdf" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
     <PackageReference Include="BlazorMonaco" />

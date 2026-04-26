@@ -28,8 +28,4 @@
     <ProjectReference Include="..\runtime\Cyrena.Runtime\Cyrena.Runtime.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\css\" />
-  </ItemGroup>
-
 </Project>

@@ -7,11 +7,20 @@ namespace Cyrena.Extensions
 {
     public static class CyrenaBuilderExtensions
     {
+        [Obsolete("Use new section mapping API")]
         public static CyrenaBuilder AddSettingsComponent<TComponent>(this CyrenaBuilder builder)
             where TComponent : ComponentBase
         {
             ComponentOptions ui = builder.GetFeatureOption<ComponentOptions>();
             ui.AddSettingsComponent<TComponent>();
+            return builder;
+        }
+
+        public static CyrenaBuilder AddSettingsComponent<TComponent>(this CyrenaBuilder builder, string section)
+            where TComponent : ComponentBase
+        {
+            ComponentOptions ui = builder.GetFeatureOption<ComponentOptions>();
+            ui.AddSettingsComponent<TComponent>(section);
             return builder;
         }
 

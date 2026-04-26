@@ -81,6 +81,7 @@ namespace Cyrena.Runtime.Services
             var startups = kernel.Services.GetServices<IStartupTask>();
             foreach (var item in startups.OrderBy(x => x.Order))
                 await item.RunAsync();
+            _pipe.InvokeLoaded(config);
             return kernel;
         }
 
@@ -146,6 +147,7 @@ namespace Cyrena.Runtime.Services
         public IDisposable OnChatCreate(Action<ChatConfiguration> cb) => _pipe.WatchConfigCreate(cb);
         public IDisposable OnChatUpdate(Action<ChatConfiguration> cb) => _pipe.WatchConfigUpdate(cb);
         public IDisposable OnChatUnload(Action<ChatConfiguration> cb) => _pipe.WatchConfigUnload(cb);
+        public IDisposable OnChatLoaded(Action<ChatConfiguration> cb) => _pipe.WatchConfigLoaded(cb);
 
         public void Dispose()
         {
@@ -185,11 +187,13 @@ namespace Cyrena.Runtime.Services
             public IDisposable WatchConfigDelete(Action<ChatConfiguration> callback) => this.ConfigurePipe("k_delete", callback);
             public IDisposable WatchConfigUpdate(Action<ChatConfiguration> callback) => this.ConfigurePipe("k_update", callback);
             public IDisposable WatchConfigUnload(Action<ChatConfiguration> callback) => this.ConfigurePipe("k_unload", callback);
+            public IDisposable WatchConfigLoaded(Action<ChatConfiguration> callback) => this.ConfigurePipe("k_loaded", callback);
 
             public void InvokeCreate(ChatConfiguration config) => InvokePipeline("k_create", config);
             public void InvokeDelete(ChatConfiguration config) => InvokePipeline("k_delete", config);
             public void InvokeUpdate(ChatConfiguration config) => InvokePipeline("k_update", config);
             public void InvokeUnload(ChatConfiguration config) => InvokePipeline("k_unload", config);
+            public void InvokeLoaded(ChatConfiguration config) => InvokePipeline("k_loaded", config);
         }
     }
 }

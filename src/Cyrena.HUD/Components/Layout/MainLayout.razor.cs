@@ -33,16 +33,6 @@ namespace Cyrena.HUD.Components.Layout
                     await Refresh();
                 });
             });
-            _controller.OnChatUpdate((_) => this.InvokeAsync(Refresh));
-            _controller.OnChatUnload((config) =>
-            {
-                this.InvokeAsync(async () =>
-                {
-                    if (_nav.Uri.EndsWith(config.Id))
-                        _nav.NavigateTo("");
-                    await Refresh();
-                });
-            });
             await Refresh();
         }
 

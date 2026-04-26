@@ -77,7 +77,7 @@ html, body {
 
 /*BB LAYOUT*/
 .layout-main {
-    display: flex;
+    display: flex !important;
     flex-direction: column;
     max-height: calc(var(--bb-layout-height) - var(--bb-layout-header-height) - var(--bb-layout-footer-height));
 }
@@ -236,4 +236,8 @@ html, body {
     color: #ffffff;
     border-top-left-radius: 6px;
     border: 1px solid rgba(0,0,0,.06);
+}
+
+.fa-xmark::before {
+    content: "X"
 }

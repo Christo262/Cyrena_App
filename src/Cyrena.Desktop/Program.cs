@@ -39,7 +39,7 @@ class Program
         builder.Services.AddSingleton<IFileDialog>(files);  
         //
 
-        builder.AddSettingsComponent<Defaults>();
+        builder.AddSettingsComponent<Defaults>("Defaults");
         builder.Build();
 
         var app = appBuilder.Build();

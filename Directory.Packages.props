@@ -5,6 +5,7 @@
   </PropertyGroup>
   <!--Third-party-->
   <ItemGroup>
+    <PackageVersion Include="BootstrapBlazor.BootstrapIcon" Version="10.0.0" />
     <PackageVersion Include="Cyrena.Coding.Core" Version="0.4.0" />
     <PackageVersion Include="Cyrena.Components.Core" Version="0.4.1" />
     <PackageVersion Include="Cyrena.Core" Version="0.4.0" />
