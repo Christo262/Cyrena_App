@@ -1,12 +1,13 @@
-using Cyrena.Contracts;
 using Cyrena.Coding.Contracts;
 using Cyrena.Coding.Extensions;
 using Cyrena.Coding.Models;
+using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Models;
-using System.Diagnostics;
 using Microsoft.SemanticKernel;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Cyrena.Angular.Services
 {
@@ -18,34 +19,6 @@ namespace Cyrena.Angular.Services
         {
             _context = context;
             _plan = plan;
-        }
-
-        // ------------------------------------------------------------------
-        // Project structure
-        // ------------------------------------------------------------------
-
-        [KernelFunction("get_project_structure")]
-        [Description("Gets the Angular project structure. Lists all folders and files in the DevelopPlan.")]
-        public Dictionary<string, object> GetProjectStructure()
-        {
-            var result = new Dictionary<string, object>();
-
-            foreach (var folder in _plan.Plan.Folders)
-                result[folder.Id] = ListFolderContents(folder);
-
-            return result;
-        }
-
-        private static Dictionary<string, object> ListFolderContents(DevelopFolder folder)
-        {
-            var dict = new Dictionary<string, object>
-            {
-                ["name"] = folder.Name,
-                ["relativePath"] = folder.RelativePath,
-                ["files"] = folder.Files.Select(f => new { f.Id, f.Name, f.RelativePath, f.ReadOnly }).ToList(),
-                ["subfolders"] = folder.Folders.Select(f => f.Id).ToList()
-            };
-            return dict;
         }
 
         // ------------------------------------------------------------------
@@ -64,15 +37,18 @@ namespace Cyrena.Angular.Services
             var features = _plan.Plan.GetOrCreateFolder(app, "features", "features");
             var feature = _plan.Plan.GetOrCreateFolder(features, $"features_{kebab}", kebab);
 
-            // Create standard subfolders
-            _plan.Plan.GetOrCreateFolder(feature, $"features_{kebab}_components", "components");
-            _plan.Plan.GetOrCreateFolder(feature, $"features_{kebab}_services", "services");
-            _plan.Plan.GetOrCreateFolder(feature, $"features_{kebab}_guards", "guards");
-            _plan.Plan.GetOrCreateFolder(feature, $"features_{kebab}_pipes", "pipes");
-            _plan.Plan.GetOrCreateFolder(feature, $"features_{kebab}_directives", "directives");
-            _plan.Plan.GetOrCreateFolder(feature, $"features_{kebab}_models", "models");
-            _plan.Plan.GetOrCreateFolder(feature, $"features_{kebab}_interceptors", "interceptors");
-            _plan.Plan.GetOrCreateFolder(feature, $"features_{kebab}_resolvers", "resolvers");
+            // Create standard subfolders in plan AND on disk
+            var rootDir = _plan.Plan.RootDirectory;
+            var featurePath = Path.Combine(rootDir, feature.RelativePath);
+            Directory.CreateDirectory(featurePath);
+
+            var subfolders = new[] { "components", "services", "guards", "pipes", "directives", "models", "interceptors", "resolvers" };
+            foreach (var sub in subfolders)
+            {
+                var subFolder = _plan.Plan.GetOrCreateFolder(feature, $"features_{kebab}_{sub}", sub);
+                var subPath = Path.Combine(rootDir, subFolder.RelativePath);
+                Directory.CreateDirectory(subPath);
+            }
 
             _context.LogInfo($"Created feature '{kebab}' with standard subfolders");
             return new ToolResult<DevelopFolder>(feature);
@@ -83,35 +59,54 @@ namespace Cyrena.Angular.Services
         // ------------------------------------------------------------------
 
         [KernelFunction("create_component")]
-        [Description("Creates a new Angular standalone component with .ts, .html, .css, and .spec.ts files. If inFeature is provided, creates in src/app/features/<feature>/components/; otherwise in src/app/components/.")]
+        [Description("Creates a new Angular standalone component using 'ng generate component'. If inFeature is provided, runs in src/app/features/<feature>/components/; otherwise in src/app/components/.")]
         public ToolResult<DevelopFile> CreateComponent(
             [Description("Name of the component in PascalCase, e.g. 'UserProfile'.")] string name,
             [Description("Optional feature name. If provided, component goes in src/app/features/<feature>/components/. If null, goes in src/app/components/.")] string? inFeature = null)
         {
-            var folder = GetTypedFolder("components", inFeature);
-            return CreateComponentInFolder(folder, name);
-        }
-
-        private ToolResult<DevelopFile> CreateComponentInFolder(DevelopFolder folder, string name)
-        {
             name = Path.GetFileNameWithoutExtension(name);
             var kebab = ToKebabCase(name);
-            var prefix = folder.Id == "app" ? "" : $"{folder.Id}_";
 
-            var tsId = $"{prefix}ts_{kebab}.component";
-            if (_plan.Plan.TryFindFile(tsId, out var existing))
-                return new ToolResult<DevelopFile>(existing!, true, "Component already exists");
+            var folder = GetTypedFolder("components", inFeature);
+            var rootDir = _plan.Plan.RootDirectory;
+            var workingDir = Path.Combine(rootDir, folder.RelativePath);
 
-            _context.LogInfo($"Creating component {name} in {folder.RelativePath}");
+            // Ensure the directory exists on disk
+            Directory.CreateDirectory(workingDir);
 
+            _context.LogInfo($"Running 'ng generate component {kebab}' in {workingDir}");
+
+            var result = RunNgCommand($"generate component {kebab}", workingDir);
+            if (!result.Success)
+                return new ToolResult<DevelopFile>(false, $"ng generate component failed: {result.Message}");
+
+            // Index the newly created component folder into the plan
             var componentFolder = _plan.Plan.GetOrCreateFolder(folder, $"{folder.Id}_{kebab}", kebab);
+            var componentPath = Path.Combine(workingDir, kebab);
 
-            var tsFile = _plan.Plan.CreateFile(componentFolder, tsId, $"{kebab}.component.ts", null);
-            _plan.Plan.CreateFile(componentFolder, $"{prefix}html_{kebab}.component", $"{kebab}.component.html", null);
-            _plan.Plan.CreateFile(componentFolder, $"{prefix}css_{kebab}.component", $"{kebab}.component.css", null);
-            _plan.Plan.CreateFile(componentFolder, $"{prefix}ts_{kebab}.component.spec", $"{kebab}.component.spec.ts", null);
+            if (Directory.Exists(componentPath))
+            {
+                // Index all files in the component folder
+                foreach (var filePath in Directory.GetFiles(componentPath))
+                {
+                    var fileName = Path.GetFileName(filePath);
+                    var ext = Path.GetExtension(fileName).TrimStart('.');
+                    var baseName = Path.GetFileNameWithoutExtension(fileName);
+                    var id = $"{folder.Id}_{kebab}_{ext}_{baseName}";
+                    _plan.Plan.CreateFile(componentFolder, id, fileName, null);
+                }
+            }
 
-            return new ToolResult<DevelopFile>(tsFile);
+            // Return the .ts file as the primary file
+            var tsId = $"{folder.Id}_{kebab}_ts_{kebab}.component";
+            if (_plan.Plan.TryFindFile(tsId, out var tsFile))
+                return new ToolResult<DevelopFile>(tsFile!);
+
+            // Fallback: return first file found
+            if (componentFolder.Files.Count > 0)
+                return new ToolResult<DevelopFile>(componentFolder.Files[0]);
+
+            return new ToolResult<DevelopFile>(false, "Component created but no files were indexed.");
         }
 
         // ------------------------------------------------------------------
@@ -119,13 +114,12 @@ namespace Cyrena.Angular.Services
         // ------------------------------------------------------------------
 
         [KernelFunction("create_service")]
-        [Description("Creates a new Angular injectable service. If inFeature is provided, creates in src/app/features/<feature>/services/; otherwise in src/app/services/.")]
+        [Description("Creates a new Angular injectable service using 'ng generate service'. If inFeature is provided, creates in src/app/features/<feature>/services/; otherwise in src/app/services/.")]
         public ToolResult<DevelopFile> CreateService(
             [Description("Name of the service in PascalCase, e.g. 'UserService'.")] string name,
             [Description("Optional feature name. If provided, service goes in src/app/features/<feature>/services/. If null, goes in src/app/services/.")] string? inFeature = null)
         {
-            var folder = GetTypedFolder("services", inFeature);
-            return CreateArtifactInFolder(folder, name, "Service", "service");
+            return CreateNgArtifact("services", "service", name, inFeature);
         }
 
         // ------------------------------------------------------------------
@@ -133,13 +127,12 @@ namespace Cyrena.Angular.Services
         // ------------------------------------------------------------------
 
         [KernelFunction("create_guard")]
-        [Description("Creates a new Angular route guard. If inFeature is provided, creates in src/app/features/<feature>/guards/; otherwise in src/app/guards/.")]
+        [Description("Creates a new Angular route guard using 'ng generate guard'. If inFeature is provided, creates in src/app/features/<feature>/guards/; otherwise in src/app/guards/.")]
         public ToolResult<DevelopFile> CreateGuard(
             [Description("Name of the guard in PascalCase, e.g. 'AuthGuard'.")] string name,
             [Description("Optional feature name. If provided, guard goes in src/app/features/<feature>/guards/. If null, goes in src/app/guards/.")] string? inFeature = null)
         {
-            var folder = GetTypedFolder("guards", inFeature);
-            return CreateArtifactInFolder(folder, name, "Guard", "guard");
+            return CreateNgArtifact("guards", "guard", name, inFeature);
         }
 
         // ------------------------------------------------------------------
@@ -147,13 +140,12 @@ namespace Cyrena.Angular.Services
         // ------------------------------------------------------------------
 
         [KernelFunction("create_pipe")]
-        [Description("Creates a new Angular pipe. If inFeature is provided, creates in src/app/features/<feature>/pipes/; otherwise in src/app/pipes/.")]
+        [Description("Creates a new Angular pipe using 'ng generate pipe'. If inFeature is provided, creates in src/app/features/<feature>/pipes/; otherwise in src/app/pipes/.")]
         public ToolResult<DevelopFile> CreatePipe(
             [Description("Name of the pipe in PascalCase, e.g. 'CurrencyPipe'.")] string name,
             [Description("Optional feature name. If provided, pipe goes in src/app/features/<feature>/pipes/. If null, goes in src/app/pipes/.")] string? inFeature = null)
         {
-            var folder = GetTypedFolder("pipes", inFeature);
-            return CreateArtifactInFolder(folder, name, "Pipe", "pipe");
+            return CreateNgArtifact("pipes", "pipe", name, inFeature);
         }
 
         // ------------------------------------------------------------------
@@ -161,13 +153,12 @@ namespace Cyrena.Angular.Services
         // ------------------------------------------------------------------
 
         [KernelFunction("create_directive")]
-        [Description("Creates a new Angular directive. If inFeature is provided, creates in src/app/features/<feature>/directives/; otherwise in src/app/directives/.")]
+        [Description("Creates a new Angular directive using 'ng generate directive'. If inFeature is provided, creates in src/app/features/<feature>/directives/; otherwise in src/app/directives/.")]
         public ToolResult<DevelopFile> CreateDirective(
             [Description("Name of the directive in PascalCase, e.g. 'HighlightDirective'.")] string name,
             [Description("Optional feature name. If provided, directive goes in src/app/features/<feature>/directives/. If null, goes in src/app/directives/.")] string? inFeature = null)
         {
-            var folder = GetTypedFolder("directives", inFeature);
-            return CreateArtifactInFolder(folder, name, "Directive", "directive");
+            return CreateNgArtifact("directives", "directive", name, inFeature);
         }
 
         // ------------------------------------------------------------------
@@ -189,13 +180,12 @@ namespace Cyrena.Angular.Services
         // ------------------------------------------------------------------
 
         [KernelFunction("create_interceptor")]
-        [Description("Creates a new Angular HTTP interceptor. If inFeature is provided, creates in src/app/features/<feature>/interceptors/; otherwise in src/app/interceptors/.")]
+        [Description("Creates a new Angular HTTP interceptor using 'ng generate interceptor'. If inFeature is provided, creates in src/app/features/<feature>/interceptors/; otherwise in src/app/interceptors/.")]
         public ToolResult<DevelopFile> CreateInterceptor(
             [Description("Name of the interceptor in PascalCase, e.g. 'AuthInterceptor'.")] string name,
             [Description("Optional feature name. If provided, interceptor goes in src/app/features/<feature>/interceptors/. If null, goes in src/app/interceptors/.")] string? inFeature = null)
         {
-            var folder = GetTypedFolder("interceptors", inFeature);
-            return CreateArtifactInFolder(folder, name, "Interceptor", "interceptor");
+            return CreateNgArtifact("interceptors", "interceptor", name, inFeature);
         }
 
         // ------------------------------------------------------------------
@@ -203,13 +193,12 @@ namespace Cyrena.Angular.Services
         // ------------------------------------------------------------------
 
         [KernelFunction("create_resolver")]
-        [Description("Creates a new Angular route resolver. If inFeature is provided, creates in src/app/features/<feature>/resolvers/; otherwise in src/app/resolvers/.")]
+        [Description("Creates a new Angular route resolver using 'ng generate resolver'. If inFeature is provided, creates in src/app/features/<feature>/resolvers/; otherwise in src/app/resolvers/.")]
         public ToolResult<DevelopFile> CreateResolver(
             [Description("Name of the resolver in PascalCase, e.g. 'UserResolver'.")] string name,
             [Description("Optional feature name. If provided, resolver goes in src/app/features/<feature>/resolvers/. If null, goes in src/app/resolvers/.")] string? inFeature = null)
         {
-            var folder = GetTypedFolder("resolvers", inFeature);
-            return CreateArtifactInFolder(folder, name, "Resolver", "resolver");
+            return CreateNgArtifact("resolvers", "resolver", name, inFeature);
         }
 
         // ------------------------------------------------------------------
@@ -443,16 +432,16 @@ namespace Cyrena.Angular.Services
 
         [KernelFunction("build")]
         [Description("Runs 'ng build' in the project root directory using the Angular CLI. Returns the build output and exit code so the AI can verify if the code compiles correctly.")]
-        public Dictionary<string, object> Build(
+        public ToolResult<string[]> Build(
             [Description("Optional build configuration, e.g. 'production' or 'development'. Defaults to 'production'.")] string configuration = "production")
         {
             var rootDir = _plan.Plan.RootDirectory;
             _context.LogInfo($"Running ng build --configuration={configuration} in {rootDir}");
-
+            bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
             var psi = new ProcessStartInfo
             {
-                FileName = "ng",
-                Arguments = $"build --configuration={configuration}",
+                FileName = isWindows ? "cmd.exe" : "ng",
+                Arguments = isWindows ? $"/c ng build --configuration={configuration}" : "build --configuration={configuration}",
                 WorkingDirectory = rootDir,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
@@ -462,28 +451,36 @@ namespace Cyrena.Angular.Services
 
             using var process = Process.Start(psi);
             if (process == null)
-                return new Dictionary<string, object>
-                {
-                    ["success"] = false,
-                    ["exitCode"] = -1,
-                    ["output"] = "Failed to start ng build process. Ensure Angular CLI is installed and available in PATH.",
-                    ["errors"] = ""
-                };
+                return new ToolResult<string[]>(false, "Failed to start ng build process. Ensure Angular CLI is installed and available in PATH.");
 
-            var output = process.StandardOutput.ReadToEnd();
-            var errors = process.StandardError.ReadToEnd();
-            process.WaitForExit();
-
-            var success = process.ExitCode == 0;
-            _context.LogInfo(success ? "ng build succeeded." : $"ng build failed with exit code {process.ExitCode}.");
-
-            return new Dictionary<string, object>
+            var logs = new List<string>();
+            var errors = new List<string>();
+            process.OutputDataReceived += (_, e) =>
             {
-                ["success"] = success,
-                ["exitCode"] = process.ExitCode,
-                ["output"] = output,
-                ["errors"] = errors
+                if (e.Data != null)
+                {
+                    logs.Add(e.Data);
+                    _context.LogInfo($"\t{e.Data}");
+                }
             };
+            process.ErrorDataReceived += (_, e) =>
+            {
+                if (e.Data != null)
+                {
+                    errors.Add(e.Data);
+                    _context.LogError($"\t{e.Data}");
+                }
+            };
+
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+            process.WaitForExit();
+            process.WaitForExit(); // flush buffers
+
+            if (process.ExitCode != 0)
+                return new ToolResult<string[]>(errors.Concat(logs).ToArray(), false, $"ng build exit code {process.ExitCode}");
+
+            return new ToolResult<string[]>(logs.ToArray(), true, $"ng build exit code {process.ExitCode}");
         }
 
         // ------------------------------------------------------------------
@@ -520,7 +517,57 @@ namespace Cyrena.Angular.Services
         }
 
         /// <summary>
-        /// Creates a single-file artifact (service, guard, pipe, directive, interceptor, resolver, model) in a folder.
+        /// Creates an Angular artifact using 'ng generate <schematic>' in the appropriate folder.
+        /// After the CLI creates files on disk, indexes them into the DevelopPlan.
+        /// </summary>
+        private ToolResult<DevelopFile> CreateNgArtifact(string folderType, string schematic, string name, string? inFeature)
+        {
+            name = Path.GetFileNameWithoutExtension(name);
+            var kebab = ToKebabCase(name);
+
+            var folder = GetTypedFolder(folderType, inFeature);
+            var rootDir = _plan.Plan.RootDirectory;
+            var workingDir = Path.Combine(rootDir, folder.RelativePath);
+
+            // Ensure the directory exists on disk
+            Directory.CreateDirectory(workingDir);
+
+            _context.LogInfo($"Running 'ng generate {schematic} {kebab}' in {workingDir}");
+
+            var result = RunNgCommand($"generate {schematic} {kebab}", workingDir);
+            if (!result.Success)
+                return new ToolResult<DevelopFile>(false, $"ng generate {schematic} failed: {result.Message}");
+
+            // ng generate creates files directly in the workingDir (not a subfolder like component)
+            // Index all .ts files created in the folder
+            var tsFiles = new List<string>();
+            if (Directory.Exists(workingDir))
+            {
+                foreach (var filePath in Directory.GetFiles(workingDir, $"{kebab}*.ts"))
+                {
+                    var fileName = Path.GetFileName(filePath);
+                    var ext = Path.GetExtension(fileName).TrimStart('.');
+                    var baseName = Path.GetFileNameWithoutExtension(fileName);
+                    var id = $"{folder.Id}_{baseName}_{ext}_{baseName}";
+                    _plan.Plan.CreateFile(folder, id, fileName, null);
+                    tsFiles.Add(fileName);
+                }
+            }
+
+            // Return the first .ts file found
+            if (tsFiles.Count > 0)
+            {
+                var firstFile = tsFiles[0];
+                var firstId = $"{folder.Id}_{Path.GetFileNameWithoutExtension(firstFile)}_ts_{Path.GetFileNameWithoutExtension(firstFile)}";
+                if (_plan.Plan.TryFindFile(firstId, out var tsFile))
+                    return new ToolResult<DevelopFile>(tsFile!);
+            }
+
+            return new ToolResult<DevelopFile>(false, $"{schematic} created but no .ts files were indexed.");
+        }
+
+        /// <summary>
+        /// Creates a single-file artifact (model) in a folder.
         /// Automatically appends the type suffix if missing.
         /// </summary>
         private ToolResult<DevelopFile> CreateArtifactInFolder(DevelopFolder folder, string name, string? typeSuffix = null, string? fileSuffix = null)
@@ -567,6 +614,58 @@ namespace Cyrena.Angular.Services
                 result.Append(char.ToLower(c));
             }
             return result.ToString();
+        }
+
+        /// <summary>
+        /// Runs an ng CLI command in the specified working directory.
+        /// </summary>
+        private ToolResult<string[]> RunNgCommand(string arguments, string workingDirectory)
+        {
+            bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
+            var psi = new ProcessStartInfo
+            {
+                FileName = isWindows ? "cmd.exe" : "ng",
+                Arguments = isWindows ? $"/c ng {arguments}" : arguments,
+                WorkingDirectory = workingDirectory,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using var process = Process.Start(psi);
+            if (process == null)
+                return new ToolResult<string[]>(false, "Failed to start ng process. Ensure Angular CLI is installed and available in PATH.");
+
+            var logs = new List<string>();
+            var errors = new List<string>();
+            process.OutputDataReceived += (_, e) =>
+            {
+                if (e.Data != null)
+                {
+                    logs.Add(e.Data);
+                    _context.LogInfo($"\t{e.Data}");
+                }
+            };
+            process.ErrorDataReceived += (_, e) =>
+            {
+                if (e.Data != null)
+                {
+                    errors.Add(e.Data);
+                    _context.LogError($"\t{e.Data}");
+                }
+            };
+
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+            process.WaitForExit();
+            process.WaitForExit(); // flush buffers
+
+            if (process.ExitCode != 0)
+                return new ToolResult<string[]>(errors.Concat(logs).ToArray(), false, $"ng exit code {process.ExitCode}");
+
+            return new ToolResult<string[]>(logs.ToArray(), true, $"ng exit code {process.ExitCode}");
         }
     }
 }

@@ -58,7 +58,14 @@
                                     }
                                 </div>
                             }
-                            <div>@((MarkupString)Markdig.Markdown.ToHtml(_msg.DisplayHistory[i].Content, _mdp))</div>
+                            @if (isUser)
+                            {
+                                <div style="white-space: pre-wrap;">@_msg.DisplayHistory[i].Content</div>
+                            }
+                            else
+                            {
+                                <div>@((MarkupString)Markdig.Markdown.ToHtml(_msg.DisplayHistory[i].Content ?? "", _mdp))</div>
+                            }
                         </div>
                     </div>
                 }

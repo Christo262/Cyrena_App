@@ -7,6 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\prompt.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\prompt.md" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Cyrena.Coding.Core" />
     <PackageReference Include="Cyrena.Components.Core" />
     <PackageReference Include="Cyrena.Core" />

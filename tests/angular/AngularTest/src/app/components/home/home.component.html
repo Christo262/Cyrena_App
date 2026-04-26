@@ -1,0 +1,110 @@
+<div class="container-fluid px-0">
+  <!-- Hero Section -->
+  <div class="bg-primary text-white py-5 mb-5">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-8">
+          <h1 class="display-4 fw-bold mb-3">Welcome to AngularTest</h1>
+          <p class="lead mb-4">
+            A modern Angular application built with standalone components, signals, and Bootstrap 5.
+            This is a placeholder home page to get you started.
+          </p>
+          <div class="d-flex gap-3">
+            <button class="btn btn-light btn-lg fw-semibold">Get Started</button>
+            <button class="btn btn-outline-light btn-lg">Learn More</button>
+          </div>
+        </div>
+        <div class="col-lg-4 text-center d-none d-lg-block">
+          <div class="display-1 opacity-50">🚀</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features Section -->
+  <div class="container mb-5">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold">Features</h2>
+      <p class="text-muted">Everything you need to build amazing applications</p>
+    </div>
+
+    <div class="row g-4">
+      @for (feature of features; track feature.title) {
+        <div class="col-md-4">
+          <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center p-4">
+              <div class="display-4 mb-3">{{ feature.icon }}</div>
+              <h5 class="card-title fw-bold">{{ feature.title }}</h5>
+              <p class="card-text text-muted">{{ feature.description }}</p>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Content Section -->
+  <div class="bg-light py-5">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-6">
+          <h3 class="fw-bold mb-3">About This Project</h3>
+          <p>
+            This is a starter Angular application using modern best practices.
+            It leverages Angular's latest features to provide a solid foundation
+            for your next project.
+          </p>
+          <ul class="list-group list-group-flush bg-transparent">
+            <li class="list-group-item bg-transparent px-0">
+              <span class="text-success me-2">✓</span> Standalone Components
+            </li>
+            <li class="list-group-item bg-transparent px-0">
+              <span class="text-success me-2">✓</span> Signal-based State Management
+            </li>
+            <li class="list-group-item bg-transparent px-0">
+              <span class="text-success me-2">✓</span> Bootstrap 5.3 Styling
+            </li>
+            <li class="list-group-item bg-transparent px-0">
+              <span class="text-success me-2">✓</span> OnPush Change Detection
+            </li>
+          </ul>
+        </div>
+        <div class="col-lg-6">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+              <h5 class="card-title fw-bold mb-3">Quick Stats</h5>
+              <div class="row text-center">
+                <div class="col-4">
+                  <div class="display-6 fw-bold text-primary">18</div>
+                  <small class="text-muted">Angular Version</small>
+                </div>
+                <div class="col-4">
+                  <div class="display-6 fw-bold text-primary">5.3</div>
+                  <small class="text-muted">Bootstrap Version</small>
+                </div>
+                <div class="col-4">
+                  <div class="display-6 fw-bold text-primary">5+</div>
+                  <small class="text-muted">TS Version</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Call to Action -->
+  <div class="container py-5">
+    <div class="card bg-dark text-white border-0">
+      <div class="card-body p-5 text-center">
+        <h3 class="fw-bold mb-3">Ready to build something amazing?</h3>
+        <p class="mb-4 opacity-75">
+          Start developing your features by creating new components and services.
+          Check the Angular documentation for more guidance.
+        </p>
+        <button class="btn btn-primary btn-lg">Start Building</button>
+      </div>
+    </div>
+  </div>
+</div>

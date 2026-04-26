@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { RouterOutlet } from "../../node_modules/@angular/router/index";
+import { RouterOutlet, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -7,7 +7,7 @@ import { RouterOutlet } from "../../node_modules/@angular/router/index";
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet]
+  imports: [RouterOutlet, RouterLink]
 })
 export class AppComponent {
   title = 'AngularTest';

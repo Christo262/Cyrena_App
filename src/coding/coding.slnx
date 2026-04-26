@@ -2,6 +2,11 @@
   <Folder Name="/sln/">
     <File Path="readme.md" />
   </Folder>
+  <Folder Name="/sln/docs/">
+    <File Path="docs/arduino-development.md" />
+    <File Path="docs/dotnet-development.md" />
+    <File Path="docs/platformio-development.md" />
+  </Folder>
   <Folder Name="/src/" />
   <Folder Name="/src/angular/">
     <Project Path="src/angular/Cyrena.Angular/Cyrena.Angular.csproj" Id="85957293-b354-40e8-beb2-cff4c5aa6d49" />
