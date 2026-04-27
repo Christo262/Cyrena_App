@@ -32,7 +32,7 @@ namespace Cyrena.Mobile
             builder.Services.AddSingleton<IFileDialog, FileDialog>();
             //
 
-            cyrena.AddSettingsComponent<Defaults>();
+            cyrena.AddSettingsComponent<Defaults>("Defaults");
             cyrena.Build();
 
 #if DEBUG

@@ -43,25 +43,7 @@ namespace Cyrena.Desktop.Components.Layout
 
             _loaded = _controller.OnChatLoaded((cfg) =>
             {
-                if(cfg.Id == ChatConfiguration.Id)
-                {
-                    _is_loaded = true;
-                    var its = _controller.GetKernel(cfg.Id)?.GetRequiredService<IIterationService>();
-                    if(its != null)
-                    {
-                        _its_start = its.OnIterationStart(e =>
-                        {
-                            _is_its = true;
-                            this.InvokeAsync(StateHasChanged);
-                        });
-                        _its_end = its.OnIterationEnd(e =>
-                        {
-                            _is_its = false;
-                            this.InvokeAsync(StateHasChanged);
-                        });
-                    }
-                    this.InvokeAsync(StateHasChanged);
-                }
+                IsLoaded(cfg);
             });
 
             _update = _controller.OnChatUpdate((cfg) => 
@@ -72,7 +54,32 @@ namespace Cyrena.Desktop.Components.Layout
                     this.InvokeAsync(StateHasChanged);
                 }
             });
+            if(_controller.KernelActive(ChatConfiguration.Id))
+                IsLoaded(ChatConfiguration);
+        }
 
+        private void IsLoaded(ChatConfiguration cfg)
+        {
+            if (cfg.Id == ChatConfiguration.Id)
+            {
+                _is_loaded = true;
+                var its = _controller.GetKernel(cfg.Id)?.GetRequiredService<IIterationService>();
+                if (its != null)
+                {
+                    _its_start = its.OnIterationStart(e =>
+                    {
+                        _is_its = true;
+                        this.InvokeAsync(StateHasChanged);
+                    });
+                    _its_end = its.OnIterationEnd(e =>
+                    {
+                        _is_its = false;
+                        this.InvokeAsync(StateHasChanged);
+                    });
+                    _is_its = its.Inferring;
+                }
+                this.InvokeAsync(StateHasChanged);
+            }
         }
 
         public void Dispose()

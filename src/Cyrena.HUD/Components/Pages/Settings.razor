@@ -1,8 +1,9 @@
 @page "/settings"
+@attribute [TabItemOption(Text = "Settings", Icon = "bi bi-gear")]
 @inject ComponentOptions _options
 
 
-<div class="bg-body p-2 rounded shadow">
+<div class="bg-body p-2 container">
     <h3>Settings</h3>
     <hr />
 
@@ -10,24 +11,32 @@
         @foreach (var s in _sections)
         {
             <TabItem Text="@s">
-                @foreach (var item in _options.GetSettingsComponents().Where(x => x.Section == s))
-                {
-                    <div class="p-2 mb-2">
-                        @this.Render(item.Component)
+                <div class="row m-0">
+                    <div class="col-md-8 m-auto">
+                        @foreach (var item in _options.GetSettingsComponents().Where(x => x.Section == s))
+                        {
+                            <div class="p-2 mb-2">
+                                @this.Render(item.Component)
+                            </div>
+                        }
                     </div>
-                }
+                </div>
             </TabItem>
         }
 
         @if (_has_m)
         {
             <TabItem Text="Miscellaneous">
-                @foreach (var item in _options.GetSettingsComponents().Where(x => string.IsNullOrEmpty(x.Section)))
-                {
-                    <div class="p-2 mb-2">
-                        @this.Render(item.Component)
+                <div class="row m-0">
+                    <div class="col-md-8 m-auto">
+                        @foreach (var item in _options.GetSettingsComponents().Where(x => string.IsNullOrEmpty(x.Section)))
+                        {
+                            <div class="p-2 mb-2">
+                                @this.Render(item.Component)
+                            </div>
+                        }
                     </div>
-                }
+                </div>
             </TabItem>
         }
     </Tab>

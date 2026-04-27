@@ -45,7 +45,7 @@ namespace Cyrena.HUD
             _builder.Services.AddSingleton<IFileDialog>(files);
             //
 
-            _builder.AddSettingsComponent<Defaults>();
+            _builder.AddSettingsComponent<Defaults>("Defaults");
             _builder.Build();
             var sp = serviceCollection.BuildServiceProvider();
             Resources.Add("services", sp);

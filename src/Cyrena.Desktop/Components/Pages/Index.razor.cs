@@ -23,8 +23,16 @@ namespace Cyrena.Desktop.Components.Pages
         private Modal? _config;
         private string? _input { get; set; }
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
+            await RefreshModel();
+        }
+
+        private async Task RefreshModel()
+        {
+            _model = null;
+            this.StateHasChanged();
+            await Task.Delay(50);
             var options = _settings.Read<WindowOptions>(WindowOptions.Key);
             if (options == null || string.IsNullOrEmpty(options.DefaultConnectionId))
                 return;
@@ -35,6 +43,8 @@ namespace Cyrena.Desktop.Components.Pages
                 ConnectionId = options.DefaultConnectionId,
             };
             _model[ChatConfiguration.Icon] = "bi bi-chat-left-quote";
+            _input = null;
+            this.StateHasChanged();
         }
 
         private async Task Settings()
@@ -54,8 +64,11 @@ namespace Cyrena.Desktop.Components.Pages
                 var its = kernel.Services.GetRequiredService<IIterationService>();
                 its.Input = _input;
                 its.Iterate(chat.Options.User, kernel);
-                _nav.NavigateTo($"converse/{_model.Id}");
-            }catch(Exception ex)
+                var url = $"converse/{_model.Id}";
+                await RefreshModel();
+                _nav.NavigateTo(url);
+            }
+            catch(Exception ex)
             {
                 await _toasts.Error("Error", ex.Message);
             }

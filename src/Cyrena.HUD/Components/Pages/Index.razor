@@ -3,23 +3,18 @@
 
 <div class="h-100 overflow-auto d-flex">
 
-    <div class="col-8 bg-body p-2 rounded shadow justify-content-center align-self-center m-auto">
+    <div class="col-8 bg-body p-2 rounded justify-content-center align-self-center m-auto">
         <div class="text-center">
-            <img src="images/rene_f.png" height="200" class="rounded-pill bg-light" />
+            <img src="images/rene_f.png" height="200" class="rounded-pill mb-2" />
         </div>
 
         @if (_model != null)
         {
-            <p class="lead text-center">How can I help you?</p>
-
-            <div class="my-2">
-                <Shortcuts></Shortcuts>
-            </div>
-
             <div class="d-flex flex-row p-2 rounded-pill border border-primary">
                 <textarea @bind="_input" class="form-control rounded-pill border-0 me-1"
                           @ref="_area"
                           rows="1"
+                          placeholder="How can I help you?"
                           @oninput="AutoGrow" @onkeydown="ComposerKeyDown"></textarea>
 
                 <div class="me-1 justify-content-center align-self-center">
@@ -28,6 +23,10 @@
                 <div class="justify-content-center align-self-center">
                     <button type="button" class="btn btn-sm btn-primary rounded-pill" @onclick="Send"><i class="bi bi-arrow-up"></i></button>
                 </div>
+            </div>
+
+            <div class="my-2">
+                <Shortcuts></Shortcuts>
             </div>
         }
         else

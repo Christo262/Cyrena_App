@@ -13,7 +13,8 @@ namespace Cyrena.Components.Shared
     public partial class Chat : IDisposable
     {
         [Inject] private IJSRuntime _js { get; set; } = default!;
-
+        [Parameter]
+        public bool AutoRefocus { get; set; } = true;
         private ElementReference _scrollHost;
         private Markdig.MarkdownPipeline _mdp = default!;
 
@@ -107,6 +108,7 @@ namespace Cyrena.Components.Shared
             {
                 StateHasChanged();
                 await _js.InvokeVoidAsync("autoGrow", _area, 5);
+                if(AutoRefocus)
                 await _area.FocusAsync();
             });
         }
@@ -131,6 +133,7 @@ namespace Cyrena.Components.Shared
                 if(!_its.Inferring)
                 {
                     await _js.InvokeVoidAsync("autoGrow", _area, 5);
+                    if(AutoRefocus)
                     await _area.FocusAsync();
                 }
             });

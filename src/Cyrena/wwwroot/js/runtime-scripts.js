@@ -126,7 +126,7 @@
 
         textarea.addEventListener('paste', handler);
         pasteHandlers.set(textarea, handler);
-        console.log('Cyrena.Runtime: Paste handler registered for textarea.');
+        //console.log('Cyrena.Runtime: Paste handler registered for textarea.');
     };
 
     /**
@@ -144,7 +144,98 @@
 
         textarea.removeEventListener('paste', handler);
         pasteHandlers.delete(textarea);
-        console.log('Cyrena.Runtime: Paste handler unregistered for textarea.');
+        //console.log('Cyrena.Runtime: Paste handler unregistered for textarea.');
     };
 
+})();
+
+(function () {
+    'use strict';
+
+    // ── Inline SVGs (no external icon font needed) ──
+    const COPY_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:text-bottom;margin-right:4px;"><path d="M4 1.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 .5.5v1.5h1.5a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V3.5a.5.5 0 0 1 .5-.5H4V1.5zM5 2v1h6V2H5z"/><path d="M3.5 3a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-10a.5.5 0 0 0-.5-.5h-1.5v1.5a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5V3h-1.5z"/></svg>';
+    const CHECK_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:text-bottom;margin-right:4px;"><path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/></svg>';
+
+    /**
+     * Attaches a copy button to a single <pre><code> block.
+     */
+    function attachCopyButton(codeBlock) {
+        const pre = codeBlock.parentElement;
+        if (!pre || pre.querySelector('.btn-copy-code')) return; // already done
+
+        // Ensure the <pre> is positioned relatively so the absolute button anchors to it
+        if (!pre.classList.contains('position-relative')) {
+            pre.classList.add('position-relative');
+        }
+
+        // ── Create the button ──
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn btn-sm btn-outline-dark btn-copy-code';
+        btn.style.cssText = 'position:absolute;top:0.5rem;right:0.5rem;opacity:0;transition:opacity 0.2s ease-in-out;z-index:10;font-size:0.75rem;padding:0.25rem 0.5rem;border-color:rgba(255,255,255,0.3);color:rgba(255,255,255,0.8);';
+        btn.innerHTML = COPY_SVG + 'Copy';
+        btn.setAttribute('aria-label', 'Copy code to clipboard');
+
+        // ── Hover visibility ──
+        pre.addEventListener('mouseenter', () => { btn.style.opacity = '1'; });
+        pre.addEventListener('mouseleave', () => { btn.style.opacity = '0'; });
+
+        // ── Click handler ──
+        btn.addEventListener('click', async function (e) {
+            e.stopPropagation();
+            const text = codeBlock.textContent || '';
+            try {
+                await navigator.clipboard.writeText(text);
+                btn.innerHTML = CHECK_SVG + 'Copied!';
+                btn.classList.replace('btn-outline-light', 'btn-success');
+                setTimeout(() => {
+                    btn.innerHTML = COPY_SVG + 'Copy';
+                    btn.classList.replace('btn-success', 'btn-outline-light');
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy code:', err);
+                btn.textContent = 'Error';
+            }
+        });
+
+        pre.appendChild(btn);
+    }
+
+    /**
+     * Initializes copy buttons within a root element (defaults to document).
+     */
+    function initCodeCopyButtons(root) {
+        root = root || document;
+        root.querySelectorAll('pre code').forEach(attachCopyButton);
+    }
+
+    // ── Run on DOM ready ──
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => initCodeCopyButtons());
+    } else {
+        initCodeCopyButtons();
+    }
+
+    // ── Watch for dynamically added code blocks (Blazor, streaming, etc.) ──
+    const observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+            mutation.addedNodes.forEach(function (node) {
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                    if (node.matches && node.matches('pre code')) {
+                        attachCopyButton(node);
+                    } else if (node.querySelectorAll) {
+                        initCodeCopyButtons(node);
+                    }
+                }
+            });
+        });
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // ── Expose globally for manual triggering ──
+    window.Cyrena = window.Cyrena || {};
+    window.Cyrena.CodeCopy = {
+        init: initCodeCopyButtons,
+        attach: attachCopyButton
+    };
 })();

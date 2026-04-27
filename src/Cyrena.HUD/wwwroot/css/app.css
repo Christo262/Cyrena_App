@@ -77,50 +77,6 @@ html, body {
     z-index: 10 !important;
 }
 
-/*BB LAYOUT*/
-.layout-main {
-    display: flex;
-    flex-direction: column;
-    max-height: calc(var(--bb-layout-height) - var(--bb-layout-header-height) - var(--bb-layout-footer-height));
-}
-
-    .layout-main > .tabs {
-        flex: 1;
-    }
-
-        .layout-main > .tabs > .tabs-body {
-            display: flex;
-        }
-
-            .layout-main > .tabs > .tabs-body > .tabs-body-content {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-            }
-
-.bb-override-tab-main {
-    display: flex;
-    flex-direction: column;
-    max-height: calc(var(--bb-layout-height) - var(--bb-layout-header-height) - var(--bb-layout-footer-height));
-    height: 100%;
-}
-
-.bb-override-tab-main {
-    flex: 1;
-}
-
-    .bb-override-tab-main > .tabs-body {
-        display: flex;
-        padding-bottom: 0;
-        padding-top: 0;
-    }
-
-        .bb-override-tab-main > .tabs-body > .tabs-body-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
 .bg-no-repeat {
     background-repeat: no-repeat;
 }
@@ -196,80 +152,32 @@ html, body {
     height: 100%
 }
 
-.auto-grow {
-    overflow-y: auto;
-    resize: none;
-}
-
 .drag-region {
     -webkit-app-region: drag;
 }
 
-.clickable {}
-
-.clickable:hover{
-    cursor:pointer;
+.layout {
+    height:100%;
+    overflow:hidden;
 }
 
-.chat-bubble {
-    max-width: min(820px, 92%);
-    border-radius: 16px;
-    padding: 5px 12px;
-    box-shadow: 0 1px 2px rgba(0,0,0,.08);
-    overflow:auto;
+.layout-main {
+    height:100%;
+    padding:0 !important;
 }
 
-.chat-bubble-has-items {
-    min-width:90%;
+.layout-main > .tabs {
+    height:100%;
 }
 
-.chat-bubble p {
-    margin:0
+.tabs-body-content {
+    height:100%;
 }
 
-.chat-bubble-user {
-    background: #2b2b40;
-    color: #ffffff;
-    border-top-right-radius: 6px;
+.layout-header {
+    padding:0 !important;
 }
 
-.chat-bubble-assistant {
-    background: #292929;
-    color: #ffffff;
-    border-top-left-radius: 6px;
-    border: 1px solid rgba(0,0,0,.06);
+.tabs-body {
+    padding:0 !important;
 }
-
-/* Width */
-::-webkit-scrollbar {
-    width: 6px; /* Vertical scrollbar */
-    height: 6px; /* Horizontal scrollbar */
-}
-
-/* Track (background) */
-::-webkit-scrollbar-track {
-    background: #1a1a1a;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-    background: #555;
-    border-radius: 4px;
-}
-
-    /* Handle on hover */
-    ::-webkit-scrollbar-thumb:hover {
-        background: #333;
-    }
-
-
-.form-control {
-    border: 1px solid #2a9fd600;
-    background-color: #2a9fd63b;
-    color:white;
-}
-
-    .form-control:focus {
-        background-color: #2a9fd63b;
-        color: white;
-    }

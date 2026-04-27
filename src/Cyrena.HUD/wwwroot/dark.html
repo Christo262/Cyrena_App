@@ -1,20 +1,29 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
-
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>Cyréna</title>
     <base href="/" />
+
     <link href="_content/BootstrapBlazor/css/bootstrap.blazor.bundle.min.css" rel="stylesheet" />
     <link href="_content/BootstrapBlazor.BootstrapIcon/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="_content/Cyrena/css/theme.css" />
     <link href="css/app.css" rel="stylesheet" />
-    <link href="Cyrena.HUD.styles.css" rel="stylesheet" />
+
 </head>
 
 <body class="bg-transparent">
-    <div id="app" class="d-flex flex-column h-100">Loading...</div>
+    <div id="app" class="d-flex flex-column h-100">
+        <div class="row m-0 h-100 p-4">
+            <div class="col-md-8 m-auto justify-content-center align-self-center">
+                <div class="d-flex align-items-center">
+                    <strong role="status">Loading...</strong>
+                    <div class="spinner-border ms-auto" aria-hidden="true"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="blazor-error-ui" data-nosnippet>
         An unhandled error has occurred.

@@ -100,7 +100,10 @@ namespace Cyrena.Runtime.Services
             if (mode is not null)
                 await mode.DeleteAsync(config);
             if (_instances.TryRemove(config.Id, out var kernel))
+            {
+                _pipe.InvokeUnload(config);
                 DisposeKernel(kernel);
+            }
             _pipe.InvokeDelete(config);
         }
 

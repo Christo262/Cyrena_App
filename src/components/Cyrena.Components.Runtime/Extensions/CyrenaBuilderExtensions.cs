@@ -15,6 +15,10 @@ namespace Cyrena.Extensions
             {
                 options.DisableGetLocalizerFromResourceManager = true;
                 options.DisableGetLocalizerFromService = true;
+                
+            }).ConfigureIconThemeOptions(icons =>
+            {
+                icons.ThemeKey = "bootstrap";
             });
 
             builder.AddAssistantPlugin<ComponentAssistantsPlugin>();

@@ -100,7 +100,7 @@
 
         <div class="p-2 rounded-pill border border-primary">
             <div class="d-flex flex-row">
-                <textarea @ref="_area" @bind:event="oninput" disabled="@_its.Inferring" rows="1" class="form-control auto-grow rounded-pill border-0 me-1" @onkeydown="ComposerKeyDown" @bind="_its.Input"></textarea>
+                <textarea @ref="_area" @bind:event="oninput" disabled="@_its.Inferring" placeholder="Reply..." rows="1" class="form-control auto-grow rounded-pill border-0 me-1" @onkeydown="ComposerKeyDown" @bind="_its.Input"></textarea>
 
                 <div class="ms-2 justify-content-center align-self-center d-flex flex-row">
                     @if(_info.SupportFiles || _info.SupportImages)

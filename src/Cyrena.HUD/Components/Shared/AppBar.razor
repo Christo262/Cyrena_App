@@ -1,7 +1,7 @@
 @inject MainWindow _main
 @inject NavigationManager _nav
 
-<div class="container ps-1 bg-body rounded border border-secondary shadow pe-0">
+<div class="container ps-1 bg-body rounded border shadow pe-0">
     <div class="d-flex">
         <div class="p-1">
             <img src="images/rene.png" alt="Rene" class="rounded" style="height:35px"/>
@@ -12,7 +12,7 @@
         <div class="ms-auto"></div>
 
         <div class="dropdown">
-            <button class="btn btn-outline-dark rounded-0 border-0 h-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <button class="btn btn-outline-light rounded-0 border-0 h-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-boxes"></i>
             </button>
             <ul class="dropdown-menu">
@@ -25,10 +25,10 @@
             </ul>
         </div>
         <Tooltip Title="Settings">
-            <button type="button" class="btn btn-outline-dark rounded-0 border-0 h-100" @onclick="@(() => _nav.NavigateTo("settings"))"><i class="bi bi-gear"></i></button>
+            <button type="button" class="btn btn-outline-light rounded-0 border-0 h-100" @onclick="@(() => _nav.NavigateTo("settings"))"><i class="bi bi-gear"></i></button>
         </Tooltip>
         <Tooltip Title="Minimize">
-            <button class="btn btn-outline-dark rounded-0 border-0 h-100" type="button" @onclick="() => _main.Minimize()"><i class="bi bi-fullscreen-exit"></i></button>
+            <button class="btn btn-outline-light rounded-0 border-0 h-100" type="button" @onclick="() => _main.Minimize()"><i class="bi bi-fullscreen-exit"></i></button>
         </Tooltip>
         <button class="btn btn-danger rounded-0 rounded-end" type="button" @onclick="() => _main.Close()"><i class="bi bi-x-lg"></i></button>
     </div>

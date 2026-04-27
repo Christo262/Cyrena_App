@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
@@ -13,37 +13,23 @@
 
 </head>
 
-<body>
+<body class="bg-transparent">
+    <div id="app" class="d-flex flex-column h-100">Loading...</div>
 
-    <div class="status-bar-safe-area"></div>
-
-    <div id="app">
-        <div class="row m-0 h-100 p-4">
-            <div class="col-md-8 m-auto justify-content-center align-self-center">
-                <div class="d-flex align-items-center">
-                    <strong role="status">Loading...</strong>
-                    <div class="spinner-border ms-auto" aria-hidden="true"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="blazor-error-ui">
+    <div id="blazor-error-ui" data-nosnippet>
         An unhandled error has occurred.
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
 
     <script src="_content/BootstrapBlazor/js/bootstrap.blazor.bundle.min.js"></script>
-
     <script src="_content/BlazorMonaco/jsInterop.js"></script>
     <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.js"></script>
     <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.js"></script>
+    <script src="_framework/blazor.webview.js"></script>
 
-    <script src="_framework/blazor.webview.js" autostart="false"></script>
     <script src="_content/Cyrena/js/cyrena.js"></script>
     <script src="_content/Cyrena/js/runtime-scripts.js"></script>
-
 </body>
 
 </html>

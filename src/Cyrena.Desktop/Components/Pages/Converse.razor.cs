@@ -19,6 +19,7 @@ namespace Cyrena.Desktop.Components.Pages
 
         private Kernel? _kernel { get; set; }
         private IDisposable? _watcher { get; set; }
+        private IDisposable? _updater { get; set; }
 
         protected override async Task OnParametersSetAsync()
         {
@@ -42,6 +43,11 @@ namespace Cyrena.Desktop.Components.Pages
                         if(cfg.Id == config.Config.Id)
                             Parent?.RemoveTab(Item);
                     });
+                    _updater = _controller.OnChatUpdate((cfg) =>
+                    {
+                        if (cfg.Id == config.Config.Id && Item != null)
+                            Item.SetHeader(config.Config.Title ?? "New Chat", config.Config[ChatConfiguration.Icon]);
+                    });
                 }
                 this.StateHasChanged();
             }
@@ -55,6 +61,7 @@ namespace Cyrena.Desktop.Components.Pages
         public void Dispose()
         {
             _watcher?.Dispose();
+            _updater?.Dispose();
         }
     }
 }
