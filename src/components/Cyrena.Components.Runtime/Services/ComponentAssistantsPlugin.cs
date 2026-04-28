@@ -21,9 +21,9 @@ namespace Cyrena.Services
         public Task LoadAsync(CyrenaKernelBuilder builder)
         {
             builder.Services.AddSingleton<IDisplayService, DisplayService>();
-            builder.KernelBuilder.AddToolbarComponent<ExportChat>(ToolbarAlignment.End);
-            builder.KernelBuilder.AddToolbarComponent<ClearChat>(ToolbarAlignment.End);
-            builder.KernelBuilder.AddToolbarComponent<DisplayServiceComponent>(ToolbarAlignment.End);
+            builder.AddToolbarComponent<ExportChat>(ToolbarAlignment.End);
+            builder.AddToolbarComponent<ClearChat>(ToolbarAlignment.End);
+            builder.AddToolbarComponent<DisplayServiceComponent>(ToolbarAlignment.End);
             return Task.CompletedTask;
         }
     }

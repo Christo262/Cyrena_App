@@ -85,7 +85,6 @@ namespace Cyrena.Components.Shared
         private List<AdditionalMessageContent> _items = new List<AdditionalMessageContent>();
         private async Task Send()
         {
-            if (_its.Inferring) return;
             if (string.IsNullOrWhiteSpace(_its.Input)) return;
 
             _its.Iterate(AuthorRole.User, Kernel, _items.ToArray());
@@ -135,8 +134,6 @@ namespace Cyrena.Components.Shared
         {
             this.InvokeAsync(async () =>
             {
-                if (!_its.Inferring)
-                    _its.Input = null;
                 StateHasChanged();
                 if(!_its.Inferring)
                 {

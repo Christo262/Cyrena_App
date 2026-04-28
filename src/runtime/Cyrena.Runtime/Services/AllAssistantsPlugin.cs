@@ -30,6 +30,7 @@ namespace Cyrena.Runtime.Services
         public Task LoadAsync(CyrenaKernelBuilder builder)
         {
             builder.Plugins.AddFromType<Cyrena.Runtime.Plugins.DateTime>();
+            builder.Plugins.AddFromType<Cyrena.Runtime.Plugins.Queue>();
             var config_service = new ChatConfigurationService(_store, builder.ChatConfiguration);
             builder.Services.AddSingleton<IChatConfigurationService>(config_service);
             builder.KernelBuilder.AddStartupTask<HistoryStartupTask>();
