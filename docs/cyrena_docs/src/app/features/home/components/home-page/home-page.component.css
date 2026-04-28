@@ -3,6 +3,7 @@
   background: linear-gradient(135deg, #0a1628 0%, #1a3a5c 50%, #0d6efd 100%);
   position: relative;
   overflow: hidden;
+  padding-bottom: 140px;
 }
 
 .hero::before {
@@ -288,7 +289,6 @@
   }
 }
 
-
 /* Memory Cards */
 .memory-card {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -398,6 +398,7 @@
 .bg-accent {
   background-color: rgba(100, 200, 255, var(--bs-bg-opacity, 1)) !important;
 }
+
 /* Video Section */
 .video-wrapper {
   background: #0a1628;
@@ -417,4 +418,3 @@
 .text-white-25 {
   color: rgba(255, 255, 255, 0.25);
 }
-

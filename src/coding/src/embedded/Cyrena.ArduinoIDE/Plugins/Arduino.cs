@@ -37,6 +37,7 @@ If the file already exists, the existing file is returned and no new file is cre
                 return new ToolResult<DevelopFile>(file!, true, "File already exists.");
             _context.LogInfo($"Creating CPP file {name}");
             var nf = _plan.Plan.CreateFile(id, $"{name}.cpp", null);
+            _plan.InvokeFileCreated(nf);
             return new ToolResult<DevelopFile>(nf);
         }
 
@@ -58,6 +59,7 @@ If the file already exists, the existing file is returned and no new file is cre
                 return new ToolResult<DevelopFile>(file!, true, "File already exists.");
             _context.LogInfo($"Creating header file {name}");
             var nf = _plan.Plan.CreateFile(id, $"{name}.h", null);
+            _plan.InvokeFileCreated(nf);
             return new ToolResult<DevelopFile>(nf);
         }
     }

@@ -96,6 +96,7 @@ namespace Cyrena.PlatformIO.Services
                 return new ToolResult<DevelopFile>(file!);
             _context.LogInfo($"Creating file {parent_id}/{target!.Name}/{name}.{ext}");
             file = _plan.Plan.CreateFile(target, id, $"{name}.{ext}", null);
+            _plan.InvokeFileCreated(file);
             return new ToolResult<DevelopFile>(file);
         }
 
@@ -116,6 +117,7 @@ namespace Cyrena.PlatformIO.Services
                 return new ToolResult<DevelopFile>(file!);
             _context.LogInfo($"Creating file {parent_id}/{target!.Name}/{name}.{ext}");
             file = _plan.Plan.CreateFile(target, id, $"{name}.{ext}", null);
+            _plan.InvokeFileCreated(file);
             return new ToolResult<DevelopFile>(file);
         }
 
@@ -136,6 +138,7 @@ namespace Cyrena.PlatformIO.Services
                 return new ToolResult<DevelopFile>(file!);
             _context.LogInfo($"Creating file {parent_id}/{target!.Name}/{name}.{ext}");
             file = _plan.Plan.CreateFile(target, id, $"{name}.{ext}", null);
+            _plan.InvokeFileCreated(file);
             return new ToolResult<DevelopFile>(file);
         }
 
@@ -148,6 +151,7 @@ namespace Cyrena.PlatformIO.Services
             _context.LogInfo($"Creating file {dir}/{name}.{ext}");
             var target = _plan.Plan.GetOrCreateFolder(dir, dir);
             var nf = _plan.Plan.CreateFile(target, id, $"{name}.{ext}", null);
+            _plan.InvokeFileCreated(nf);
             return new ToolResult<DevelopFile>(nf);
         }
     }

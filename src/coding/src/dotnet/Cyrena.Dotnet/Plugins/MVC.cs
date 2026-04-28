@@ -42,6 +42,7 @@ namespace Cyrena.Dotnet.Plugins
             content = content.Replace("{name}", name).Replace("{namespace}", _sln.Current["namespace"]);
             var controllers = _plan.Plan.GetOrCreateFolder("controllers", "Controllers");
             file = _plan.Plan.CreateFile(controllers, id, $"{name}.cs", content);
+            _plan.InvokeFileCreated(file);
             return new ToolResult<DevelopFile>(file);
         }
 
@@ -66,6 +67,7 @@ namespace Cyrena.Dotnet.Plugins
             var content = ReadTemplate("view.txt");
             content = content.Replace("{name}", name).Replace("{namespace}", _sln.Current["namespace"]);
             var file = _plan.Plan.CreateFile(folder, id, $"{name}.cshtml", content);
+            _plan.InvokeFileCreated(file);
             return new ToolResult<DevelopFile>(file);
         }
 
@@ -86,6 +88,7 @@ namespace Cyrena.Dotnet.Plugins
             var content = ReadTemplate("razor-partial.txt");
             content = content.Replace("{name}", name).Replace("{namespace}", _sln.Current["namespace"]);
             var file = _plan.Plan.CreateFile(shared, id, $"{name}.cshtml", content);
+            _plan.InvokeFileCreated(file);
             return new ToolResult<DevelopFile>( file);
         }
 

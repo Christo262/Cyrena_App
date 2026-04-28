@@ -93,7 +93,8 @@ namespace Cyrena.Angular.Services
                     var ext = Path.GetExtension(fileName).TrimStart('.');
                     var baseName = Path.GetFileNameWithoutExtension(fileName);
                     var id = $"{folder.Id}_{kebab}_{ext}_{baseName}";
-                    _plan.Plan.CreateFile(componentFolder, id, fileName, null);
+                    var file = _plan.Plan.CreateFile(componentFolder, id, fileName, null);
+                    _plan.InvokeFileCreated(file);
                 }
             }
 
@@ -549,7 +550,8 @@ namespace Cyrena.Angular.Services
                     var ext = Path.GetExtension(fileName).TrimStart('.');
                     var baseName = Path.GetFileNameWithoutExtension(fileName);
                     var id = $"{folder.Id}_{baseName}_{ext}_{baseName}";
-                    _plan.Plan.CreateFile(folder, id, fileName, null);
+                    var file = _plan.Plan.CreateFile(folder, id, fileName, null);
+                    _plan.InvokeFileCreated(file);
                     tsFiles.Add(fileName);
                 }
             }
@@ -587,6 +589,7 @@ namespace Cyrena.Angular.Services
 
             _context.LogInfo($"Creating {typeSuffix?.ToLowerInvariant() ?? "file"} {name} in {folder.RelativePath}");
             var file = _plan.Plan.CreateFile(folder, id, $"{kebab}{suffix}.ts", null);
+            _plan.InvokeFileCreated(file);
             return new ToolResult<DevelopFile>(file);
         }
 
@@ -600,6 +603,7 @@ namespace Cyrena.Angular.Services
             _context.LogInfo($"Creating file {rootId}/{name}.{ext}");
             var target = _plan.Plan.GetOrCreateFolder(rootId, rootId);
             var nf = _plan.Plan.CreateFile(target, id, $"{name}.{ext}", null);
+            _plan.InvokeFileCreated(nf);
             return new ToolResult<DevelopFile>(nf);
         }
 

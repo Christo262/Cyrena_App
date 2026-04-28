@@ -41,6 +41,7 @@ namespace Cyrena.Dotnet.Plugins
                 var www = _plan.Plan.GetOrCreateFolder("wwwroot", "wwwroot");
                 var style = _plan.Plan.GetOrCreateFolder(www, "wwwroot_css", "css");
                 var model = _plan.Plan.CreateFile(style, id, $"{name}.css", $"body {{ {Environment.NewLine} }}");
+                _plan.InvokeFileCreated(model);
                 return new ToolResult<DevelopFile>(model);
             }catch(Exception ex)
             {
@@ -67,6 +68,7 @@ namespace Cyrena.Dotnet.Plugins
                 var www = _plan.Plan.GetOrCreateFolder("wwwroot", "wwwroot");
                 var scripts = _plan.Plan.GetOrCreateFolder(www, "scripts", "js");
                 var model = _plan.Plan.CreateFile(scripts, id, $"{name}.js", $"function foo() {{ {Environment.NewLine} }}");
+                _plan.InvokeFileCreated(model);
                 return new ToolResult<DevelopFile>(model);
             }catch (Exception ex)
             {

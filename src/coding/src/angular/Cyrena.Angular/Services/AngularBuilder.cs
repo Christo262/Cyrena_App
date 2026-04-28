@@ -43,7 +43,7 @@ namespace Cyrena.Angular.Services
             // Add the Angular system prompt
             var prompt = Resources.Read(typeof(AngularBuilder).Assembly, "Cyrena.Angular.Resources.prompt.md");
             options.GetFeatureOption<IPromptManager>().AddPrompt(0, prompt);
-
+            options.KernelBuilder.AddStartupTask<ComponentFolderWatcher>();
             return Task.FromResult(plan);
         }
 

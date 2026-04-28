@@ -44,6 +44,7 @@ namespace Cyrena.Dotnet.Plugins
             var cmp = _plan.Plan.GetOrCreateFolder("components", "Components");
             var pages = _plan.Plan.GetOrCreateFolder(cmp, "components_pages", "Pages");
             var nf = _plan.Plan.CreateFile(pages, id, $"{name}.razor", content);
+            _plan.InvokeFileCreated(nf);
             return new ToolResult<DevelopFile>(nf);
         }
 
@@ -64,6 +65,7 @@ namespace Cyrena.Dotnet.Plugins
             var cmp = _plan.Plan.GetOrCreateFolder("components", "Components");
             var shared = _plan.Plan.GetOrCreateFolder(cmp, "components_shared", "Shared");
             var nf = _plan.Plan.CreateFile(shared, id, $"{name}.razor", content);
+            _plan.InvokeFileCreated(nf);
             return new ToolResult<DevelopFile>(nf);
         }
 
@@ -84,6 +86,7 @@ namespace Cyrena.Dotnet.Plugins
             var cmp = _plan.Plan.GetOrCreateFolder("components", "Components");
             var layouts = _plan.Plan.GetOrCreateFolder(cmp, "components_layout", "Layout");
             var nf = _plan.Plan.CreateFile(layouts, id, $"{name}.razor", content);
+            _plan.InvokeFileCreated(nf);
             return new ToolResult<DevelopFile>(nf);
         }
 
@@ -103,6 +106,7 @@ namespace Cyrena.Dotnet.Plugins
             content = content.Replace("{name}", name).Replace("{namespace}", _sln.Current["namespace"]);
             var cmp = _plan.Plan.GetOrCreateFolder("components", "Components");
             var nf = _plan.Plan.CreateFile(cmp, id, $"{name}.razor", content);
+            _plan.InvokeFileCreated(nf);
             return new ToolResult<DevelopFile>(nf);
         }
 

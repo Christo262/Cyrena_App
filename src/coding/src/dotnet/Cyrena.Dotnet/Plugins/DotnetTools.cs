@@ -107,6 +107,7 @@ namespace Cyrena.Dotnet.Plugins
             template = template.Replace("{name}", name);
             var folder = _plan.Plan.GetOrCreateFolder(folder_id, folder_name);
             file = _plan.Plan.CreateFile(folder, id, $"{name}.{ext}", template);
+            _plan.InvokeFileCreated(file);
             return new ToolResult<DevelopFile>(file!);
         }
 

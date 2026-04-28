@@ -95,6 +95,7 @@ namespace Cyrena.Coding.Services
                 _version.Backup(fileContent);
                 if (!_plan.Plan.TryWriteFileContent(file!, content, out var newContent))
                     return new ToolResult<DevelopFileContent>(false, $"Unable to write to file");
+                _plan.InvokeFileUpdated(newContent!);
                 return new ToolResult<DevelopFileContent>(newContent!);
             }
             catch (Exception ex)
@@ -141,6 +142,7 @@ namespace Cyrena.Coding.Services
             if (!_plan.Plan.TryReplaceLines(file, startIndex, count, newLines, out var updated))
                 return new ToolResult<DevelopFileLines>(false, $"Failed to replace lines {startIndex}–{endIndex}.");
 
+            _plan.InvokeFileUpdated(updated!);
             return new ToolResult<DevelopFileLines>(updated!);
         }
 
@@ -170,6 +172,8 @@ namespace Cyrena.Coding.Services
                 sb.AppendLine(text);
                 if (!_plan.Plan.TryWriteFileContent(file!, sb.ToString(), out var newContent))
                     return new ToolResult<DevelopFileContent>(false, $"Unable to write to file");
+
+                _plan.InvokeFileUpdated(newContent!);
                 return new ToolResult<DevelopFileContent>(newContent!);
             }
             catch (Exception ex)
@@ -205,6 +209,7 @@ namespace Cyrena.Coding.Services
             if (!_plan.Plan.TryInsertLines(file, afterIndex, lines, out var updated))
                 return new ToolResult<DevelopFileLines>(false, $"Failed to insert after line {afterIndex} in '{file.RelativePath}'.");
 
+            _plan.InvokeFileUpdated(updated!);
             return new ToolResult<DevelopFileLines>(updated!);
         }
 
@@ -225,8 +230,8 @@ namespace Cyrena.Coding.Services
                 _plan.Plan.TryReadFileContent(file!, out var ext_content);
                 _version.Backup(ext_content);
                 _plan.Plan.RemoveFile(file!);
+                _plan.InvokeFileDeleted(file);
                 return new ToolResult(true, "File deleted.");
-
             }
             catch (Exception ex)
             {

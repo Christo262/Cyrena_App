@@ -9,5 +9,14 @@ namespace Cyrena.Coding.Contracts
     {
         DevelopPlan Plan { get; }
         void SetPlan(DevelopPlan newPlan);
+
+        IDisposable OnDevelopPlanChanged(Action<DevelopPlan> plan);
+        IDisposable OnFileCreated(Action<DevelopFile> cb);
+        IDisposable OnFileUpdated(Action<DevelopFile> cb);
+        IDisposable OnFileDeleted(Action<DevelopFile> cb);
+
+        void InvokeFileCreated(DevelopFile file);
+        void InvokeFileUpdated(DevelopFile file);
+        void InvokeFileDeleted(DevelopFile file);
     }
 }

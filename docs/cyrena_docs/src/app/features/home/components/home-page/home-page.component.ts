@@ -50,9 +50,9 @@ export class HomePageComponent {
       description: 'Not locked to one AI provider. Connect Ollama, OpenAI, or any compatible endpoint. Switch anytime.'
     },
     {
-      icon: 'bi-hdd-network',
-      title: 'No Server',
-      description: 'Does not expose endpoints or talk to a central server. You own the infrastructure. You own the data.'
+      icon: 'bi-puzzle',
+      title: 'Extensible',
+      description: 'Build extensions to adapt Cyréna to your workflow. Custom integrations, internal tools, and domain-specific agents — installed from a server or dropped in manually.'
     }
   ]);
 
