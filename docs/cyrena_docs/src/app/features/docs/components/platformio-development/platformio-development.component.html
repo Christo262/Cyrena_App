@@ -1,0 +1,121 @@
+<div>
+  <h1 class="fw-bold mb-3">PlatformIO Development</h1>
+  <p class="lead text-secondary mb-5">
+    Cyréna integrates with PlatformIO projects in Visual Studio Code, supporting both Arduino and ESP-IDF frameworks.
+    It indexes your source files, headers, libraries, and configuration to provide intelligent assistance throughout the
+    embedded development cycle.
+  </p>
+
+  <!-- Prerequisites -->
+  <h2 class="h4 fw-bold mb-3">Requirements</h2>
+  <ul class="mb-5">
+    @for (item of prerequisites; track item) {
+    <li class="mb-2">{{ item }}</li>
+    }
+  </ul>
+
+  <!-- What Cyréna Indexes -->
+  <h2 class="h4 fw-bold mb-3">What Cyréna Indexes</h2>
+
+  <h5 class="fw-bold mb-2">Core Project Layout (Arduino &amp; ESP-IDF)</h5>
+  <div class="table-responsive mb-4">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Folder / File</th>
+          <th>Content</th>
+          <th>Access</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of coreLayout; track row.item) {
+        <tr>
+          <td><code>{{ row.item }}</code></td>
+          <td>{{ row.content }}</td>
+          <td>
+            @if (row.access === 'Read / write') {
+            <span class="badge bg-success">{{ row.access }}</span>
+            } @else {
+            <span class="badge bg-secondary">{{ row.access }}</span>
+            }
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h5 class="fw-bold mb-2">Additional Folders for ESP-IDF Projects</h5>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Folder / File</th>
+          <th>Content</th>
+          <th>Access</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of espIdfLayout; track row.item) {
+        <tr>
+          <td><code>{{ row.item }}</code></td>
+          <td>{{ row.content }}</td>
+          <td><span class="badge bg-secondary">{{ row.access }}</span></td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Getting Started -->
+  <h2 class="h4 fw-bold mb-3">Getting Started</h2>
+  @for (step of steps; track step.number) {
+  <div class="step mb-4">
+    <div class="d-flex align-items-start">
+      <div
+        class="step-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3">
+        {{ step.number }}
+      </div>
+      <div class="flex-grow-1">
+        <h4 class="fw-bold mb-2">{{ step.title }}</h4>
+        <p class="text-secondary mb-0">{{ step.description }}</p>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- What You Can Ask -->
+  <h2 class="h4 fw-bold mb-3 mt-5">What You Can Ask</h2>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Task</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of tasks; track row.task) {
+        <tr>
+          <td><strong>{{ row.task }}</strong></td>
+          <td>{{ row.description }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Permissions Note -->
+  <div class="alert alert-info mb-5">
+    <i class="bi bi-info-circle me-2"></i>
+    <strong>Permissions Note</strong> — All indexed folders and files are accessed according to the permissions shown
+    above. Cyréna will never modify read-only items.
+  </div>
+
+  <!-- Extension Reference -->
+  <h2 class="h4 fw-bold mb-3">Extension Reference</h2>
+  <p class="text-secondary mb-5">
+    The PlatformIO integration is provided by the <code class="text-primary">{{ extensionId }}</code> extension.
+    Make sure it is installed and enabled in your Cyréna settings.
+  </p>
+</div>

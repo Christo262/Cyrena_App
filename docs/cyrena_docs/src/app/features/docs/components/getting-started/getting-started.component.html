@@ -1,0 +1,133 @@
+<div>
+  <h1 class="fw-bold mb-3">Getting Started</h1>
+  <p class="lead text-secondary mb-5">
+    Cyréna is a desktop application — not a web service. Download it, connect your AI, and start building.
+  </p>
+
+  <!-- Download CTA -->
+  <div class="download-cta mb-5 p-4 rounded-3 border">
+    <div class="d-flex align-items-center mb-3">
+      <i class="bi bi-download fs-3 text-primary me-3"></i>
+      <div>
+        <h3 class="fw-bold mb-1">Download Cyréna</h3>
+        <p class="text-secondary mb-0">Latest release on GitHub</p>
+      </div>
+    </div>
+    <div class="row g-3 mb-3">
+      @for (platform of platforms; track platform.arch) {
+        <div class="col-md-4">
+          <div class="platform-card p-3 rounded-2 border text-center">
+            <i class="bi fs-2 mb-2 d-block" [class]="platform.icon"></i>
+            <strong class="d-block">{{ platform.name }}</strong>
+            <code class="text-secondary small">{{ platform.arch }}</code>
+          </div>
+        </div>
+      }
+    </div>
+    <a [href]="downloadUrl" target="_blank" rel="noopener" class="btn btn-primary">
+      <i class="bi bi-github me-2"></i>View Releases on GitHub
+    </a>
+    <p class="text-secondary small mt-2 mb-0">
+      <i class="bi bi-info-circle me-1"></i>
+      Alpha release — more architectures coming after alpha.
+    </p>
+  </div>
+
+  <!-- Getting Started Video -->
+  <div class="video-section mb-5">
+    <div class="video-wrapper rounded-3 border overflow-hidden">
+      <video controls class="w-100" style="max-height: 480px; object-fit: contain;">
+        <source src="videos/GettingStarted.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+        <a href="videos/GettingStarted.mp4" download>Download the video</a>.
+      </video>
+    </div>
+    <p class="text-secondary small mt-2 mb-0 text-center">
+      <i class="bi bi-play-circle me-1"></i>
+      Watch: Install, connect your AI, and start your first chat.
+    </p>
+  </div>
+
+  <!-- Step-by-step -->
+  <h2 class="h4 fw-bold mb-4">Step-by-Step Setup</h2>
+
+  @for (step of steps; track step.number) {
+    <div class="step mb-5">
+      <div class="d-flex align-items-start">
+        <div class="step-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3">
+          {{ step.number }}
+        </div>
+        <div class="flex-grow-1">
+          <h4 class="fw-bold mb-2">{{ step.title }}</h4>
+          <p class="text-secondary mb-3">{{ step.description }}</p>
+          @if (step.code) {
+            <pre class="bg-dark text-light p-3 rounded"><code>{{ step.code }}</code></pre>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Connection Details -->
+  <h2 class="h4 fw-bold mb-4 mt-5">Configuring Connections</h2>
+
+  <div class="row g-4 mb-5">
+    <div class="col-md-6">
+      <div class="connection-card p-4 rounded-3 border h-100">
+        <div class="d-flex align-items-center mb-3">
+          <i class="bi bi-cpu fs-3 text-success me-3"></i>
+          <h3 class="fw-bold mb-0">Ollama</h3>
+        </div>
+        <p class="text-secondary mb-3">
+          Run AI models entirely on your own machine. No internet required. No data leaves your device.
+        </p>
+        <ol class="mb-3">
+          <li>In Settings, select the <strong>Ollama</strong> tab</li>
+          <li>Click the <strong>plus icon</strong> to add a connection</li>
+          <li>Fill in the host URL (usually <code>http://localhost:11434</code>)</li>
+          <li>Select your model from the dropdown</li>
+          <li>Adjust parameters if needed — then save</li>
+        </ol>
+        <div class="params-list">
+          <p class="small fw-bold mb-2">Configurable parameters:</p>
+          <div class="d-flex flex-wrap gap-1">
+            @for (param of ollamaParams; track param) {
+              <span class="badge bg-dark text-light">{{ param }}</span>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="connection-card p-4 rounded-3 border h-100">
+        <div class="d-flex align-items-center mb-3">
+          <i class="bi bi-cloud fs-3 text-info me-3"></i>
+          <h3 class="fw-bold mb-0">OpenAI</h3>
+        </div>
+        <p class="text-secondary mb-3">
+          Use OpenAI's cloud models. Requires an API key and internet connection.
+        </p>
+        <ol class="mb-0">
+          <li>In Settings, select the <strong>OpenAI</strong> tab</li>
+          <li>Click the <strong>plus icon</strong> to add a connection</li>
+          <li>Paste your <strong>OpenAI API Key</strong></li>
+          <li>Enter the <strong>model ID</strong> (e.g. <code>gpt-5</code>)</li>
+          <li>Save the connection</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tips -->
+  <div class="tips-section p-4 rounded-3 border mb-5">
+    <h3 class="h5 fw-bold mb-3">
+      <i class="bi bi-lightbulb text-warning me-2"></i>Tips
+    </h3>
+    <ul class="mb-0">
+      <li>You can have multiple Ollama and OpenAI connections configured at the same time</li>
+      <li>Switch between models mid-chat — Cyréna remembers the conversation context</li>
+      <li>Set a <strong>Default Connection</strong> in the Defaults tab so new chats start with your preferred model</li>
+      <li>Ollama parameters let you fine-tune generation behavior: temperature for creativity, num_context for memory window, min_p for sampling diversity</li>
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,26 @@
+<div>
+  <h1 class="fw-bold mb-4">Guides</h1>
+  <p class="lead text-secondary mb-5">
+    Step-by-step tutorials to help you build with Cyréna. Pick a guide that matches your skill level.
+  </p>
+
+  <div class="row g-4">
+    @for (guide of guides(); track guide.title) {
+      <div class="col-md-6">
+        <div class="card h-100 border-0 shadow-sm guide-card">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <h5 class="card-title fw-bold mb-0">{{ guide.title }}</h5>
+              <span class="badge" [class]="difficultyClass(guide.difficulty)">{{ guide.difficulty }}</span>
+            </div>
+            <p class="card-text text-secondary mb-3">{{ guide.description }}</p>
+            <div class="d-flex align-items-center text-secondary">
+              <i class="bi bi-clock me-1"></i>
+              <small>{{ guide.estimatedTime }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

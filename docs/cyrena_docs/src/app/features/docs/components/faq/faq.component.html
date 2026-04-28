@@ -1,0 +1,32 @@
+<div>
+  <h1 class="fw-bold mb-4">Frequently Asked Questions</h1>
+  <p class="lead text-secondary mb-5">
+    Find answers to common questions about Cyréna. Can't find what you're looking for? Reach out to our support team.
+  </p>
+
+  <div class="accordion" id="faqAccordion">
+    @for (faq of faqs(); track $index) {
+      <div class="accordion-item border-0 shadow-sm mb-3">
+        <h2 class="accordion-header">
+          <button
+            class="accordion-button fw-bold"
+            [class.collapsed]="openIndex() !== $index"
+            type="button"
+            (click)="toggle($index)"
+          >
+            {{ faq.question }}
+          </button>
+        </h2>
+        <div
+          class="accordion-collapse"
+          [class.collapse]="openIndex() !== $index"
+          [class.show]="openIndex() === $index"
+        >
+          <div class="accordion-body text-secondary">
+            {{ faq.answer }}
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

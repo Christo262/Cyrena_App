@@ -1,0 +1,161 @@
+<div>
+  <h1 class="fw-bold mb-3">.NET Development</h1>
+  <p class="lead text-secondary mb-5">
+    Use Cyréna to build, refactor, and reason about .NET projects with deep understanding of your codebase structure.
+  </p>
+
+  <!-- Prerequisites -->
+  <h2 class="h4 fw-bold mb-3">Prerequisites</h2>
+  <ul class="mb-5">
+    @for (item of prerequisites; track item) {
+      <li class="mb-2">{{ item }}</li>
+    }
+  </ul>
+
+  <!-- Supported Project Types -->
+  <h2 class="h4 fw-bold mb-3">Supported Project Types</h2>
+  <p class="text-secondary mb-3">
+    <code class="text-primary">{{ extensionId }}</code> works with the following C# templates:
+  </p>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Project Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (pt of projectTypes; track pt.name) {
+          <tr>
+            <td><strong>{{ pt.name }}</strong></td>
+            <td>{{ pt.description }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <div class="alert alert-info mb-5">
+    <i class="bi bi-info-circle me-2"></i>
+    <strong>Note</strong> — The folder layout for each project type is opinionated. Keeping to the default structure guarantees stable and predictable AI behaviour; Cyrena will not restructure the hierarchy.
+  </div>
+
+  <!-- Default Folder Structure -->
+  <h2 class="h4 fw-bold mb-3">Default Folder Structure</h2>
+  <p class="text-secondary mb-3">
+    All supported project types share the following top-level items. Files and folders are <strong>writable</strong> unless explicitly marked as read-only.
+  </p>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Folder / File</th>
+          <th>Purpose</th>
+          <th>Read-Only?</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (folder of baseFolders; track folder.name) {
+          <tr>
+            <td><code>{{ folder.name }}</code></td>
+            <td>{{ folder.purpose }}</td>
+            <td>
+              @if (folder.readOnly) {
+                <span class="badge bg-danger">Yes</span>
+              } @else {
+                <span class="badge bg-success">No</span>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Blazor Additional Folders -->
+  <h3 class="h5 fw-bold mb-3">Additional Folders for Blazor Projects</h3>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Folder</th>
+          <th>Allowed Content</th>
+          <th>Read-Only?</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (folder of blazorFolders; track folder.name) {
+          <tr>
+            <td><code>{{ folder.name }}</code></td>
+            <td>{{ folder.content }}</td>
+            <td>
+              @if (folder.readOnly) {
+                <span class="badge bg-danger">Yes</span>
+              } @else {
+                <span class="badge bg-success">No</span>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- MVC Additional Folders -->
+  <h3 class="h5 fw-bold mb-3">Additional Folders for MVC Projects</h3>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Folder</th>
+          <th>Allowed Content</th>
+          <th>Read-Only?</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (folder of mvcFolders; track folder.name) {
+          <tr>
+            <td><code>{{ folder.name }}</code></td>
+            <td>{{ folder.content }}</td>
+            <td>
+              @if (folder.readOnly) {
+                <span class="badge bg-danger">Yes</span>
+              } @else {
+                <span class="badge bg-success">No</span>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Recommended Workflow -->
+  <h2 class="h4 fw-bold mb-3">Recommended Workflow</h2>
+  <p class="text-secondary mb-4">
+    Using the folder layout that Cyrena understands and enforces yields the most reliable results. If you need a different organization, you can create a <strong>custom extension</strong> that defines the rules you require.
+  </p>
+
+  <h3 class="h5 fw-bold mb-3">Step-by-Step Guide</h3>
+  @for (step of steps; track step.number) {
+    <div class="step mb-4">
+      <div class="d-flex align-items-start">
+        <div class="step-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3">
+          {{ step.number }}
+        </div>
+        <div class="flex-grow-1">
+          <h4 class="fw-bold mb-2">{{ step.title }}</h4>
+          <p class="text-secondary mb-0">{{ step.description }}</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Permissions Note -->
+  <div class="permissions-note p-4 rounded-3 border mt-5">
+    <p class="mb-0 text-secondary">
+      <i class="bi bi-shield-check text-success me-2"></i>
+      <strong>Cyrena respects the permissions indicated above:</strong> files marked "read-only" cannot be altered by the AI, while all other folders and files — including <code>wwwroot/css</code> and <code>wwwroot/js</code> — are fully readable and writable.
+    </p>
+  </div>
+</div>

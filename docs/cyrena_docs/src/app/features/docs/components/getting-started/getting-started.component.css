@@ -1,0 +1,70 @@
+.step-number {
+  width: 40px;
+  height: 40px;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+pre {
+  font-size: 0.875rem;
+  overflow-x: auto;
+  margin-bottom: 0;
+}
+
+pre code {
+  white-space: pre;
+}
+
+.download-cta {
+  background: rgba(13, 110, 253, 0.05);
+  border-color: rgba(13, 110, 253, 0.2) !important;
+}
+
+.platform-card {
+  background: rgba(255, 255, 255, 0.03);
+  transition: background 0.2s ease;
+}
+
+.platform-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.connection-card {
+  background: rgba(255, 255, 255, 0.02);
+  transition: border-color 0.2s ease;
+}
+
+.connection-card:hover {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.tips-section {
+  background: rgba(255, 193, 7, 0.05);
+  border-color: rgba(255, 193, 7, 0.2) !important;
+}
+
+.params-list .badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.step ol {
+  padding-left: 1.25rem;
+}
+
+.step ol li {
+  margin-bottom: 0.5rem;
+}
+
+.step ol li:last-child {
+  margin-bottom: 0;
+}
+
+.video-wrapper {
+  background: rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.video-wrapper video {
+  display: block;
+}

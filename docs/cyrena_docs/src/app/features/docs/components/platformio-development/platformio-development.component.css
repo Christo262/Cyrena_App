@@ -1,0 +1,78 @@
+.step-number {
+  width: 40px;
+  height: 40px;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+/* ── Tables (light theme) ── */
+.table {
+  --bs-table-bg: #ffffff;
+  --bs-table-color: #212529;
+  --bs-table-border-color: #dee2e6;
+  --bs-table-striped-bg: #f8f9fa;
+  --bs-table-hover-bg: #e9ecef;
+  --bs-table-active-bg: #dee2e6;
+}
+
+.table thead th {
+  background: #f1f3f5 !important;
+  color: #212529 !important;
+  font-weight: 600;
+  border-bottom: 2px solid #adb5bd;
+  padding: 0.875rem 1rem;
+}
+
+.table tbody td {
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+  color: #212529 !important;
+  border-color: #dee2e6;
+}
+
+.table tbody tr {
+  background: #ffffff;
+}
+
+.table tbody tr:hover {
+  background: #e9ecef;
+}
+
+/* Code inside tables */
+.table td code {
+  color: #0d6efd;
+  font-size: 0.875rem;
+  background: #e9ecef;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.25rem;
+}
+
+/* Alerts */
+.alert-info {
+  background: #e7f3ff;
+  border-color: #b6d4fe;
+  color: #084298;
+}
+
+.alert-info .alert-heading {
+  color: #084298;
+}
+
+/* Section headings */
+h2 {
+  color: #212529;
+}
+
+h3 {
+  color: #343a40;
+}
+
+/* Lead text */
+.lead {
+  color: #6c757d;
+}
+
+/* Secondary text */
+.text-secondary {
+  color: #6c757d !important;
+}

@@ -1,0 +1,26 @@
+.doc-layout {
+  min-height: calc(100vh - 56px - 200px);
+}
+
+.doc-sidebar {
+  width: 260px;
+  min-height: 100%;
+  position: sticky;
+  top: 56px;
+  height: calc(100vh - 56px);
+  overflow-y: auto;
+}
+
+.doc-sidebar.collapsed {
+  display: none;
+}
+
+.doc-content {
+  min-width: 0;
+}
+
+@media (min-width: 992px) {
+  .doc-sidebar.collapsed {
+    display: block;
+  }
+}
