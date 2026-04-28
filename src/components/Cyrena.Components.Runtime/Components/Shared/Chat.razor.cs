@@ -7,12 +7,14 @@ using Cyrena.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Cyrena.Models;
+using BootstrapBlazor.Components;
 
 namespace Cyrena.Components.Shared
 {
     public partial class Chat : IDisposable
     {
         [Inject] private IJSRuntime _js { get; set; } = default!;
+        [Inject] private ToastService _toasts { get; set; } = default!;
         [Parameter]
         public bool AutoRefocus { get; set; } = true;
         private ElementReference _scrollHost;
@@ -51,6 +53,12 @@ namespace Cyrena.Components.Shared
         [JSInvokable]
         public void OnImagePasted(string base64DataUrl, string mimeType)
         {
+            var info = Kernel.GetRequiredService<ConnectionInfo>();
+            if (!info.SupportImages)
+            {
+                _toasts.Error("Not Supported", "This model does not support images.");
+                return;
+            }
             if (string.IsNullOrEmpty(mimeType))
                 mimeType = "image/png";
             var extension = mimeType switch

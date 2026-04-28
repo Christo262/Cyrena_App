@@ -35,8 +35,8 @@ namespace Cyrena.HUD
                                 .AddExtensa(e =>
                                 {
                                     e.ExtensionInfoFileName = "extension.json";
-                                    e.ExtensionsDirectory = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena", "extensions");
-                                    e.InstallationsDirectory = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena", "install");
+                                    e.ExtensionsDirectory = System.IO.Path.Combine(CyrenaBuilder.AppDataDirectory, "extensions");
+                                    e.InstallationsDirectory = System.IO.Path.Combine(CyrenaBuilder.AppDataDirectory, "install");
                                 })
                                 .AddExtension<CyrenaExtension>(CyrenaExtension.Id, CyrenaExtension.Name, CyrenaExtension.Version, CyrenaExtension.Description);
 

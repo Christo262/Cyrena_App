@@ -24,7 +24,7 @@ namespace Cyrena.Dotnet.Services
         public string Description => "Develop a .NET C# Console Application.";
         public string Icon => "bi bi-terminal";
         public string Color => "primary";
-        public string Category => ".NET";
+        public string Category => ".NET Development";
         public string[] Tags => ["C#", "csproj"];
 
         public async Task OnClick()

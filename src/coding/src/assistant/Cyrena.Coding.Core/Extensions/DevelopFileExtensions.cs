@@ -275,6 +275,47 @@ namespace Cyrena.Coding.Extensions
             return true;
         }
 
+        /// <summary>
+        /// Tries to insert multiple lines starting at <paramref name="afterIndex"/> in <paramref name="file"/>.
+        /// Lines are inserted in order, each after the previous. Returns true and the updated
+        /// <see cref="DevelopFileLines"/> on success, otherwise false (and <c>lines</c> is null).
+        /// </summary>
+        public static bool TryInsertLines(
+            this DevelopPlan plan,
+            DevelopFile file,
+            int afterIndex,
+            IEnumerable<string> newLines,
+            out DevelopFileLines? lines)
+        {
+            if (!plan.TryReadFileLines(file, out var current))
+            {
+                lines = null;
+                return false;
+            }
+
+            var lineList = newLines.ToList();
+
+            if (afterIndex < 0 || afterIndex > current!.Lines.Count)
+            {
+                lines = null;
+                return false;
+            }
+
+            // Insert from the end of the batch backward so each TryInsertLine call
+            // targets the same 'afterIndex', naturally pushing earlier inserts down.
+            for (int i = lineList.Count - 1; i >= 0; i--)
+            {
+                if (!plan.TryInsertLine(file, afterIndex, lineList[i], out var updated))
+                {
+                    lines = null;
+                    return false;
+                }
+            }
+
+            lines = plan.TryReadFileLines(file, out var final) ? final : null;
+            return lines != null;
+        }
+
 
         public static void IndexFiles(this DevelopPlan plan, DevelopFolder folder, string extension, string id_prefix, bool readOnly = false)
         {

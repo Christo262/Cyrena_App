@@ -14,10 +14,10 @@ namespace Cyrena.Extensions
             var builder = new CyrenaBuilder(services);
             builder.UseFilePersistence(fs =>
             {
-                fs.BaseDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena");
+                fs.BaseDirectory = CyrenaBuilder.AppDataDirectory;
                 fs.FileExtension = "json";
             });
-            var settings = new SettingsService(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena"));
+            var settings = new SettingsService(CyrenaBuilder.AppDataDirectory);
             builder.Services.AddSingleton<ISettingsService>(settings);
             builder.AddFeatureOption<ISettingsService>(settings);
 

@@ -1,4 +1,6 @@
-﻿namespace Cyrena.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Cyrena.Models
 {
     /// <summary>
     /// Configuration that is saved for chats
@@ -53,6 +55,7 @@
         /// <summary>
         /// Id of the <see cref="Contracts.IConnection"/> provided by <see cref="Contracts.IConnectionProvider"/>
         /// </summary>
+        [Required]
         public string ConnectionId { get; set; } = default!;
 
         /// <summary>

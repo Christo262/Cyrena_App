@@ -4,6 +4,7 @@ using Cyrena.Desktop.Components.Shared;
 using Cyrena.Desktop.Models;
 using Cyrena.Desktop.Services;
 using Cyrena.Extensions;
+using Cyrena.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Photino.Blazor;
@@ -29,8 +30,8 @@ class Program
                         .AddExtensa(e =>
                         {
                             e.ExtensionInfoFileName = "extension.json";
-                            e.ExtensionsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena", "extensions");
-                            e.InstallationsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena", "install");
+                            e.ExtensionsDirectory = Path.Combine(CyrenaBuilder.AppDataDirectory, "extensions");
+                            e.InstallationsDirectory = Path.Combine(CyrenaBuilder.AppDataDirectory, "install");
                         })
                         .AddExtension<CyrenaExtension>(CyrenaExtension.Id, CyrenaExtension.Name, CyrenaExtension.Version, CyrenaExtension.Description);
 

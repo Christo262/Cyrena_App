@@ -13,17 +13,11 @@ namespace Cyrena.Components.Shared
         [Parameter] public ChatConfiguration Model { get; set; } = default!;
         [Inject] private IServiceProvider _services { get; set; } = default!;
         private List<ConnectionInfo> _models { get; set; } = new();
-
-        private DefaultChatViewModel _model = default!;
         private EditContext _context { get; set; } = default!;
 
         protected override void OnInitialized()
         {
-            _model = new DefaultChatViewModel()
-            {
-                ConnectionId = Model.ConnectionId,
-            };
-            _context = new EditContext(_model);
+            _context = new EditContext(Model);
         }
 
         Task IResultDialog.OnClose(DialogResult result)
@@ -35,8 +29,6 @@ namespace Cyrena.Components.Shared
         {
             if (result != DialogResult.Yes) return true;
             var valid = _context.Validate();
-            if (valid)
-                Model.ConnectionId = _model.ConnectionId!;
             return valid;
         }
 
@@ -51,11 +43,5 @@ namespace Cyrena.Components.Shared
             }
             this.StateHasChanged();
         }
-    }
-
-    internal class DefaultChatViewModel
-    {
-        [Required]
-        public string? ConnectionId { get; set; }
     }
 }

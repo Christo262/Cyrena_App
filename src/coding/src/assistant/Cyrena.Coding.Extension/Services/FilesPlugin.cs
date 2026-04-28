@@ -103,65 +103,45 @@ namespace Cyrena.Coding.Services
             }
         }
 
-        [KernelFunction("replace_line")]
+        [KernelFunction("replace_lines")]
         [Description(
-    "Replaces a block of lines in a file starting at a given index.\n" +
-    "Provide the zero‑based start line, the number of lines to remove, " +
-    "and the new line(s) that should take their place (one line per entry).")]
-        public ToolResult<DevelopFileLines> ReplaceFileLine(
-    [Description(
-        "The unique identifier of the target file within the current develop plan.")]
+            "Replace lines in a file. " +
+            "startIndex is zero-based. " +
+            "endIndex is the last line to remove (inclusive). " +
+            "newLines is an array of replacement lines (can be empty to just delete). " +
+            "Use FileActions_read_lines to get lines & index numbers of each line.")]
+        public ToolResult<DevelopFileLines> ReplaceFileLines(
+            [Description("The unique identifier of the target file.")]
     string fileId,
 
-    [Description(
-        "Zero‑based line number where the replacement starts (0 = first line).")]
+            [Description("Zero-based index of the first line to remove.")]
     int startIndex,
 
-    [Description(
-        "How many existing lines should be removed starting at *startIndex*.")]
-    int count,
+            [Description("Zero-based index of the last line to remove (inclusive). Use the same value as startIndex to replace a single line.")]
+    int endIndex,
 
-    [Description(
-        "The new line(s) that will replace the removed block. " +
-        "Separate multiple lines with the literal '\\n' (the method will split on it).")]
-    string newLines)
+            [Description("The replacement lines. Pass an empty array to delete without inserting anything.")]
+    string[] newLines)
         {
-            try
-            {
-                if (!_plan.Plan.TryFindFile(fileId, out var file))
-                    return new ToolResult<DevelopFileLines>(false,
-                        $"File with id {fileId} not found.");
+            if (!_plan.Plan.TryFindFile(fileId, out var file))
+                return new ToolResult<DevelopFileLines>(false, $"File '{fileId}' not found.");
 
-                if (file!.ReadOnly)
-                    return new ToolResult<DevelopFileLines>(false, "File is READ ONLY");
+            if (file!.ReadOnly)
+                return new ToolResult<DevelopFileLines>(false, "File is read-only.");
 
-                _context.LogInfo(
-                    $"Replacing {count} line(s) at index {startIndex} in {file.RelativePath}");
+            int count = endIndex - startIndex + 1;
+            if (count < 1)
+                return new ToolResult<DevelopFileLines>(false, $"endIndex ({endIndex}) must be >= startIndex ({startIndex}).");
 
-                // Backup the current content for version‑control
-                _plan.Plan.TryReadFileContent(file, out var fileContent);
-                _version.Backup(fileContent);
+            _context.LogInfo($"Replacing lines {startIndex}–{endIndex} in {file.RelativePath}");
 
-                // Split the incoming string into separate lines (the AI can send a
-                // single string with '\n' as delimiter)
-                var replacement = string.IsNullOrEmpty(newLines)
-                    ? Enumerable.Empty<string>()
-                    : newLines.Split('\n');
+            _plan.Plan.TryReadFileContent(file, out var fileContent);
+            _version.Backup(fileContent);
 
-                if (!_plan.Plan.TryReplaceLines(
-                        file, startIndex, count, replacement, out var updated))
-                {
-                    return new ToolResult<DevelopFileLines>(false,
-                        $"Unable to replace lines at index {startIndex} (count {count}).");
-                }
+            if (!_plan.Plan.TryReplaceLines(file, startIndex, count, newLines, out var updated))
+                return new ToolResult<DevelopFileLines>(false, $"Failed to replace lines {startIndex}–{endIndex}.");
 
-                return new ToolResult<DevelopFileLines>(updated!);
-            }
-            catch (Exception ex)
-            {
-                return new ToolResult<DevelopFileLines>(false,
-                    $"Error: {ex.Message}");
-            }
+            return new ToolResult<DevelopFileLines>(updated!);
         }
 
         [KernelFunction("append_line")]
@@ -197,41 +177,35 @@ namespace Cyrena.Coding.Services
                 return new ToolResult<DevelopFileContent>(false, $"Error: {ex.Message}");
             }
         }
-        [KernelFunction("insert_line")]
-        [Description("Inserts a new line of text after the line at the given zero‑based index.")]
-        public ToolResult<DevelopFileLines> InsertFileLine(
-            [Description("The unique identifier of the target file within the current plan.")]
+
+        [KernelFunction("insert_lines")]
+        [Description(
+            "Inserts one or more lines after the line at the given zero-based index. " +
+            "Use FileActions_read_lines first to get current line numbers. " +
+            "To append at the end, pass the current line count as the index.")]
+        public ToolResult<DevelopFileLines> InsertFileLines(
+            [Description("The unique identifier of the target file.")]
     string fileId,
-            [Description("Zero‑based line number after which the new text will be inserted. Use the current line count to append at the end of the file.")]
-    int index,
-            [Description("The line content to insert (do not include line‑break characters).")]
-    string text)
+
+            [Description("Zero-based line number to insert after. Pass the total line count to append at the end.")]
+    int afterIndex,
+
+            [Description("The lines to insert. Each array entry becomes one new line — do not include line-break characters.")]
+    string[] lines)
         {
-            try
-            {
-                if (!_plan.Plan.TryFindFile(fileId, out var file))
-                    return new ToolResult<DevelopFileLines>(false,
-                        $"File with id {fileId} not found.");
+            if (!_plan.Plan.TryFindFile(fileId, out var file))
+                return new ToolResult<DevelopFileLines>(false, $"File '{fileId}' not found.");
 
-                if (file!.ReadOnly)
-                    return new ToolResult<DevelopFileLines>(false,
-                        $"File '{file.RelativePath}' is read‑only.");
+            if (file!.ReadOnly)
+                return new ToolResult<DevelopFileLines>(false, $"File '{file.RelativePath}' is read-only.");
 
-                _context.LogInfo($"Writing file {file.RelativePath} line number {index} (insert)");
-                _plan.Plan.TryReadFileContent(file, out var fileContent);
-                _version.Backup(fileContent);
+            _context.LogInfo($"Inserting {lines.Length} line(s) after index {afterIndex} in {file.RelativePath}");
+            _plan.Plan.TryReadFileContent(file, out var fileContent);
+            _version.Backup(fileContent);
+            if (!_plan.Plan.TryInsertLines(file, afterIndex, lines, out var updated))
+                return new ToolResult<DevelopFileLines>(false, $"Failed to insert after line {afterIndex} in '{file.RelativePath}'.");
 
-                if (!_plan.Plan.TryInsertLine(file, index, text, out var newContent))
-                    return new ToolResult<DevelopFileLines>(false,
-                        $"Failed to insert line at index {index} in file '{file.RelativePath}'.");
-
-                return new ToolResult<DevelopFileLines>(newContent!);
-            }
-            catch (Exception ex)
-            {
-                return new ToolResult<DevelopFileLines>(false,
-                    $"Unexpected error while inserting line: {ex.Message}");
-            }
+            return new ToolResult<DevelopFileLines>(updated!);
         }
 
         [KernelFunction("delete")]

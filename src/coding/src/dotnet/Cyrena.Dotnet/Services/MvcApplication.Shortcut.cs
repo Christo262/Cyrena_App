@@ -23,7 +23,7 @@ namespace Cyrena.Dotnet.Services
         public string Description => "Develop a Model-View-Controller app.";
         public string Icon => "bi bi-menu-button-wide-fill";
         public string Color => "light";
-        public string Category => ".NET";
+        public string Category => ".NET Development";
         public string[] Tags => ["C#", "csproj"];
 
         public async Task OnClick()
