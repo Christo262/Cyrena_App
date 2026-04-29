@@ -24,6 +24,14 @@ namespace Cyrena.Extensions
             return builder;
         }
 
+        public static CyrenaBuilder AddSettingsComponent<TComponent>(this CyrenaBuilder builder, string section, int order)
+            where TComponent : ComponentBase
+        {
+            ComponentOptions ui = builder.GetFeatureOption<ComponentOptions>();
+            ui.AddSettingsComponent<TComponent>(section, order);
+            return builder;
+        }
+
         public static CyrenaBuilder AddShortcut<TShortcut>(this CyrenaBuilder builder)
             where TShortcut : class, IShortcut
         {

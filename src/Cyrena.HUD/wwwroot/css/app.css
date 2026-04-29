@@ -181,3 +181,25 @@ html, body {
 .tabs-body {
     padding:0 !important;
 }
+
+/*BB LAYOUT*/
+.layout-main {
+    display: flex !important;
+    flex-direction: column;
+    max-height: calc(var(--bb-layout-height) - var(--bb-layout-header-height) - var(--bb-layout-footer-height));
+}
+
+    .layout-main > .tabs {
+        flex: 1;
+    }
+
+        .layout-main > .tabs > .tabs-body {
+            display: flex;
+        }
+
+            .layout-main > .tabs > .tabs-body > .tabs-body-content {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                width:100%;
+            }

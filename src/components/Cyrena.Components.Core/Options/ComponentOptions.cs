@@ -16,7 +16,7 @@ namespace Cyrena.Options
         }
     }
 
-    public record ComponentMetaData(Type Component, string? Section);
+    public record ComponentMetaData(Type Component, string? Section, int Order);
 
     public static class ComponentOptionsExtensions
     {
@@ -25,13 +25,19 @@ namespace Cyrena.Options
             where TComponent : ComponentBase
         {
             if (!options.SettingsComponents.Any(x => x.Component == typeof(TComponent)))
-                options.SettingsComponents.Add(new ComponentMetaData(typeof(TComponent), null));
+                options.SettingsComponents.Add(new ComponentMetaData(typeof(TComponent), null, 0));
         }
 
         public static void AddSettingsComponent<TComponent>(this ComponentOptions options, string section)
         {
             if (!options.SettingsComponents.Any(x => x.Component == typeof(TComponent)))
-                options.SettingsComponents.Add(new ComponentMetaData(typeof(TComponent), section));
+                options.SettingsComponents.Add(new ComponentMetaData(typeof(TComponent), section, 0));
+        }
+
+        public static void AddSettingsComponent<TComponent>(this ComponentOptions options, string section, int order)
+        {
+            if (!options.SettingsComponents.Any(x => x.Component == typeof(TComponent)))
+                options.SettingsComponents.Add(new ComponentMetaData(typeof(TComponent), section, order));
         }
     }
 }

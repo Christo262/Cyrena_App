@@ -43,6 +43,7 @@ internal class PluginServerService : IPluginServerService
             Name = x.Name,
             Id = x.Id,
             Priority = x.Priority,
+            IsDefault = true,
         }));
         return model;
     }

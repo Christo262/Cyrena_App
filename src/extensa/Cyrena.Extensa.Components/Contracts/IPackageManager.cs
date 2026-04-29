@@ -9,6 +9,7 @@ namespace Cyrena.Extensa.Contracts
         event EventHandler<PackageManagerStatus>? StatusChanged;
         Task IndexPackagesAsync(CancellationToken ct = default);
         Task<IEnumerable<Package>> ListPackagesAsync(CancellationToken ct = default);
+        Task<Package?> GetPackageAsync(string id, CancellationToken ct = default);
         void ClearErrors();
         Task ClearCacheAsync();
 

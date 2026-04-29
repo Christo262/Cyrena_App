@@ -1,0 +1,53 @@
+
+<h4>Extension Servers</h4>
+<div class="alert alert-success" role="alert">
+    <span class="text-danger">*</span> Extension servers provide additional extensions and updates to Cyréna. Add custom servers to host your own. Visit <a href="https://cyrena.dev" target="_blank">cyrena.dev</a> to learn more.
+</div>
+
+<table class="table table-sm striped">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                BaseUrl
+            </th>
+            <th>
+                Enabled
+            </th>
+            <th>
+                <Tooltip Title="Add Server">
+                    <button type="button" class="btn btn-sm btn-success rounded-pill" @onclick="Add"><i class="bi bi-plus"></i></button>
+                </Tooltip>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var item in _models)
+        {
+            <tr>
+                <td>
+                    @item.Name
+                </td>
+                <td>
+                    @item.BaseUrl
+                </td>
+                <td>
+                    <Switch Value="@item.IsEnabled" IsDisabled="@item.IsDefault" OnValueChanged="(e) => OnServerEnableChange(item, e)"/>
+                </td>
+                <td>
+                    @if (!item.IsDefault)
+                    {
+                        <Tooltip Title="Edit">
+                            <button type="button" class="btn btn-sm btn-primary rounded-pill" @onclick="() => Edit(item)"><i class="bi bi-pen"></i></button>
+                        </Tooltip>
+                        <Tooltip Title="Delete">
+                            <button type="button" class="btn btn-sm btn-danger rounded-pill" @onclick="() => Delete(item)"><i class="bi bi-trash"></i></button>
+                        </Tooltip>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
