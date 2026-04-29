@@ -49,6 +49,7 @@ namespace Cyrena.Runtime.Services
             if (connectionProvider == null)
                 throw new InvalidOperationException($"Unable to find connection provider for {config.ConnectionId}");
             IKernelBuilder builder = Kernel.CreateBuilder();
+            builder.Services.AddLogging();
             builder.Services.AddSingleton(config);
             var info = await connectionProvider.AttachAsync(builder, config.ConnectionId);
             builder.Services.AddSingleton(info);

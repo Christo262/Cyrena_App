@@ -12,6 +12,7 @@
     <PackageVersion Include="Cyrena.Extensa.Core" Version="0.4.0" />
     <PackageVersion Include="Cyrena.Persistence.Core" Version="0.4.0" />
     <PackageVersion Include="Cyrena.Persistence.File" Version="0.4.0" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.7" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageVersion Include="Markdig" Version="0.44.0" />
     <PackageVersion Include="PdfPig" Version="0.1.13" />

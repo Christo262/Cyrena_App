@@ -20,7 +20,8 @@
     <Project Path="src/assistant/Cyrena.Coding.Extension/Cyrena.Coding.Extension.csproj" Id="e7d52556-111a-49f8-8390-823f2f59d28b" />
   </Folder>
   <Folder Name="/src/dotnet/">
-    <Project Path="src/dotnet/Cyrena.Dotnet/Cyrena.Dotnet.csproj" Id="f9594dea-0d7b-449c-b904-073f885c6306" />
+    <Project Path="src/dotnet/Cyrena.Dotnet.Core/Cyrena.Dotnet.Core.csproj" Id="b8a38b0b-a36a-4a1c-b4df-2c2e0dc883b5" />
+    <Project Path="src/dotnet/Cyrena.Dotnet.CSharp/Cyrena.Dotnet.CSharp.csproj" />
   </Folder>
   <Folder Name="/src/embedded/">
     <Project Path="src/embedded/Cyrena.ArduinoIDE/Cyrena.ArduinoIDE.csproj" />
