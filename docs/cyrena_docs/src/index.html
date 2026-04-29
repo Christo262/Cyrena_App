@@ -1,11 +1,15 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" dir="ltr">
 
 <head>
+  <base href="/">
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    crossorigin="anonymous">
 
   <!-- Primary Meta Tags -->
   <title>AI Platform Documentation - Cyréna</title>
@@ -26,8 +30,10 @@
   <meta property="og:url" content="https://cyrena.dev" />
   <meta property="og:title" content="AI Platform Documentation - Cyréna" />
   <meta property="og:description"
-    content="Offline-first AI engineering agent that understands project architecture, respects constraints, and writes maintainable code." />
+    content="Offline-first AI engineering agent that understands project architecture, respects constraints, and writes maintainable code. Built by developers, for developers." />
   <meta property="og:image" content="https://cyrena.dev/images/cyrena_og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:site_name" content="Cyréna" />
   <meta property="og:locale" content="en_US" />
 
@@ -35,7 +41,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="AI Platform Documentation - Cyréna" />
   <meta name="twitter:description"
-    content="Offline-first AI engineering agent that understands project architecture, respects constraints, and writes maintainable code." />
+    content="Offline-first AI engineering agent that understands project architecture, respects constraints, and writes maintainable code. Built by developers, for developers." />
   <meta name="twitter:image" content="https://cyrena.dev/images/cyrena_og.png" />
 
   <!-- Structured Data - Organization -->
@@ -44,7 +50,6 @@
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Cyréna",
-    "alternateName": "Cyréna",
     "url": "https://cyrena.dev",
     "logo": "https://cyrena.dev/images/cyrena.png",
     "sameAs": [
@@ -52,6 +57,7 @@
     ],
     "contactPoint": {
         "@type": "ContactPoint",
+        "contactType": "Technical Support",
         "url": "https://github.com/christo262/Cyrena_App/issues"
     }
 }
@@ -65,18 +71,23 @@
     "name": "Cyréna",
     "alternateName": "Cyréna - AI Engineering Agent",
     "url": "https://cyrena.dev",
-    "description": "Offline-first AI engineering agent that understands project architecture and writes maintainable code.",
-    "keywords": "AI coding assistant, engineering agent, offline-first IDE",
-    "author": {
-        "@type": "Organization",
-        "name": "Cyréna"
-    }
+    "description": "Offline-first AI engineering agent that understands project architecture, respects constraints, and writes maintainable code. Built by developers, for developers."
 }
 </script>
 </head>
 
 <body>
   <app-root></app-root>
+  <noscript>
+    <div
+      style="padding: 2rem; text-align: center; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      <h1 style="color: #0d6efd; margin-bottom: 1rem;">JavaScript is Required</h1>
+      <p style="color: #6c757d; max-width: 500px; margin: 0 auto;">
+        Cyréna Documentation is a single-page application that requires JavaScript to function.
+        Please enable JavaScript in your browser settings to continue.
+      </p>
+    </div>
+  </noscript>
 </body>
 
 </html>

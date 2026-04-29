@@ -19,12 +19,10 @@ namespace Cyrena.Components.Shared
         public EventCallback<AdditionalMessageContent[]> OnItemsAdded { get; set; }
         [Inject] private IJSRuntime _js { get; set; } = default!;
         [Inject] private ToastService _toasts { get; set; } = default!;
-        private IIterationService _its { get; set; } = default!;
         private ConnectionInfo _info = default!;
         private string _accepts { get; set; } = default!;
         protected override void OnInitialized()
         {
-            _its = Kernel.Services.GetRequiredService<IIterationService>();
             _info = Kernel.Services.GetRequiredService<ConnectionInfo>();
             if (_info.SupportImages)
                 _accepts += $"image/*{(_info.SupportFiles ? "," : "")}";
@@ -41,7 +39,6 @@ namespace Cyrena.Components.Shared
 
         private async Task HandleFilesSelected(InputFileChangeEventArgs e)
         {
-            if (_its.Inferring) return;
             var files = e.GetMultipleFiles(maximumFileCount: 10);
             List<AdditionalMessageContent> models = new List<AdditionalMessageContent>();
 

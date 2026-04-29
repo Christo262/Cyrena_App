@@ -1,0 +1,46 @@
+.breadcrumb {
+  background: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+.breadcrumb-item a {
+  color: #0d6efd;
+}
+
+.breadcrumb-item a:hover {
+  text-decoration: underline !important;
+}
+
+.breadcrumb-item.active {
+  color: #6c757d;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  color: #adb5bd;
+}
+
+.setup-steps {
+  list-style: none;
+  padding: 0;
+  counter-reset: step;
+}
+
+.setup-steps li {
+  position: relative;
+}
+
+.setup-steps li:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 40px;
+  bottom: -16px;
+  width: 2px;
+  background: linear-gradient(180deg, #0d6efd 0%, rgba(13, 110, 253, 0.1) 100%);
+}
+
+.step-number {
+  font-size: 0.875rem;
+  font-weight: 700;
+}

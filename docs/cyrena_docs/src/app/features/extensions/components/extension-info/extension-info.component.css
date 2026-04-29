@@ -1,0 +1,50 @@
+.extension-hero {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 0.75rem;
+  padding: 2rem;
+}
+
+.extension-icon-wrapper {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.extension-icon-wrapper:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+}
+
+.extension-icon-wrapper img {
+  object-fit: contain;
+}
+
+/* Table styling */
+.table thead th {
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  border-bottom-width: 2px;
+}
+
+.table tbody td {
+  vertical-align: middle;
+  font-size: 0.9375rem;
+}
+
+/* Responsive */
+@media (max-width: 767.98px) {
+  .extension-hero {
+    padding: 1.5rem !important;
+  }
+
+  .extension-icon-wrapper {
+    width: 72px !important;
+    height: 72px !important;
+  }
+
+  .extension-icon-wrapper img {
+    max-width: 56px !important;
+    max-height: 56px !important;
+  }
+}

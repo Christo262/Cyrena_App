@@ -17,6 +17,7 @@ interface NavItem {
 export class NavbarComponent {
   readonly navItems = signal<NavItem[]>([
     { label: 'Home', route: '/' },
+    { label: 'Extensions', route: '/extensions' },
     { label: 'Docs', route: '/docs' },
     { label: 'Getting Started', route: '/docs/getting-started' }
   ]);

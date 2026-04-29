@@ -7,6 +7,14 @@ export const routes: Routes = [
     loadComponent: () => import('./features/home/components/home-page/home-page.component').then(m => m.HomePageComponent)
   },
   {
+    path: 'extensions',
+    loadComponent: () => import('./features/extensions/components/extensions-landing/extensions-landing.component').then(m => m.ExtensionsLandingComponent)
+  },
+  {
+    path: 'extensions/:packageId',
+    loadComponent: () => import('./features/extensions/components/extension-detail/extension-detail.component').then(m => m.ExtensionDetailComponent)
+  },
+  {
     path: 'docs',
     component: DocLayoutComponent,
     children: [

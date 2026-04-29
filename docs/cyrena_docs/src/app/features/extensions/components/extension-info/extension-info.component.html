@@ -1,0 +1,130 @@
+@if (loading()) {
+  <div class="d-flex justify-content-center align-items-center" style="min-height: 40vh;">
+    <div class="text-center">
+      <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="text-secondary">Loading extension details...</p>
+    </div>
+  </div>
+}
+
+@if (error()) {
+  <div class="alert alert-danger d-flex align-items-center" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-3 fs-4"></i>
+    <div>
+      <strong>Error</strong><br>
+      {{ error() }}
+    </div>
+  </div>
+}
+
+@if (package(); as pkg) {
+  <!-- Hero Section -->
+  <section class="extension-hero py-5">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <div class="d-flex align-items-center mb-4">
+          <div class="extension-icon-wrapper bg-white rounded-4 shadow-sm d-flex align-items-center justify-content-center me-4"
+               style="width: 96px; height: 96px;">
+            @if (pkg.hasIcon) {
+              <img [src]="iconUrl()" [alt]="pkg.title || pkg.packageId" class="img-fluid p-2" style="max-width: 80px; max-height: 80px;" />
+            } @else {
+              <i class="bi bi-puzzle fs-1 text-primary"></i>
+            }
+          </div>
+          <div>
+            <h1 class="fw-bold mb-2">{{ pkg.title || pkg.packageId }}</h1>
+            <p class="text-secondary mb-0 font-monospace small">{{ pkg.packageId }}</p>
+          </div>
+        </div>
+        <p class="lead text-secondary mb-4">{{ pkg.description }}</p>
+        <div class="d-flex flex-wrap gap-2 mb-4">
+          @for (os of pkg.supportedOperatingSystems; track os) {
+            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25">
+              <i class="bi me-1"
+                 [class.bi-microsoft]="os === 'win'"
+                 [class.bi-apple]="os === 'mac'"
+                 [class.bi-ubuntu]="os === 'linux'"
+                 [class.bi-phone]="os === 'android'"></i>
+              {{ osLabels[os] || os }}
+            </span>
+          }
+          @for (arch of pkg.supportedArchitectures; track arch) {
+            <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25">
+              <i class="bi bi-cpu me-1"></i>
+              {{ archLabels[arch] || arch }}
+            </span>
+          }
+        </div>
+        <div class="d-flex flex-wrap gap-3">
+          <a [href]="getDownloadUrl()"
+             class="btn btn-primary btn-lg fw-bold px-4">
+            <i class="bi bi-download me-2"></i>Download Latest
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-4 mt-5 mt-lg-0">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-4">
+            <h5 class="fw-bold mb-3">
+              <i class="bi bi-info-circle me-2 text-primary"></i>Details
+            </h5>
+            <dl class="row mb-0">
+              <dt class="col-sm-5 text-secondary small">Latest Version</dt>
+              <dd class="col-sm-7 fw-semibold">{{ pkg.latestVersion || 'N/A' }}</dd>
+              <dt class="col-sm-5 text-secondary small">Total Versions</dt>
+              <dd class="col-sm-7">{{ pkg.versions.length }}</dd>
+              @if (latestVersion(); as ver) {
+                <dt class="col-sm-5 text-secondary small">Size</dt>
+                <dd class="col-sm-7">{{ formatBytes(ver.sizeBytes) }}</dd>
+                <dt class="col-sm-5 text-secondary small">Released</dt>
+                <dd class="col-sm-7">{{ formatDate(ver.createdAt) }}</dd>
+              }
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Version History -->
+  @if (pkg.versions.length > 0) {
+    <section class="py-5">
+      <h2 class="fw-bold mb-4">
+        <i class="bi bi-clock-history me-2 text-primary"></i>Version History
+      </h2>
+      <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="ps-4">Version</th>
+                <th>Released</th>
+                <th>Size</th>
+                <th>Release Notes</th>
+                <th class="pe-4 text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (ver of pkg.versions; track ver.version) {
+                <tr>
+                  <td class="ps-4 fw-semibold">{{ ver.version }}</td>
+                  <td class="text-secondary">{{ formatDate(ver.createdAt) }}</td>
+                  <td class="text-secondary">{{ formatBytes(ver.sizeBytes) }}</td>
+                  <td class="text-secondary">{{ ver.releaseNotes || '—' }}</td>
+                  <td class="pe-4 text-end">
+                    <a [href]="getDownloadUrl(ver.version)"
+                       class="btn btn-sm btn-outline-primary">
+                      <i class="bi bi-download me-1"></i>Download
+                    </a>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  }
+}

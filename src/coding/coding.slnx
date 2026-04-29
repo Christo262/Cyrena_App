@@ -3,6 +3,7 @@
     <File Path="readme.md" />
   </Folder>
   <Folder Name="/sln/docs/">
+    <File Path="docs/angular-development.md" />
     <File Path="docs/arduino-development.md" />
     <File Path="docs/dotnet-development.md" />
     <File Path="docs/platformio-development.md" />
