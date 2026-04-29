@@ -5,7 +5,7 @@
         <option value="">--Select--</option>
         @foreach (var item in _models)
         {
-            <option value="@item.Id">@item.Name</option>
+            <option value="@item.Id">@item.Name (@item.Source)</option>
         }
     </select>
 </div>

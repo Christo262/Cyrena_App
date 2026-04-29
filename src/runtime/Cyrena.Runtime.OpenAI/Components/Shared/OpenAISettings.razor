@@ -7,23 +7,64 @@
         <ValidationSummary />
 
         <div class="row m-0">
-            <div class="col-md-6">
+            <div class="col-md-8 m-auto">
                 <div class="mb-3">
                     <label class="form-label">API Key</label>
                     <InputText @bind-Value="_model.ApiKey" class="form-control" type="password" />
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label class="form-label">Model Id</label>
-                    <InputText @bind-Value="_model.ModelId" class="form-control" />
-                </div>
+            <div class="col-md-12 text-center">
+                <button type="submit" class="btn btn-sm btn-primary">Save API Key</button>
             </div>
-            <div class="col-md-12 text-end">
-                <button type="submit" class="btn btn-sm btn-primary">Save</button>
-            </div>
-        </div>
-
-        
+        </div> 
     </EditForm>
+
+    <table class="table table-sm table-striped">
+        <thead>
+            <tr>
+                <th>
+                    Model Id
+                </th>
+                <th>
+                    Display Name
+                </th>
+                <th>
+                    Temperature
+                </th>
+                <th>
+                    <Tooltip Title="Add Model">
+                        <button type="button" class="btn btn-sm btn-success rounded-pill" @onclick="Add"><i class="bi bi-plus"></i></button>
+                    </Tooltip>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var item in _models)
+            {
+                <tr>
+                    <td>
+                        @item.ModelId
+                    </td>
+                    <td>
+                        @item.DisplayName
+                    </td>
+                    <td>
+                        @item.Temperature
+                    </td>
+                    <td>
+                        <Tooltip Title="Edit">
+                            <button type="button" class="btn btn-sm btn-primary rounded-pill" @onclick="() => Edit(item)">
+                                <i class="bi bi-pen"></i>
+                            </button>
+                        </Tooltip>
+                        <Tooltip Title="Delete">
+                            <button type="button" class="btn btn-sm btn-danger rounded-pill" @onclick="() => Delete(item)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </Tooltip>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }

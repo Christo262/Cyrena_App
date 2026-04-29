@@ -1,0 +1,40 @@
+
+<EditForm EditContext="_context">
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
+
+    <div class="mb-2">
+        <label class="form-label">Model ID</label>
+        <InputText @bind-Value="Model.ModelId" class="form-control" />
+    </div>
+    <div class="mb-2">
+        <label class="form-label">Display Name</label>
+        <InputText @bind-Value="Model.DisplayName" class="form-control" />
+    </div>
+
+    <Slider @bind-Value="@Model.MTemperature" ShowLabel="true" Max="20" Min="0" Step="1"
+            DisplayText="@($"Temperature: {Model.Temperature}")"></Slider>
+    <p class="small text-muted">
+        The temperature of the model. Increasing the temperature will make the model answer more creatively. (Default: 1.0)
+    </p>
+
+    <Slider @bind-Value="@Model.MTopP" ShowLabel="true" Max="100" Min="5" Step="5"
+            DisplayText="@($"TopP: {Model.TopP}")"></Slider>
+    <p class="small text-muted">
+        A higher value (e.g., 0.95) will lead to more diverse text, while a lower value (e.g., 0.5) will generate more focused and conservative text. (Default: 1.0)
+    </p>
+
+    <div class="form-check mb-3">
+        <InputCheckbox @bind-Value="Model.SupportImages" class="form-check-input"></InputCheckbox>
+        <label class="form-check-label">
+            Support Images
+        </label>
+    </div>
+
+    <div class="form-check mb-3">
+        <InputCheckbox @bind-Value="Model.SupportFiles" class="form-check-input"></InputCheckbox>
+        <label class="form-check-label">
+            Support Files
+        </label>
+    </div>
+</EditForm>

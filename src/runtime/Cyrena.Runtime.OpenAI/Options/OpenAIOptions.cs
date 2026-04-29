@@ -11,9 +11,5 @@ namespace Cyrena.Runtime.OpenAI.Options
 
         [Required]
         public string? ApiKey { get; set; }
-        [Required]
-        public string? ModelId { get; set; }
     }
 }
-
-//TODO: Temperature, etc.
