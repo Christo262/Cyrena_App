@@ -3,14 +3,11 @@
   "name": "Tavily Web Search",
   "version": "0.4.0",
   "entryAssemblyFile": "Cyrena.Tavily.dll",
-  "description": "Adds web search functionality for assistants using Tavily.",
-  "icon": null,
-  "contentRootDirectory": null,
+  "description": "Gives Cyréna assistants access to live web search via the Tavily API. Requires a Tavily API key — sign up at tavily.com to get one, then configure it directly in Cyréna's settings UI. Once connected, assistants can search the web as part of their workflow.",
   "dependencies": [
     {
       "id": "cyrena",
       "minVersion": "0.4.0"
     }
-  ],
-  "requireFrameworkBuilder": true
+  ]
 }

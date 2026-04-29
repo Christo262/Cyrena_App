@@ -1,6 +1,4 @@
 ﻿using Cyrena.Extensa.Contracts;
-using Cyrena.Extensa.Installer.Contracts;
-using Cyrena.Extensa.Installer.Services;
 using Cyrena.Extensa.Loader.Contracts;
 using Cyrena.Extensa.Loader.Models;
 using Cyrena.Extensa.Loader.Services;
@@ -26,7 +24,6 @@ namespace Cyrena.Extensions
             builder.AddFeatureOption<ExtensaOptions>(o);
             builder.RunStartupUninstaller();
             builder.RunStartupInstaller();
-            builder.Services.AddScoped<IInstaller, InstallerService>();
             var rgstry = new ExtensionRegistry();
             builder.AddFeatureOption<IExtensionRegistry>(rgstry);
 
@@ -138,15 +135,12 @@ namespace Cyrena.Extensions
                         if (extensionInfo == null)
                             throw new NullReferenceException($"Unable to deserialize extension info from {path}");
                         loadedExtension.Description = extensionInfo.Description;
-                        loadedExtension.Icon = extensionInfo.Icon;
                         loadedExtension.Id = extensionInfo.Id;
                         loadedExtension.Version = extensionInfo.Version;
                         loadedExtension.Name = extensionInfo.Name;
                         loadedExtension.Status = ExtensionStatus.Unloaded;
                         loadedExtension.EntryAssembly = extensionInfo.EntryAssemblyFile;
-                        loadedExtension.ContentRootDirectory = extensionInfo.ContentRootDirectory;
                         loadedExtension.Dependencies = extensionInfo.Dependencies;
-                        loadedExtension.RequireFrameworkBuilder = extensionInfo.RequireFrameworkBuilder;
                     }
                     catch (Exception ex)
                     {

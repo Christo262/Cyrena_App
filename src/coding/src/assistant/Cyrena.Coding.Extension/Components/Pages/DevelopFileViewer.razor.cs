@@ -26,11 +26,31 @@ namespace Cyrena.Coding.Components.Pages
         private DevelopFileContent? _current { get; set; }
         private int _selectedVersionIndex { get; set; }
 
+        [CascadingParameter]
+        public TabItem? Item { get; set; }
+        [CascadingParameter]
+        public Tab? Parent { get; set; }
+        private IDisposable _unload = default!;
+
+        protected override void OnInitialized()
+        {
+            _unload = _controller.OnChatUnload(cfg =>
+            {
+                if (cfg.Id == KernelId)
+                {
+                    if (Item != null && Parent != null)
+                        Parent.RemoveTab(Item);
+                }
+            });
+        }
+
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (!firstRender) return;
             if (string.IsNullOrEmpty(KernelId) || string.IsNullOrEmpty(FileId))
             {
+                if (Parent != null && Item != null)
+                    await Parent.RemoveTab(Item);
                 _nav.NavigateTo("");
                 return;
             }
@@ -61,6 +81,8 @@ namespace Cyrena.Coding.Components.Pages
             catch (Exception ex)
             {
                 await _toasts.Error("Error", ex.Message);
+                if (Parent != null && Item != null)
+                    await Parent.RemoveTab(Item);
                 _nav.NavigateTo("");
             }
         }
@@ -69,29 +91,6 @@ namespace Cyrena.Coding.Components.Pages
         TextModel? originalModel = null;
         TextModel? modifiedModel = null;
         private DevelopFileVersion? _og_target { get; set; }
-
-        private async Task OnVersionSelected(SelectedItem item)
-        {
-            if (_originals == null || _diffEditor == null) return;
-            if (!int.TryParse(item.Value, out var index)) return;
-
-            _selectedVersionIndex = index;
-            _og_target = _originals[index];
-
-            // Dispose and recreate the original model with the selected version's content
-            if (originalModel != null)
-                await originalModel.DisposeModel();
-
-            var ext = Path.GetExtension(_og_target.File.RelativePath);
-            var lang = _langs.GetFileLanguage(ext);
-            originalModel = await BlazorMonaco.Editor.Global.CreateModel(_js, _og_target.File.Content, lang, $"{FileId}-originalModel-{index}");
-
-            await _diffEditor.SetModel(new DiffEditorModel
-            {
-                Original = originalModel,
-                Modified = modifiedModel
-            });
-        }
 
         private async Task OnVersionSelected()
         {
@@ -160,6 +159,8 @@ namespace Cyrena.Coding.Components.Pages
                 var versionControl = _kernel.Services.GetRequiredService<IVersionControl>();
                 versionControl.RollbackTo(_og_target);
                 _og_target = null;
+                if (Parent != null && Item != null)
+                    Parent.RemoveTab(Item);
                 _nav.NavigateTo($"converse/{KernelId}");
             }
         }
@@ -169,11 +170,14 @@ namespace Cyrena.Coding.Components.Pages
             if (string.IsNullOrEmpty(FileId) || _kernel == null) return;
             var versionControl = _kernel.Services.GetRequiredService<IVersionControl>();
             versionControl.RemoveBackup(FileId);
+            if (Parent != null && Item != null)
+                Parent.RemoveTab(Item);
             _nav.NavigateTo($"converse/{KernelId}");
         }
 
         public async ValueTask DisposeAsync()
         {
+            _unload.Dispose();
             if (originalModel != null)
                 await originalModel.DisposeModel();
             if (modifiedModel != null)

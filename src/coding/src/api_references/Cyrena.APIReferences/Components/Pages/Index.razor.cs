@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace Cyrena.APIReferences.Components.Pages
 {
-    public partial class Index
+    public partial class Index : IDisposable
     {
         [Inject] private IKernelController _kernels { get; set; } = default!;
         [Inject] private NavigationManager _nav { get; set;  } = default!;
@@ -18,10 +18,27 @@ namespace Cyrena.APIReferences.Components.Pages
         [Inject] private DialogService _dialog { get; set; } = default!;
         [Inject] private IFileDialog _files { get; set; } = default!;
         [Parameter] public string? KernelId { get; set; }
+        [CascadingParameter]
+        public TabItem? Item { get; set; }
+        [CascadingParameter]
+        public Tab? Parent { get; set; }
 
         private Kernel _kernel = default!;
         private IStore<ApiReference> _store = default!;
         private IEnumerable<ApiReference> _models = Enumerable.Empty<ApiReference>();
+
+        private IDisposable _unload = default!;
+        protected override void OnInitialized()
+        {
+            _unload = _kernels.OnChatUnload(cfg =>
+            {
+                if(cfg.Id == KernelId)
+                {
+                    if (Item != null && Parent != null)
+                        Parent.RemoveTab(Item);
+                }
+            });
+        }
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (!firstRender) return;
@@ -90,6 +107,11 @@ namespace Cyrena.APIReferences.Components.Pages
             {
                 await _toasts.Error("Error", ex.Message);
             }
+        }
+
+        public void Dispose()
+        {
+            _unload.Dispose();
         }
     }
 }

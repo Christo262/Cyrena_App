@@ -34,7 +34,8 @@ namespace Cyrena.Runtime.Services
             var config_service = new ChatConfigurationService(_store, builder.ChatConfiguration);
             builder.Services.AddSingleton<IChatConfigurationService>(config_service);
             builder.KernelBuilder.AddStartupTask<HistoryStartupTask>();
-
+            var prompt = Resources.Read(typeof(AllAssistantsPlugin).Assembly, "Cyrena.Runtime.Resources.prompt-queue.md");
+            builder.GetFeatureOption<IPromptManager>().AddPrompt(5, prompt);
             return Task.CompletedTask;
         }
     }
