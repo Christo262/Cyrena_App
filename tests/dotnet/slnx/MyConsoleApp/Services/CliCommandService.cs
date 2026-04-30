@@ -174,16 +174,38 @@ public class CliCommandService : ICliCommandService
         }
 
         // ── Execute ─────────────────────────────────────────────────
-        double result = options.Operation switch
+        double result;
+        switch (options.Operation)
         {
-            "add" or "+" => options.Left + options.Right,
-            "subtract" or "sub" or "-" => options.Left - options.Right,
-            "multiply" or "mul" or "*" or "x" => options.Left * options.Right,
-            "divide" or "div" or "/" => options.Right == 0
-                ? throw new DivideByZeroException("Cannot divide by zero.")
-                : options.Left / options.Right,
-            _ => throw new ArgumentException($"Unknown operation '{options.Operation}'.")
-        };
+            case "add":
+            case "+":
+                result = options.Left + options.Right;
+                break;
+            case "subtract":
+            case "sub":
+            case "-":
+                result = options.Left - options.Right;
+                break;
+            case "multiply":
+            case "mul":
+            case "*":
+            case "x":
+                result = options.Left * options.Right;
+                break;
+            case "divide":
+            case "div":
+            case "/":
+                if (options.Right == 0)
+                {
+                    Console.WriteLine("Error: Cannot divide by zero.");
+                    return 1;
+                }
+                result = options.Left / options.Right;
+                break;
+            default:
+                Console.WriteLine($"Error: Unknown operation '{options.Operation}'.");
+                return 1;
+        }
 
         Console.WriteLine($"Result: {Math.Round(result, options.Precision)}");
         return 0;

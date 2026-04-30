@@ -16,7 +16,7 @@ namespace Cyrena.Services
 
         public bool Required => true;
 
-        public string Title => "UI Components";
+        public string Title => "Display Components";
 
         public Task LoadAsync(CyrenaKernelBuilder builder)
         {
@@ -24,6 +24,9 @@ namespace Cyrena.Services
             builder.AddToolbarComponent<ExportChat>(ToolbarAlignment.End);
             builder.AddToolbarComponent<ClearChat>(ToolbarAlignment.End);
             builder.AddToolbarComponent<DisplayServiceComponent>(ToolbarAlignment.End);
+            var info = builder.GetFeatureOption<ConnectionInfo>();
+            if(info.SupportFiles)
+                builder.Services.AddSingleton<IFileHandler, PdfFileHandler>();
             return Task.CompletedTask;
         }
     }

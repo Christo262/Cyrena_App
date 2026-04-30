@@ -20,10 +20,9 @@ namespace Cyrena.Desktop.Components.Layout
         private IDisposable? _its_end { get; set; }
         private bool _is_loaded { get; set; }
         private bool _is_its { get; set; }
-        protected override void OnAfterRender(bool firstRender)
+
+        protected override void OnInitialized()
         {
-            if (!firstRender)
-                return;
             _unload = _controller.OnChatUnload((cfg) =>
             {
                 if (cfg.Id == ChatConfiguration.Id)
@@ -46,15 +45,20 @@ namespace Cyrena.Desktop.Components.Layout
                 IsLoaded(cfg);
             });
 
-            _update = _controller.OnChatUpdate((cfg) => 
-            { 
-                if(cfg.Id == ChatConfiguration.Id)
+            _update = _controller.OnChatUpdate((cfg) =>
+            {
+                if (cfg.Id == ChatConfiguration.Id)
                 {
                     ChatConfiguration = cfg;
                     this.InvokeAsync(StateHasChanged);
                 }
             });
-            if(_controller.KernelActive(ChatConfiguration.Id))
+        }
+
+        protected override void OnAfterRender(bool firstRender)
+        {
+            if (!firstRender) return;
+            if (_controller.KernelActive(ChatConfiguration.Id))
                 IsLoaded(ChatConfiguration);
         }
 

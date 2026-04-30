@@ -25,7 +25,7 @@ namespace Cyrena.Runtime.Services
 
         public bool Required => true;
 
-        public string Title => "Runtime";
+        public string Title => "Runtime Services";
 
         public Task LoadAsync(CyrenaKernelBuilder builder)
         {
@@ -36,6 +36,12 @@ namespace Cyrena.Runtime.Services
             builder.KernelBuilder.AddStartupTask<HistoryStartupTask>();
             var prompt = Resources.Read(typeof(AllAssistantsPlugin).Assembly, "Cyrena.Runtime.Resources.prompt-queue.md");
             builder.GetFeatureOption<IPromptManager>().AddPrompt(5, prompt);
+
+            var info = builder.GetFeatureOption<ConnectionInfo>();
+            if (info.SupportImages)
+                builder.Services.AddSingleton<IFileHandler, ImageFileHandler>();
+            if (info.SupportFiles)
+                builder.Services.AddSingleton<IFileHandler, TextFileHandler>();
             return Task.CompletedTask;
         }
     }

@@ -7,6 +7,7 @@ using Cyrena.Options;
 using Cyrena.Persistence.Contracts;
 using Cyrena.Runtime.Models;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.SemanticKernel;
 
 namespace Cyrena.Services
 {
@@ -28,6 +29,7 @@ namespace Cyrena.Services
             var prompts = builder.GetFeatureOption<IPromptManager>();
             var prompt = Resources.Read(typeof(DefaultAssistantMode).Assembly, "Cyrena.Resources.prompt.md");
             prompts.AddPrompt(0, prompt);
+            builder.Plugins.AddFromType<Chat>();
             return Task.CompletedTask;
         }
 

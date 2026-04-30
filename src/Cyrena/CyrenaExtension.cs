@@ -20,7 +20,6 @@ namespace Cyrena
             builder.AddOpenAI();
 
             builder.AddAssistantMode<DefaultAssistantMode>();
-            builder.AddAssistantPlugin<DefaultAssistantPlugin>();
         }
     }
 }

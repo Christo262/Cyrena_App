@@ -51,12 +51,12 @@ namespace Cyrena.Components.Shared
         }
 
         [JSInvokable]
-        public void OnImagePasted(string base64DataUrl, string mimeType)
+        public async Task OnImagePasted(string base64DataUrl, string mimeType)
         {
-            var info = Kernel.GetRequiredService<ConnectionInfo>();
-            if (!info.SupportImages)
+            var handlers = Kernel.Services.GetServices<IFileHandler>();
+            if(handlers.Count() == 0)
             {
-                _toasts.Error("Not Supported", "This model does not support images.");
+                await _toasts.Error("File Support Error", "Files are not supported in this chat.");
                 return;
             }
             if (string.IsNullOrEmpty(mimeType))
@@ -69,17 +69,29 @@ namespace Cyrena.Components.Shared
                 "image/webp" => "webp",
                 _ => "png"
             };
-
-            var base64Data = base64DataUrl.Contains(',')
-                ? base64DataUrl.Split(',')[1]
-                : base64DataUrl;
-
-            var bytes = Convert.FromBase64String(base64Data);
-            var imageContent = new ImageContent(bytes, mimeType);
-            var additionalContent = new AdditionalMessageContent($"pasted-image.{extension}", imageContent);
-
-            _items.Add(additionalContent);
-            InvokeAsync(StateHasChanged);
+            var name = $"pasted-image.{extension}";
+            AdditionalMessageContent? content = null;
+            foreach (var handler in handlers)
+            {
+                if(handler.HandlesType(mimeType, name))
+                {
+                    var base64Data = base64DataUrl.Contains(',')
+                        ? base64DataUrl.Split(',')[1]
+                        : base64DataUrl;
+                    var bytes = Convert.FromBase64String(base64Data);
+                    using var ms = new MemoryStream(bytes);
+                    content = await handler.GetMessageContent(ms, mimeType, name);
+                    if (content != null)
+                        break;
+                }
+            }
+            if(content ==null)
+            {
+                await _toasts.Error("Not Supported", "File type is not supported");
+                return;
+            }
+            _items.Add(content);
+            this.StateHasChanged();
         }
 
         private List<AdditionalMessageContent> _items = new List<AdditionalMessageContent>();

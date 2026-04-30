@@ -8,7 +8,6 @@ namespace Cyrena.Extensions
         public static CyrenaBuilder AddDefaultAssistant(this CyrenaBuilder builder)
         {
             builder.AddAssistantMode<DefaultAssistantMode>();
-            builder.AddAssistantPlugin<DefaultAssistantPlugin>();
             return builder;
         }
     }

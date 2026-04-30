@@ -1,15 +1,18 @@
 ﻿@inherits KernelComponentBase
 
-<Tooltip Title="Attach File">
-    <button type="button" @onclick="TriggerFileUpload" class="btn btn-secondary btn-sm rounded-pill">
-        <i class="bi bi-paperclip"></i>
-    </button>
-</Tooltip>
+@if (!string.IsNullOrEmpty(_accepts))
+{
+    <Tooltip Title="Attach File">
+        <button type="button" @onclick="TriggerFileUpload" class="btn btn-secondary btn-sm rounded-pill">
+            <i class="bi bi-paperclip"></i>
+        </button>
+    </Tooltip>
 
    
-<!-- Hidden File Input -->
-<InputFile @ref="_fileInput"
-           OnChange="HandleFilesSelected"
-           multiple
-           accept="@_accepts"
-           style="display: none;" />
+    <!-- Hidden File Input -->
+    <InputFile @ref="_fileInput"
+               OnChange="HandleFilesSelected"
+               multiple
+               accept="@_accepts"
+               style="display: none;" />
+}
