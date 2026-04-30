@@ -23,6 +23,18 @@ namespace Cyrena.Services
             return content;
         }
 
+        public async Task<AdditionalMessageContent?> GetMessageContent(byte[] data, string contentType, string name)
+        {
+            if (!HandlesType(contentType, name))
+                return null;
+            using var ms = new MemoryStream(data);
+            ms.Position = 0;
+            var pdfText = ExtractTextFromPdf(ms, name);
+            var c = new TextContent(pdfText);
+            var content = new AdditionalMessageContent(name, c);
+            return content;
+        }
+
         public string[] GetSupportedMimeTypes()
         {
             return ["application/pdf"];

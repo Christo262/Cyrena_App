@@ -18,6 +18,15 @@ namespace Cyrena.Runtime.Services
             return content;
         }
 
+        public async Task<AdditionalMessageContent?> GetMessageContent(byte[] data, string contentType, string name)
+        {
+            if (!contentType.StartsWith("image/"))
+                return null;
+            var c = new ImageContent(data, contentType);
+            var content = new AdditionalMessageContent(name, c);
+            return content;
+        }
+
         public string[] GetSupportedMimeTypes()
         {
             return ["image/*"];

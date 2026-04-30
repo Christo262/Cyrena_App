@@ -21,6 +21,19 @@ namespace Cyrena.Runtime.Services
             return content;
         }
 
+        public async Task<AdditionalMessageContent?> GetMessageContent(byte[] data, string contentType, string name)
+        {
+            if (!HandlesType(contentType, name))
+                return null;
+            using var ms = new MemoryStream(data);
+            ms.Position = 0;
+            using var reader = new StreamReader(ms);
+            var textContent = await reader.ReadToEndAsync();
+            var c = new TextContent($"--- File: {name} ---\n\n{textContent}");
+            var content = new AdditionalMessageContent(name, c);
+            return content;
+        }
+
         public string[] GetSupportedMimeTypes()
         {
             return ["text/*", "application/json"];

@@ -79,8 +79,7 @@ namespace Cyrena.Components.Shared
                         ? base64DataUrl.Split(',')[1]
                         : base64DataUrl;
                     var bytes = Convert.FromBase64String(base64Data);
-                    using var ms = new MemoryStream(bytes);
-                    content = await handler.GetMessageContent(ms, mimeType, name);
+                    content = await handler.GetMessageContent(bytes, mimeType, name);
                     if (content != null)
                         break;
                 }
