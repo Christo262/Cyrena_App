@@ -97,15 +97,18 @@ namespace Cyrena.Runtime.Services
 
         public async Task Delete(ChatConfiguration config)
         {
-            await _store.DeleteAsync(config);
-            var mode = _services.GetServices<IAssistantMode>().FirstOrDefault(x => x.Id == config.AssistantModeId);
-            if (mode is not null)
-                await mode.DeleteAsync(config);
+            var ext = await _store.FindAsync(x => x.Id == config.Id);
+            if(ext != null)
+                await _store.DeleteAsync(ext);
             if (_instances.TryRemove(config.Id, out var kernel))
             {
                 _pipe.InvokeUnload(config);
+                await Task.Delay(100); //Breather for unload pipe
                 DisposeKernel(kernel);
             }
+            var mode = _services.GetServices<IAssistantMode>().FirstOrDefault(x => x.Id == config.AssistantModeId);
+            if (mode is not null)
+                await mode.DeleteAsync(config);
             _pipe.InvokeDelete(config);
         }
 
@@ -131,11 +134,11 @@ namespace Cyrena.Runtime.Services
             if (_instances.TryRemove(config.Id, out var kernel))
             {
                 //Make it look like a recreation
+                _pipe.InvokeUnload(config);
                 DisposeKernel(kernel);
-                _pipe.InvokeDelete(config);
                 await Task.Delay(100);
                 await LoadAsync(config);
-                _pipe.InvokeCreate(config);
+                _pipe.InvokeLoaded(config);
             }
         }
 

@@ -25,7 +25,7 @@
 @if(_model != null)
 {
 <div class="row m-0 my-2 h-100">
-    <div class="col-md-8 m-auto h-100">
+    <div class="col-md-9 m-auto h-100">
             @if (_model.HasIcon)
             {
                 <div class="text-center">
@@ -42,21 +42,24 @@
             }
 
             <h6 class="m-0 my-2 text-center">@_model.Title</h6>
-            <p>
-                @_model.LatestVersion().Version <br />
-                @_model.Description <br />
-
-                @foreach (var os in _model.SupportedOperatingSystems)
-                {
-                    <span class="badge text-bg-primary me-1">@os</span>
-                }
-            </p>
 
             @if (!string.IsNullOrEmpty(_model.WebPageLink))
             {
                 <IFrame Src="@_model.WebPageLink"></IFrame>
             }
-    </div>
+            else
+            {
+                <p>
+                    @_model.LatestVersion().Version <br />
+                    @_model.Description <br />
+
+                    @foreach (var os in _model.SupportedOperatingSystems)
+                    {
+                        <span class="badge text-bg-primary me-1">@os</span>
+                    }
+                </p>
+            }
+        </div>
 </div>
 }
 
