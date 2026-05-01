@@ -27,6 +27,17 @@ namespace Cyrena.Extensions
             var rgstry = new ExtensionRegistry();
             builder.AddFeatureOption<IExtensionRegistry>(rgstry);
 
+            try
+            {
+                var readme_i = Path.Combine(o.InstallationsDirectory, "README.txt");
+                if (!File.Exists(readme_i))
+                {
+                    var readme = Resources.Read(typeof(ExtensionRegistry).Assembly, "Cyrena.Extensa.Resources.install-readme.md");
+                    File.WriteAllText(readme_i, readme);
+                }
+            }
+            catch { }
+
             builder.BuildActions.Add(framework =>
             {
                 ExtensaOptions options = framework.GetFeatureOption<ExtensaOptions>();

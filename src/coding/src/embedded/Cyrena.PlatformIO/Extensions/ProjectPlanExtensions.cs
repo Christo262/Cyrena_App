@@ -1,10 +1,10 @@
-﻿using Cyrena.Coding.Models;
+using Cyrena.Coding.Models;
 using Cyrena.Coding.Extensions;
 using Cyrena.Extensions;
 using Cyrena.Models;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
 
 namespace Cyrena.PlatformIO.Extensions
 {
@@ -12,33 +12,76 @@ namespace Cyrena.PlatformIO.Extensions
     {
         public static void IndexPlatformIODefaultPlan(this DevelopPlan plan)
         {
+            // ===== include/ =====
+            var include = plan.GetOrCreateFolder("include", "include");
+
+            // Index .h files directly in include/ root (writable)
+            plan.IndexFiles(include, "h", "include_h_");
+
+            // Index feature folders in include/
+            var includeDirs = Directory.GetDirectories(Path.Combine(plan.RootDirectory, include.RelativePath));
+            foreach (var dir in includeDirs)
+            {
+                var dirInfo = new DirectoryInfo(dir);
+                var featureName = dirInfo.Name.ToLowerInvariant();
+                var featureFolder = plan.GetOrCreateFolder(include, $"include_{featureName}", dirInfo.Name);
+
+                // Ensure structured sub-folders exist: definitions, actions, internals
+                var definitions = plan.GetOrCreateFolder(featureFolder, $"include_{featureName}_definitions", "definitions");
+                var actions = plan.GetOrCreateFolder(featureFolder, $"include_{featureName}_actions", "actions");
+                var internals = plan.GetOrCreateFolder(featureFolder, $"include_{featureName}_internals", "internals");
+
+                // Index .h files in each sub-folder (writable — AI can create here)
+                plan.IndexFiles(definitions, "h", $"include_{featureName}_definitions_h_");
+                plan.IndexFiles(actions, "h", $"include_{featureName}_actions_h_");
+                plan.IndexFiles(internals, "h", $"include_{featureName}_internals_h_");
+
+                // Index any stray .h files directly in the feature folder (read-only — outside structured sub-folders)
+                plan.IndexFiles(featureFolder, "h", $"include_{featureName}_h_", true);
+            }
+
+            // ===== src/ =====
             var src = plan.GetOrCreateFolder("src", "src");
+
+            // Index .c and .cpp files directly in src/ root (writable)
             plan.IndexFiles(src, "c", "c_");
             plan.IndexFiles(src, "cpp", "cpp_");
-            plan.IndexFiles(src, "h", "h_");
+
+            // Index any stray .h files in src/ root (read-only — not part of new structure)
+            plan.IndexFiles(src, "h", "h_", true);
+
+            // Index feature folders in src/
             var srcDirs = Directory.GetDirectories(Path.Combine(plan.RootDirectory, src.RelativePath));
             foreach (var dir in srcDirs)
             {
-                DirectoryInfo dirInfo = new DirectoryInfo(dir);
-                var folder = plan.GetOrCreateFolder(src, dirInfo.Name, dirInfo.Name);
-                plan.IndexFiles(folder, "h", $"{folder.Name}_h_");
-                plan.IndexFiles(folder, "cpp", $"{folder.Name}_cpp_");
-                plan.IndexFiles(folder, "c", $"{folder.Name}_c_");
+                var dirInfo = new DirectoryInfo(dir);
+                var featureName = dirInfo.Name.ToLowerInvariant();
+                var featureFolder = plan.GetOrCreateFolder(src, $"src_{featureName}", dirInfo.Name);
+
+                // Ensure structured sub-folders exist: actions, internals (no definitions in src/)
+                var actions = plan.GetOrCreateFolder(featureFolder, $"src_{featureName}_actions", "actions");
+                var internals = plan.GetOrCreateFolder(featureFolder, $"src_{featureName}_internals", "internals");
+
+                // Index .c and .cpp files in each sub-folder (writable — AI can create here)
+                plan.IndexFiles(actions, "c", $"src_{featureName}_actions_c_");
+                plan.IndexFiles(actions, "cpp", $"src_{featureName}_actions_cpp_");
+                plan.IndexFiles(internals, "c", $"src_{featureName}_internals_c_");
+                plan.IndexFiles(internals, "cpp", $"src_{featureName}_internals_cpp_");
+
+                // Index any stray .h files directly in the feature folder (read-only — outside structured sub-folders)
+                plan.IndexFiles(featureFolder, "h", $"src_{featureName}_h_", true);
             }
 
-
-            var include = plan.GetOrCreateFolder("include", "include");
-            plan.IndexFiles(include, "h", "include_h_");
-
+            // ===== lib/ (read-only) =====
             var lib = plan.GetOrCreateFolder("lib", "lib");
             var libDirs = Directory.GetDirectories(Path.Combine(plan.RootDirectory, lib.RelativePath));
             foreach (var dir in libDirs)
             {
-                DirectoryInfo dirInfo = new DirectoryInfo(dir);
+                var dirInfo = new DirectoryInfo(dir);
                 var folder = plan.GetOrCreateFolder(lib, dirInfo.Name, dirInfo.Name);
-                plan.IndexFiles(folder, "json", $"{folder.Name}_json_", true); //index library.json as readonly
-                plan.IndexFiles(folder, "properties", $"{folder.Name}_props_", true); //index library.properties as read only
-                plan.IndexFiles(folder, "h", $"{folder.Name}_h_", true); //index headers as read only
+                plan.IndexFiles(folder, "json", $"{folder.Name}_json_", true);
+                plan.IndexFiles(folder, "properties", $"{folder.Name}_props_", true);
+                plan.IndexFiles(folder, "h", $"{folder.Name}_h_", true);
                 var libSrc = Path.Combine(dir, "src");
                 if (Directory.Exists(libSrc))
                 {
@@ -49,34 +92,39 @@ namespace Cyrena.PlatformIO.Extensions
                 }
             }
 
+            // ===== data/ (writable) =====
             var data = plan.GetOrCreateFolder("data", "data");
-            plan.IndexFiles(data, "txt", "data_txt_"); //some basic data stuff
-            plan.IndexFiles(data, "json", "data_json_"); //some basic data stuff
+            plan.IndexFiles(data, "txt", "data_txt_");
+            plan.IndexFiles(data, "json", "data_json_");
         }
 
         public static void IndexPlatformIOEspIdf(this DevelopPlan plan)
         {
+            // Root-level ESP-IDF files (read-only)
             plan.IndexFiles("txt", "txt_", true);
-            plan.IndexFiles("csv", "csv_"); //partitions.csv
+            plan.IndexFiles("csv", "csv_", true);
 
+            // src/ txt files (ESP-IDF specific, read-only)
             var src = plan.GetOrCreateFolder("src", "src");
-            plan.IndexFiles("txt", "src_txt_", true);
+            plan.IndexFiles(src, "txt", "src_txt_", true);
 
+            // components/ (read-only)
             var components = plan.GetOrCreateFolder("components", "components");
-            var dirs = Directory.GetDirectories(Path.Combine(plan.RootDirectory, components.RelativePath));
-            foreach(var item in dirs)
+            var compDirs = Directory.GetDirectories(Path.Combine(plan.RootDirectory, components.RelativePath));
+            foreach (var item in compDirs)
             {
                 var info = new DirectoryInfo(item);
                 var folder = plan.GetOrCreateFolder(components, $"components_{info.Name}", info.Name);
                 plan.IndexFiles(folder, "yml", $"components_{folder.Name}_yml_", true);
             }
 
-            var m_components = plan.GetOrCreateFolder("managed_components", "managed_components");
-            var m_dirs = Directory.GetDirectories(Path.Combine(plan.RootDirectory, m_components.RelativePath));
-            foreach (var item in m_dirs)
+            // managed_components/ (read-only)
+            var mComponents = plan.GetOrCreateFolder("managed_components", "managed_components");
+            var mDirs = Directory.GetDirectories(Path.Combine(plan.RootDirectory, mComponents.RelativePath));
+            foreach (var item in mDirs)
             {
                 var info = new DirectoryInfo(item);
-                var folder = plan.GetOrCreateFolder(m_components, $"managed_components_{info.Name}", info.Name);
+                var folder = plan.GetOrCreateFolder(mComponents, $"managed_components_{info.Name}", info.Name);
                 plan.IndexFiles(folder, "yml", $"managed_components_{folder.Name}_yml_", true);
             }
         }

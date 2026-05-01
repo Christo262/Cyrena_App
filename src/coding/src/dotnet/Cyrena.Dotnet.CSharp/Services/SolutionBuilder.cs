@@ -52,7 +52,7 @@ namespace Cyrena.Dotnet.CSharp.Services
                     ProjectDirectory = fi.DirectoryName!,
                     ProjectTypeId = project_type?.Id,
                     ProjectTypeName = project_type?.ProjectTypeName,
-                    Id = Guid.NewGuid().ToString()
+                    Id = $"{fi.DirectoryName?.Replace(sln_dir ??"","").Replace("\\", "_")}_{item.ProjectName}"
                 };
                 projects.Add(project);
                 if(project_type != null)

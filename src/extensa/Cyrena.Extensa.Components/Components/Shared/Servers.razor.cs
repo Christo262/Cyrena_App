@@ -1,7 +1,10 @@
 ﻿using BootstrapBlazor.Components;
+using Cyrena.Contracts;
 using Cyrena.Extensa.Contracts;
 using Cyrena.Extensa.Models;
+using Cyrena.Extensa.Options;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Options;
 
 namespace Cyrena.Extensa.Components.Shared
 {
@@ -9,6 +12,9 @@ namespace Cyrena.Extensa.Components.Shared
     {
         [Inject] private IPluginServerService _service { get; set; } = default!;
         [Inject] private DialogService _dialog { get; set; } = default!;
+        [Inject] private IFileDialog _files { get; set;  } = default!;
+        [Inject] private IOptions<ExtensaOptions> _options { get; set; } = default!;
+        [Inject] private ToastService _toasts { get; set; } = default!;
 
         private IEnumerable<PluginServer> _models = Enumerable.Empty<PluginServer>();
 
@@ -78,6 +84,30 @@ namespace Cyrena.Extensa.Components.Shared
                 await _service.RemoveServerAsync(model.Id);
                 _models = await _service.GetAllServers();
                 this.StateHasChanged();
+            }
+        }
+
+        private async Task OpenExtensions()
+        {
+            try
+            {
+                _files.ExploreFolder(_options.Value.ExtensionsDirectory);
+            }
+            catch (Exception ex)
+            {
+                await _toasts.Error("Error", ex.Message);
+            }
+        }
+
+        private async Task OpenInstallations()
+        {
+            try
+            {
+                _files.ExploreFolder(_options.Value.InstallationsDirectory);
+            }
+            catch (Exception ex)
+            {
+                await _toasts.Error("Error", ex.Message);
             }
         }
     }
