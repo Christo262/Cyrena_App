@@ -1,7 +1,13 @@
 @page "/"
 @attribute [TabItemOption(Text = "New Chat", Icon = "bi bi-chat-dots")]
 
-<div class="h-100 overflow-auto d-flex">
+<style>
+    .setup-shadow {
+        box-shadow: 0 0.1rem 4rem rgba(var(--bs-info-rgb), 0.8) !important;
+    }
+</style>
+
+<div class="h-100 overflow-auto d-flex position-relative">
 
     <div class="col-8 bg-body p-2 rounded justify-content-center align-self-center m-auto">
         <div class="text-center">
@@ -33,12 +39,14 @@
         {
             <div class="text-center py-2">
                 <p>
-                    <span class="text-danger">*</span> Go to <a href="settings">Settings</a> to configure AI connections and get started.
+                    <span class="text-danger">*</span> New to Cyréna? Use the Setup Wizard below. For advanced configuration, go to <a href="settings">Settings</a>.
                 </p>
             </div>
         }
     </div>
-
+    <div class="position-absolute end-0 bottom-0 p-2 text-end">
+        <a href="app-setup" class="btn btn-info btn-lg text-uppercase fw-bolder setup-shadow"><i class="bi bi-magic"></i> Setup Wizard</a>
+    </div>
 </div>
 
 @if (_model != null)

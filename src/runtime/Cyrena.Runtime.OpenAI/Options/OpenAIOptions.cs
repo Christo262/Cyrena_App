@@ -7,7 +7,7 @@ namespace Cyrena.Runtime.OpenAI.Options
     /// </summary>
     public class OpenAIOptions
     {
-        internal const string Key = "openai";
+        public const string Key = "openai";
 
         [Required]
         public string? ApiKey { get; set; }

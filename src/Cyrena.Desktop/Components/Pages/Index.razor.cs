@@ -11,17 +11,28 @@ using Microsoft.JSInterop;
 
 namespace Cyrena.Desktop.Components.Pages
 {
-    public partial class Index
+    public partial class Index : IDisposable
     {
         [Inject] private ISettingsService _settings { get; set; } = default!;
         [Inject] private IKernelController _kernels { get; set; } = default!;
         [Inject] private NavigationManager _nav { get; set; } = default!;
         [Inject] private ToastService _toasts { get; set; } = default!;
         [Inject] private IJSRuntime _js { get; set; } = default!;
+        [Inject] private ISetupService _setup { get; set; } = default!;
 
         private ChatConfiguration? _model;
         private Modal? _config;
         private string? _input { get; set; }
+
+        protected override void OnInitialized()
+        {
+            _setup.OnDefaultConnectionSet += _setup_OnDefaultConnectionSet;
+        }
+
+        private void _setup_OnDefaultConnectionSet(object? sender, EventArgs e)
+        {
+            this.InvokeAsync(async () => await RefreshModel());
+        }
 
         protected override async Task OnInitializedAsync()
         {
@@ -88,6 +99,11 @@ namespace Cyrena.Desktop.Components.Pages
         {
             _input = e.Value?.ToString() ?? "";
             await _js.InvokeVoidAsync("autoGrow", _area, 5);
+        }
+
+        public void Dispose()
+        {
+            _setup.OnDefaultConnectionSet -= _setup_OnDefaultConnectionSet;
         }
     }
 }

@@ -38,6 +38,7 @@ class Program
         //Platform Specific Implementation
         var files = new FileDialog();
         builder.Services.AddSingleton<IFileDialog>(files);  
+        builder.Services.AddSingleton<ISetupService, SetupService>();
         //
 
         builder.AddSettingsComponent<Defaults>("Defaults");

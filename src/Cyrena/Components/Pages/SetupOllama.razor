@@ -1,0 +1,71 @@
+﻿@page "/app-setup/ollama"
+@attribute [TabItemOption(Text = "Setup Ollama", Icon = "bi bi-magic")]
+
+<div class="h-100 overflow-auto">
+    <h1>
+        Setup Ollama
+    </h1>
+    <hr />
+
+    <div class="row m-0">
+        <div class="col-md-9 m-auto">
+            <h4>
+                <span class="badge text-bg-primary rounded-pill">1</span> Install Ollama
+            </h4>
+            <p>
+                Visit <a href="https://ollama.com/download" target="_blank">ollama.com/download</a> and follow the instructions to install and run Ollama on your machine.
+            </p>
+
+            <hr />
+
+            <h4>
+                <span class="badge text-bg-primary rounded-pill">2</span> Download a Model
+            </h4>
+            <p>
+                Open a terminal and run the following command to download a model. The download may take a few minutes depending on your connection.
+            </p>
+            <pre><code>ollama pull {your-model}</code></pre>
+            <p>
+                For example:
+            </p>
+            <pre><code>ollama pull gpt-oss:20b</code></pre>
+            <p>
+                Browse available models at <a href="https://ollama.com/search" target="_blank">ollama.com/search</a>.
+            </p>
+
+            <hr />
+
+            <h4>
+                <span class="badge text-bg-primary rounded-pill">3</span> Connect Cyréna
+            </h4>
+            <div class="rounded mt-2 border p-4">
+                <EditForm Model="_model" OnValidSubmit="Submit">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="mb-2">
+                        <label class="form-label">Ollama Endpoint</label>
+                        <InputText @bind-Value="_model.Endpoint" class="form-control" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Model ID</label>
+                        <InputText @bind-Value="_model.ModelId" placeholder="e.g. gpt-oss:20b" class="form-control" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Display Name</label>
+                        <InputText @bind-Value="_model.Name" placeholder="e.g. My Local Model" class="form-control" />
+                    </div>
+
+                    <div class="text-center">
+                        <input type="submit" class="btn btn-primary" value="Submit" />
+                    </div>
+                </EditForm>
+            </div>
+            <p class="mt-2">
+                <span class="text-danger">*</span> Advanced parameters and file or image support can be configured later in Settings (<i class="bi bi-gear"></i>).
+            </p>
+        </div>
+    </div>
+</div>

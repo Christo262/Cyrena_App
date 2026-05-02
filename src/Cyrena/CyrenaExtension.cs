@@ -20,6 +20,7 @@ namespace Cyrena
             builder.AddOpenAI();
 
             builder.AddAssistantMode<DefaultAssistantMode>();
+            builder.AddFeatureAssembly<DefaultAssistantMode>("blazor");
         }
     }
 }

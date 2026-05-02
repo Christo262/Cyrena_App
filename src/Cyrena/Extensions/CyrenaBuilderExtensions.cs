@@ -8,6 +8,7 @@ namespace Cyrena.Extensions
         public static CyrenaBuilder AddDefaultAssistant(this CyrenaBuilder builder)
         {
             builder.AddAssistantMode<DefaultAssistantMode>();
+            builder.AddFeatureAssembly<DefaultAssistantMode>("blazor");
             return builder;
         }
     }

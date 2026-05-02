@@ -43,6 +43,7 @@ namespace Cyrena.HUD
             //Platform Specific Implementation
             var files = new FileDialog();
             _builder.Services.AddSingleton<IFileDialog>(files);
+            _builder.Services.AddSingleton<ISetupService, SetupService>();
             //
 
             _builder.AddSettingsComponent<Defaults>("Defaults");
