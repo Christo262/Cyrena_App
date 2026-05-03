@@ -362,3 +362,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/sdk/Cyrena.Components.0.3.0.nupkg
+/sdk/Cyrena.Core.0.3.0.nupkg
+/sdk/Cyrena.Developer.Core.0.3.0.nupkg
+/sdk/Cyrena.Extensa.Core.0.3.0.nupkg
+/sdk/Cyrena.Persistence.Core.0.3.0.nupkg
