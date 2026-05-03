@@ -63,6 +63,8 @@ namespace Cyrena.Dotnet.CSharp.Services
             options.Plugins.AddFromType<Www>();
             var prompt = Resources.Read(typeof(DotnetExtension).Assembly, "Cyrena.Dotnet.CSharp.Resources.blazor-lib-prompt.md");
             options.GetFeatureOption<IPromptManager>().AddPrompt(0, prompt);
+
+            options.Services.AddSingleton<IDevelopPlanIndexer, DevelopPlanIndexer>();
             return plan;
         }
 

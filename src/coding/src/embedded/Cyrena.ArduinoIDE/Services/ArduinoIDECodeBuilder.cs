@@ -41,6 +41,7 @@ namespace Cyrena.ArduinoIDE.Services
             sb.AppendLine($"Clock: {options.ChatConfiguration[ArduinoOptions.Clock]}");
             prompt = prompt.Replace("{BOARD_CONTEXT}", sb.ToString());
             options.GetFeatureOption<IPromptManager>().AddPrompt(0, prompt);
+            options.Services.AddSingleton<IDevelopPlanIndexer, DevelopPlanIndexer>();
             return Task.FromResult(plan);
         }
 

@@ -45,6 +45,7 @@ namespace Cyrena.PlatformIO.Services
             var prompt = Resources.Read(typeof(PlatformIOBuilder).Assembly, "Cyrena.PlatformIO.Resources.prompt.md");
             options.GetFeatureOption<IPromptManager>().AddPrompt(0, prompt);
             options.AddToolbarComponent<Cyrena.PlatformIO.Components.Shared.Toolbar>(ToolbarAlignment.Start);
+            options.Services.AddSingleton<IDevelopPlanIndexer, DevelopPlanIndexer>();
             return Task.FromResult(plan);
         }
 

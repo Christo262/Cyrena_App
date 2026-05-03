@@ -11,6 +11,7 @@ namespace Cyrena.Dotnet.Contracts
         IEnumerable<ProjectModel> GetValidProjects();
         void RefreshProjectPlans();
         ProjectModel Current { get; }
+        SolutionViewModel Sln { get; }
         IDisposable OnProjectChange(Action<ProjectModel> cb);
     }
 }

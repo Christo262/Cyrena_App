@@ -5,4 +5,5 @@
   <Project Path="MyMvcApp/MyMvcApp.csproj" Id="48891d42-62a3-4cc0-9d9a-d19aa5c9a824" />
   <Project Path="MyMvcLibrary/MyMvcLibrary.csproj" Id="fb15d7ed-dde7-47d0-ad73-813af5feb6f9" />
   <Project Path="MyRazorLibrary/MyRazorLibrary.csproj" Id="3a5e70a2-5b8d-429e-9d70-1a5ef4b09317" />
+  <Project Path="TestClassLibrary/TestClassLibrary.csproj" Id="4f02feaa-7732-4dea-bf91-2728a3d2bfd8" />
 </Solution>

@@ -44,6 +44,7 @@ namespace Cyrena.Angular.Services
             var prompt = Resources.Read(typeof(AngularBuilder).Assembly, "Cyrena.Angular.Resources.prompt.md");
             options.GetFeatureOption<IPromptManager>().AddPrompt(0, prompt);
             options.KernelBuilder.AddStartupTask<ComponentFolderWatcher>();
+            options.Services.AddSingleton<IDevelopPlanIndexer, DevelopPlanIndexer>();
             return Task.FromResult(plan);
         }
 

@@ -20,7 +20,7 @@ namespace Cyrena.Dotnet.Services
             _project_types = project_types;
             _plan = plan;
             _sln = sln;
-            _current = _sln.Projects.FirstOrDefault(x => x.Id == _config.Config[DotnetOptions.LastProject])!;
+            _current = _sln.Projects.First(x => x.Id == _config.Config[DotnetOptions.LastProject])!;
             _pipe = new SolutionPipeline();
         }
 
@@ -45,6 +45,7 @@ namespace Cyrena.Dotnet.Services
         public IDisposable OnProjectChange(Action<ProjectModel> cb) => _pipe.WatchProjectChange(cb);
 
         public ProjectModel Current => _current;
+        public SolutionViewModel Sln => _sln;
 
         public void Dispose()
         {

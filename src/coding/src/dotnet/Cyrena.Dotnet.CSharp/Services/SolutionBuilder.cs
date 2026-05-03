@@ -90,7 +90,7 @@ namespace Cyrena.Dotnet.CSharp.Services
             var prompt = Resources.Read(typeof(DotnetExtension).Assembly, "Cyrena.Dotnet.CSharp.Resources.dotnet-prompt.md");
             options.GetFeatureOption<IPromptManager>().AddPrompt(0, prompt);
             options.AddToolbarComponent<SolutionSelector>(ToolbarAlignment.Start);
-            options.AddToolbarComponent<RefreshPlan>(ToolbarAlignment.Start);
+            options.Services.AddSingleton<IDevelopPlanIndexer, DevelopPlanIndexer>();
             return active.Plan!;
         }
 

@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Cyrena.Coding</RootNamespace>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.4.1</Version>
+    <Version>0.4.2</Version>
     <Authors>Vaya Nova</Authors>
     <Description>Core models &amp; contracts for coding with Cyréna</Description>
     <PackageIcon>cyrena.png</PackageIcon>

@@ -61,6 +61,7 @@ namespace Cyrena.Dotnet.CSharp.Services
             options.Plugins.AddFromType<DotnetTools>();
             var prompt = Resources.Read(typeof(DotnetExtension).Assembly, "Cyrena.Dotnet.CSharp.Resources.class-library-prompt.md");
             options.GetFeatureOption<IPromptManager>().AddPrompt(0, prompt);
+            options.Services.AddSingleton<IDevelopPlanIndexer, DevelopPlanIndexer>();
             return plan;
         }
 
