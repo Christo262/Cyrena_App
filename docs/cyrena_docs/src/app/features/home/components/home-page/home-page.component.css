@@ -418,3 +418,35 @@
 .text-white-25 {
   color: rgba(255, 255, 255, 0.25);
 }
+
+/* New Feature Cards */
+.new-feature-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-left: 3px solid #0d6efd;
+}
+
+.new-feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1) !important;
+}
+
+.new-feature-card:hover .icon-wrapper {
+  transform: scale(1.05);
+}
+
+.feature-image-wrapper {
+  background: #f8f9fa;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.feature-image {
+  display: block;
+  max-height: 160px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.new-feature-card:hover .feature-image {
+  transform: scale(1.02);
+}
+

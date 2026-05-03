@@ -1,0 +1,141 @@
+<div>
+  <h1 class="fw-bold mb-4">Cyrena.Persistence.Core</h1>
+
+  <p class="lead text-secondary mb-5">
+    Persistence abstraction layer for the Cyréna framework.
+  </p>
+
+  <div class="alert alert-info">
+    <strong>Namespaces:</strong> <code>Cyrena.Persistence.Contracts</code>, <code>Cyrena.Persistence.Options</code>, <code>Cyrena.Extensions</code>
+  </div>
+
+  <hr class="my-5">
+
+  <h2 class="fw-bold mb-4">Overview</h2>
+  <p class="text-secondary">
+    <code>Cyrena.Persistence.Core</code> provides the persistence abstraction layer for the Cyréna framework.
+    It defines the generic repository contract <code>IStore&lt;T&gt;</code>, the persistence builder interface
+    <code>ICyrenaPersistenceBuilder</code>, and extension methods for convenient querying.
+    Concrete implementations (e.g., <code>Cyrena.Persistence.File</code>) provide the actual storage backend.
+  </p>
+
+  <hr class="my-5">
+
+  <h2 class="fw-bold mb-4">Contracts</h2>
+
+  <h3 id="istore" class="h5 fw-bold mt-4">IStore&lt;T&gt;</h3>
+  <p class="text-secondary">
+    Generic repository interface for entity persistence. Supports CRUD operations, querying with specifications,
+    ordering, and paging.
+  </p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IStore&lt;T&gt; : IDisposable
+    where T : class, IEntity
+&#123;
+    IQueryable&lt;T&gt; QueryableData &#123; get; &#125;
+    Task SaveAsync(T entity, CancellationToken cancellationToken = default);
+    Task AddAsync(T entity, CancellationToken cancellationToken = default);
+    Task AddManyAsync(IEnumerable&lt;T&gt; entities, CancellationToken cancellationToken = default);
+    Task UpdateAsync(T entity, CancellationToken cancellationToken = default);
+    Task DeleteAsync(T entity, CancellationToken cancellationToken = default);
+    Task&lt;int&gt; DeleteManyAsync(ISpecification&lt;T&gt; specification, CancellationToken cancellationToken = default);
+    Task&lt;IEnumerable&lt;T&gt;&gt; FindManyAsync(ISpecification&lt;T&gt; specification, IOrderBy&lt;T&gt;? orderBy = default, IPaging? paging = default, CancellationToken cancellationToken = default);
+    Task&lt;int&gt; CountAsync(ISpecification&lt;T&gt; specification, CancellationToken cancellationToken = default);
+    Task&lt;T?&gt; FindAsync(ISpecification&lt;T&gt; specification, CancellationToken cancellationToken = default);
+&#125;</code></pre>
+  <p class="text-secondary"><strong>Key behaviors:</strong></p>
+  <ul class="text-secondary">
+    <li><code>SaveAsync</code>: Upsert operation. Auto-generates <code>Id</code> if null.</li>
+    <li><code>AddAsync</code>: Insert operation. Auto-generates <code>Id</code> if null.</li>
+    <li><code>QueryableData</code>: Direct LINQ queryable access to the underlying collection.</li>
+    <li>All operations are async and support cancellation.</li>
+  </ul>
+
+  <h3 id="icyrenapersistencebuilder" class="h5 fw-bold mt-4">ICyrenaPersistenceBuilder</h3>
+  <p class="text-secondary">Helper interface for registering entity stores during DI configuration.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface ICyrenaPersistenceBuilder
+&#123;
+    void AddScopedStore&lt;TEntity&gt;(string collectionName) where TEntity : class, IEntity;
+    void AddSingletonStore&lt;TEntity&gt;(string collectionName) where TEntity : class, IEntity;
+&#125;</code></pre>
+  <ul class="text-secondary">
+    <li><code>AddScopedStore</code>: Registers <code>IStore&lt;TEntity&gt;</code> as a scoped service (one per chat/kernel).</li>
+    <li><code>AddSingletonStore</code>: Registers <code>IStore&lt;TEntity&gt;</code> as a singleton service (application-wide).</li>
+    <li><code>collectionName</code>: Logical collection/table name for the entity type.</li>
+  </ul>
+
+  <hr class="my-5">
+
+  <h2 class="fw-bold mb-4">Extension Methods</h2>
+
+  <h3 id="cyrenabuilderextensions" class="h5 fw-bold mt-4">CyrenaBuilderExtensions</h3>
+  <p class="text-secondary">Located in <code>Cyrena.Extensions</code>.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public static class CyrenaBuilderExtensions
+&#123;
+    public static CyrenaBuilder AddScopedStore&lt;TEntity&gt;(this CyrenaBuilder builder, string collectionName)
+        where TEntity : class, IEntity;
+
+    public static CyrenaBuilder AddSingletonStore&lt;TEntity&gt;(this CyrenaBuilder builder, string collectionName)
+        where TEntity : class, IEntity;
+&#125;</code></pre>
+  <p class="text-secondary">
+    These methods delegate to the <code>ICyrenaPersistenceBuilder</code> registered in <code>CyrenaBuilder.FeatureOptions</code>.
+    The persistence implementation package (e.g., <code>Cyrena.Persistence.File</code>) must be added first.
+  </p>
+
+  <h3 id="storeextensions" class="h5 fw-bold mt-4">StoreExtensions</h3>
+  <p class="text-secondary">Convenience overloads using <code>Expression&lt;Func&lt;T, bool&gt;&gt;</code> predicates instead of <code>ISpecification&lt;T&gt;</code>.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public static class StoreExtensions
+&#123;
+    public static Task&lt;T?&gt; FindAsync&lt;T&gt;(this IStore&lt;T&gt; store, Expression&lt;Func&lt;T, bool&gt;&gt; predicate, CancellationToken ct = default)
+        where T : class, IEntity;
+
+    public static Task&lt;IEnumerable&lt;T&gt;&gt; FindManyAsync&lt;T&gt;(this IStore&lt;T&gt; store, Expression&lt;Func&lt;T, bool&gt;&gt; predicate,
+        OrderBy&lt;T&gt;? orderBy = null, Paging? paging = null, CancellationToken ct = default)
+        where T : class, IEntity;
+
+    public static Task&lt;int&gt; CountAsync&lt;T&gt;(this IStore&lt;T&gt; store, Expression&lt;Func&lt;T, bool&gt;&gt; predicate, CancellationToken ct = default)
+        where T : class, IEntity;
+
+    public static Task&lt;int&gt; DeleteManyAsync&lt;T&gt;(this IStore&lt;T&gt; store, Expression&lt;Func&lt;T, bool&gt;&gt; predicate, CancellationToken ct = default)
+        where T : class, IEntity;
+&#125;</code></pre>
+  <p class="text-secondary">These extensions wrap the predicate in an internal <code>AnySpecification&lt;T&gt;</code> that implements <code>ISpecification&lt;T&gt;</code>.</p>
+
+  <hr class="my-5">
+
+  <h2 class="fw-bold mb-4">Related Types</h2>
+  <p class="text-secondary">The following types are referenced by <code>IStore&lt;T&gt;</code> and <code>StoreExtensions</code> but defined in concrete persistence implementation packages:</p>
+  <ul class="text-secondary">
+    <li><code>ISpecification&lt;T&gt;</code> — Query specification interface</li>
+    <li><code>Specification&lt;T&gt;</code> — Base specification implementation</li>
+    <li><code>IOrderBy&lt;T&gt;</code> — Ordering specification interface</li>
+    <li><code>OrderBy&lt;T&gt;</code> — Ordering implementation</li>
+    <li><code>IPaging</code> — Paging specification interface</li>
+    <li><code>Paging</code> — Paging implementation</li>
+  </ul>
+  <p class="text-secondary">
+    When using <code>Cyrena.Persistence.Core</code>, you must also reference a concrete implementation package
+    that provides these types.
+  </p>
+
+  <hr class="my-5">
+
+  <h2 class="fw-bold mb-4">Usage for Extension Developers</h2>
+  <p class="text-secondary">Reference <code>Cyrena.Persistence.Core</code> to:</p>
+  <ol class="text-secondary">
+    <li>Define custom entities that implement <code>IEntity</code></li>
+    <li>Use <code>IStore&lt;TEntity&gt;</code> for data access in services</li>
+    <li>Register stores via <code>CyrenaBuilder.AddScopedStore&lt;TEntity&gt;()</code> or <code>AddSingletonStore&lt;TEntity&gt;()</code></li>
+    <li>Query data using LINQ expressions via <code>StoreExtensions</code></li>
+  </ol>
+
+  <h3 class="h5 fw-bold mt-4">Example</h3>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>// Define entity
+public class MyData : Entity &#123; public string Value &#123; get; set; &#125; &#125;
+
+// Register store in extension
+builder.AddScopedStore&lt;MyData&gt;("my-data");
+
+// Use in service
+public class MyService(IStore&lt;MyData&gt; store) &#123; ... &#125;</code></pre>
+</div>

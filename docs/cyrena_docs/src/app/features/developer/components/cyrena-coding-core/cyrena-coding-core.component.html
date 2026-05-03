@@ -1,0 +1,467 @@
+<div class="container py-5">
+  <h1 class="fw-bold mb-4">Cyrena.Coding.Core</h1>
+  <p class="lead text-secondary mb-5">
+    Foundational class library for the Cyréna coding assistant. Defines contracts, models, extensions, and configuration constants that extensions and plugins use to build project-aware AI coding capabilities.
+  </p>
+
+  <div class="alert alert-info">
+    <p class="mb-1"><strong>Package:</strong> <code>Cyrena.Coding.Core</code></p>
+    <p class="mb-1"><strong>Namespace:</strong> <code>Cyrena.Coding</code> (contracts, models, options, extensions)</p>
+    <p class="mb-1"><strong>Target Framework:</strong> <code>net10.0</code></p>
+    <p class="mb-0"><strong>Dependency:</strong> <code>Cyrena.Core</code> (provides <code>Entity</code>, <code>IJsonSerializable</code>, <code>ChatConfiguration</code>, <code>CyrenaKernelBuilder</code>, <code>ToolResult</code>)</p>
+  </div>
+
+  <!-- Contracts -->
+  <h2 class="fw-bold mb-4 mt-5">Contracts</h2>
+
+  <h3 class="h5 fw-bold mt-4">ICodeBuilder</h3>
+  <p class="text-secondary">
+    <strong>Namespace:</strong> <code>Cyrena.Coding.Contracts</code>
+  </p>
+  <p class="text-secondary">
+    Defines how different project types configure the AI assistant's <code>DevelopPlan</code>, register Semantic Kernel plugins, and set up prompts. Implement this to add support for a new project type (e.g., Rust, Go, custom framework).
+  </p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable>public interface ICodeBuilder
+&#123;
+    /// &lt;summary&gt;Project type identifier stored in ChatConfiguration&lt;/summary&gt;
+    string Id &#123; get; &#125;
+
+    /// &lt;summary&gt;Configures plugins/services and creates the DevelopPlan&lt;/summary&gt;
+    Task&lt;DevelopPlan&gt; ConfigureAsync(CyrenaKernelBuilder options);
+
+    Task DeleteAsync(ChatConfiguration config);
+    Task EditAsync(ChatConfiguration config, IServiceProvider services);
+&#125;</pre>
+  <p class="text-secondary mt-3">
+    <strong>Registration pattern:</strong>
+  </p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable>builder.Services.AddSingleton&lt;ICodeBuilder, MyProjectBuilder&gt;();</pre>
+  <p class="text-secondary mt-3">
+    <strong>Selection at runtime:</strong> <code>config[DevelopOptions.BuilderId]</code> must match <code>ICodeBuilder.Id</code>.
+  </p>
+  <p class="text-secondary mt-3"><strong>Typical ConfigureAsync implementation:</strong></p>
+  <ol class="text-secondary">
+    <li>Create <code>DevelopPlan</code> from <code>options.ChatConfiguration[DevelopOptions.RootDirectory]</code></li>
+    <li>Index files using <code>plan.IndexFiles()</code> or folder-specific extensions</li>
+    <li>Register Semantic Kernel plugins via <code>options.Plugins.AddFromType&lt;T&gt;()</code></li>
+    <li>Add system prompts via <code>options.GetFeatureOption&lt;IPromptManager&gt;().AddPrompt()</code></li>
+    <li>Register additional services in <code>options.Services</code></li>
+    <li>Return the <code>DevelopPlan</code></li>
+  </ol>
+
+  <h3 class="h5 fw-bold mt-4">IDevelopPlanService</h3>
+  <p class="text-secondary">
+    <strong>Namespace:</strong> <code>Cyrena.Coding.Contracts</code>
+  </p>
+  <p class="text-secondary">
+    Provides access to the current <code>DevelopPlan</code> and observable hooks for plan and file lifecycle events. Used for project switching in multi-project solutions.
+  </p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable>public interface IDevelopPlanService
+&#123;
+    DevelopPlan Plan &#123; get; &#125;
+    void SetPlan(DevelopPlan newPlan);
+
+    IDisposable OnDevelopPlanChanged(Action&lt;DevelopPlan&gt; plan);
+    IDisposable OnFileCreated(Action&lt;DevelopFile&gt; cb);
+    IDisposable OnFileUpdated(Action&lt;DevelopFile&gt; cb);
+    IDisposable OnFileDeleted(Action&lt;DevelopFile&gt; cb);
+
+    void InvokeFileCreated(DevelopFile file);
+    void InvokeFileUpdated(DevelopFile file);
+    void InvokeFileDeleted(DevelopFile file);
+&#125;</pre>
+  <p class="text-secondary mt-3"><strong>Registration:</strong> Singleton, typically instantiated with initial plan in <code>IAssistantMode.ConfigureAsync</code>.</p>
+
+  <div class="table-responsive mt-3">
+    <table class="table table-bordered">
+      <thead class="table-light">
+        <tr>
+          <th>Member</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (member of developPlanMembers; track member.member) {
+          <tr>
+            <td><code>{{ member.member }}</code></td>
+            <td class="text-secondary">{{ member.description }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="h5 fw-bold mt-4">IVersionControl</h3>
+  <p class="text-secondary">
+    <strong>Namespace:</strong> <code>Cyrena.Coding.Contracts</code>
+  </p>
+  <p class="text-secondary">
+    Capped, timestamped in-memory version history for files modified by AI. Thread-safe. Each file tracks up to <code>MaxVersionsPerFile</code> snapshots (oldest dropped first).
+  </p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable>public interface IVersionControl
+&#123;
+    int MaxVersionsPerFile &#123; get; set; &#125;
+
+    // Write
+    void Backup(DevelopFileContent? file, string? label = null);
+    void RemoveBackup(string fileId);
+    void Clear();
+
+    // Query
+    bool HasBackup(string fileId);
+    DevelopFileVersion? GetLatest(string fileId);
+    IReadOnlyList&lt;DevelopFileVersion&gt; GetHistory(string fileId);
+    IEnumerable&lt;DevelopFileVersion&gt; GetAllLatest();
+
+    // Restore by index or timestamp
+    bool TryGetVersion(string fileId, int index, out DevelopFileVersion? version);
+    bool TryGetVersionAt(string fileId, DateTimeOffset at, out DevelopFileVersion? version);
+
+    // Rollback
+    DevelopFileVersion? RollbackTo(DevelopFileVersion version);
+    DevelopFileVersion? RollbackOne(string fileId);
+
+    // Backward-compatible shims
+    DevelopFileContent? GetBackups(string fileId);
+    IEnumerable&lt;DevelopFileContent&gt; GetBackups();
+&#125;</pre>
+  <p class="text-secondary mt-3"><strong>Default MaxVersionsPerFile:</strong> 20</p>
+  <p class="text-secondary"><strong>Usage pattern:</strong></p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable>// Before any file modification:
+_plan.Plan.TryReadFileContent(file, out var fileContent);
+_version.Backup(fileContent);
+// ... perform modification ...</pre>
+
+  <div class="table-responsive mt-3">
+    <table class="table table-bordered">
+      <thead class="table-light">
+        <tr>
+          <th>Category</th>
+          <th>Method</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (method of versionControlMethods; track method.method) {
+          <tr>
+            <td><span class="badge bg-secondary">{{ method.category }}</span></td>
+            <td><code>{{ method.method }}</code></td>
+            <td class="text-secondary">{{ method.description }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Models -->
+  <h2 class="fw-bold mb-4 mt-5">Models</h2>
+
+  <h3 class="h5 fw-bold mt-4">DevelopPlan</h3>
+  <p class="text-secondary">
+    <strong>Namespace:</strong> <code>Cyrena.Coding.Models</code>
+  </p>
+  <p class="text-secondary">
+    Root model representing the in-memory index of a project's files and folders. Serializable to JSON via Newtonsoft.Json.
+  </p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable>public class DevelopPlan : IJsonSerializable
+&#123;
+    public DevelopPlan(string rootDirectory);
+
+    [JsonIgnore] public string RootDirectory &#123; get; set; &#125;
+    [JsonIgnore] public string DataDirectory &#123; get; set; &#125;  // RootDirectory + "/.cyrena"
+
+    public List&lt;DevelopFile&gt; Files &#123; get; set; &#125;
+    public List&lt;DevelopFolder&gt; Folders &#123; get; set; &#125;
+
+    public static bool TryLoadFromDirectory(string dir, out DevelopPlan plan);
+    public string ToJson();
+&#125;</pre>
+  <p class="text-secondary mt-3">
+    <strong>Persistence:</strong> Plan is loaded from <code>&#123;DataDirectory&#125;/plan</code> as JSON. Saving is handled by extensions, not this core library.
+  </p>
+  <p class="text-secondary">
+    <strong>Loading:</strong> <code>TryLoadFromDirectory</code> attempts to load from <code>.cyrena/plan</code>, falls back to new empty plan on any failure.
+  </p>
+
+  <h3 class="h5 fw-bold mt-4">DevelopItem (abstract base)</h3>
+  <p class="text-secondary">
+    <strong>Namespace:</strong> <code>Cyrena.Coding.Models</code>
+  </p>
+  <p class="text-secondary">Abstract base for all plan items. Extends <code>Cyrena.Entity</code> and implements <code>IJsonSerializable</code>.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable>public abstract class DevelopItem : Entity, IJsonSerializable
+&#123;
+    public string Name &#123; get; set; &#125; = default!;
+    public string RelativePath &#123; get; set; &#125; = default!;
+    public string ToJson() => JsonConvert.SerializeObject(this, Formatting.Indented);
+&#125;</pre>
+
+  <h3 class="h5 fw-bold mt-4">DevelopFile</h3>
+  <p class="text-secondary">
+    <strong>Namespace:</strong> <code>Cyrena.Coding.Models</code>
+  </p>
+  <p class="text-secondary">Represents a file in the plan index.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable>public class DevelopFile : DevelopItem
+&#123;
+    public bool ReadOnly &#123; get; set; &#125; = false;
+&#125;</pre>
+  <p class="text-secondary mt-3">
+    <strong>ReadOnly:</strong> When <code>true</code>, the AI should not modify this file. Used for build config, project files, etc.
+  </p>
+
+  <h3 class="h5 fw-bold mt-4">DevelopFileContent</h3>
+  <p class="text-secondary">
+    <strong>Namespace:</strong> <code>Cyrena.Coding.Models</code>
+  </p>
+  <p class="text-secondary">File model with full text content.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable>public class DevelopFileContent : DevelopFile
+&#123;
+    public DevelopFileContent() &#123; &#125;
+    public DevelopFileContent(DevelopFile file, string? content);
+    public string? Content &#123; get; set; &#125;
+&#125;</pre>
+
+  <h3 class="h5 fw-bold mt-4">DevelopFileLines</h3>
+  <p class="text-secondary">
+    <strong>Namespace:</strong> <code>Cyrena.Coding.Models</code>
+  </p>
+  <p class="text-secondary">File model with line-indexed content for precise line-based editing.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable>public class DevelopFileLines : DevelopFile
+&#123;
+    public DevelopFileLines();
+    public DevelopFileLines(DevelopFile file, string? content);
+    public Dictionary&lt;int, string&gt; Lines &#123; get; set; &#125;
+    public override string ToString() => string.Join("\r\n", Lines.OrderBy(x => x.Key).Select(x => x.Value));
+&#125;</pre>
+  <p class="text-secondary mt-3"><strong>Line splitting behavior:</strong></p>
+  <ul class="text-secondary">
+    <li>Splits on <code>\r\n</code> (Windows) first</li>
+    <li>Falls back to <code>\n</code> (Unix)</li>
+    <li>Falls back to <code>\r</code> (old Mac)</li>
+    <li>Preserves empty lines via <code>StringSplitOptions.None</code></li>
+    <li>Reconstructs with <code>\r\n</code> via <code>ToString()</code></li>
+  </ul>
+
+  <h3 class="h5 fw-bold mt-4">DevelopFolder</h3>
+  <p class="text-secondary">
+    <strong>Namespace:</strong> <code>Cyrena.Coding.Models</code>
+  </p>
+  <p class="text-secondary">Represents a folder in the plan index. Supports nested folders and files.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable>public class DevelopFolder : DevelopItem
+&#123;
+    public List&lt;DevelopFile&gt; Files &#123; get; set; &#125;
+    public List&lt;DevelopFolder&gt; Folders &#123; get; set; &#125;
+&#125;</pre>
+
+  <h3 class="h5 fw-bold mt-4">DevelopFileVersion</h3>
+  <p class="text-secondary">
+    <strong>Namespace:</strong> <code>Cyrena.Coding.Models</code>
+  </p>
+  <p class="text-secondary">Represents a single versioned snapshot of a file's content.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable>public class DevelopFileVersion
+&#123;
+    public DevelopFileVersion(DevelopFileContent file, string? label = null);
+    public DevelopFileContent File &#123; get; &#125;
+    public DateTimeOffset Timestamp &#123; get; &#125;
+    public string? Label &#123; get; &#125;
+    public override string ToString() => $"[&#123;Timestamp:yyyy-MM-dd HH:mm:ss&#125;] &#123;File.Name&#125;&#123;(Label != null ? $" — &#123;Label&#125;" : string.Empty)&#125;";
+&#125;</pre>
+
+  <h3 class="h5 fw-bold mt-4">StickyNote</h3>
+  <p class="text-secondary">
+    <strong>Namespace:</strong> <code>Cyrena.Coding.Models</code>
+  </p>
+  <p class="text-secondary">Simple entity for the AI to persist notes about the project across sessions.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable>public sealed class StickyNote : Entity
+&#123;
+    public StickyNote() &#123; &#125;
+    public StickyNote(string? title, string? content);
+    public string? Title &#123; get; set; &#125;
+    public string? Content &#123; get; set; &#125;
+&#125;</pre>
+  <p class="text-secondary mt-3">
+    <strong>Storage:</strong> Typically stored via <code>IStore&lt;StickyNote&gt;</code> (from Cyrena.Persistence).
+  </p>
+  <p class="text-secondary">
+    <strong>AI Access:</strong> Exposed via <code>ProjectInformation</code> Semantic Kernel plugin functions (<code>get_plan</code>, <code>create_note</code>, <code>update_note</code>, <code>delete_note</code>).
+  </p>
+
+  <!-- Extension Methods -->
+  <h2 class="fw-bold mb-4 mt-5">Extension Methods</h2>
+
+  <h3 class="h5 fw-bold mt-4">DevelopFileExtensions</h3>
+  <p class="text-secondary">
+    <strong>Namespace:</strong> <code>Cyrena.Coding.Extensions</code> · <strong>Target:</strong> <code>DevelopPlan</code>
+  </p>
+  <p class="text-secondary">All methods operate on the plan's <code>RootDirectory</code> for disk I/O.</p>
+
+  <div class="table-responsive mt-3">
+    <table class="table table-bordered">
+      <thead class="table-light">
+        <tr>
+          <th>Method</th>
+          <th>Signature</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (method of fileExtensionMethods; track method.signature) {
+          <tr>
+            <td><code>{{ method.method }}</code></td>
+            <td><code>{{ method.signature }}</code></td>
+            <td class="text-secondary">{{ method.purpose }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <p class="text-secondary mt-3"><strong>Important behavioral notes:</strong></p>
+  <ul class="text-secondary">
+    <li><code>TryReadFileContent</code> / <code>TryReadFileLines</code> are pure query methods. If the file does not exist on disk, they return <code>false</code> with <code>null</code> output <strong>without</strong> modifying the plan. Callers must explicitly call <code>RemoveFile</code> if they want to purge stale entries.</li>
+    <li><code>CreateFile</code> is idempotent by <code>fileId</code>. If a file with the given ID already exists in the plan, it ensures the file exists on disk (writing content if missing) and returns the existing model. It does not create duplicates.</li>
+    <li><code>IndexFiles</code> extension stripping uses suffix-only removal (<code>EndsWith</code> + range indexer), so files like <code>my.component.ts</code> correctly produce <code>my.component</code> rather than <code>my.componen</code>.</li>
+  </ul>
+
+  <h3 class="h5 fw-bold mt-4">DevelopFolderExtensions</h3>
+  <p class="text-secondary">
+    <strong>Namespace:</strong> <code>Cyrena.Coding.Extensions</code> · <strong>Target:</strong> <code>DevelopPlan</code> and <code>DevelopFolder</code>
+  </p>
+
+  <div class="table-responsive mt-3">
+    <table class="table table-bordered">
+      <thead class="table-light">
+        <tr>
+          <th>Method</th>
+          <th>Signature</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (method of folderExtensionMethods; track method.signature) {
+          <tr>
+            <td><code>{{ method.method }}</code></td>
+            <td><code>{{ method.signature }}</code></td>
+            <td class="text-secondary">{{ method.purpose }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Options -->
+  <h2 class="fw-bold mb-4 mt-5">Options</h2>
+
+  <h3 class="h5 fw-bold mt-4">DevelopOptions</h3>
+  <p class="text-secondary">
+    <strong>Namespace:</strong> <code>Cyrena.Coding.Options</code>
+  </p>
+  <p class="text-secondary">Constant string keys used in <code>ChatConfiguration</code> dictionary for developer mode setup.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable>public sealed class DevelopOptions
+&#123;
+    public const string AssistantModeId = "developer";
+    public const string BuilderId = "dev.builder-id";
+    public const string RootDirectory = "dev.root-dir";
+&#125;</pre>
+
+  <div class="table-responsive mt-3">
+    <table class="table table-bordered">
+      <thead class="table-light">
+        <tr>
+          <th>Constant</th>
+          <th>Value</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (opt of developOptionConstants; track opt.constant) {
+          <tr>
+            <td><code>{{ opt.constant }}</code></td>
+            <td><code>{{ opt.value }}</code></td>
+            <td class="text-secondary">{{ opt.purpose }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <p class="text-secondary mt-3"><strong>Usage:</strong></p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable>// Setting configuration
+model[DevelopOptions.BuilderId] = "cs-class-library";
+model[DevelopOptions.RootDirectory] = &#64;"C:\path\to\project";
+
+// Reading configuration
+var builderId = config[DevelopOptions.BuilderId];
+var rootDir = config[DevelopOptions.RootDirectory];</pre>
+
+  <!-- Dependencies -->
+  <h2 class="fw-bold mb-4 mt-5">Dependencies on Cyrena.Core</h2>
+  <p class="text-secondary">
+    This package depends on <code>Cyrena.Core</code> and uses the following types extensively. Extension developers must reference <code>Cyrena.Core</code> alongside this package.
+  </p>
+
+  <div class="table-responsive mt-3">
+    <table class="table table-bordered">
+      <thead class="table-light">
+        <tr>
+          <th>Type</th>
+          <th>Source</th>
+          <th>Usage</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (dep of coreDependencies; track dep.type) {
+          <tr>
+            <td><code>{{ dep.type }}</code></td>
+            <td><code>{{ dep.source }}</code></td>
+            <td class="text-secondary">{{ dep.usage }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Class Hierarchy -->
+  <h2 class="fw-bold mb-4 mt-5">Class Hierarchy</h2>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable>Cyrena.Entity
+├── DevelopItem (abstract, IJsonSerializable)
+│   ├── DevelopFile
+│   │   ├── DevelopFileContent
+│   │   └── DevelopFileLines
+│   └── DevelopFolder
+├── StickyNote
+└── DevelopFileVersion
+
+DevelopPlan (IJsonSerializable)</pre>
+
+  <!-- Quick Start -->
+  <h2 class="fw-bold mb-4 mt-5">Extension Developer Quick Start</h2>
+
+  <p class="text-secondary"><strong>1. Reference packages:</strong></p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable>&lt;PackageReference Include="Cyrena.Core" /&gt;
+&lt;PackageReference Include="Cyrena.Coding.Core" /&gt;</pre>
+
+  <p class="text-secondary mt-4"><strong>2. Implement ICodeBuilder:</strong></p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable>public class MyProjectBuilder : ICodeBuilder
+&#123;
+    public string Id => "my-project";
+    
+    public async Task&lt;DevelopPlan&gt; ConfigureAsync(CyrenaKernelBuilder options)
+    &#123;
+        var rootDir = options.ChatConfiguration[DevelopOptions.RootDirectory];
+        var plan = new DevelopPlan(rootDir);
+        // Index files, register plugins, add prompts...
+        return plan;
+    &#125;
+    
+    public Task DeleteAsync(ChatConfiguration config) => Task.CompletedTask;
+    public Task EditAsync(ChatConfiguration config, IServiceProvider services) => Task.CompletedTask;
+&#125;</pre>
+
+  <p class="text-secondary mt-4"><strong>3. Register in your extension:</strong></p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable>builder.Services.AddSingleton&lt;ICodeBuilder, MyProjectBuilder&gt;();</pre>
+
+  <p class="text-secondary mt-4"><strong>4. Use plan extensions for file operations:</strong></p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable>plan.CreateFile("readme", "README.md", "# My Project");
+plan.CreateFolder("src", "src");
+plan.IndexFiles("cs", "src_");</pre>
+</div>

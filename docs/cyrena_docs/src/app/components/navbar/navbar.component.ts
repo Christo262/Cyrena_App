@@ -19,6 +19,7 @@ export class NavbarComponent {
     { label: 'Home', route: '/' },
     { label: 'Extensions', route: '/extensions' },
     { label: 'Docs', route: '/docs' },
+    { label: 'Developer', route: '/developer' },
     { label: 'Getting Started', route: '/docs/getting-started' }
   ]);
 

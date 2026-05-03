@@ -6,13 +6,94 @@
     embedded development cycle.
   </p>
 
-  <!-- Prerequisites -->
+  <!-- Requirements -->
   <h2 class="h4 fw-bold mb-3">Requirements</h2>
   <ul class="mb-5">
     @for (item of prerequisites; track item) {
     <li class="mb-2">{{ item }}</li>
     }
   </ul>
+
+  <!-- Enforced Project Structure -->
+  <h2 class="h4 fw-bold mb-3">Enforced Project Structure</h2>
+  <p class="text-secondary mb-4">
+    Cyréna enforces a strict feature-based layout inside <code>src/</code> and <code>include/</code>.
+    This structure is not a suggestion — the agent cannot deviate from it, ensuring consistent and maintainable
+    firmware across sessions.
+  </p>
+  <p class="text-secondary mb-4">
+    All firmware is organised into <strong>features</strong>. A feature represents a self-contained hardware or
+    software concern, for example: <code>display</code>, <code>sensors</code>, <code>networking</code>,
+    <code>motor_control</code>.
+  </p>
+
+  <h5 class="fw-bold mb-2">src/ Layout</h5>
+  <div class="table-responsive mb-4">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Folder / File</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of srcLayout; track row.name) {
+        <tr>
+          <td><code>{{ row.name }}</code></td>
+          <td>{{ row.description }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h5 class="fw-bold mb-2">include/ Layout</h5>
+  <div class="table-responsive mb-4">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Folder / File</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of includeLayout; track row.name) {
+        <tr>
+          <td><code>{{ row.name }}</code></td>
+          <td>{{ row.description }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h5 class="fw-bold mb-2">Folder Responsibilities</h5>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Folder</th>
+          <th>Location</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of folderResponsibilities; track row.folder) {
+        <tr>
+          <td><code>{{ row.folder }}</code></td>
+          <td>{{ row.location }}</td>
+          <td>{{ row.purpose }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="alert alert-info mb-5">
+    <i class="bi bi-info-circle me-2"></i>
+    <strong>Note</strong> — Consumers of a feature include only <code>&#123;feature&#125;.h</code>.
+    Internal headers are never included from outside their own feature.
+  </div>
 
   <!-- What Cyréna Indexes -->
   <h2 class="h4 fw-bold mb-3">What Cyréna Indexes</h2>
@@ -78,42 +159,16 @@
       </div>
       <div class="flex-grow-1">
         <h4 class="fw-bold mb-2">{{ step.title }}</h4>
+        @if (step.description) {
         <p class="text-secondary mb-0">{{ step.description }}</p>
+        }
       </div>
     </div>
   </div>
   }
 
-  <!-- What You Can Ask -->
-  <h2 class="h4 fw-bold mb-3 mt-5">What You Can Ask</h2>
-  <div class="table-responsive mb-5">
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Task</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (row of tasks; track row.task) {
-        <tr>
-          <td><strong>{{ row.task }}</strong></td>
-          <td>{{ row.description }}</td>
-        </tr>
-        }
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Permissions Note -->
-  <div class="alert alert-info mb-5">
-    <i class="bi bi-info-circle me-2"></i>
-    <strong>Permissions Note</strong> — All indexed folders and files are accessed according to the permissions shown
-    above. Cyréna will never modify read-only items.
-  </div>
-
   <!-- Extension Reference -->
-  <h2 class="h4 fw-bold mb-3">Extension Reference</h2>
+  <h2 class="h4 fw-bold mb-3 mt-5">Extension Reference</h2>
   <p class="text-secondary mb-5">
     The PlatformIO integration is provided by the <code class="text-primary">{{ extensionId }}</code> extension.
     Make sure it is installed and enabled in your Cyréna settings.

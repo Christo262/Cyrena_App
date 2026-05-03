@@ -228,6 +228,55 @@
   </div>
 </section>
 
+<!-- New Features Section -->
+<section class="py-6 bg-light">
+  <div class="container">
+    <div class="text-center mb-6">
+      <span class="text-primary fw-semibold text-uppercase ls-2 small">What's New</span>
+      <h2 class="fw-bold mt-2 mb-3">Built for Control</h2>
+      <p class="text-secondary mx-auto" style="max-width: 650px;">
+        Four new capabilities that put you in charge of how Cyréna thinks, what she knows, and when she acts.
+      </p>
+    </div>
+    <div class="row g-4">
+      @for (feature of newFeatures(); track feature.title) {
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm new-feature-card">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-center mb-3">
+              <div
+                class="icon-wrapper bg-primary bg-opacity-10 rounded-4 d-flex align-items-center justify-content-center me-3"
+                style="width: 48px; height: 48px;">
+                <i class="bi fs-5 text-primary" [class]="feature.icon"></i>
+              </div>
+              <div>
+                <h5 class="fw-bold mb-0">{{ feature.title }}</h5>
+                <span class="badge bg-primary bg-opacity-10 text-primary">New</span>
+              </div>
+            </div>
+            <p class="text-primary fw-semibold small mb-2">{{ feature.tagline }}</p>
+            <p class="text-secondary small mb-3">{{ feature.description }}</p>
+            @if (feature.image) {
+            <div class="feature-image-wrapper rounded-3 overflow-hidden mb-3">
+              <img [src]="feature.image" [alt]="feature.title + ' screenshot'" class="feature-image w-100">
+            </div>
+            }
+            <ul class="list-unstyled mb-0">
+              @for (item of feature.features; track item) {
+              <li class="d-flex align-items-start mb-1">
+                <i class="bi bi-check2-circle text-primary me-2 mt-1 small"></i>
+                <span class="text-secondary small">{{ item }}</span>
+              </li>
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+
+
 <!-- The Four Pillars Section -->
 <section class="py-6 bg-light">
   <div class="container">

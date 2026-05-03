@@ -18,8 +18,14 @@ interface EspIdfEntry {
   access: string;
 }
 
-interface TaskEntry {
-  task: string;
+interface FolderResponsibility {
+  folder: string;
+  location: string;
+  purpose: string;
+}
+
+interface FeatureFolder {
+  name: string;
   description: string;
 }
 
@@ -40,61 +46,78 @@ export class PlatformioDevelopmentComponent {
     'Cyréna PlatformIO extension (cyrena.platformio) installed and enabled'
   ];
 
+  readonly srcLayout: FeatureFolder[] = [
+    { name: 'main.c / main.cpp', description: 'Application entry point.' },
+    { name: '{feature}/', description: 'Feature folder containing feature source, actions, and internals.' },
+    { name: '  {feature}.c / {feature}.cpp', description: 'Feature initialisation or coordinator. Optional.' },
+    { name: '  actions/', description: 'Public action implementations.' },
+    { name: '  internals/', description: 'Private implementations. Never exposed outside the feature.' }
+  ];
+
+  readonly includeLayout: FeatureFolder[] = [
+    { name: '{feature}/', description: 'Feature folder containing public headers, definitions, actions, and internals.' },
+    { name: '  {feature}.h', description: 'The single public entry point for the feature. Consumers include only this file.' },
+    { name: '  definitions/', description: 'Types, structs, enums, and constants. Never in src/.' },
+    { name: '  actions/', description: 'Function declarations for public actions.' },
+    { name: '  internals/', description: 'Private headers. Never included from outside their own feature.' }
+  ];
+
+  readonly folderResponsibilities: FolderResponsibility[] = [
+    { folder: 'definitions/', location: 'include/{feature}/ only', purpose: 'Types, structs, enums, and constants. Never in src/.' },
+    { folder: 'actions/', location: 'Both', purpose: 'Function declarations in include/, implementations in src/.' },
+    { folder: 'internals/', location: 'Both', purpose: 'Private headers in include/, private implementations in src/. Never exposed outside the feature.' },
+    { folder: '{feature}.h', location: 'include/{feature}/', purpose: 'The single public entry point for the feature. Consumers include only this file.' },
+    { folder: '{feature}.c / {feature}.cpp', location: 'src/{feature}/', purpose: 'Feature initialisation or coordinator. Optional.' }
+  ];
+
   readonly coreLayout: CoreLayoutEntry[] = [
-    { item: 'src', content: 'All sub-folders; .c, .cpp, .h source files', access: 'Read / write' },
-    { item: 'include', content: 'All sub-folders; header (.h) files', access: 'Read / write' },
-    { item: 'lib', content: 'All sub-folders; .c, .cpp, .h library files', access: 'Read-only' },
-    { item: 'platformio.ini', content: 'Project configuration file', access: 'Read-only' }
+    { item: 'src', content: 'Feature folders, main.c / main.cpp.', access: 'Read / write' },
+    { item: 'include', content: 'Feature folders and their sub-folders.', access: 'Read / write' },
+    { item: 'lib', content: 'All sub-folders; .c, .cpp, .h library files.', access: 'Read-only' },
+    { item: 'platformio.ini', content: 'Project configuration file.', access: 'Read-only' }
   ];
 
   readonly espIdfLayout: EspIdfEntry[] = [
-    { item: 'managed_components', content: 'All sub-folders; .c, .cpp, .h files', access: 'Read-only' },
-    { item: 'components', content: 'All sub-folders; .c, .cpp, .h files', access: 'Read-only' },
-    { item: 'sdkconfig*', content: 'ESP-IDF configuration files', access: 'Read-only' }
+    { item: 'managed_components', content: 'All sub-folders; .c, .cpp, .h files.', access: 'Read-only' },
+    { item: 'components', content: 'All sub-folders; .c, .cpp, .h files.', access: 'Read-only' },
+    { item: 'sdkconfig*', content: 'ESP-IDF configuration files.', access: 'Read-only' }
   ];
 
   readonly steps: Step[] = [
     {
       number: 1,
       title: 'Create a PlatformIO project',
-      description: 'Set up a new project in Visual Studio Code using the PlatformIO extension.'
+      description: 'In Visual Studio Code.'
     },
     {
       number: 2,
       title: 'Open Cyréna and start a New Chat',
-      description: 'Launch the Cyréna desktop app and create a new chat session.'
+      description: ''
     },
     {
       number: 3,
       title: 'Expand the Embedded shortcuts',
-      description: 'Click the Embedded category to reveal available shortcuts.'
+      description: ''
     },
     {
       number: 4,
       title: 'Click PlatformIO',
-      description: 'Select the PlatformIO shortcut to open the configuration dialog.'
+      description: ''
     },
     {
       number: 5,
       title: 'Configure the chat',
-      description: 'Enter a title, provide the path to your platformio.ini file, choose an AI connection, and optionally enable or disable specific Cyréna features.'
+      description: 'Enter a title for the chat. Provide the full path to the platformio.ini file (or browse to select it). Choose the AI connection you wish to use. Optionally enable or disable specific Cyréna features.'
     },
     {
       number: 6,
       title: 'Press Submit',
-      description: 'Cyréna indexes your project and opens the chat session.'
+      description: ''
     },
     {
       number: 7,
       title: 'Begin chatting with the AI',
-      description: 'Ask for code reviews, add or modify source files, resolve build issues, or ask any other project-specific questions.'
+      description: 'Add or modify source files. Implement new features using the enforced structure. Resolve build issues. Ask any other project-specific questions.'
     }
-  ];
-
-  readonly tasks: TaskEntry[] = [
-    { task: 'Code Review', description: 'Request a review of your source files for quality and correctness.' },
-    { task: 'Add or Modify Files', description: 'Ask the AI to create new source files or update existing ones.' },
-    { task: 'Resolve Build Issues', description: 'Get help diagnosing and fixing compilation or linking errors.' },
-    { task: 'Project Questions', description: 'Ask anything about your PlatformIO project configuration or structure.' }
   ];
 }

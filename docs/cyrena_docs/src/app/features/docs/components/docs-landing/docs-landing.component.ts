@@ -27,6 +27,13 @@ export class DocsLandingComponent {
       icon: 'bi-filetype-cs'
     },
     {
+      id: 'angular',
+      title: 'Angular',
+      description: 'Scaffold Angular projects with enforced folder structure, standalone components, and signal-based state.',
+      route: '/docs/angular',
+      icon: 'bi-filetype-js'
+    },
+    {
       id: 'arduino',
       title: 'Arduino IDE',
       description: 'Write, compile, and upload Arduino sketches with full IDE integration.',
@@ -41,11 +48,11 @@ export class DocsLandingComponent {
       icon: 'bi-cpu'
     },
     {
-      id: 'extensions',
-      title: 'Extension Development',
-      description: 'Build custom extensions to expand Cyréna with your own integrations and workflows.',
-      route: '/docs/extensions',
-      icon: 'bi-puzzle'
+      id: 'api-references',
+      title: 'API References',
+      description: 'Shippable AI memory — export and import .aiapi files for libraries and frameworks.',
+      route: '/docs/api-references',
+      icon: 'bi-journal-code'
     }
   ]);
 }

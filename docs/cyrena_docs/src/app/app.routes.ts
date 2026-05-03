@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { DocLayoutComponent } from './components/doc-layout/doc-layout.component';
+import { DeveloperLayoutComponent } from './features/developer/components/developer-layout/developer-layout.component';
 
 export const routes: Routes = [
   {
@@ -43,8 +44,46 @@ export const routes: Routes = [
         loadComponent: () => import('./features/docs/components/platformio-development/platformio-development.component').then(m => m.PlatformioDevelopmentComponent)
       },
       {
+        path: 'angular',
+        loadComponent: () => import('./features/docs/components/angular-development/angular-development.component').then(m => m.AngularDevelopmentComponent)
+      },
+      {
+        path: 'api-references',
+        loadComponent: () => import('./features/docs/components/api-references/api-references.component').then(m => m.ApiReferencesComponent)
+      }
+    ]
+  },
+  {
+    path: 'developer',
+    component: DeveloperLayoutComponent,
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./features/developer/components/developer-landing/developer-landing.component').then(m => m.DeveloperLandingComponent)
+      },
+      {
         path: 'extensions',
-        loadComponent: () => import('./features/docs/components/extension-development/extension-development.component').then(m => m.ExtensionDevelopmentComponent)
+        loadComponent: () => import('./features/developer/components/extension-development/extension-development.component').then(m => m.ExtensionDevelopmentComponent)
+      },
+      {
+        path: 'core',
+        loadComponent: () => import('./features/developer/components/cyrena-core/cyrena-core.component').then(m => m.CyrenaCoreComponent)
+      },
+      {
+        path: 'persistence',
+        loadComponent: () => import('./features/developer/components/cyrena-persistence-core/cyrena-persistence-core.component').then(m => m.CyrenaPersistenceCoreComponent)
+      },
+      {
+        path: 'extensa',
+        loadComponent: () => import('./features/developer/components/cyrena-extensa-core/cyrena-extensa-core.component').then(m => m.CyrenaExtensaCoreComponent)
+      },
+      {
+        path: 'components',
+        loadComponent: () => import('./features/developer/components/cyrena-components-core/cyrena-components-core.component').then(m => m.CyrenaComponentsCoreComponent)
+      },
+      {
+        path: 'coding',
+        loadComponent: () => import('./features/developer/components/cyrena-coding-core/cyrena-coding-core.component').then(m => m.CyrenaCodingCoreComponent)
       }
     ]
   },

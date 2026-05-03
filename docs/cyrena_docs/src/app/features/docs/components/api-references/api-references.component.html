@@ -1,0 +1,254 @@
+<div>
+  <h1 class="fw-bold mb-3">API References</h1>
+  <p class="lead text-secondary mb-5">
+    Shippable AI memory for your libraries. Export technical documentation as <code>.aiapi</code> files so the AI
+    understands your code without manual training.
+  </p>
+
+  <!-- What Are API References -->
+  <h2 class="h4 fw-bold mb-3">What Are API References?</h2>
+  <p class="text-secondary mb-4">
+    API References are structured technical documents that capture the deep knowledge of a codebase — service contracts,
+    method signatures, integration patterns, architecture rules, and usage examples. They are the authoritative source
+    of truth for how a library or extension works.
+  </p>
+  <p class="text-secondary mb-4">
+    Unlike Sticky Notes (quick reminders and conventions), API References are comprehensive, grounded in actual source
+    code, and designed for intense coding sessions. They describe real method signatures, real contracts, and real
+    behavior — not generic or hypothetical descriptions.
+  </p>
+  <p class="text-secondary mb-5">
+    The key difference: <strong>API References are importable and exportable</strong>. This means a library can ship its
+    own documentation, and any developer using that library can import it into their Cyréna chat. The AI immediately
+    understands the library's surface — no context building, no repeated explanations.
+  </p>
+
+  <!-- The UI -->
+  <h2 class="h4 fw-bold mb-3">The API References UI</h2>
+  <p class="text-secondary mb-4">
+    In every <strong>Cyréna Coding Assistant</strong> chat, the API References button appears in the toolbar. Clicking it opens a dedicated page where
+    you can view, create, edit, import, and export API Reference documents.
+  </p>
+  <div class="card border-0 shadow-sm mb-5">
+    <div class="card-body p-0">
+      <img
+        src="images/ext/api_references/main.png"
+        alt="API References page showing a list of reference documents with edit, export, and delete actions"
+        class="img-fluid rounded"
+        style="width: 100%;"
+      />
+    </div>
+    <div class="card-footer bg-light text-secondary small">
+      The API References page lists all documents for the current chat. Each entry shows the title, summary, keywords,
+      and provides actions to edit, export, or delete. The toolbar at the top supports importing <code>.aiapi</code> files
+      and manually creating new API Reference documents.
+    </div>
+  </div>
+
+  <!-- The .aiapi File Format -->
+  <h2 class="h4 fw-bold mb-3">The <code>.aiapi</code> File Format</h2>
+  <p class="text-secondary mb-4">
+    API References are exported as <code>.aiapi</code> files — JSON-formatted documents with a distinctive extension
+    that makes them easy to identify, share, and import. The <code>.aiapi</code> extension is purely for differentiation;
+    the content is standard JSON and can be inspected or edited with any text editor.
+  </p>
+
+  <h3 class="h5 fw-bold mb-3">File Structure</h3>
+  <div class="table-responsive mb-4">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Field</th>
+          <th>Type</th>
+          <th>Required</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (field of aiapiFields; track field.field) {
+        <tr>
+          <td><code>{{ field.field }}</code></td>
+          <td><code>{{ field.type }}</code></td>
+          <td>
+            @if (field.required) {
+            <span class="badge bg-danger">Yes</span>
+            } @else {
+            <span class="badge bg-success">No</span>
+            }
+          </td>
+          <td>{{ field.description }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="h5 fw-bold mb-3">Example <code>.aiapi</code> File</h3>
+  <pre class="bg-dark text-light p-3 rounded mb-5"><code>{{ exampleAiapi }}</code></pre>
+
+  <!-- Export / Import Workflow -->
+  <h2 class="h4 fw-bold mb-4">Export &amp; Import Workflow</h2>
+  <p class="text-secondary mb-4">
+    The power of API References lies in the export/import cycle. Here's how a library author ships documentation and
+    how a consumer imports it:
+  </p>
+
+  @for (step of workflowSteps; track step.number) {
+  <div class="step mb-5">
+    <div class="d-flex align-items-start">
+      <div
+        class="step-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3"
+        style="width: 40px; height: 40px;">
+        {{ step.number }}
+      </div>
+      <div class="flex-grow-1">
+        <h4 class="fw-bold mb-2">{{ step.title }}</h4>
+        <p class="text-secondary mb-0">{{ step.description }}</p>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Pro Tip -->
+  <div class="card border-0 shadow-sm mb-5 bg-primary bg-opacity-10">
+    <div class="card-body p-4">
+      <div class="d-flex align-items-start">
+        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3" style="width: 36px; height: 36px;">
+          <i class="bi bi-lightbulb-fill"></i>
+        </div>
+        <div>
+          <h4 class="fw-bold mb-2 text-primary">Pro Tip</h4>
+          <p class="text-secondary mb-0">{{ proTip }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Benefits -->
+  <h2 class="h4 fw-bold mb-4">Why Use API References?</h2>
+  <div class="row g-4 mb-5">
+    @for (benefit of benefits; track benefit.title) {
+    <div class="col-md-6">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-start">
+            <i class="bi {{ benefit.icon }} text-primary fs-3 me-3 mt-1"></i>
+            <div>
+              <h5 class="fw-bold mb-2">{{ benefit.title }}</h5>
+              <p class="text-secondary mb-0">{{ benefit.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- For Library Authors -->
+  <h2 class="h4 fw-bold mb-3">For Library Authors</h2>
+  <p class="text-secondary mb-4">
+    If you are building a shared library with Cyréna, you should create API References for every public surface
+    intended for consumers:
+  </p>
+  <ul class="mb-4">
+    <li class="mb-2">Models exposed across feature boundaries</li>
+    <li class="mb-2">Global services and their public methods</li>
+    <li class="mb-2">Guards, interceptors, and resolvers with non-trivial behavior</li>
+    <li class="mb-2">Shared components with documented inputs and outputs</li>
+    <li class="mb-2">Route structure and lazy-loaded feature entry points</li>
+    <li class="mb-2">Extension entry points and builder methods</li>
+  </ul>
+  <p class="text-secondary mb-5">
+    Once documented, export the API References as a <code>.aiapi</code> file and include it in your package. Consumers
+    import it and the AI immediately knows how to use your library correctly — following the patterns, respecting the
+    contracts, and avoiding common mistakes.
+  </p>
+
+  <!-- For Library Consumers -->
+  <h2 class="h4 fw-bold mb-3">For Library Consumers</h2>
+  <p class="text-secondary mb-4">
+    When you install a library that includes a <code>.aiapi</code> file, import it into your Cyréna chat before you
+    start coding. The AI will:
+  </p>
+  <ul class="mb-4">
+    <li class="mb-2">Know the correct method signatures and parameter types</li>
+    <li class="mb-2">Follow established architecture rules and patterns</li>
+    <li class="mb-2">Use the library's extension points correctly</li>
+    <li class="mb-2">Avoid anti-patterns documented in the reference</li>
+    <li class="mb-2">Generate code that aligns with the library's design philosophy</li>
+  </ul>
+  <p class="text-secondary mb-5">
+    This eliminates the "learning curve" phase where the AI guesses at APIs and produces incorrect or outdated code.
+    The documentation is authoritative because it was written by the library author, grounded in the actual source.
+  </p>
+
+  <!-- Best Practices -->
+  <h2 class="h4 fw-bold mb-3">Best Practices</h2>
+  <div class="tips-section p-4 rounded-3 border mb-5">
+    <h3 class="h5 fw-bold mb-3">
+      <i class="bi bi-lightbulb text-warning me-2"></i>Tips for Writing API References
+    </h3>
+    <ul class="mb-0">
+      <li class="mb-2">Ground every document in real source code — include actual method signatures, not generic descriptions</li>
+      <li class="mb-2">Document the "why" alongside the "what" — architecture rules, design decisions, and constraints</li>
+      <li class="mb-2">Use keywords that developers would search for when trying to solve a problem with your library</li>
+      <li class="mb-2">Keep references focused — one document per major service, contract, or feature area</li>
+      <li class="mb-2">Update references when the public API changes — version them alongside your code</li>
+      <li class="mb-2">Export and ship <code>.aiapi</code> files with every release of your library</li>
+      <li class="mb-2">Import references before starting work on a new codebase — the AI reads them automatically</li>
+      <li class="mb-0">Treat public interfaces as stable contracts — breaking changes require updated documentation</li>
+    </ul>
+  </div>
+
+  <!-- Comparison with Sticky Notes -->
+  <h2 class="h4 fw-bold mb-3">API References vs. Sticky Notes</h2>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Aspect</th>
+          <th>API References</th>
+          <th>Sticky Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Purpose</strong></td>
+          <td>Deep technical documentation for services, contracts, and APIs</td>
+          <td>Quick reminders, rules, and architectural decisions</td>
+        </tr>
+        <tr>
+          <td><strong>Scope</strong></td>
+          <td>Public surfaces intended for consumers</td>
+          <td>Internal conventions and project-specific notes</td>
+        </tr>
+        <tr>
+          <td><strong>Format</strong></td>
+          <td>Structured documents with title, summary, keywords, content</td>
+          <td>Free-form text notes</td>
+        </tr>
+        <tr>
+          <td><strong>Exportable</strong></td>
+          <td>Yes — as <code>.aiapi</code> files for shipping with libraries</td>
+          <td>No — tied to the specific project chat</td>
+        </tr>
+        <tr>
+          <td><strong>Grounded in Code</strong></td>
+          <td>Yes — real signatures, real contracts, real behavior</td>
+          <td>No — can be abstract or conceptual</td>
+        </tr>
+        <tr>
+          <td><strong>When to Use</strong></td>
+          <td>When building or consuming shared libraries and extensions</td>
+          <td>When establishing project conventions and rules</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="text-secondary mb-0">
+    Both systems work together. Sticky Notes capture the project's personality and conventions. API References capture
+    the library's technical surface. Together, they give the AI complete context — both the "how we do things here"
+    and the "how this library works."
+  </p>
+</div>

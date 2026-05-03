@@ -1,0 +1,26 @@
+.dev-layout {
+  min-height: calc(100vh - 56px - 200px);
+}
+
+.dev-sidebar {
+  width: 260px;
+  min-height: 100%;
+  position: sticky;
+  top: 56px;
+  height: calc(100vh - 56px);
+  overflow-y: auto;
+}
+
+.dev-sidebar.collapsed {
+  display: none;
+}
+
+.dev-content {
+  min-width: 0;
+}
+
+@media (min-width: 992px) {
+  .dev-sidebar.collapsed {
+    display: block;
+  }
+}

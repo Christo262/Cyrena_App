@@ -50,11 +50,17 @@ export class DocLayoutComponent {
       icon: 'bi-cpu'
     },
     {
-      id: 'extensions',
-      title: 'Extension Development',
-      description: 'Build extensions for Cyréna',
-      route: '/docs/extensions',
-      icon: 'bi-puzzle'
+      id: 'angular',
+      title: 'Angular',
+      description: 'Angular project scaffolding and code generation',
+      route: '/docs/angular',
+      icon: 'bi-filetype-js'
+    },
+    {
+      id: 'api-references',
+      title: 'API References',
+      description: 'Shippable AI memory for libraries',
+      route: '/docs/api-references',
     }
   ]);
 
