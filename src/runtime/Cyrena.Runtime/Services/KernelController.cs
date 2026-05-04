@@ -49,10 +49,11 @@ namespace Cyrena.Runtime.Services
             if (connectionProvider == null)
                 throw new InvalidOperationException($"Unable to find connection provider for {config.ConnectionId}");
             IKernelBuilder builder = Kernel.CreateBuilder();
+            builder.Services.AddLogging();
             builder.Services.AddSingleton(config);
             var info = await connectionProvider.AttachAsync(builder, config.ConnectionId);
             builder.Services.AddSingleton(info);
-
+            
             builder.Services.AddSingleton<IIterationService, IterationService>();
 
             var store = _services.GetRequiredService<IStore<ChatMessage>>();
@@ -61,6 +62,7 @@ namespace Cyrena.Runtime.Services
             var cyrenaKernelBuilder = new CyrenaKernelBuilder(config, builder);
             IPromptManager promptManager = new PromptManager();
             cyrenaKernelBuilder.AddFeatureOption<IPromptManager>(promptManager);
+            cyrenaKernelBuilder.AddFeatureOption(info);
             await mode.ConfigureAsync(cyrenaKernelBuilder);
 
             IEnumerable<IAssistantPlugin> plugins = _services.GetServices<IAssistantPlugin>().Where(x => x.Modes.Length == 0 || x.Modes.Contains(mode.Id));
@@ -81,6 +83,7 @@ namespace Cyrena.Runtime.Services
             var startups = kernel.Services.GetServices<IStartupTask>();
             foreach (var item in startups.OrderBy(x => x.Order))
                 await item.RunAsync();
+            _pipe.InvokeLoaded(config);
             return kernel;
         }
 
@@ -94,12 +97,18 @@ namespace Cyrena.Runtime.Services
 
         public async Task Delete(ChatConfiguration config)
         {
-            await _store.DeleteAsync(config);
+            var ext = await _store.FindAsync(x => x.Id == config.Id);
+            if(ext != null)
+                await _store.DeleteAsync(ext);
+            if (_instances.TryRemove(config.Id, out var kernel))
+            {
+                _pipe.InvokeUnload(config);
+                await Task.Delay(100); //Breather for unload pipe
+                DisposeKernel(kernel);
+            }
             var mode = _services.GetServices<IAssistantMode>().FirstOrDefault(x => x.Id == config.AssistantModeId);
             if (mode is not null)
                 await mode.DeleteAsync(config);
-            if (_instances.TryRemove(config.Id, out var kernel))
-                DisposeKernel(kernel);
             _pipe.InvokeDelete(config);
         }
 
@@ -125,11 +134,11 @@ namespace Cyrena.Runtime.Services
             if (_instances.TryRemove(config.Id, out var kernel))
             {
                 //Make it look like a recreation
+                _pipe.InvokeUnload(config);
                 DisposeKernel(kernel);
-                _pipe.InvokeDelete(config);
                 await Task.Delay(100);
                 await LoadAsync(config);
-                _pipe.InvokeCreate(config);
+                _pipe.InvokeLoaded(config);
             }
         }
 
@@ -146,6 +155,7 @@ namespace Cyrena.Runtime.Services
         public IDisposable OnChatCreate(Action<ChatConfiguration> cb) => _pipe.WatchConfigCreate(cb);
         public IDisposable OnChatUpdate(Action<ChatConfiguration> cb) => _pipe.WatchConfigUpdate(cb);
         public IDisposable OnChatUnload(Action<ChatConfiguration> cb) => _pipe.WatchConfigUnload(cb);
+        public IDisposable OnChatLoaded(Action<ChatConfiguration> cb) => _pipe.WatchConfigLoaded(cb);
 
         public void Dispose()
         {
@@ -185,11 +195,13 @@ namespace Cyrena.Runtime.Services
             public IDisposable WatchConfigDelete(Action<ChatConfiguration> callback) => this.ConfigurePipe("k_delete", callback);
             public IDisposable WatchConfigUpdate(Action<ChatConfiguration> callback) => this.ConfigurePipe("k_update", callback);
             public IDisposable WatchConfigUnload(Action<ChatConfiguration> callback) => this.ConfigurePipe("k_unload", callback);
+            public IDisposable WatchConfigLoaded(Action<ChatConfiguration> callback) => this.ConfigurePipe("k_loaded", callback);
 
             public void InvokeCreate(ChatConfiguration config) => InvokePipeline("k_create", config);
             public void InvokeDelete(ChatConfiguration config) => InvokePipeline("k_delete", config);
             public void InvokeUpdate(ChatConfiguration config) => InvokePipeline("k_update", config);
             public void InvokeUnload(ChatConfiguration config) => InvokePipeline("k_unload", config);
+            public void InvokeLoaded(ChatConfiguration config) => InvokePipeline("k_loaded", config);
         }
     }
 }

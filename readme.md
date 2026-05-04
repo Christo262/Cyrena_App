@@ -17,7 +17,7 @@ It has since become a core part of daily engineering — and is now evolving int
 - 📸 [Screenshots](./docs/screenshots.md)
 - 🧠 [Architecture Overview](./docs/code_overview.md)
 - 🤝 [Contributing](./contributing.md)
-- 👉 [Getting Started Video](https://cyrena.dev/videos#getting_started)
+- 👉 [Getting Started](https://cyrena.dev/#/docs/getting-started)
 - 📸 [UI Overview](./docs/ui_overview.md)
 
 ---
@@ -26,7 +26,7 @@ It has since become a core part of daily engineering — and is now evolving int
 
 Here is Cyréna HUD running a real prompt → build → repair loop:
 
-👉 [Demo video](https://cyrena.dev/videos#hud_working)
+👉 [Demo video](https://cyrena.dev)
 
 This is not code generation —
 this is an engineering agent working inside a project.

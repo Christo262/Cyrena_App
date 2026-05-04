@@ -1,0 +1,17 @@
+{
+  "id": "cyrena.angular",
+  "name": "Angular",
+  "version": "0.4.0",
+  "entryAssemblyFile": "Cyrena.Angular.dll",
+  "description": "Builds complete Angular v17+ applications with a strictly enforced global/feature-scoped folder structure. Global concerns (components, services, guards, pipes, directives, models, interceptors, resolvers) live under src/app/, while feature modules mirror the same structure under src/app/features/. The agent cannot deviate from this layout, ensuring consistent and maintainable AI-generated code across sessions.",
+  "dependencies": [
+    {
+      "id": "cyrena.developer",
+      "minVersion": "0.4.0"
+    },
+    {
+      "id": "cyrena.api_references",
+      "minVersion": "0.4.0"
+    }
+  ]
+}

@@ -1,24 +1,26 @@
 @page "/"
+@attribute [TabItemOption(Text = "New Chat", Icon = "bi bi-chat-dots")]
 
-<div class="h-100 overflow-auto d-flex">
+<style>
+    .setup-shadow {
+        box-shadow: 0 0.1rem 4rem rgba(var(--bs-info-rgb), 0.8) !important;
+    }
+</style>
 
-    <div class="col-8 bg-body p-2 rounded shadow justify-content-center align-self-center m-auto">
+<div class="h-100 overflow-auto d-flex position-relative">
+
+    <div class="col-8 bg-body p-2 rounded justify-content-center align-self-center m-auto">
         <div class="text-center">
-            <img src="images/rene_f.png" height="200" class="rounded-pill bg-light" />
+            <img src="images/rene_f.png" height="200" class="rounded-pill mb-2" />
         </div>
 
         @if (_model != null)
         {
-            <p class="lead text-center">How can I help you?</p>
-
-            <div class="my-2">
-                <Shortcuts></Shortcuts>
-            </div>
-
             <div class="d-flex flex-row p-2 rounded-pill border border-primary">
                 <textarea @bind="_input" class="form-control rounded-pill border-0 me-1"
                           @ref="_area"
                           rows="1"
+                          placeholder="How can I help you?"
                           @oninput="AutoGrow" @onkeydown="ComposerKeyDown"></textarea>
 
                 <div class="me-1 justify-content-center align-self-center">
@@ -28,17 +30,23 @@
                     <button type="button" class="btn btn-sm btn-primary rounded-pill" @onclick="Send"><i class="bi bi-arrow-up"></i></button>
                 </div>
             </div>
+
+            <div class="my-2">
+                <Shortcuts></Shortcuts>
+            </div>
         }
         else
         {
             <div class="text-center py-2">
                 <p>
-                    <span class="text-danger">*</span> Go to <a href="settings">Settings</a> to configure AI connections and get started.
+                    <span class="text-danger">*</span> New to Cyréna? Use the Setup Wizard below. For advanced configuration, go to <a href="settings">Settings</a>.
                 </p>
             </div>
         }
     </div>
-
+    <div class="position-absolute end-0 bottom-0 p-2 text-end">
+        <a href="app-setup" class="btn btn-info btn-lg text-uppercase fw-bolder setup-shadow"><i class="bi bi-magic"></i> Setup Wizard</a>
+    </div>
 </div>
 
 @if (_model != null)

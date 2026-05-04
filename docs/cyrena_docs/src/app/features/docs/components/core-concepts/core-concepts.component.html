@@ -1,0 +1,20 @@
+<div>
+  <h1 class="fw-bold mb-4">Core Concepts</h1>
+  <p class="lead text-secondary mb-5">
+    Understanding these core concepts will help you get the most out of the Cyréna platform.
+  </p>
+
+  @for (concept of concepts(); track concept.title) {
+    <div class="concept mb-5">
+      <div class="d-flex align-items-start">
+        <div class="icon-wrapper bg-primary bg-opacity-10 rounded-3 p-3 me-3 flex-shrink-0">
+          <i class="bi fs-4" [class]="concept.icon"></i>
+        </div>
+        <div>
+          <h4 class="fw-bold mb-2">{{ concept.title }}</h4>
+          <p class="text-secondary mb-0">{{ concept.description }}</p>
+        </div>
+      </div>
+    </div>
+  }
+</div>

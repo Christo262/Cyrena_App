@@ -15,12 +15,11 @@
         }
         else
         {
-            <p class="lead text-center">How can I help you?</p>
-
             <div class="d-flex flex-row p-2 rounded-pill border border-primary">
                 <textarea @bind="_input" class="form-control rounded-pill border-0 me-1"
                           @ref="_area"
                           rows="1"
+                          placeholder="How can I help you?"
                           @oninput="AutoGrow" @onkeydown="ComposerKeyDown"></textarea>
 
                 <div class="ms-2 justify-content-center align-self-center">

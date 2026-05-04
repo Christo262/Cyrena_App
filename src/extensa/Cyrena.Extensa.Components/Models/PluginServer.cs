@@ -1,4 +1,5 @@
 using Cyrena.Models;
+using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -21,6 +22,7 @@ public class PluginServer : Entity
     /// </summary>
     /// 
     [Required]
+    [Url]
     public string BaseUrl { get; set; } = default!;
 
     /// <summary>
@@ -44,4 +46,7 @@ public class PluginServer : Entity
     /// When this server was added.
     /// </summary>
     public DateTimeOffset AddedAt { get; set; } = DateTimeOffset.UtcNow;
+
+    [JsonIgnore]
+    public bool IsDefault { get; set; }
 }

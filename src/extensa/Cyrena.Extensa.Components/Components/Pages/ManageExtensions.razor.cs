@@ -15,7 +15,6 @@ namespace Cyrena.Extensa.Components.Pages
         [Inject] private IOptions<ExtensaOptions> _options { get; set; } = default!;
         [Inject] private DialogService _dialog { get; set; } = default!;
         [Inject] private ToastService _toasts { get; set;  } = default!;
-        [Inject] private IFileDialog _files { get; set;  } = default!;
 
         private List<string> _uninstalls { get; set; } = new List<string>();
 
@@ -39,16 +38,7 @@ namespace Cyrena.Extensa.Components.Pages
             }
         }
 
-        private async Task OpenExtensions()
-        {
-            try
-            {
-                _files.ExploreFolder(_options.Value.ExtensionsDirectory);
-            }catch (Exception ex)
-            {
-                await _toasts.Error("Error", ex.Message);
-            }
-        }
+
 
         private async Task MarkUninstall(LoadedExtension ext)
         {

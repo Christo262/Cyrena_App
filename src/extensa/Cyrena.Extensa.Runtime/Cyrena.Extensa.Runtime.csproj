@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\install-readme.md" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Cyrena.Extensa.Core\Cyrena.Extensa.Core.csproj" />
   </ItemGroup>
 

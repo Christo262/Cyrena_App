@@ -1,0 +1,17 @@
+{
+  "id": "cyrena.arduino_ide",
+  "name": "Arduino IDE",
+  "version": "0.4.0",
+  "entryAssemblyFile": "Cyrena.ArduinoIDE.dll",
+  "description": "Builds Arduino IDE firmware projects with a strictly enforced flat sketch structure. Only .ino (entry point), .cpp (implementation), and .h (header) files are valid — no subdirectories. This mirrors Arduino IDE's own sketch model and keeps AI-generated firmware consistent and portable across devices.",
+  "dependencies": [
+    {
+      "id": "cyrena.developer",
+      "minVersion": "0.4.0"
+    },
+    {
+      "id": "cyrena.api_references",
+      "minVersion": "0.4.0"
+    }
+  ]
+}

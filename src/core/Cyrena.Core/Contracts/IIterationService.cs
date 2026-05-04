@@ -34,8 +34,33 @@ namespace Cyrena.Contracts
         /// <param name="callback"></param>
         /// <returns></returns>
         IDisposable OnIterationEnd(Action<bool> callback);
-        void Iterate(AuthorRole role, Kernel kernel);
-        void Iterate(AuthorRole role, Kernel kernel, params AdditionalMessageContent[] items);
+        /// <summary>
+        /// Queues the next iteration
+        /// </summary>
+        /// <param name="role"></param>
+        /// <param name="kernel"></param>
+        /// <param name="items"></param>
+        void Iterate(AuthorRole role, Kernel kernel, params AdditionalMessageContent[]? items);
+        /// <summary>
+        /// Cancels the current iteration and pauses the input queue
+        /// </summary>
         void Cancel();
+        /// <summary>
+        /// Pauses input queue
+        /// </summary>
+        void PauseQueue(bool by_ai = false);
+        /// <summary>
+        /// Resumes the input queue
+        /// </summary>
+        void ContinueQueue();
+        /// <summary>
+        /// true if queue is paused
+        /// </summary>
+        bool IsPaused { get; }
+        int QueueCount { get; }
+        bool IsPausedByAi { get; }
+        IReadOnlyList<QueuedInput> Queued { get; }
+
+        void CancelInput(string id);
     }
 }

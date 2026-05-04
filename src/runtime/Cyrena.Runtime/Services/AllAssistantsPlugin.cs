@@ -1,10 +1,8 @@
 ﻿using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Models;
-using Cyrena.Persistence.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace Cyrena.Runtime.Services
 {
@@ -27,15 +25,23 @@ namespace Cyrena.Runtime.Services
 
         public bool Required => true;
 
-        public string Title => "Runtime";
+        public string Title => "Runtime Services";
 
         public Task LoadAsync(CyrenaKernelBuilder builder)
         {
             builder.Plugins.AddFromType<Cyrena.Runtime.Plugins.DateTime>();
+            builder.Plugins.AddFromType<Cyrena.Runtime.Plugins.Queue>();
             var config_service = new ChatConfigurationService(_store, builder.ChatConfiguration);
             builder.Services.AddSingleton<IChatConfigurationService>(config_service);
             builder.KernelBuilder.AddStartupTask<HistoryStartupTask>();
+            var prompt = Resources.Read(typeof(AllAssistantsPlugin).Assembly, "Cyrena.Runtime.Resources.prompt-queue.md");
+            builder.GetFeatureOption<IPromptManager>().AddPrompt(5, prompt);
 
+            var info = builder.GetFeatureOption<ConnectionInfo>();
+            if (info.SupportImages)
+                builder.Services.AddSingleton<IFileHandler, ImageFileHandler>();
+            if (info.SupportFiles)
+                builder.Services.AddSingleton<IFileHandler, TextFileHandler>();
             return Task.CompletedTask;
         }
     }

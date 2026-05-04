@@ -1,0 +1,13 @@
+{
+  "id": "cyrena.developer",
+  "name": "Coding Assistant",
+  "version": "0.4.0",
+  "entryAssemblyFile": "Cyrena.Coding.Extension.dll",
+  "description": "Foundation extension required by all coding extensions. Provides the core assistant mode that aggressively minimises context window usage each iteration, file I/O operations (read and edit — creation is delegated to stack-specific extensions), sticky notes for persistent short-form memory, and access to the DevelopPlan so the agent always works from a structured project plan.",
+  "dependencies": [
+    {
+      "id": "cyrena",
+      "minVersion": "0.4.0"
+    }
+  ]
+}

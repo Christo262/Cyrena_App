@@ -1,0 +1,406 @@
+<div>
+  <h1 class="fw-bold mb-3">Extension Development</h1>
+  <p class="lead text-secondary mb-5">
+    Build custom extensions that add AI capabilities, UI components, and integrations to the Cyréna platform.
+  </p>
+
+  <h2 class="h4 fw-bold mb-3">What Is an Extension?</h2>
+  <p class="text-secondary mb-4">
+    An extension in Cyréna is a self-contained Razor Class Library that teaches the platform new capabilities.
+    Extensions can add AI tools, Blazor UI components, persistence backends, or LLM connection providers. They are the
+    primary mechanism for expanding Cyréna beyond its built-in functionality.
+  </p>
+  <p class="text-secondary mb-5">
+    Extensions can be loaded in two ways:
+  </p>
+  <ul class="mb-5">
+    <li class="mb-2"><strong>Compile-time</strong> — Referenced as project references and loaded at startup</li>
+    <li class="mb-2"><strong>Runtime</strong> — Distributed as ZIP packages and loaded dynamically via Extensa</li>
+  </ul>
+
+  <h2 class="h4 fw-bold mb-3">Prerequisites</h2>
+  <ul class="mb-5">
+    @for (item of prerequisites; track item) {
+    <li class="mb-2">{{ item }}</li>
+    }
+  </ul>
+
+  <h2 class="h4 fw-bold mb-3">Project Structure</h2>
+  <p class="text-secondary mb-3">
+    A typical extension follows the standard Cyréna class library structure:
+  </p>
+  <pre class="bg-dark text-light p-3 rounded mb-5"><code>MyExtension/
+├── MyExtension.csproj              # SDK: Microsoft.NET.Sdk.Razor
+├── extension.json                  # Extension manifest (required for runtime)
+├── TavilyExtension.cs              # Extension entry point (inherits Extension)
+├── Extensions/
+│   └── CyrenaBuilderExtensions.cs  # Builder extension methods
+├── Services/
+│   └── TavilyExtension.cs          # IAssistantPlugin implementation
+├── Models/
+│   ├── SearchRequest.cs            # API request models
+│   └── SearchResponse.cs           # API response models
+├── Options/
+│   └── TavilyOptions.cs            # Settings/options class
+├── Components/
+│   ├── _Imports.razor              # Razor imports
+│   └── Shared/
+│       └── TavilySettings.razor    # Settings UI component
+└── Resources/
+    └── prompt.md                   # Embedded system prompt</code></pre>
+
+  <h2 class="h4 fw-bold mb-4">Step-by-Step Guide</h2>
+
+  @for (step of steps; track step.number) {
+  <div class="step mb-5">
+    <div class="d-flex align-items-start">
+      <div
+        class="step-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3">
+        {{ step.number }}
+      </div>
+      <div class="flex-grow-1">
+        <h4 class="fw-bold mb-2">{{ step.title }}</h4>
+        <p class="text-secondary mb-3">{{ step.description }}</p>
+        @if (step.code) {
+        <pre class="bg-dark text-light p-3 rounded"><code>{{ step.code }}</code></pre>
+        }
+      </div>
+    </div>
+  </div>
+  }
+
+  <h2 class="h4 fw-bold mb-3">Extension Entry Point</h2>
+  <p class="text-secondary mb-3">
+    The entry point class inherits from <code>Extension</code> (from <code>Cyrena.Extensa.Core</code>) and overrides
+    <code>BuildExtension</code>:
+  </p>
+  <pre class="bg-dark text-light p-3 rounded mb-3"><code>public class TavilyExtension : Extension
+{{ '{' }}
+    public override void BuildExtension(CyrenaBuilder builder)
+    {{ '{' }}
+        builder.AddTavily();
+    {{ '}' }}
+{{ '}' }}</code></pre>
+  <p class="text-secondary mb-5">
+    The Extensa loader discovers this type via reflection and calls <code>BuildExtension(CyrenaBuilder)</code> during
+    application startup. All registrations are additive.
+  </p>
+
+  <h2 class="h4 fw-bold mb-3">Builder Extension Methods</h2>
+  <p class="text-secondary mb-3">
+    Create a static extension class on <code>CyrenaBuilder</code> to encapsulate all registrations:
+  </p>
+  <pre class="bg-dark text-light p-3 rounded mb-3"><code>public static class CyrenaBuilderExtensions
+{{ '{' }}
+    public static CyrenaBuilder AddTavily(this CyrenaBuilder builder)
+    {{ '{' }}
+        builder.AddAssistantPlugin&lt;TavilyExtension&gt;();
+        builder.AddSettingsComponent&lt;TavilySettings&gt;();
+        return builder;
+    {{ '}' }}
+{{ '}' }}</code></pre>
+  <p class="text-secondary mb-3">Available builder methods for extensions:</p>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Method</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (method of builderMethods; track method.method) {
+        <tr>
+          <td><code>{{ method.method }}</code></td>
+          <td>{{ method.description }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="h4 fw-bold mb-3">IAssistantPlugin Implementation</h2>
+  <p class="text-secondary mb-3">
+    The plugin is where AI capabilities are added. It implements <code>IAssistantPlugin</code>:
+  </p>
+  <pre class="bg-dark text-light p-3 rounded mb-3"><code>internal class TavilyExtension : IAssistantPlugin
+{{ '{' }}
+    private readonly ISettingsService _settings;
+
+    public TavilyExtension(ISettingsService settings)
+    {{ '{' }}
+        _settings = settings;
+    {{ '}' }}
+
+    public int Priority =&gt; 10;
+    public string[] Modes =&gt; [];  // Empty = compatible with ALL modes
+    public string Id =&gt; "cyrena.tavily";
+    public bool Required =&gt; false;
+    public string Title =&gt; "Tavily Web Search";
+
+    public Task LoadAsync(CyrenaKernelBuilder builder)
+    {{ '{' }}
+        var options = _settings.Read&lt;TavilyOptions&gt;(TavilyOptions.Key);
+
+        if (options == null || string.IsNullOrEmpty(options.ApiKey) || !options.Enable)
+            return Task.CompletedTask;
+
+        builder.Services.AddSingleton(options);
+        builder.Plugins.AddFromType&lt;Internet&gt;();
+
+        var prompt = Resources.Read(typeof(TavilyExtension).Assembly,
+            "Cyrena.Tavily.Resources.prompt.md");
+        builder.GetFeatureOption&lt;IPromptManager&gt;().AddPrompt(10, prompt);
+
+        return Task.CompletedTask;
+    {{ '}' }}
+{{ '}' }}</code></pre>
+  <p class="text-secondary mb-3">IAssistantPlugin contract:</p>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Member</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (member of pluginMembers; track member.member) {
+        <tr>
+          <td><code>{{ member.member }}</code></td>
+          <td><code>{{ member.type }}</code></td>
+          <td>{{ member.description }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="h4 fw-bold mb-3">Options / Settings</h2>
+  <p class="text-secondary mb-3">
+    Options classes define user-configurable settings. They use the Options pattern with a <code>Key</code> constant:
+  </p>
+  <pre class="bg-dark text-light p-3 rounded mb-3"><code>public class TavilyOptions
+{{ '{' }}
+    public const string Key = "tavily";
+
+    [Required]
+    public string? ApiKey {{ '{' }} get; set; {{ '}' }}
+
+    public bool Enable {{ '{' }} get; set; {{ '}' }}
+{{ '}' }}</code></pre>
+  <p class="text-secondary mb-3">
+    Settings are automatically encrypted at rest using platform-specific encryption (DPAPI on Windows).
+  </p>
+  <pre class="bg-dark text-light p-3 rounded mb-5"><code>// Reading settings
+var options = settingsService.Read&lt;TavilyOptions&gt;(TavilyOptions.Key);
+
+// Writing settings
+settingsService.Write(TavilyOptions.Key, new TavilyOptions
+{{ '{' }}
+    ApiKey = "...",
+    Enable = true
+{{ '}' }});</code></pre>
+
+  <h2 class="h4 fw-bold mb-3">Models</h2>
+  <p class="text-secondary mb-3">
+    Models for API communication should inherit from <code>JsonStringObject</code> (from <code>Cyrena.Core</code>) for
+    easy JSON serialization:
+  </p>
+  <pre class="bg-dark text-light p-3 rounded mb-3"><code>public class SearchRequest : JsonStringObject
+{{ '{' }}
+    [JsonPropertyName("query")]
+    public string? Query {{ '{' }} get; set; {{ '}' }}
+
+    [JsonPropertyName("max_results")]
+    public int MaxResults {{ '{' }} get; set; {{ '}' }} = 5;
+
+    [JsonPropertyName("include_images")]
+    public bool IncludeImages {{ '{' }} get; set; {{ '}' }}
+{{ '}' }}</code></pre>
+  <p class="text-secondary mb-5">
+    <code>JsonStringObject</code> provides a <code>ToString()</code> override that returns indented JSON. It is located
+    in the <code>Cyrena.Models</code> namespace.
+  </p>
+
+  <h2 class="h4 fw-bold mb-3">Extension Manifest</h2>
+  <p class="text-secondary mb-3">
+    The <code>extension.json</code> file is required for runtime-loaded extensions. It describes the extension to the
+    Extensa loader:
+  </p>
+  <pre class="bg-dark text-light p-3 rounded mb-3"><code>{{ '{' }}
+  "id": "cyrena.tavily",
+  "name": "Tavily Web Search",
+  "version": "0.4.0",
+  "entryAssemblyFile": "Cyrena.Tavily.dll",
+  "description": "Adds web search functionality for assistants using Tavily.",
+  "icon": null,
+  "contentRootDirectory": null,
+  "dependencies": [
+    {{ '{' }}
+      "id": "cyrena",
+      "minVersion": "0.4.0"
+    {{ '}' }}
+  ],
+  "requireFrameworkBuilder": true
+{{ '}' }}</code></pre>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Field</th>
+          <th>Required</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>id</code></td>
+          <td><span class="badge bg-danger">Yes</span></td>
+          <td>Unique identifier, reverse-domain recommended</td>
+        </tr>
+        <tr>
+          <td><code>name</code></td>
+          <td><span class="badge bg-danger">Yes</span></td>
+          <td>Human-readable name</td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td><span class="badge bg-danger">Yes</span></td>
+          <td>SemVer version string</td>
+        </tr>
+        <tr>
+          <td><code>entryAssemblyFile</code></td>
+          <td><span class="badge bg-danger">Yes</span></td>
+          <td>Main DLL filename</td>
+        </tr>
+        <tr>
+          <td><code>description</code></td>
+          <td><span class="badge bg-success">No</span></td>
+          <td>Short description</td>
+        </tr>
+        <tr>
+          <td><code>icon</code></td>
+          <td><span class="badge bg-success">No</span></td>
+          <td>Icon path or null</td>
+        </tr>
+        <tr>
+          <td><code>contentRootDirectory</code></td>
+          <td><span class="badge bg-success">No</span></td>
+          <td>Static content root (for wwwroot assets)</td>
+        </tr>
+        <tr>
+          <td><code>dependencies</code></td>
+          <td><span class="badge bg-success">No</span></td>
+          <td>Array of <code>{{ '{' }} "id": "...", "minVersion": "..." {{ '}' }}</code></td>
+        </tr>
+        <tr>
+          <td><code>requireFrameworkBuilder</code></td>
+          <td><span class="badge bg-success">No</span></td>
+          <td>If true, requires framework builder context</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="h4 fw-bold mb-3">Embedded Resources</h2>
+  <p class="text-secondary mb-3">
+    Extensions can embed resources (like system prompts) that are read at runtime:
+  </p>
+  <pre class="bg-dark text-light p-3 rounded mb-3"><code>&lt;!-- In .csproj --&gt;
+&lt;ItemGroup&gt;
+  &lt;EmbeddedResource Include="Resources\prompt.md" /&gt;
+&lt;/ItemGroup&gt;</code></pre>
+  <p class="text-secondary mb-3">Reading embedded resources:</p>
+  <pre class="bg-dark text-light p-3 rounded mb-5"><code>var prompt = Resources.Read(typeof(TavilyExtension).Assembly,
+    "Cyrena.Tavily.Resources.prompt.md");
+builder.GetFeatureOption&lt;IPromptManager&gt;().AddPrompt(10, prompt);</code></pre>
+
+  <h2 class="h4 fw-bold mb-3">Complete Extension Lifecycle</h2>
+  <pre class="bg-dark text-light p-3 rounded mb-5"><code>1. App starts
+   └── CyrenaBuilder.Build() called
+       └── All compile-time extensions: BuildExtension(builder) called
+           └── builder.AddTavily() registers plugin + settings component
+
+2. User creates a new chat
+   └── IKernelController creates kernel
+       └── CyrenaKernelBuilder instantiated
+           └── IAssistantPlugin.LoadAsync(builder) called for each active plugin
+               └── TavilyExtension reads settings, adds SK plugin, adds prompt
+
+3. User sends a message
+   └── Semantic Kernel processes with Tavily plugin functions available
+       └── AI can call web search functions as needed</code></pre>
+
+  <h2 class="h4 fw-bold mb-3">File Checklist</h2>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>File</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of checklist; track item.file) {
+        <tr>
+          <td><code>{{ item.file }}</code></td>
+          <td>{{ item.description }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="h4 fw-bold mb-3">Required Package References</h2>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Package</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>Cyrena.Extensa.Core</code></td>
+          <td>Extension base class, <code>Extension</code></td>
+        </tr>
+        <tr>
+          <td><code>Cyrena.Core</code></td>
+          <td>Builders, contracts, models, <code>IAssistantPlugin</code></td>
+        </tr>
+        <tr>
+          <td><code>Cyrena.Components.Core</code></td>
+          <td>UI contracts, <code>ISettingsComponent</code>, <code>KernelComponentBase</code></td>
+        <tr>
+          <td><code>Cyrena.Persistence.Core</code></td>
+          <td>Persistence contracts, data access abstractions</td>
+        </tr>
+        <tr>
+          <td><code>Microsoft.AspNetCore.Components.Web</code></td>
+          <td>Blazor component support</td>
+        </tr>
+        <tr>
+          <td><code>Microsoft.SemanticKernel</code></td>
+          <td>Semantic Kernel plugins (if adding AI tools)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tips-section p-4 rounded-3 border mb-5">
+    <h3 class="h5 fw-bold mb-3">
+      <i class="bi bi-lightbulb text-warning me-2"></i>Tips
+    </h3>
+    <ul class="mb-0">
+      <li>Keep your extension self-contained — it should not depend on the main app's internal types</li>
+      <li>Use the Options pattern for all user-configurable settings — they are automatically encrypted at rest</li>
+      <li>Always guard plugin loading with configuration checks — skip gracefully if settings are missing</li>
+      <li>Register plugins with appropriate Priority values to control load order</li>
+      <li>Use <code>Modes</code> to restrict plugins to specific assistant modes if needed</li>
+      <li>Embedded resources are ideal for system prompts — they travel with the assembly</li>
+    </ul>
+  </div>
+</div>

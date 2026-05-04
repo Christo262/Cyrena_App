@@ -1,0 +1,46 @@
+<div class="dev-layout d-flex">
+  <!-- Sidebar -->
+  <nav
+    class="dev-sidebar bg-light border-end"
+    [class.collapsed]="!sidebarOpen()"
+  >
+    <div class="p-3">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0">Developer Docs</h5>
+        <button
+          class="btn btn-sm btn-outline-secondary d-lg-none"
+          (click)="toggleSidebar()"
+        >
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <ul class="nav nav-pills flex-column">
+        @for (page of devPages(); track page.id) {
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              [routerLink]="page.route"
+              routerLinkActive="active"
+            >
+              <i class="bi me-2" [class]="page.icon"></i>
+              {{ page.title }}
+            </a>
+          </li>
+        }
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Content -->
+  <main class="dev-content flex-grow-1">
+    <div class="container py-4">
+      <button
+        class="btn btn-sm btn-outline-secondary mb-3 d-lg-none"
+        (click)="toggleSidebar()"
+      >
+        <i class="bi bi-list"></i> Menu
+      </button>
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

@@ -20,7 +20,7 @@
             <RowDefinition/>
             <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
-        <blazor:BlazorWebView Grid.Row="0" x:Name="mainView" HostPage="wwwroot/index.html" Services="{DynamicResource services}">
+        <blazor:BlazorWebView Grid.Row="0" x:Name="mainView" HostPage="wwwroot/dark.html" Services="{DynamicResource services}">
             <blazor:BlazorWebView.RootComponents>
                 <blazor:RootComponent Selector="#app" ComponentType="{x:Type components:Routes}" />
             </blazor:BlazorWebView.RootComponents>

@@ -1,0 +1,241 @@
+/**
+ * Cyrena.Components.Runtime - JavaScript Interop
+ * Provides runtime initialization, updates, disposal, and clipboard paste handling for Blazor components.
+ */
+(function () {
+    'use strict';
+
+    if (!window.Cyrena) {
+        window.Cyrena = {};
+    }
+
+    if (!window.Cyrena.Runtime) {
+        window.Cyrena.Runtime = {};
+    }
+
+    const instances = new Map();
+    const pasteHandlers = new Map();
+
+    /**
+     * Initializes a runtime instance for the given element.
+     * @param {string} elementId - The DOM element ID to bind to.
+     * @param {DotNetObjectReference} dotNetRef - The .NET object reference for callbacks.
+     */
+    window.Cyrena.Runtime.initializeRuntime = function (elementId, dotNetRef) {
+        if (!elementId) {
+            console.error('Cyrena.Runtime: elementId is required.');
+            return;
+        }
+
+        const element = document.getElementById(elementId);
+        if (!element) {
+            console.error(`Cyrena.Runtime: Element with id '${elementId}' not found.`);
+            return;
+        }
+
+        if (instances.has(elementId)) {
+            console.warn(`Cyrena.Runtime: Instance for '${elementId}' already exists. Disposing old instance.`);
+            window.Cyrena.Runtime.disposeRuntime(elementId);
+        }
+
+        instances.set(elementId, {
+            element: element,
+            dotNetRef: dotNetRef,
+            data: null
+        });
+
+        console.log(`Cyrena.Runtime: Initialized for element '${elementId}'.`);
+    };
+
+    /**
+     * Updates the runtime instance with new data and notifies .NET.
+     * @param {string} elementId - The DOM element ID.
+     * @param {object} data - The data payload to send to .NET.
+     */
+    window.Cyrena.Runtime.updateRuntime = function (elementId, data) {
+        const instance = instances.get(elementId);
+        if (!instance) {
+            console.error(`Cyrena.Runtime: No instance found for element '${elementId}'.`);
+            return;
+        }
+
+        instance.data = data;
+
+        if (instance.dotNetRef) {
+            instance.dotNetRef.invokeMethodAsync('OnRuntimeUpdated', data)
+                .catch(err => console.error(`Cyrena.Runtime: Error invoking OnRuntimeUpdated for '${elementId}':`, err));
+        }
+    };
+
+    /**
+     * Disposes the runtime instance and cleans up resources.
+     * @param {string} elementId - The DOM element ID.
+     */
+    window.Cyrena.Runtime.disposeRuntime = function (elementId) {
+        const instance = instances.get(elementId);
+        if (!instance) {
+            console.warn(`Cyrena.Runtime: No instance to dispose for element '${elementId}'.`);
+            return;
+        }
+
+        if (instance.dotNetRef) {
+            instance.dotNetRef.dispose();
+        }
+
+        instances.delete(elementId);
+        console.log(`Cyrena.Runtime: Disposed instance for element '${elementId}'.`);
+    };
+
+    /**
+     * Registers a paste handler on a textarea to capture pasted images (e.g. screenshots).
+     * @param {HTMLElement} textarea - The textarea element to attach the handler to.
+     * @param {DotNetObjectReference} dotNetHelper - The .NET object reference for callbacks.
+     */
+    window.Cyrena.Runtime.registerChatPasteHandler = function (textarea, dotNetHelper) {
+        if (!textarea) {
+            console.error('Cyrena.Runtime: textarea element is required for registerChatPasteHandler.');
+            return;
+        }
+
+        if (pasteHandlers.has(textarea)) {
+            console.warn('Cyrena.Runtime: Paste handler already registered for this textarea.');
+            return;
+        }
+
+        const handler = async function (e) {
+            const items = e.clipboardData?.items;
+            if (!items) return;
+
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                if (item.type.indexOf('image') === 0) {
+                    e.preventDefault();
+                    const blob = item.getAsFile();
+                    if (!blob) continue;
+
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        const base64 = event.target.result;
+                        dotNetHelper.invokeMethodAsync('OnImagePasted', base64, item.type)
+                            .catch(err => console.error('Cyrena.Runtime: Error invoking OnImagePasted:', err));
+                    };
+                    reader.readAsDataURL(blob);
+                }
+            }
+        };
+
+        textarea.addEventListener('paste', handler);
+        pasteHandlers.set(textarea, handler);
+        //console.log('Cyrena.Runtime: Paste handler registered for textarea.');
+    };
+
+    /**
+     * Unregisters the paste handler from a textarea.
+     * @param {HTMLElement} textarea - The textarea element to remove the handler from.
+     */
+    window.Cyrena.Runtime.unregisterChatPasteHandler = function (textarea) {
+        if (!textarea) return;
+
+        const handler = pasteHandlers.get(textarea);
+        if (!handler) {
+            console.warn('Cyrena.Runtime: No paste handler to unregister for this textarea.');
+            return;
+        }
+
+        textarea.removeEventListener('paste', handler);
+        pasteHandlers.delete(textarea);
+        //console.log('Cyrena.Runtime: Paste handler unregistered for textarea.');
+    };
+
+})();
+
+(function () {
+    'use strict';
+
+    // ── Inline SVGs (no external icon font needed) ──
+    const COPY_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:text-bottom;margin-right:4px;"><path d="M4 1.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 .5.5v1.5h1.5a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V3.5a.5.5 0 0 1 .5-.5H4V1.5zM5 2v1h6V2H5z"/><path d="M3.5 3a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-10a.5.5 0 0 0-.5-.5h-1.5v1.5a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5V3h-1.5z"/></svg>';
+    const CHECK_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:text-bottom;margin-right:4px;"><path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/></svg>';
+
+    /**
+     * Attaches a copy button to a single <pre><code> block.
+     */
+    function attachCopyButton(codeBlock) {
+        const pre = codeBlock.parentElement;
+        if (!pre || pre.querySelector('.btn-copy-code')) return; // already done
+
+        // Ensure the <pre> is positioned relatively so the absolute button anchors to it
+        if (!pre.classList.contains('position-relative')) {
+            pre.classList.add('position-relative');
+        }
+
+        // ── Create the button ──
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn btn-sm btn-outline-dark btn-copy-code';
+        btn.style.cssText = 'position:absolute;top:0.5rem;right:0.5rem;opacity:0;transition:opacity 0.2s ease-in-out;z-index:10;font-size:0.75rem;padding:0.25rem 0.5rem;border-color:rgba(255,255,255,0.3);color:rgba(255,255,255,0.8);';
+        btn.innerHTML = COPY_SVG + 'Copy';
+        btn.setAttribute('aria-label', 'Copy code to clipboard');
+
+        // ── Hover visibility ──
+        pre.addEventListener('mouseenter', () => { btn.style.opacity = '1'; });
+        pre.addEventListener('mouseleave', () => { btn.style.opacity = '0'; });
+
+        // ── Click handler ──
+        btn.addEventListener('click', async function (e) {
+            e.stopPropagation();
+            const text = codeBlock.textContent || '';
+            try {
+                await navigator.clipboard.writeText(text);
+                btn.innerHTML = CHECK_SVG + 'Copied!';
+                btn.classList.replace('btn-outline-light', 'btn-success');
+                setTimeout(() => {
+                    btn.innerHTML = COPY_SVG + 'Copy';
+                    btn.classList.replace('btn-success', 'btn-outline-light');
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy code:', err);
+                btn.textContent = 'Error';
+            }
+        });
+
+        pre.appendChild(btn);
+    }
+
+    /**
+     * Initializes copy buttons within a root element (defaults to document).
+     */
+    function initCodeCopyButtons(root) {
+        root = root || document;
+        root.querySelectorAll('pre code').forEach(attachCopyButton);
+    }
+
+    // ── Run on DOM ready ──
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => initCodeCopyButtons());
+    } else {
+        initCodeCopyButtons();
+    }
+
+    // ── Watch for dynamically added code blocks (Blazor, streaming, etc.) ──
+    const observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+            mutation.addedNodes.forEach(function (node) {
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                    if (node.matches && node.matches('pre code')) {
+                        attachCopyButton(node);
+                    } else if (node.querySelectorAll) {
+                        initCodeCopyButtons(node);
+                    }
+                }
+            });
+        });
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // ── Expose globally for manual triggering ──
+    window.Cyrena = window.Cyrena || {};
+    window.Cyrena.CodeCopy = {
+        init: initCodeCopyButtons,
+        attach: attachCopyButton
+    };
+})();

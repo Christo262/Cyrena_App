@@ -1,4 +1,9 @@
 <Solution>
   <Project Path="MyBlazorApp/MyBlazorApp.csproj" Id="d700f216-ec9a-451b-8100-9fda73a5f1e1" />
   <Project Path="MyClassLibrary/MyClassLibrary.csproj" Id="10023a4a-a373-46a5-a9e5-a8f677002608" />
+  <Project Path="MyConsoleApp/MyConsoleApp.csproj" Id="0d6347f6-687a-4eac-8f4a-6b4c035ebc2a" />
+  <Project Path="MyMvcApp/MyMvcApp.csproj" Id="48891d42-62a3-4cc0-9d9a-d19aa5c9a824" />
+  <Project Path="MyMvcLibrary/MyMvcLibrary.csproj" Id="fb15d7ed-dde7-47d0-ad73-813af5feb6f9" />
+  <Project Path="MyRazorLibrary/MyRazorLibrary.csproj" Id="3a5e70a2-5b8d-429e-9d70-1a5ef4b09317" />
+  <Project Path="TestClassLibrary/TestClassLibrary.csproj" Id="4f02feaa-7732-4dea-bf91-2728a3d2bfd8" />
 </Solution>

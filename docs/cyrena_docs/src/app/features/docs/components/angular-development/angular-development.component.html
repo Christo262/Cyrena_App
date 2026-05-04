@@ -1,0 +1,135 @@
+<div>
+  <h1 class="fw-bold mb-3">Angular Development</h1>
+  <p class="lead text-secondary mb-5">
+    Use Cyréna to scaffold, generate, and reason about Angular projects with deep understanding of your component hierarchy and services.
+  </p>
+
+  <!-- Prerequisites -->
+  <h2 class="h4 fw-bold mb-3">Prerequisites</h2>
+  <ul class="mb-5">
+    @for (item of prerequisites; track item.text) {
+      <li class="mb-2">{{ item.text }}</li>
+    }
+  </ul>
+
+  <!-- Supported Version -->
+  <h2 class="h4 fw-bold mb-3">Supported Version</h2>
+  <p class="text-secondary mb-5">
+    <code class="text-primary">{{ extensionId }}</code> targets <strong>Angular v17 and above</strong>. Earlier versions are not supported.
+  </p>
+
+  <!-- Enforced Folder Structure -->
+  <h2 class="h4 fw-bold mb-3">Enforced Folder Structure</h2>
+  <p class="text-secondary mb-3">
+    The extension enforces a strict global/feature-scoped layout. Cyréna will not deviate from this structure — it is a hard constraint, not a guideline.
+  </p>
+
+  <!-- Global Structure -->
+  <h3 class="h5 fw-bold mb-3">Global (src/app/)</h3>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Folder</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (folder of globalFolders; track folder.name) {
+          <tr>
+            <td><code>{{ folder.name }}</code></td>
+            <td>{{ folder.purpose }}</td>
+          </tr>
+        }
+        <tr>
+          <td><code>app.component.ts</code></td>
+          <td>Root application component.</td>
+        </tr>
+        <tr>
+          <td><code>app.config.ts</code></td>
+          <td>Application configuration.</td>
+        </tr>
+        <tr>
+          <td><code>app.routes.ts</code></td>
+          <td>Root route definitions.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Feature Modules -->
+  <h3 class="h5 fw-bold mb-3">Feature Modules (src/app/features/feature-name/)</h3>
+  <p class="text-secondary mb-3">
+    Each feature module mirrors the global structure:
+  </p>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Folder</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (folder of featureFolders; track folder.name) {
+          <tr>
+            <td><code>{{ folder.name }}</code></td>
+            <td>{{ folder.purpose }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Other Top-Level Folders -->
+  <h3 class="h5 fw-bold mb-3">Other Top-Level Folders</h3>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Folder</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (folder of topLevelFolders; track folder.name) {
+          <tr>
+            <td><code>{{ folder.name }}</code></td>
+            <td>{{ folder.purpose }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="alert alert-info mb-5">
+    <i class="bi bi-info-circle me-2"></i>
+    <strong>Note</strong> — Global concerns belong under <code>src/app/</code>. Feature-specific code belongs under <code>src/app/features/feature-name/</code>. Keeping to this layout guarantees stable and predictable AI behaviour; Cyréna will not restructure the hierarchy.
+  </div>
+
+  <!-- Recommended Workflow -->
+  <h2 class="h4 fw-bold mb-3">Recommended Workflow</h2>
+
+  <h3 class="h5 fw-bold mb-3">Step-by-Step Guide</h3>
+  @for (step of steps; track step.number) {
+    <div class="step mb-4">
+      <div class="d-flex align-items-start">
+        <div class="step-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3">
+          {{ step.number }}
+        </div>
+        <div class="flex-grow-1">
+          <h4 class="fw-bold mb-2">{{ step.title }}</h4>
+          <p class="text-secondary mb-0">{{ step.description }}</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Symmetry Note -->
+  <div class="permissions-note p-4 rounded-3 border mt-5">
+    <p class="mb-0 text-secondary">
+      <i class="bi bi-layers text-primary me-2"></i>
+      <strong>Global and feature-scoped folders mirror each other intentionally.</strong> This symmetry is what allows the AI to reason consistently about both shared and feature-specific code without ambiguity.
+    </p>
+  </div>
+</div>

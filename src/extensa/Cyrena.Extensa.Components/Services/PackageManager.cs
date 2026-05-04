@@ -66,6 +66,12 @@ namespace Cyrena.Extensa.Services
             return packs;
         }
 
+        public async Task<Package?> GetPackageAsync(string id, CancellationToken ct = default)
+        {
+            var pack = await _store.FindAsync(x => x.Id == id);
+            return pack;
+        }
+
         private void SetIndexing(bool isIndexing)
         {
             Status = new PackageManagerStatus(isIndexing, _downloads.Count, _current?.PackageId, _current?.Progress ?? 0);

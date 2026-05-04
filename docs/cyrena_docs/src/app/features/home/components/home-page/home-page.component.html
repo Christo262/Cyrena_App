@@ -1,0 +1,688 @@
+<!-- Hero Section -->
+<section class="hero text-white">
+  <div class="container">
+    <div class="row align-items-center min-vh-75">
+      <div class="col-lg-8 mx-auto text-center">
+        <div class="hero-badge mb-3">
+          <span class="badge bg-white bg-opacity-10 border border-white border-opacity-25 rounded-pill px-4 py-2">
+            <i class="bi bi-stars me-2"></i>The Engineering Agent That Actually Gets It
+          </span>
+        </div>
+        <div class="hero-badge mb-4">
+          <span class="badge bg-accent bg-opacity-20 border border-accent border-opacity-40 rounded-pill px-4 py-2">
+            <i class="bi bi-shield-lock me-2"></i>Offline-First &middot; Model-Agnostic &middot; Desktop App
+          </span>
+        </div>
+        <h1 class="display-2 fw-bold mb-4 hero-title">
+          Meet <span class="text-accent">Cyréna</span>
+        </h1>
+        <p class="lead mb-2 text-white-75">
+          A desktop platform for engineering with AI.
+        </p>
+        <p class="lead mb-5 text-white-75">
+          She reads your code, understands your constraints, and writes solutions that <strong>actually
+            compile</strong>.<br>
+          <span class="text-accent">You choose the brain. She does the work.</span>
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap hero-buttons">
+          <a routerLink="/docs/getting-started" class="btn btn-light btn-lg fw-bold px-5">
+            <i class="bi bi-rocket me-2"></i>Get Started
+          </a>
+          <a href="https://github.com/Christo262/Cyrena_App" target="_blank" rel="noopener"
+            class="btn btn-outline-light btn-lg px-5">
+            <i class="bi bi-github me-2"></i>View on GitHub
+          </a>
+        </div>
+        <div class="mt-5 pt-3">
+          <p class="text-white-50 small mb-3">Works with your favourite models</p>
+          <div class="d-flex justify-content-center gap-4 flex-wrap tech-stack">
+            <span class="tech-badge"><i class="bi bi-hdd me-1"></i>Ollama</span>
+            <span class="tech-badge"><i class="bi bi-cloud me-1"></i>OpenAI</span>
+            <span class="tech-badge"><i class="bi bi-microsoft me-1"></i>.NET</span>
+            <span class="tech-badge"><i class="bi bi-filetype-html me-1"></i>Angular</span>
+            <span class="tech-badge"><i class="bi bi-motherboard me-1"></i>Arduino</span>
+            <span class="tech-badge"><i class="bi bi-cpu me-1"></i>PlatformIO</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-wave">
+    <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
+        fill="#f8f9fa" />
+    </svg>
+  </div>
+</section>
+
+<section class="py-6 bg-dark text-light">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="text-accent fw-semibold text-uppercase ls-2 small">See It In Action</span>
+      <h2 class="fw-bold mt-2 mb-3">Prompt → Code → Build</h2>
+      <p class="text-white-75 mx-auto" style="max-width: 650px;">
+        Watch Cyréna take a natural language prompt, generate working code, and build it — all in one seamless loop. No
+        copy-paste. No context switching. Just engineering.
+      </p>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="video-wrapper rounded-4 overflow-hidden shadow-lg">
+          <video class="w-100" controls poster="images/video-poster.jpg" preload="metadata">
+            <source src="videos/WorkingHUD.mp4" type="video/mp4">
+            <p class="text-white-75 text-center p-4 mb-0">
+              Your browser does not support the video tag.
+              <a href="videos/WorkingHUD.mp4" class="text-accent" download>Download the video</a> to watch it.
+            </p>
+          </video>
+        </div>
+        <div class="text-center mt-4">
+          <div class="d-inline-flex align-items-center gap-4 flex-wrap justify-content-center">
+            <span class="d-flex align-items-center text-white-50 small">
+              <i class="bi bi-chat-square-text me-2 text-accent"></i>Describe what you want
+            </span>
+            <i class="bi bi-arrow-right text-white-25"></i>
+            <span class="d-flex align-items-center text-white-50 small">
+              <i class="bi bi-code-slash me-2 text-accent"></i>She writes the code
+            </span>
+            <i class="bi bi-arrow-right text-white-25"></i>
+            <span class="d-flex align-items-center text-white-50 small">
+              <i class="bi bi-hammer me-2 text-accent"></i>It compiles and runs
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- See Cyréna in Action Section -->
+
+<!-- What Cyréna Is Section -->
+<section class="py-6 bg-light">
+  <div class="container">
+    <div class="text-center mb-6">
+      <span class="text-primary fw-semibold text-uppercase ls-2 small">What Cyréna Actually Is</span>
+      <h2 class="fw-bold mt-2 mb-3">A Desktop Platform, Not a Service</h2>
+      <p class="text-secondary mx-auto" style="max-width: 650px;">
+        Cyréna is software that runs on <strong>your machine</strong>. She does not expose endpoints, talk to a server,
+        or lock you into a single AI provider. She is the platform. You bring the model. And with
+        <strong>extensions</strong>, she adapts to your workflow.
+      </p>
+    </div>
+    <div class="row g-4 justify-content-center">
+      @for (trait of platformTraits(); track trait.title) {
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm trait-card">
+          <div class="card-body p-4 text-center">
+            <div
+              class="icon-wrapper bg-primary bg-opacity-10 rounded-4 d-inline-flex align-items-center justify-content-center mb-4"
+              style="width: 64px; height: 64px;">
+              <i class="bi fs-3 text-primary" [class]="trait.icon"></i>
+            </div>
+            <h5 class="card-title fw-bold mb-3">{{ trait.title }}</h5>
+            <p class="card-text text-secondary small">{{ trait.description }}</p>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Your AI, Your Choice Section -->
+<section class="py-6">
+  <div class="container">
+    <div class="text-center mb-6">
+      <span class="text-primary fw-semibold text-uppercase ls-2 small">Model Agnostic</span>
+      <h2 class="fw-bold mt-2 mb-3">Your AI, Your Choice</h2>
+      <p class="text-secondary mx-auto" style="max-width: 650px;">
+        Cyréna is not an AI model. She is the platform that <strong>orchestrates</strong> models. Connect Ollama for
+        offline work, OpenAI for cloud power, or switch between them mid-conversation. The choice is always yours.
+      </p>
+    </div>
+    <div class="row g-4 align-items-stretch">
+      <!-- Ollama Card -->
+      <div class="col-md-5">
+        <div class="card h-100 border-0 shadow-sm model-card ollama-card">
+          <div class="card-body p-5">
+            <div class="d-flex align-items-center mb-4">
+              <div
+                class="icon-wrapper bg-success bg-opacity-10 rounded-4 d-flex align-items-center justify-content-center me-3"
+                style="width: 56px; height: 56px;">
+                <i class="bi bi-hdd fs-3 text-success"></i>
+              </div>
+              <div>
+                <h4 class="fw-bold mb-0">Ollama</h4>
+                <span class="badge bg-success bg-opacity-10 text-success">Local & Offline</span>
+              </div>
+            </div>
+            <p class="text-secondary mb-4">
+              Run large language models entirely on your own hardware. No internet required. No data leaves your
+              machine.
+            </p>
+            <ul class="list-unstyled mb-0">
+              @for (item of ollamaFeatures(); track item) {
+              <li class="d-flex align-items-start mb-2">
+                <i class="bi bi-check2-circle text-success me-2 mt-1"></i>
+                <span class="text-secondary small">{{ item }}</span>
+              </li>
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- Switch Visual -->
+      <div class="col-md-2 d-flex align-items-center justify-content-center">
+        <div class="switch-visual text-center">
+          <div
+            class="switch-circle bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3"
+            style="width: 72px; height: 72px;">
+            <i class="bi bi-arrow-left-right fs-2 text-primary"></i>
+          </div>
+          <p class="fw-bold text-primary mb-1">Switch Anytime</p>
+          <p class="text-secondary small mb-0">In any chat,<br>at any moment</p>
+        </div>
+      </div>
+      <!-- OpenAI Card -->
+      <div class="col-md-5">
+        <div class="card h-100 border-0 shadow-sm model-card openai-card">
+          <div class="card-body p-5">
+            <div class="d-flex align-items-center mb-4">
+              <div
+                class="icon-wrapper bg-info bg-opacity-10 rounded-4 d-flex align-items-center justify-content-center me-3"
+                style="width: 56px; height: 56px;">
+                <i class="bi bi-cloud fs-3 text-info"></i>
+              </div>
+              <div>
+                <h4 class="fw-bold mb-0">OpenAI</h4>
+                <span class="badge bg-info bg-opacity-10 text-info">Cloud Powered</span>
+              </div>
+            </div>
+            <p class="text-secondary mb-4">
+              Tap into state-of-the-art cloud models when you need maximum capability. Always up to date, always
+              powerful.
+            </p>
+            <ul class="list-unstyled mb-0">
+              @for (item of openaiFeatures(); track item) {
+              <li class="d-flex align-items-start mb-2">
+                <i class="bi bi-check2-circle text-info me-2 mt-1"></i>
+                <span class="text-secondary small">{{ item }}</span>
+              </li>
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-5">
+      <div class="d-inline-block bg-white rounded-4 shadow-sm p-4">
+        <p class="mb-0 fw-semibold text-primary">
+          <i class="bi bi-lightning-charge-fill me-2"></i>
+          Start a chat with Ollama, switch to OpenAI mid-conversation, then go back. Cyréna keeps context across model
+          changes.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- New Features Section -->
+<section class="py-6 bg-light">
+  <div class="container">
+    <div class="text-center mb-6">
+      <span class="text-primary fw-semibold text-uppercase ls-2 small">What's New</span>
+      <h2 class="fw-bold mt-2 mb-3">Built for Control</h2>
+      <p class="text-secondary mx-auto" style="max-width: 650px;">
+        Four new capabilities that put you in charge of how Cyréna thinks, what she knows, and when she acts.
+      </p>
+    </div>
+    <div class="row g-4">
+      @for (feature of newFeatures(); track feature.title) {
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm new-feature-card">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-center mb-3">
+              <div
+                class="icon-wrapper bg-primary bg-opacity-10 rounded-4 d-flex align-items-center justify-content-center me-3"
+                style="width: 48px; height: 48px;">
+                <i class="bi fs-5 text-primary" [class]="feature.icon"></i>
+              </div>
+              <div>
+                <h5 class="fw-bold mb-0">{{ feature.title }}</h5>
+                <span class="badge bg-primary bg-opacity-10 text-primary">New</span>
+              </div>
+            </div>
+            <p class="text-primary fw-semibold small mb-2">{{ feature.tagline }}</p>
+            <p class="text-secondary small mb-3">{{ feature.description }}</p>
+            @if (feature.image) {
+            <div class="feature-image-wrapper rounded-3 overflow-hidden mb-3">
+              <img [src]="feature.image" [alt]="feature.title + ' screenshot'" class="feature-image w-100">
+            </div>
+            }
+            <ul class="list-unstyled mb-0">
+              @for (item of feature.features; track item) {
+              <li class="d-flex align-items-start mb-1">
+                <i class="bi bi-check2-circle text-primary me-2 mt-1 small"></i>
+                <span class="text-secondary small">{{ item }}</span>
+              </li>
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+
+
+<!-- The Four Pillars Section -->
+<section class="py-6 bg-light">
+  <div class="container">
+    <div class="text-center mb-6">
+      <span class="text-primary fw-semibold text-uppercase ls-2 small">The Four Pillars</span>
+      <h2 class="fw-bold mt-2 mb-3">What Cyréna Does</h2>
+      <p class="text-secondary mx-auto" style="max-width: 600px;">
+        Four pillars of engineering assistance that adapt to your workflow, not the other way around.
+      </p>
+    </div>
+    <div class="row g-4">
+      @for (feature of features(); track feature.title) {
+      <div class="col-md-6 col-lg-3">
+        @if (feature.title === 'Extensions') {
+        <a routerLink="/extensions" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm capability-card">
+            <div class="card-body p-4 text-center">
+              <div
+                class="icon-wrapper bg-primary bg-opacity-10 rounded-4 d-inline-flex align-items-center justify-content-center mb-4"
+                style="width: 64px; height: 64px;">
+                <i class="bi fs-3 text-primary" [class]="feature.icon"></i>
+              </div>
+              <h5 class="card-title fw-bold mb-3">{{ feature.title }}</h5>
+              <p class="card-text text-secondary small">{{ feature.description }}</p>
+            </div>
+          </div>
+        </a>
+        } @else {
+        <div class="card h-100 border-0 shadow-sm capability-card">
+          <div class="card-body p-4 text-center">
+            <div
+              class="icon-wrapper bg-primary bg-opacity-10 rounded-4 d-inline-flex align-items-center justify-content-center mb-4"
+              style="width: 64px; height: 64px;">
+              <i class="bi fs-3 text-primary" [class]="feature.icon"></i>
+            </div>
+            <h5 class="card-title fw-bold mb-3">{{ feature.title }}</h5>
+            <p class="card-text text-secondary small">{{ feature.description }}</p>
+          </div>
+        </div>
+        }
+      </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Multi-Domain Support Section -->
+<section class="py-6">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-5 mb-5 mb-lg-0">
+        <span class="text-primary fw-semibold text-uppercase ls-2 small">Multi-Domain Support</span>
+        <h2 class="fw-bold mt-2 mb-4">A Polyglot Engineering Agent</h2>
+        <p class="text-secondary mb-4">
+          Cyréna is not locked into one ecosystem. Each domain has domain-specific constraints and prompts, but they all
+          share the same core architecture principles.
+        </p>
+        <p class="text-secondary mb-4">
+          <strong>Consistency across ecosystems.</strong> Whether you are building a .NET web app or programming an
+          ESP32, Cyréna understands the idioms, the tooling, and the constraints.
+        </p>
+        <a routerLink="/docs/getting-started" class="btn btn-primary fw-bold">
+          <i class="bi bi-arrow-right me-2"></i>Explore Architecture
+        </a>
+      </div>
+      <div class="col-lg-7">
+        <div class="row g-4">
+          @for (domain of domains(); track domain.name) {
+          <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm domain-card">
+              <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-3">
+                  <div
+                    class="icon-wrapper-sm bg-primary bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center me-3"
+                    style="width: 44px; height: 44px;">
+                    <i class="bi text-primary" [class]="domain.icon"></i>
+                  </div>
+                  <h6 class="fw-bold mb-0">{{ domain.name }}</h6>
+                </div>
+                <ul class="list-unstyled mb-0">
+                  @for (item of domain.items; track item) {
+                  <li class="text-secondary small mb-1">
+                    <i class="bi bi-check2 text-primary me-2"></i>{{ item }}
+                  </li>
+                  }
+                </ul>
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Cyréna's Memory Section -->
+<section class="py-6 bg-dark text-light">
+  <div class="container">
+    <div class="text-center mb-6">
+      <span class="text-accent fw-semibold text-uppercase ls-2 small">Built-In Memory</span>
+      <h2 class="fw-bold mt-2 mb-3">Cyréna Remembers</h2>
+      <p class="text-white-75 mx-auto" style="max-width: 700px;">
+        A two-part memory system that lives with your code. Sticky Notes capture rules and reminders. API References
+        hold the deep technical docs. Together, they let any model pick up exactly where the last one left off.
+      </p>
+    </div>
+    <div class="row g-4 align-items-stretch">
+      <!-- Sticky Notes -->
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 border-0 shadow-sm memory-card sticky-note-card">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-center mb-4">
+              <div
+                class="icon-wrapper bg-warning bg-opacity-10 rounded-4 d-flex align-items-center justify-content-center me-3"
+                style="width: 56px; height: 56px;">
+                <i class="bi bi-sticky fs-3 text-warning"></i>
+              </div>
+              <div>
+                <h4 class="fw-bold mb-0">Sticky Notes</h4>
+                <span class="badge bg-warning bg-opacity-10 text-warning">Quick Notes & Rules</span>
+              </div>
+            </div>
+            <p class="text-secondary mb-4">
+              Notes, rules, and reminders the AI writes for itself. Architectural decisions, coding conventions, things
+              not to forget.
+            </p>
+            <ul class="list-unstyled mb-0">
+              <li class="d-flex align-items-start mb-2">
+                <i class="bi bi-check2-circle text-warning me-2 mt-1"></i>
+                <span class="text-secondary small">Capture decisions as they happen</span>
+              </li>
+              <li class="d-flex align-items-start mb-2">
+                <i class="bi bi-check2-circle text-warning me-2 mt-1"></i>
+                <span class="text-secondary small">Rules the AI must follow</span>
+              </li>
+              <li class="d-flex align-items-start mb-2">
+                <i class="bi bi-check2-circle text-warning me-2 mt-1"></i>
+                <span class="text-secondary small">Reminders about context and intent</span>
+              </li>
+              <li class="d-flex align-items-start">
+                <i class="bi bi-check2-circle text-warning me-2 mt-1"></i>
+                <span class="text-secondary small">Lightweight, fast to scan</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- API References -->
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 border-0 shadow-sm memory-card api-ref-card">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-center mb-4">
+              <div
+                class="icon-wrapper bg-accent bg-opacity-10 rounded-4 d-flex align-items-center justify-content-center me-3"
+                style="width: 56px; height: 56px;">
+                <i class="bi bi-journal-code fs-3 text-accent"></i>
+              </div>
+              <div>
+                <h4 class="fw-bold mb-0">API References</h4>
+                <span class="badge bg-accent bg-opacity-10 text-white">Deep Technical Docs</span>
+              </div>
+            </div>
+            <p class="text-secondary mb-4">
+              Intense coding and architectural documentation. Service contracts, integration patterns, real signatures
+              grounded in actual code.
+            </p>
+            <ul class="list-unstyled mb-0">
+              <li class="d-flex align-items-start mb-2">
+                <i class="bi bi-check2-circle text-accent me-2 mt-1"></i>
+                <span class="text-secondary small">Service interfaces and contracts</span>
+              </li>
+              <li class="d-flex align-items-start mb-2">
+                <i class="bi bi-check2-circle text-accent me-2 mt-1"></i>
+                <span class="text-secondary small">Architecture rules and patterns</span>
+              </li>
+              <li class="d-flex align-items-start mb-2">
+                <i class="bi bi-check2-circle text-accent me-2 mt-1"></i>
+                <span class="text-secondary small">Integration contracts between components</span>
+              </li>
+              <li class="d-flex align-items-start">
+                <i class="bi bi-check2-circle text-accent me-2 mt-1"></i>
+                <span class="text-secondary small">Grounded in real implementation</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- The .cyrena Folder -->
+      <div class="col-lg-4">
+        <div class="card h-100 border-0 shadow-sm memory-card folder-card">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-center mb-4">
+              <div
+                class="icon-wrapper bg-success bg-opacity-10 rounded-4 d-flex align-items-center justify-content-center me-3"
+                style="width: 56px; height: 56px;">
+                <i class="bi bi-folder2-open fs-3 text-success"></i>
+              </div>
+              <div>
+                <h4 class="fw-bold mb-0">The .cyrena Folder</h4>
+                <span class="badge bg-success bg-opacity-10 text-success">Lives With Your Code</span>
+              </div>
+            </div>
+            <p class="text-secondary mb-4">
+              Both memory systems are saved in a <code>.cyrena</code> folder at your project's root. It is just files.
+              Source control them. Share them. Another developer picks up where you left off.
+            </p>
+            <div class="folder-tree rounded-3 p-3 mb-0">
+              <div class="folder-item">
+                <i class="bi bi-folder-fill text-warning me-2"></i>
+                <span class="text-light font-monospace small">my-project/</span>
+              </div>
+              <div class="folder-item indent-1">
+                <i class="bi bi-folder-fill text-primary me-2"></i>
+                <span class="text-light font-monospace small">src/</span>
+              </div>
+              <div class="folder-item indent-1">
+                <i class="bi bi-folder-fill text-success me-2"></i>
+                <span class="text-light font-monospace small fw-bold">.cyrena/</span>
+              </div>
+              <div class="folder-item indent-2">
+                <i class="bi bi-folder-fill text-warning me-2"></i>
+                <span class="text-light font-monospace small">sticky-notes/</span>
+              </div>
+              <div class="folder-item indent-2">
+                <i class="bi bi-folder-fill text-accent me-2"></i>
+                <span class="text-light font-monospace small">api-references/</span>
+              </div>
+              <div class="folder-item indent-1">
+                <i class="bi bi-file-earmark-text text-secondary me-2"></i>
+                <span class="text-secondary font-monospace small">package.json</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-5">
+      <div class="col-lg-10 mx-auto">
+        <div class="card border-0 shadow-sm memory-callout">
+          <div class="card-body p-4">
+            <div class="row g-4 align-items-center">
+              <div class="col-md-6">
+                <h5 class="fw-bold mb-3">
+                  <i class="bi bi-arrow-repeat text-accent me-2"></i>Model Handoff, Zero Friction
+                </h5>
+                <p class="text-secondary mb-0">
+                  Switch from Ollama to OpenAI mid-project and the new model reads the same memory. No need to
+                  re-explain the codebase. No need to rebuild context from scratch. The memory is already there.
+                </p>
+              </div>
+              <div class="col-md-6">
+                <h5 class="fw-bold mb-3">
+                  <i class="bi bi-people-fill text-accent me-2"></i>Team Handoff, Same Story
+                </h5>
+                <p class="text-secondary mb-0">
+                  Commit <code>.cyrena</code> to Git. Another developer clones the repo, opens Cyréna, and the AI
+                  already knows the architecture, the rules, and the intent. No onboarding docs required.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- What Cyréna Is NOT Section -->
+<section class="py-6 bg-light">
+  <div class="container">
+    <div class="text-center mb-6">
+      <span class="text-primary fw-semibold text-uppercase ls-2 small">Reality Check</span>
+      <h2 class="fw-bold mt-2 mb-3">What Cyréna Is <span class="text-danger">NOT</span></h2>
+      <p class="text-secondary mx-auto" style="max-width: 600px;">
+        Setting expectations is important. Here is what we do not pretend to be.
+      </p>
+    </div>
+    <div class="row g-4 justify-content-center">
+      @for (item of notItems(); track item.label) {
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="card h-100 border-0 shadow-sm not-card text-center">
+          <div class="card-body p-4">
+            <div
+              class="not-icon bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+              style="width: 56px; height: 56px;">
+              <i class="bi text-danger fs-4" [class]="item.icon"></i>
+            </div>
+            <p class="fw-semibold mb-0 small">{{ item.label }}</p>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+    <div class="text-center mt-5">
+      <div class="d-inline-block bg-white rounded-4 shadow-sm p-4">
+        <p class="mb-0 fw-semibold text-primary">
+          <i class="bi bi-check-circle-fill me-2"></i>
+          But she will: Roll up her sleeves, read your code, understand your constraints, and write solutions that
+          actually compile.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Platform Vision Section -->
+<section class="py-6">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 order-lg-2 mb-5 mb-lg-0 ps-lg-5">
+        <span class="text-primary fw-semibold text-uppercase ls-2 small">The Platform Vision</span>
+        <h2 class="fw-bold mt-2 mb-4">From Agent to Platform</h2>
+        <p class="text-secondary mb-4">
+          Cyréna starts as an engineering agent on your desktop, but with extensions she becomes a platform. Your
+          organization builds what it needs, distributes through your own servers, and your team gets a unified AI
+          experience.
+        </p>
+        <div class="row g-3">
+          @for (feature of platformFeatures(); track feature) {
+          <div class="col-sm-6">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-check2-circle text-primary fs-5 me-3"></i>
+              <span class="fw-medium">{{ feature }}</span>
+            </div>
+          </div>
+          }
+        </div>
+        <div class="mt-4">
+          <a routerLink="/docs/getting-started" class="btn btn-outline-primary fw-bold">
+            <i class="bi bi-book me-2"></i>Read the Guides
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-6 order-lg-1">
+        <div class="platform-visual rounded-4 bg-primary bg-opacity-5 p-5 text-center">
+          <div class="platform-layers">
+            <div
+              class="platform-layer bg-white rounded-3 shadow-sm p-3 mb-3 d-flex align-items-center justify-content-center">
+              <i class="bi bi-layers text-primary fs-2 me-3"></i>
+              <span class="fw-bold">Your Extensions</span>
+            </div>
+            <div
+              class="platform-layer bg-white rounded-3 shadow-sm p-3 mb-3 d-flex align-items-center justify-content-center">
+              <i class="bi bi-puzzle text-primary fs-2 me-3"></i>
+              <span class="fw-bold">Custom Workflows</span>
+            </div>
+            <div
+              class="platform-layer bg-white rounded-3 shadow-sm p-3 mb-3 d-flex align-items-center justify-content-center">
+              <i class="bi bi-cpu text-primary fs-2 me-3"></i>
+              <span class="fw-bold">Cyréna Core</span>
+            </div>
+            <div
+              class="platform-layer bg-primary rounded-3 shadow-sm p-3 d-flex align-items-center justify-content-center text-white">
+              <i class="bi bi-hdd-network fs-2 me-3"></i>
+              <span class="fw-bold">Your Machine</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Open Source Section -->
+<section class="py-6 bg-primary text-white">
+  <div class="container text-center">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <i class="bi bi-github fs-1 mb-4 d-block"></i>
+        <h2 class="fw-bold mb-3">Open Source and Evolving</h2>
+        <p class="lead mb-4 text-white-75">
+          Cyréna is an open source project built by developers who were tired of AI tools that do not understand
+          codebases. Check out the repo, contribute, or just see how it works.
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+          <a href="https://github.com/Christo262/Cyrena_App" target="_blank" rel="noopener"
+            class="btn btn-light btn-lg fw-bold px-5">
+            <i class="bi bi-github me-2"></i>View on GitHub
+          </a>
+          <a routerLink="/docs/getting-started" class="btn btn-outline-light btn-lg px-5">
+            <i class="bi bi-book me-2"></i>Read the Docs
+          </a>
+        </div>
+        <div class="mt-4">
+          <span class="badge bg-white bg-opacity-10 border border-white border-opacity-25 rounded-pill px-3 py-2 me-2">
+            <i class="bi bi-star-fill me-1"></i>Star us on GitHub
+          </span>
+          <span class="badge bg-white bg-opacity-10 border border-white border-opacity-25 rounded-pill px-3 py-2">
+            <i class="bi bi-git me-1"></i>Contribute
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-6 bg-light">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-3">Ready to Get Started?</h2>
+    <p class="text-secondary mb-4 mx-auto" style="max-width: 500px;">
+      Download Cyréna, connect your favourite model, and start building with an AI that actually understands your code.
+    </p>
+    <a routerLink="/docs/getting-started" class="btn btn-primary btn-lg fw-bold px-5">
+      <i class="bi bi-rocket me-2"></i>Get Started
+    </a>
+  </div>
+</section>

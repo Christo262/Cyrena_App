@@ -1,0 +1,119 @@
+<div>
+  <h1 class="fw-bold mb-3">Arduino IDE Support</h1>
+  <p class="lead text-secondary mb-5">
+    Cyréna can interpret the flat-file layout used by Arduino IDE sketches and assist throughout the development cycle.
+  </p>
+
+  <!-- Prerequisites -->
+  <h2 class="h4 fw-bold mb-3">Requirements</h2>
+  <ul class="mb-5">
+    @for (item of prerequisites; track item) {
+    <li class="mb-2">{{ item }}</li>
+    }
+  </ul>
+
+  <!-- Getting Started -->
+  <h2 class="h4 fw-bold mb-3">Getting Started</h2>
+  <p class="text-secondary mb-4">
+    The flat structure of an Arduino sketch (a single <code class="text-primary">.ino</code> file plus optional
+    libraries) is fully supported. Cyréna will respect the board specifications you provide to generate correct code and
+    suggestions.
+  </p>
+
+  @for (step of steps; track step.number) {
+  <div class="step mb-4">
+    <div class="d-flex align-items-start">
+      <div
+        class="step-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3">
+        {{ step.number }}
+      </div>
+      <div class="flex-grow-1">
+        <h4 class="fw-bold mb-2">{{ step.title }}</h4>
+        <p class="text-secondary mb-0">{{ step.description }}</p>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Board Specs Note -->
+  <div class="alert alert-info mb-5">
+    <i class="bi bi-info-circle me-2"></i>
+    <strong>Board Specifications</strong> — When you configure the dialog, providing accurate board details (name, RAM
+    size, and clock speed) helps Cyréna generate code that respects the target hardware constraints.
+  </div>
+
+  <!-- What You Can Ask -->
+  <h2 class="h4 fw-bold mb-3">What You Can Ask</h2>
+  <p class="text-secondary mb-3">
+    Once the chat is configured, you can interact with the AI in a variety of ways:
+  </p>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Task</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Code Review</strong></td>
+          <td>Ask the AI to review your sketch for bugs, inefficiencies, or style issues.</td>
+        </tr>
+        <tr>
+          <td><strong>Bug Fix</strong></td>
+          <td>Describe a problem and get targeted fixes for your Arduino code.</td>
+        </tr>
+        <tr>
+          <td><strong>Feature Addition</strong></td>
+          <td>Request new functionality and get code that fits the flat sketch structure.</td>
+        </tr>
+        <tr>
+          <td><strong>Hardware Guidance</strong></td>
+          <td>Get advice on pin assignments, memory usage, and timing based on your board specs.</td>
+        </tr>
+        <tr>
+          <td><strong>Library Integration</strong></td>
+          <td>Ask how to include and use third-party libraries within your sketch.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Sketch Structure -->
+  <h2 class="h4 fw-bold mb-3">Sketch Structure</h2>
+  <p class="text-secondary mb-3">
+    Arduino IDE sketches follow a simple flat-file layout. Cyréna understands this structure and will not attempt to
+    reorganize it.
+  </p>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>File / Folder</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>*.ino</code></td>
+          <td>The main sketch file containing <code>setup()</code> and <code>loop()</code> functions.</td>
+        </tr>
+        <tr>
+          <td><code>*.h</code> / <code>*.cpp</code></td>
+          <td>Optional header and source files for custom libraries or helper code.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Permissions Note -->
+  <div class="permissions-note p-4 rounded-3 border mt-5">
+    <p class="mb-0 text-secondary">
+      <i class="bi bi-shield-check text-success me-2"></i>
+      <strong>Cyrena respects the flat sketch structure:</strong> the AI will not restructure your Arduino project into
+      folders or introduce files that break the IDE's expected layout. All generated code stays within the single
+      <code>.ino</code> file or its adjacent helper files.
+    </p>
+  </div>
+</div>

@@ -1,20 +1,21 @@
 ﻿@page "/browse-extensions"
+@using Cyrena.Extensa.Extensions
+@attribute [TabItemOption(Text = "Browse Extensions", Icon = "bi bi-cloud-download")]
 
-<div class="container">
-    <div class="row m-0 mt-2">
-        <div class="col-md-8">
-            <h4>Browse Extensions</h4>
-        </div>
-        <div class="col-md-4 text-end">
-            <Tooltip Title="Clear Cache">
-                <button type="button" @onclick="ClearCache" class="btn btn-sm btn-primary"><i class="bi bi-x-square"></i></button>
-            </Tooltip>
-            <Tooltip Title="Refresh">
-                <button type="button" @onclick="IndexPackages" class="btn btn-sm btn-primary"><i class="bi bi-arrow-clockwise"></i></button>
-            </Tooltip>
-        </div>
+<div class="row m-0 mt-2 border-bottom">
+    <div class="col-md-8">
+        <h4>Browse Extensions</h4>
     </div>
-    <hr />
+    <div class="col-md-4 text-end">
+        <Tooltip Title="Clear Cache">
+            <button type="button" @onclick="ClearCache" class="btn btn-sm btn-primary"><i class="bi bi-x-square"></i></button>
+        </Tooltip>
+        <Tooltip Title="Refresh">
+            <button type="button" @onclick="IndexPackages" class="btn btn-sm btn-primary"><i class="bi bi-arrow-clockwise"></i></button>
+        </Tooltip>
+    </div>
+</div>
+<div class="container overflow-auto">
 
     @if (_manager.Status.IsIndexing)
     {
@@ -53,54 +54,65 @@
 
     @if(_models != null)
     {
-        <div class="row m-0">
-            @foreach(var item in _models)
-            {
-                <div class="col-md-4">
-                    <div class="p-2 rounded border mb-2 d-flex flex-column" style="height:200px;overflow:auto">
-                        @if (item.HasIcon)
-                        {
-                            <div class="text-center">
-                                <img src="@item.IconUrl" alt="@item.Title" class="rounded" height="80"/>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="text-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor" class="bi bi-boxes" viewBox="0 0 16 16">
-                                    <path d="M7.752.066a.5.5 0 0 1 .496 0l3.75 2.143a.5.5 0 0 1 .252.434v3.995l3.498 2A.5.5 0 0 1 16 9.07v4.286a.5.5 0 0 1-.252.434l-3.75 2.143a.5.5 0 0 1-.496 0l-3.502-2-3.502 2.001a.5.5 0 0 1-.496 0l-3.75-2.143A.5.5 0 0 1 0 13.357V9.071a.5.5 0 0 1 .252-.434L3.75 6.638V2.643a.5.5 0 0 1 .252-.434zM4.25 7.504 1.508 9.071l2.742 1.567 2.742-1.567zM7.5 9.933l-2.75 1.571v3.134l2.75-1.571zm1 3.134 2.75 1.571v-3.134L8.5 9.933zm.508-3.996 2.742 1.567 2.742-1.567-2.742-1.567zm2.242-2.433V3.504L8.5 5.076V8.21zM7.5 8.21V5.076L4.75 3.504v3.134zM5.258 2.643 8 4.21l2.742-1.567L8 1.076zM15 9.933l-2.75 1.571v3.134L15 13.067zM3.75 14.638v-3.134L1 9.933v3.134z" />
-                                </svg>
-                            </div>
-                        }
-                        <h6 class="m-0 my-2 text-center">@item.Title</h6>
-                        <p class="small m-0 flex-fill overflow-auto">
-                            @item.Description <br />
-
-                            @foreach (var os in item.SupportedOperatingSystems)
+        @foreach(var distro in _distros)
+        {
+            <div class="row m-0">
+                <div class="col-md-12">
+                    <h4>@distro.Name</h4>
+                </div>
+                @foreach (var item in _models.Where(x => x.ServerId == distro.Id))
+                {
+                    <div class="col-md-4">
+                        <div class="p-2 rounded border mb-2 d-flex flex-column position-relative" style="height:200px;overflow:auto">
+                            @if (item.HasIcon)
                             {
-                                <span class="badge text-bg-primary me-1">@os</span>
+                                <div class="text-center">
+                                    <img src="@item.IconUrl" alt="@item.Title" class="rounded" height="80" />
+                                </div>
                             }
-                        </p>
+                            else
+                            {
+                                <div class="text-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor" class="bi bi-boxes" viewBox="0 0 16 16">
+                                        <path d="M7.752.066a.5.5 0 0 1 .496 0l3.75 2.143a.5.5 0 0 1 .252.434v3.995l3.498 2A.5.5 0 0 1 16 9.07v4.286a.5.5 0 0 1-.252.434l-3.75 2.143a.5.5 0 0 1-.496 0l-3.502-2-3.502 2.001a.5.5 0 0 1-.496 0l-3.75-2.143A.5.5 0 0 1 0 13.357V9.071a.5.5 0 0 1 .252-.434L3.75 6.638V2.643a.5.5 0 0 1 .252-.434zM4.25 7.504 1.508 9.071l2.742 1.567 2.742-1.567zM7.5 9.933l-2.75 1.571v3.134l2.75-1.571zm1 3.134 2.75 1.571v-3.134L8.5 9.933zm.508-3.996 2.742 1.567 2.742-1.567-2.742-1.567zm2.242-2.433V3.504L8.5 5.076V8.21zM7.5 8.21V5.076L4.75 3.504v3.134zM5.258 2.643 8 4.21l2.742-1.567L8 1.076zM15 9.933l-2.75 1.571v3.134L15 13.067zM3.75 14.638v-3.134L1 9.933v3.134z" />
+                                    </svg>
+                                </div>
+                            }
+                            <h6 class="m-0 my-2 text-center">@item.Title</h6>
+                            <p class="small m-0 flex-fill overflow-auto">
+                                @item.LatestVersion().Version <br />
+                                @item.Description <br />
+
+                                @foreach (var os in item.SupportedOperatingSystems)
+                                {
+                                    <span class="badge text-bg-primary me-1">@os</span>
+                                }
+                            </p>
 
                         
 
-                        <div class="text-end">
-                            @if (CanDownload(item.Id))
-                            {
-                                <Tooltip Title="Download">
-                                    <button type="button" @onclick="() => QueueDownload(item)" class="btn btn-sm btn-info"><i class="bi bi-download"></i></button>
+                            <div class="text-end position-absolute top-0 end-0 p-1">
+                                @if (CanDownload(item.Id))
+                                {
+                                    <Tooltip Title="Download">
+                                        <button type="button" @onclick="() => QueueDownload(item)" class="btn btn-sm btn-info rounded-pill"><i class="bi bi-download"></i></button>
+                                    </Tooltip>
+                                }
+                                @if (CanUpdate(item))
+                                {
+                                    <Tooltip Title="Update">
+                                        <button type="button" @onclick="() => QueueDownload(item)" class="btn btn-sm btn-info rounded-pill"><i class="bi bi-box-arrow-up"></i></button>
+                                    </Tooltip>
+                                }
+
+                                <Tooltip Title="View">
+                                    <a href="view-extension/@item.Id" class="btn btn-sm btn-primary rounded-pill ms-1"><i class="bi bi-info"></i></a>
                                 </Tooltip>
-                            }
-                            @if (CanUpdate(item))
-                            {
-                                <Tooltip Title="Update">
-                                    <button type="button" @onclick="() => QueueDownload(item)" class="btn btn-sm btn-info"><i class="bi bi-box-arrow-up"></i></button>
-                                </Tooltip>
-                            }
+                            </div>
                         </div>
                     </div>
-                </div>
-            }
-        </div>
+                }
+            </div>
+        }
     }
 </div>

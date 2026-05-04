@@ -1,0 +1,400 @@
+<div>
+  <h1 class="fw-bold mb-4">Cyrena.Components.Core</h1>
+
+  <p class="lead text-secondary mb-5">
+    <code>Cyrena.Components.Core</code> is the Blazor component library providing UI contracts, base classes, and
+    extension methods for building UI components that integrate with Cyréna's kernel-scoped services. Extensions that
+    add UI elements (toolbars, settings pages, shortcuts) must reference this package.
+  </p>
+
+  <div class="alert alert-info">
+    <strong>Namespaces:</strong>
+    @for (ns of namespaces; track ns) {
+      <code class="me-2">{{ ns }}</code>
+    }
+  </div>
+
+  <hr class="my-5">
+
+  <!-- Contracts -->
+  <h2 class="fw-bold mb-4">Contracts</h2>
+
+  <h3 id="idisplayservice" class="h5 fw-bold mt-4">
+    IDisplayService <span class="badge bg-secondary">Kernel-locked</span>
+  </h3>
+  <p class="text-secondary">
+    Service for showing dialogs, toast notifications, and navigation in the Blazor UI.
+  </p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IDisplayService
+&#123;
+    Task&lt;DialogResult&gt; ShowModal&lt;TComponent&gt;(ResultDialogOption option, Dialog? dialog = null)
+        where TComponent : IComponent, IResultDialog;
+
+    Task&lt;DialogResult&gt; ShowModal(string title, string content, ResultDialogOption? option = null, Dialog? dialog = null);
+
+    Task ShowToast(ToastOption option, ToastContainer? toastContainer = null);
+    Task ShowErrorToast(string? title = null, string? content = null, bool autoHide = true);
+    Task ShowWarnToast(string? title = null, string? content = null, bool autoHide = true);
+    Task ShowSuccessToast(string? title = null, string? content = null, bool autoHide = true);
+    Task ShowInfoToast(string? title = null, string? content = null, bool autoHide = true);
+
+    void NavigateTo(string url);
+&#125;</code></pre>
+  <p class="text-secondary mb-3">
+    <strong>Dependencies:</strong> Requires <code>BootstrapBlazor</code> components
+    (<code>Dialog</code>, <code>ToastContainer</code>, <code>ToastOption</code>, <code>ResultDialogOption</code>,
+    <code>DialogResult</code>).
+  </p>
+  <p class="text-secondary mb-5">
+    <strong>Implementation:</strong> <code>DisplayService</code> in <code>Cyrena.Components.Runtime</code> implements
+    this interface.
+  </p>
+
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Method</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (method of displayMethods; track method.method) {
+        <tr>
+          <td><code>{{ method.method }}</code></td>
+          <td>{{ method.description }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="ishortcut" class="h5 fw-bold mt-4">IShortcut</h3>
+  <p class="text-secondary">Defines a keyboard shortcut or quick action that appears in the UI.</p>
+  <pre class="bg-dark text-light p-3 rounded mb-5" ngNonBindable><code>public interface IShortcut
+&#123;
+    string Title &#123; get; &#125;
+    string Description &#123; get; &#125;
+    string Icon &#123; get; &#125;
+    string Color &#123; get; &#125;
+    string Category &#123; get; &#125;
+    string[] Tags &#123; get; &#125;
+    Task OnClick();
+&#125;</code></pre>
+
+  <h3 id="itoolbarcomponent" class="h5 fw-bold mt-4">IToolbarComponent</h3>
+  <p class="text-secondary">Defines a component that renders in the chat toolbar.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IToolbarComponent
+&#123;
+    Type Component &#123; get; &#125;
+    ToolbarAlignment Alignment &#123; get; &#125;
+&#125;
+
+public enum ToolbarAlignment
+&#123;
+    Start, End
+&#125;</code></pre>
+  <ul class="text-secondary mb-5">
+    <li><code>Component</code>: The <code>Type</code> of the Blazor component to render.</li>
+    <li><code>Alignment</code>: <code>Start</code> (left side) or <code>End</code> (right side) of the toolbar.</li>
+  </ul>
+
+  <hr class="my-5">
+
+  <!-- Models -->
+  <h2 class="fw-bold mb-4">Models</h2>
+
+  <h3 id="kernelcomponentbase" class="h5 fw-bold mt-4">KernelComponentBase</h3>
+  <p class="text-secondary">
+    Base class for Blazor components that need access to the current <code>Kernel</code>.
+  </p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public abstract class KernelComponentBase : ComponentBase
+&#123;
+    [Parameter]
+    [EditorRequired]
+    public Kernel Kernel &#123; get; set; &#125; = default!;
+&#125;</code></pre>
+  <p class="text-secondary mb-5">
+    Components extending this class receive the active kernel instance as a parameter. Use this for toolbar components,
+    chat overlays, or any UI that interacts with the current chat's kernel.
+  </p>
+
+  <hr class="my-5">
+
+  <!-- Options -->
+  <h2 class="fw-bold mb-4">Options</h2>
+
+  <h3 id="componentoptions" class="h5 fw-bold mt-4">ComponentOptions</h3>
+  <p class="text-secondary">Configuration for UI components, particularly settings pages.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public class ComponentOptions
+&#123;
+    internal List&lt;ComponentMetaData&gt; SettingsComponents &#123; get; set; &#125;
+    public ComponentMetaData[] GetSettingsComponents();
+&#125;
+
+public record ComponentMetaData(Type Component, string? Section, int Order);</code></pre>
+  <ul class="text-secondary mb-5">
+    <li><code>SettingsComponents</code>: Collection of registered settings component metadata (internal).</li>
+    <li><code>GetSettingsComponents()</code>: Returns all registered settings components as an array.</li>
+    <li><code>ComponentMetaData</code>: Record describing a settings component with its type, section group, and display order.</li>
+  </ul>
+
+  <h3 id="componentoptionsextensions" class="h5 fw-bold mt-4">ComponentOptionsExtensions</h3>
+  <p class="text-secondary">Extension methods for registering settings components:</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public static class ComponentOptionsExtensions
+&#123;
+    [Obsolete("Use new section mapping API")]
+    public static void AddSettingsComponent&lt;TComponent&gt;(this ComponentOptions options)
+        where TComponent : ComponentBase;
+
+    public static void AddSettingsComponent&lt;TComponent&gt;(this ComponentOptions options, string section);
+
+    public static void AddSettingsComponent&lt;TComponent&gt;(this ComponentOptions options, string section, int order);
+&#125;</code></pre>
+  <ul class="text-secondary mb-5">
+    <li>All overloads prevent duplicate registration by checking if the component type already exists.</li>
+    <li>The no-parameter overload is <strong>obsolete</strong> — use section overloads instead.</li>
+  </ul>
+
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Signature</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (overload of settingsOverloads; track overload.signature) {
+        <tr>
+          <td><code>{{ overload.signature }}</code></td>
+          <td>{{ overload.description }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="codelanguages" class="h5 fw-bold mt-4">CodeLanguages</h3>
+  <p class="text-secondary">Maps file extensions to syntax highlighting language identifiers.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public class CodeLanguages
+&#123;
+    public string GetFileLanguage(string extension);
+&#125;</code></pre>
+  <p class="text-secondary mb-3"><strong>Supported mappings:</strong></p>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Extensions</th>
+          <th>Language</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (mapping of languageMappings; track mapping.extensions) {
+        <tr>
+          <td><code>{{ mapping.extensions }}</code></td>
+          <td><code>{{ mapping.language }}</code></td>
+        </tr>
+        }
+        <tr>
+          <td><em>Default</em></td>
+          <td><code>plaintext</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="my-5">
+
+  <!-- Extension Methods -->
+  <h2 class="fw-bold mb-4">Extension Methods</h2>
+
+  <h3 id="cyrenabuilderextensions" class="h5 fw-bold mt-4">CyrenaBuilderExtensions</h3>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public static class CyrenaBuilderExtensions
+&#123;
+    [Obsolete("Use new section mapping API")]
+    public static CyrenaBuilder AddSettingsComponent&lt;TComponent&gt;(this CyrenaBuilder builder)
+        where TComponent : ComponentBase;
+
+    public static CyrenaBuilder AddSettingsComponent&lt;TComponent&gt;(this CyrenaBuilder builder, string section)
+        where TComponent : ComponentBase;
+
+    public static CyrenaBuilder AddSettingsComponent&lt;TComponent&gt;(this CyrenaBuilder builder, string section, int order)
+        where TComponent : ComponentBase;
+
+    public static CyrenaBuilder AddShortcut&lt;TShortcut&gt;(this CyrenaBuilder builder)
+        where TShortcut : class, IShortcut;
+&#125;</code></pre>
+  <ul class="text-secondary mb-5">
+    <li><code>AddSettingsComponent</code>: Registers a Blazor component as a settings tab under the specified section with optional order.</li>
+    <li><code>AddShortcut</code>: Registers a shortcut action in the UI as a scoped <code>IShortcut</code> service.</li>
+  </ul>
+
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Signature</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (overload of builderSettingsOverloads; track overload.signature) {
+        <tr>
+          <td><code>{{ overload.signature }}</code></td>
+          <td>{{ overload.description }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="cyrenakernelbuilderextensions" class="h5 fw-bold mt-4">CyrenaKernelBuilderExtensions</h3>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public static class CyrenaKernelBuilderExtensions
+&#123;
+    public static void AddToolbarComponent&lt;TComponent&gt;(this CyrenaKernelBuilder builder, ToolbarAlignment alignment)
+        where TComponent : KernelComponentBase;
+
+    [Obsolete]
+    public static void AddToolbarComponent&lt;TComponent&gt;(this IKernelBuilder builder, ToolbarAlignment alignment)
+        where TComponent : KernelComponentBase;
+&#125;</code></pre>
+  <ul class="text-secondary mb-5">
+    <li><code>AddToolbarComponent</code>: Registers a component to render in the chat toolbar for the current kernel/chat.</li>
+    <li>The obsolete overload on <code>IKernelBuilder</code> is deprecated; prefer <code>CyrenaKernelBuilder</code>.</li>
+  </ul>
+
+  <h3 id="componentbaseextensions" class="h5 fw-bold mt-4">ComponentBaseExtensions</h3>
+  <pre class="bg-dark text-light p-3 rounded mb-5" ngNonBindable><code>public static class ComponentBaseExtensions
+&#123;
+    public static RenderFragment Render(this ComponentBase cmp, Type type);
+    public static RenderFragment Render(this ComponentBase cmp, Type type, Dictionary&lt;string, object?&gt; parameters);
+&#125;</code></pre>
+  <p class="text-secondary mb-5">
+    Helper methods for dynamically rendering Blazor components from code with optional parameter passing.
+  </p>
+
+  <hr class="my-5">
+
+  <!-- Shared Blazor Components -->
+  <h2 class="fw-bold mb-4">Shared Blazor Components</h2>
+
+  <h3 id="codeinput" class="h5 fw-bold mt-4">CodeInput.razor</h3>
+  <p class="text-secondary">
+    Monaco code editor wrapper (BlazorMonaco) with syntax highlighting, dark theme, and two-way value binding.
+  </p>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Parameter</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (param of codeInputParams; track param.param) {
+        <tr>
+          <td><code>{{ param.param }}</code></td>
+          <td>{{ param.description }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="connectionselector" class="h5 fw-bold mt-4">ConnectionSelector.razor</h3>
+  <p class="text-secondary">
+    Dropdown of available AI connections from all registered <code>IConnectionProvider</code> services.
+  </p>
+  <div class="table-responsive mb-3">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Parameter</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (param of connectionSelectorParams; track param.param) {
+        <tr>
+          <td><code>{{ param.param }}</code></td>
+          <td>{{ param.description }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <p class="text-secondary mb-5">
+    <strong>Behavior:</strong> Populates connections on first render and on click. Displays <code>Name (Source)</code> per option.
+  </p>
+
+  <h3 id="pluginselector" class="h5 fw-bold mt-4">PluginSelector.razor</h3>
+  <p class="text-secondary">
+    Checkbox list for activating/deactivating <code>IAssistantPlugin</code> instances filtered by the current chat's
+    assistant mode.
+  </p>
+  <div class="table-responsive mb-3">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Parameter</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (param of pluginSelectorParams; track param.param) {
+        <tr>
+          <td><code>{{ param.param }}</code></td>
+          <td>{{ param.description }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <ul class="text-secondary mb-5">
+    <li>Filters plugins by mode compatibility</li>
+    <li>Required plugins are always selected and disabled</li>
+    <li>If <code>Chat.PluginIds</code> is empty, all plugins are selected by default</li>
+    <li>Updates <code>Chat.PluginIds</code> on every selection change</li>
+  </ul>
+
+  <hr class="my-5">
+
+  <!-- Usage -->
+  <h2 class="fw-bold mb-4">Usage for Extension Developers</h2>
+
+  <p class="text-secondary">Reference <code>Cyrena.Components.Core</code> to:</p>
+  <ol class="text-secondary mb-5">
+    <li>Implement <code>IShortcut</code> for quick actions</li>
+    <li>Implement <code>IToolbarComponent</code> for toolbar buttons</li>
+    <li>Extend <code>KernelComponentBase</code> for kernel-aware UI components</li>
+    <li>Use <code>IDisplayService</code> for dialogs and toasts</li>
+    <li>Register settings components via <code>AddSettingsComponent</code></li>
+    <li>Register toolbar components via <code>AddToolbarComponent</code></li>
+  </ol>
+
+  <h3 class="h5 fw-bold mb-3">Example — Toolbar Component</h3>
+  <pre class="bg-dark text-light p-3 rounded mb-3" ngNonBindable><code>public class MyToolbarComponent : KernelComponentBase &#123; ... &#125;
+
+// In IAssistantPlugin.LoadAsync:
+builder.AddToolbarComponent&lt;MyToolbarComponent&gt;(ToolbarAlignment.End);</code></pre>
+
+  <h3 class="h5 fw-bold mb-3">Example — Shortcut</h3>
+  <pre class="bg-dark text-light p-3 rounded mb-3" ngNonBindable><code>public class MyShortcut : IShortcut
+&#123;
+    public string Title =&gt; "My Action";
+    public string Description =&gt; "Does something";
+    public string Icon =&gt; "fa-solid fa-star";
+    public string Color =&gt; "primary";
+    public string Category =&gt; "My Category";
+    public string[] Tags =&gt; ["my"];
+    public Task OnClick() &#123; ... &#125;
+&#125;
+
+// In extension BuildExtension:
+builder.AddShortcut&lt;MyShortcut&gt;();</code></pre>
+
+  <h3 class="h5 fw-bold mb-3">Example — Settings Component</h3>
+  <pre class="bg-dark text-light p-3 rounded mb-5" ngNonBindable><code>builder.AddSettingsComponent&lt;MySettingsComponent&gt;("General", 1);</code></pre>
+</div>

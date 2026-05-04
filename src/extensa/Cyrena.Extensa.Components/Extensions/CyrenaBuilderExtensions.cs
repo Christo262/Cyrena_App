@@ -1,4 +1,5 @@
 ﻿using Cyrena.Extensa.Components;
+using Cyrena.Extensa.Components.Shared;
 using Cyrena.Extensa.Contracts;
 using Cyrena.Extensa.Models;
 using Cyrena.Extensa.Options;
@@ -50,6 +51,7 @@ namespace Cyrena.Extensions
             builder.Services.AddSingleton<IPluginPackageService, PluginPackageService>();
             builder.Services.AddSingleton<IPackageManager, PackageManager>();
             builder.Services.AddSingleton<DownloadService>();
+            builder.AddSettingsComponent<Servers>("Extensions", 10);
 
             builder.AddRunAction(async (sp, ct) =>
             {

@@ -1,0 +1,30 @@
+<Solution>
+  <Folder Name="/sln/">
+    <File Path="readme.md" />
+  </Folder>
+  <Folder Name="/sln/docs/">
+    <File Path="docs/angular-development.md" />
+    <File Path="docs/arduino-development.md" />
+    <File Path="docs/dotnet-development.md" />
+    <File Path="docs/platformio-development.md" />
+  </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/src/angular/">
+    <Project Path="src/angular/Cyrena.Angular/Cyrena.Angular.csproj" Id="85957293-b354-40e8-beb2-cff4c5aa6d49" />
+  </Folder>
+  <Folder Name="/src/api_references/">
+    <Project Path="src/api_references/Cyrena.APIReferences/Cyrena.APIReferences.csproj" Id="4cc6b0b4-2807-43c4-899d-fa5a039cd65c" />
+  </Folder>
+  <Folder Name="/src/assistant/">
+    <Project Path="src/assistant/Cyrena.Coding.Core/Cyrena.Coding.Core.csproj" Id="40cd55f9-09e8-478f-a9e3-b1f6b95fbb65" />
+    <Project Path="src/assistant/Cyrena.Coding.Extension/Cyrena.Coding.Extension.csproj" Id="e7d52556-111a-49f8-8390-823f2f59d28b" />
+  </Folder>
+  <Folder Name="/src/dotnet/">
+    <Project Path="src/dotnet/Cyrena.Dotnet.Core/Cyrena.Dotnet.Core.csproj" Id="b8a38b0b-a36a-4a1c-b4df-2c2e0dc883b5" />
+    <Project Path="src/dotnet/Cyrena.Dotnet.CSharp/Cyrena.Dotnet.CSharp.csproj" />
+  </Folder>
+  <Folder Name="/src/embedded/">
+    <Project Path="src/embedded/Cyrena.ArduinoIDE/Cyrena.ArduinoIDE.csproj" />
+    <Project Path="src/embedded/Cyrena.PlatformIO/Cyrena.PlatformIO.csproj" />
+  </Folder>
+</Solution>

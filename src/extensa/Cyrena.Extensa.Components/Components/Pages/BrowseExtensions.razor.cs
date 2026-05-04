@@ -9,9 +9,11 @@ namespace Cyrena.Extensa.Components.Pages
     public partial class BrowseExtensions : IDisposable
     {
         [Inject] private IPackageManager _manager { get; set; } = default!;
+        [Inject] private IPluginServerService _servers { get; set; } = default!;
         [Inject] private IExtensionRegistry _registry { get; set; } = default!;
         [Inject] private DialogService _dialog { get; set;  } = default!;
         private IEnumerable<Package>? _models { get; set; }
+        private IEnumerable<PluginServer> _distros = Enumerable.Empty<PluginServer>();
 
         public void Dispose()
         {
@@ -22,6 +24,7 @@ namespace Cyrena.Extensa.Components.Pages
         {
             if (!firstRender) return;
             _manager.StatusChanged += _manager_StatusChanged;
+            _distros = await _servers.GetEnabledServers();
             _models = await _manager.ListPackagesAsync();
             if(_models.Count() == 0)
             {

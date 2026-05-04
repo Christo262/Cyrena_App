@@ -1,0 +1,410 @@
+<div>
+  <h1 class="fw-bold mb-4">Cyrena.Core</h1>
+
+  <p class="lead text-secondary mb-5">
+    <code>Cyrena.Core</code> is the foundational class library of the Cyréna AI assistant framework.
+    It defines all core contracts, data models, application builders, and extension methods that the rest of the solution depends on.
+    Any extension or plugin for Cyréna must reference this package.
+  </p>
+
+  <div class="alert alert-info">
+    <strong>Namespace:</strong> <code>Cyrena</code> (contracts, models, options, extensions)
+  </div>
+
+  <hr class="my-5">
+
+  <!-- Contracts -->
+  <h2 class="fw-bold mb-4">Contracts</h2>
+
+  <h3 id="iassistantmode" class="h5 fw-bold mt-4">IAssistantMode</h3>
+  <p class="text-secondary">Configures behavior surrounding the <code>Microsoft.SemanticKernel.Kernel</code> for a specific assistant mode.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IAssistantMode
+&#123;
+    public const string AssistantModeDefault = "assistant-default";
+    string Id &#123; get; &#125;
+    Task ConfigureAsync(CyrenaKernelBuilder builder);
+    Task DeleteAsync(ChatConfiguration config);
+    Task EditAsync(ChatConfiguration config, IServiceProvider services);
+&#125;</code></pre>
+  <ul class="text-secondary">
+    <li><code>Id</code>: Unique identifier for the mode.</li>
+    <li><code>ConfigureAsync</code>: Called when a kernel is loaded for this mode. Use to add plugins, prompts, and services.</li>
+    <li><code>DeleteAsync</code>: Called when a chat using this mode is deleted.</li>
+    <li><code>EditAsync</code>: Called when a chat configuration is edited.</li>
+  </ul>
+
+  <h3 id="iassistantplugin" class="h5 fw-bold mt-4">IAssistantPlugin</h3>
+  <p class="text-secondary">Adds additional services, features, or functions to an <code>IAssistantMode</code>.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IAssistantPlugin
+&#123;
+    string Id &#123; get; &#125;
+    string[] Modes &#123; get; &#125;      // Empty = applicable to all modes
+    int Priority &#123; get; &#125;
+    bool Required &#123; get; &#125;       // false = can be deactivated
+    string Title &#123; get; &#125;
+    Task LoadAsync(CyrenaKernelBuilder builder);
+&#125;</code></pre>
+
+  <h3 id="ichatmessageservice" class="h5 fw-bold mt-4">IChatMessageService <span class="badge bg-secondary">Kernel-locked</span></h3>
+  <p class="text-secondary">Maintains chat history with separate kernel and display histories.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IChatMessageService : IDisposable
+&#123;
+    IReadOnlyList&lt;ChatMessageContent&gt; KernelHistory &#123; get; &#125;
+    IReadOnlyList&lt;ChatMessageContent&gt; DisplayHistory &#123; get; &#125;
+    ChatOptions Options &#123; get; &#125;
+
+    IDisposable OnStreamToken(Action&lt;string?&gt; callback);
+    IDisposable OnDisplayHistoryChanged(Action&lt;ChatHistory&gt; callback);
+    IDisposable OnKernelHistoryChanged(Action&lt;ChatHistory&gt; callback);
+    IDisposable OnHistoryLoaded(Action&lt;ChatHistory&gt; callback);
+    ChatHistory GetKernelHistory();
+
+    void LoadHistory(IEnumerable&lt;ChatMessageContent&gt; kernelHistory, IEnumerable&lt;ChatMessageContent&gt;? displayHistory);
+    Task LoadHistoryAsync();
+    Task AddMessage(ChatMessageContent content);
+    Task AddMessage(AuthorRole role, string? content);
+    Task AddMessage(AuthorRole role, string? input, params AdditionalMessageContent[] items);
+    Task ClearHistoryAsync();
+    void Stream(string? token);
+&#125;</code></pre>
+
+  <h3 id="ichatconfigurationservice" class="h5 fw-bold mt-4">IChatConfigurationService <span class="badge bg-secondary">Kernel-locked</span></h3>
+  <p class="text-secondary">Provides access to the current chat's persistent configuration.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IChatConfigurationService
+&#123;
+    ChatConfiguration Config &#123; get; &#125;
+    Task SaveConfigurationAsync();
+&#125;</code></pre>
+
+  <h3 id="iconnection" class="h5 fw-bold mt-4">IConnection <span class="badge bg-secondary">Kernel-locked</span></h3>
+  <p class="text-secondary">Connection to an LLM service provider.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IConnection
+&#123;
+    Task HandleAsync(AuthorRole role, string input, Kernel kernel, CancellationToken ct = default);
+    Task HandleAsync(AuthorRole role, string input, Kernel kernel, CancellationToken ct = default, params AdditionalMessageContent[] items);
+&#125;</code></pre>
+
+  <h3 id="iconnectionprovider" class="h5 fw-bold mt-4">IConnectionProvider</h3>
+  <p class="text-secondary">Manages available LLM connections and attaches them to kernels.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IConnectionProvider
+&#123;
+    Task&lt;IEnumerable&lt;ConnectionInfo&gt;&gt; ListConnectionsAsync();
+    Task&lt;bool&gt; HasConnectionAsync(string id);
+    Task&lt;ConnectionInfo&gt; AttachAsync(IKernelBuilder builder, string connectionId);
+&#125;</code></pre>
+
+  <h3 id="ifilehandler" class="h5 fw-bold mt-4">IFileHandler <span class="badge bg-secondary">Kernel-locked</span></h3>
+  <p class="text-secondary">Handles file attachments in chat messages. Determines supported file types and converts file data into <code>AdditionalMessageContent</code>.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IFileHandler
+&#123;
+    bool HandlesType(string contentType, string fileName);
+    Task&lt;AdditionalMessageContent?&gt; GetMessageContent(Stream data, string contentType, string name);
+    Task&lt;AdditionalMessageContent?&gt; GetMessageContent(byte[] data, string contentType, string name);
+    string[] GetSupportedMimeTypes();
+&#125;</code></pre>
+
+  <h3 id="ikernelcontroller" class="h5 fw-bold mt-4">IKernelController</h3>
+  <p class="text-secondary">Manages all <code>Kernel</code> instances, loading, creating, updating, and unloading them.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IKernelController : IDisposable
+&#123;
+    Task&lt;Kernel&gt; LoadAsync(ChatConfiguration config);
+    Task&lt;Kernel&gt; LoadAsync(string id);
+    Task Delete(ChatConfiguration config);
+    Task&lt;Kernel&gt; Create(ChatConfiguration config);
+    Task UpdateAsync(ChatConfiguration config, bool reload = false);
+    Kernel? GetKernel(string id);
+    bool KernelActive(string id);
+    void Unload(ChatConfiguration config);
+
+    IDisposable OnChatDelete(Action&lt;ChatConfiguration&gt; cb);
+    IDisposable OnChatCreate(Action&lt;ChatConfiguration&gt; cb);
+    IDisposable OnChatUpdate(Action&lt;ChatConfiguration&gt; cb);
+    IDisposable OnChatUnload(Action&lt;ChatConfiguration&gt; cb);
+&#125;</code></pre>
+
+  <h3 id="ipromptmanager" class="h5 fw-bold mt-4">IPromptManager <span class="badge bg-secondary">Kernel-locked</span></h3>
+  <p class="text-secondary">Dynamic system prompt configuration.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IPromptManager
+&#123;
+    IReadOnlyList&lt;Prompt&gt; Prompts &#123; get; &#125;
+    string AddPrompt(int order, string content);
+    void UpdatePrompt(string id, string content);
+    void RemovePrompt(string id);
+    Func&lt;ChatHistory, ChatOptions, IEnumerable&lt;ChatMessageContent&gt;&gt;? ModifyKernelHistoryFunc &#123; get; set; &#125;
+&#125;</code></pre>
+
+  <h3 id="iiterationservice" class="h5 fw-bold mt-4">IIterationService <span class="badge bg-secondary">Kernel-locked</span></h3>
+  <p class="text-secondary">Manages a single chat iteration from user input to model completion.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IIterationService : IDisposable
+&#123;
+    string? Input &#123; get; set; &#125;
+    bool Inferring &#123; get; &#125;
+    void InferenceStart();
+    void InferenceEnd();
+    IDisposable OnIterationStart(Action&lt;bool&gt; callback);
+    IDisposable OnIterationEnd(Action&lt;bool&gt; callback);
+    void Iterate(AuthorRole role, Kernel kernel);
+    void Iterate(AuthorRole role, Kernel kernel, params AdditionalMessageContent[] items);
+    void Cancel();
+&#125;</code></pre>
+
+  <h3 id="isettingsservice" class="h5 fw-bold mt-4">ISettingsService</h3>
+  <p class="text-secondary">Encrypted settings storage.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface ISettingsService
+&#123;
+    void Save&lt;T&gt;(string key, T value) where T : class;
+    T? Read&lt;T&gt;(string key) where T : class;
+&#125;</code></pre>
+
+  <h3 id="ifiledialog" class="h5 fw-bold mt-4">IFileDialog</h3>
+  <p class="text-secondary">Cross-platform file dialog abstraction.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IFileDialog
+&#123;
+    Task&lt;string?&gt; OpenAsync(string title, (string filterName, string[] extensions)? ftr);
+    Task&lt;string?&gt; ShowSaveFileAsync(string title, (string filterName, string[] extensions)? ftr, string? defaultPath = null);
+    void ExploreFolder(string folderPath);
+&#125;</code></pre>
+
+  <h3 id="istartuptask" class="h5 fw-bold mt-4">IStartupTask</h3>
+  <p class="text-secondary">Post-DI-build startup task with ordered execution.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IStartupTask
+&#123;
+    int Order &#123; get; &#125;
+    Task RunAsync(CancellationToken cancellationToken = default);
+&#125;</code></pre>
+
+  <hr class="my-5">
+
+  <!-- Models -->
+  <h2 class="fw-bold mb-4">Models</h2>
+
+  <h3 id="chatconfiguration" class="h5 fw-bold mt-4">ChatConfiguration <span class="badge bg-info">extends Entity</span></h3>
+  <p class="text-secondary">Persistent configuration for each chat conversation.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public sealed class ChatConfiguration : Entity
+&#123;
+    public const string Icon = "icon";
+    public const string Group = "group";
+
+    public string? this[string key] &#123; get; set; &#125;
+    public string? Title &#123; get; set; &#125;
+    public string AssistantModeId &#123; get; set; &#125; = default!;
+    public DateTime Created &#123; get; set; &#125;
+    public DateTime LastModified &#123; get; set; &#125;
+    public string ConnectionId &#123; get; set; &#125; = default!;
+    public Dictionary&lt;string, string?&gt; Properties &#123; get; set; &#125;
+    public List&lt;string&gt; PluginIds &#123; get; set; &#125;
+&#125;</code></pre>
+
+  <h3 id="cyrenakernelbuilder" class="h5 fw-bold mt-4">CyrenaKernelBuilder</h3>
+  <p class="text-secondary">Per-chat kernel configuration builder passed to modes and plugins.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public sealed class CyrenaKernelBuilder
+&#123;
+    public ChatConfiguration ChatConfiguration &#123; get; &#125;
+    public IKernelBuilder KernelBuilder &#123; get; &#125;
+    public IDictionary&lt;string, object&gt; FeatureOptions &#123; get; &#125;
+    public IServiceCollection Services =&gt; KernelBuilder.Services;
+    public IKernelBuilderPlugins Plugins =&gt; KernelBuilder.Plugins;
+&#125;</code></pre>
+
+  <h3 id="cyrenabuilder" class="h5 fw-bold mt-4">CyrenaBuilder</h3>
+  <p class="text-secondary">Application-level DI builder.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public sealed class CyrenaBuilder
+&#123;
+    public IServiceCollection Services &#123; get; &#125;
+    public IDictionary&lt;string, IList&lt;Assembly&gt;&gt; FeatureAssemblies &#123; get; &#125;
+    public IDictionary&lt;string, object&gt; FeatureOptions &#123; get; &#125;
+    public IList&lt;Action&lt;CyrenaBuilder&gt;&gt; BuildActions &#123; get; &#125;
+    public IList&lt;Action&lt;IServiceProvider, CancellationToken&gt;&gt; RunActions &#123; get; &#125;
+
+    public void AddBuildAction(Action&lt;CyrenaBuilder&gt; action);
+    public void AddRunAction(Action&lt;IServiceProvider, CancellationToken&gt; action);
+    public CancellationToken GetLifetimeCT();
+    public void CancelLifetimeCT();
+    public void Build();
+&#125;</code></pre>
+
+  <h3 id="eventpipeline" class="h5 fw-bold mt-4">EventPipeline</h3>
+  <p class="text-secondary">Custom publish/subscribe event system with automatic cleanup.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public abstract class EventPipeline : IDisposable
+&#123;
+    protected void InvokePipeline(string key);
+    protected void InvokePipeline&lt;T&gt;(string key, T value);
+    protected IDisposable ConfigurePipe(string key, Action cb);
+    protected IDisposable ConfigurePipe&lt;T&gt;(string key, Action&lt;T&gt; cb);
+&#125;</code></pre>
+
+  <h3 id="entity" class="h5 fw-bold mt-4">Entity / IEntity</h3>
+  <p class="text-secondary">Base entity with <code>Id</code>.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IEntity &#123; string Id &#123; get; set; &#125; &#125;
+public abstract class Entity : IEntity
+&#123;
+    public virtual string Id &#123; get; set; &#125; = default!;
+&#125;</code></pre>
+
+  <h3 id="additionalmessagecontent" class="h5 fw-bold mt-4">AdditionalMessageContent</h3>
+  <p class="text-secondary">Named wrapper for <code>KernelContent</code>.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public class AdditionalMessageContent
+&#123;
+    public AdditionalMessageContent(string name, KernelContent item);
+    public string Name &#123; get; set; &#125;
+    public KernelContent Item &#123; get; set; &#125;
+&#125;</code></pre>
+
+  <h3 id="connectioninfo" class="h5 fw-bold mt-4">ConnectionInfo</h3>
+  <p class="text-secondary">LLM connection metadata.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public record ConnectionInfo(
+    string Id,
+    string Name,
+    string Source,
+    string ModelId,
+    IConnectionProvider Provider,
+    bool SupportImages,
+    bool SupportFiles
+);</code></pre>
+
+  <h3 id="prompt" class="h5 fw-bold mt-4">Prompt</h3>
+  <p class="text-secondary">System prompt with ordering.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public sealed class Prompt : Entity
+&#123;
+    public int Order &#123; get; init; &#125;
+    public string Content &#123; get; init; &#125; = default!;
+&#125;</code></pre>
+
+  <h3 id="queuedinput" class="h5 fw-bold mt-4">QueuedInput</h3>
+  <p class="text-secondary">Represents a single queued chat input message.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public sealed class QueuedInput
+&#123;
+    public QueuedInput(AuthorRole role, string? content, AdditionalMessageContent[]? items);
+
+    public string Id &#123; get; &#125;
+    public AuthorRole Role &#123; get; &#125;
+    public string Content &#123; get; set; &#125;
+    public List&lt;AdditionalMessageContent&gt; Items &#123; get; set; &#125;
+&#125;</code></pre>
+
+  <h3 id="toolresult" class="h5 fw-bold mt-4">ToolResult / ToolResult&lt;T&gt;</h3>
+  <p class="text-secondary">Function call result wrapper.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public class ToolResult : IJsonSerializable
+&#123;
+    public bool Success &#123; get; set; &#125;
+    public string? Message &#123; get; set; &#125;
+    public string ToJson();
+&#125;
+
+public class ToolResult&lt;T&gt; : ToolResult where T : class
+&#123;
+    public T? Result &#123; get; set; &#125;
+&#125;</code></pre>
+
+  <h3 id="infomessagecontentitem" class="h5 fw-bold mt-4">InfoMessageContentItem</h3>
+  <p class="text-secondary">Display-only content item extending <code>KernelContent</code>.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public sealed class InfoMessageContentItem : KernelContent
+&#123;
+    public string FileName &#123; get; set; &#125; = default!;
+&#125;</code></pre>
+
+  <h3 id="ijsonserializable" class="h5 fw-bold mt-4">IJsonSerializable / JsonStringObject</h3>
+  <p class="text-secondary">JSON serialization marker interface.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IJsonSerializable &#123; string ToJson(); &#125;
+
+[Obsolete]
+public abstract class JsonStringObject : IJsonSerializable
+&#123;
+    public string ToJson();
+&#125;</code></pre>
+
+  <hr class="my-5">
+
+  <!-- Options -->
+  <h2 class="fw-bold mb-4">Options</h2>
+
+  <h3 id="chatoptions" class="h5 fw-bold mt-4">ChatOptions</h3>
+  <p class="text-secondary">Role configuration for chat messages.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public sealed class ChatOptions
+&#123;
+    public AuthorRole System &#123; get; &#125;
+    public AuthorRole Assistant &#123; get; &#125;
+    public AuthorRole User &#123; get; &#125;
+    public AuthorRole Tool &#123; get; &#125;
+    public AuthorRole LogInfo &#123; get; &#125;
+    public AuthorRole LogSuccess &#123; get; &#125;
+    public AuthorRole LogWarn &#123; get; &#125;
+    public AuthorRole LogError &#123; get; &#125;
+    public bool IncludeLogsInDisplay &#123; get; set; &#125; = true;
+    public AuthorRole[] MessagePersistRoles &#123; get; set; &#125;  // Defaults to [Assistant, User]
+&#125;</code></pre>
+
+  <hr class="my-5">
+
+  <!-- Extension Methods -->
+  <h2 class="fw-bold mb-4">Extension Methods</h2>
+
+  <h3 id="cyrenabuilderextensions" class="h5 fw-bold mt-4">CyrenaBuilderExtensions</h3>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public static class CyrenaBuilderExtensions
+&#123;
+    public static void AddFeatureOption&lt;T&gt;(this CyrenaBuilder builder, T option) where T : class;
+    public static object? GetFeatureOption(this CyrenaBuilder builder, string name);
+    public static T GetFeatureOption&lt;T&gt;(this CyrenaBuilder builder) where T : class;
+    public static void AddFeatureAssembly(this CyrenaBuilder builder, string key, Assembly assembly);
+    public static void AddFeatureAssembly&lt;T&gt;(this CyrenaBuilder builder, string key);
+    public static IList&lt;Assembly&gt; GetFeatureAssemblies(this CyrenaOptions builder, string key);
+    public static void AddStartupTask&lt;TStartupTask&gt;(this CyrenaBuilder builder) where TStartupTask : class, IStartupTask;
+    public static void AddAssistantMode&lt;TAssistantMode&gt;(this CyrenaBuilder builder) where TAssistantMode : class, IAssistantMode;
+    public static void AddAssistantPlugin&lt;TAssistantPlugin&gt;(this CyrenaBuilder builder) where TAssistantPlugin : class, IAssistantPlugin;
+&#125;</code></pre>
+
+  <h3 id="cyrenakernelbuilderextensions" class="h5 fw-bold mt-4">CyrenaKernelBuilderExtensions</h3>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public static class CyrenaKernelBuilderExtensions
+&#123;
+    public static void AddFeatureOption&lt;T&gt;(this CyrenaKernelBuilder builder, T option) where T : class;
+    public static object? GetFeatureOption(this CyrenaKernelBuilder builder, string name);
+    public static T GetFeatureOption&lt;T&gt;(this CyrenaKernelBuilder builder) where T : class;
+&#125;</code></pre>
+
+  <h3 id="chatmessageserviceextensions" class="h5 fw-bold mt-4">ChatMessageServiceExtensions</h3>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public static class ChatMessageServiceExtensions
+&#123;
+    public static Task LogInfo(this IChatMessageService service, string? message);
+    public static Task LogSuccess(this IChatMessageService service, string? message);
+    public static Task LogWarn(this IChatMessageService service, string? message);
+    public static Task LogError(this IChatMessageService service, string? message);
+    public static Task AddSystemMessage(this IChatMessageService service, string? message);
+    public static Task AddAssistantMessage(this IChatMessageService service, string? message);
+    public static Task AddUserMessage(this IChatMessageService service, string? message);
+    public static Task AddToolMessage(this IChatMessageService service, string? message);
+&#125;</code></pre>
+
+  <h3 id="chatoptionsextensions" class="h5 fw-bold mt-4">ChatOptionsExtensions</h3>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public static class ChatOptionsExtensions
+&#123;
+    public static bool IsDisplayContent(this ChatOptions options, ChatMessageContent content);
+    public static bool IsKernelContent(this ChatOptions options, ChatMessageContent content);
+&#125;</code></pre>
+
+  <h3 id="kernelbuilderextensions" class="h5 fw-bold mt-4">KernelBuilderExtensions</h3>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public static class KernelBuilderExtensions
+&#123;
+    public static void AddStartupTask&lt;TStartupTask&gt;(this IKernelBuilder builder) where TStartupTask : class, IStartupTask;
+&#125;</code></pre>
+
+  <h3 id="resources" class="h5 fw-bold mt-4">Resources</h3>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public static class Resources
+&#123;
+    public static string Read(Assembly assembly, string resourceName);
+&#125;</code></pre>
+
+  <hr class="my-5">
+
+  <!-- Usage -->
+  <h2 class="fw-bold mb-4">Usage for Extension Developers</h2>
+
+  <p class="text-secondary">Reference <code>Cyrena.Core</code> to:</p>
+  <ol class="text-secondary">
+    <li>Implement <code>IAssistantMode</code> or <code>IAssistantPlugin</code></li>
+    <li>Access chat services like <code>IChatMessageService</code>, <code>IPromptManager</code>, <code>IIterationService</code></li>
+    <li>Use <code>CyrenaBuilder</code> and <code>CyrenaKernelBuilder</code> to configure DI and kernel</li>
+    <li>Use <code>ChatConfiguration</code> and <code>Entity</code> for data models</li>
+    <li>Use <code>EventPipeline</code> for custom events</li>
+    <li>Use <code>ToolResult</code> for function call results</li>
+  </ol>
+</div>

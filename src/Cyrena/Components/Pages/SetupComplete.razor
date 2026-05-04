@@ -1,0 +1,22 @@
+@page "/app-setup/complete"
+@attribute [TabItemOption(Text = "Setup Complete", Icon = "bi bi-magic")]
+
+<div class="h-100 overflow-auto">
+    <h1>
+        You're All Set!
+    </h1>
+    <hr />
+
+    <div class="row m-0">
+        <div class="col-md-8 m-auto">
+            <p class="lead">
+                Cyréna is connected and ready to go. Start chatting or browse extensions to expand what your assistant can do.
+            </p>
+
+            <p class="text-center">
+                <button type="button" @onclick="@(() => NavigateCloseTab("browse-extensions"))" class="btn btn-primary mx-1"><i class="bi bi-boxes"></i> Browse Extensions</button>
+                <button type="button" @onclick="@(() => NavigateCloseTab(""))" class="btn btn-primary mx-1"><i class="menu-icon bi bi-chat-dots"></i> Start Chatting</button>
+            </p>
+        </div>
+    </div>
+</div>

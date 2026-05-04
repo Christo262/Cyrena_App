@@ -31,4 +31,5 @@ public class Package : Entity
     public string[] SupportedArchitectures { get; set;  } = [];
     public bool HasIcon { get; set; }
     public string? IconUrl { get; set; }
+    public string? WebPageLink { get; set; }
 }

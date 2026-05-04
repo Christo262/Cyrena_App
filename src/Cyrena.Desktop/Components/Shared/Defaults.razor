@@ -1,4 +1,5 @@
 @inject ISettingsService _settings
+@inject ISetupService _setup
 
 <h4>Default AI Connection</h4>
 <hr />
@@ -15,5 +16,6 @@
     private void OnValueChanged()
     {
         _settings.Save<WindowOptions>(WindowOptions.Key, _model);
+        _setup.InvokeDefaultConnectionSet();
     }
 }

@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\components\Cyrena.Components\Cyrena.Components.csproj" />
+    <ProjectReference Include="..\..\components\Cyrena.Components.Core\Cyrena.Components.Core.csproj" />
     <ProjectReference Include="..\..\persistence\Cyrena.Persistence.Core\Cyrena.Persistence.Core.csproj" />
     <ProjectReference Include="..\Cyrena.Extensa.Runtime\Cyrena.Extensa.Runtime.csproj" />
   </ItemGroup>

@@ -9,13 +9,14 @@ using Microsoft.JSInterop;
 
 namespace Cyrena.HUD.Components.Pages
 {
-    public partial class Index
+    public partial class Index : IDisposable
     {
         [Inject] private ISettingsService _settings { get; set; } = default!;
         [Inject] private IKernelController _kernels { get; set; } = default!;
         [Inject] private NavigationManager _nav { get; set; } = default!;
         [Inject] private ToastService _toasts { get; set; } = default!;
         [Inject] private IJSRuntime _js { get; set; } = default!;
+        [Inject] private ISetupService _setup { get; set; } = default!;
 
         private ChatConfiguration? _model;
         private Modal? _config;
@@ -23,6 +24,24 @@ namespace Cyrena.HUD.Components.Pages
 
         protected override void OnInitialized()
         {
+            _setup.OnDefaultConnectionSet += _setup_OnDefaultConnectionSet;
+        }
+
+        private void _setup_OnDefaultConnectionSet(object? sender, EventArgs e)
+        {
+            this.InvokeAsync(async () => await RefreshModel());
+        }
+
+        protected override async Task OnInitializedAsync()
+        {
+            await RefreshModel();
+        }
+
+        private async Task RefreshModel()
+        {
+            _model = null;
+            this.StateHasChanged();
+            await Task.Delay(50);
             var options = _settings.Read<WindowOptions>(WindowOptions.Key);
             if (options == null || string.IsNullOrEmpty(options.DefaultConnectionId))
                 return;
@@ -33,6 +52,8 @@ namespace Cyrena.HUD.Components.Pages
                 ConnectionId = options.DefaultConnectionId,
             };
             _model[ChatConfiguration.Icon] = "bi bi-chat-left-quote";
+            _input = null;
+            this.StateHasChanged();
         }
 
         private async Task Send()
@@ -46,7 +67,9 @@ namespace Cyrena.HUD.Components.Pages
                 var its = kernel.Services.GetRequiredService<IIterationService>();
                 its.Input = _input;
                 its.Iterate(chat.Options.User, kernel);
-                _nav.NavigateTo($"converse/{_model.Id}");
+                var url = $"converse/{_model.Id}";
+                await RefreshModel();
+                _nav.NavigateTo(url);
             }
             catch (Exception ex)
             {
@@ -74,6 +97,11 @@ namespace Cyrena.HUD.Components.Pages
         {
             _input = e.Value?.ToString() ?? "";
             await _js.InvokeVoidAsync("autoGrow", _area, 5);
+        }
+
+        public void Dispose()
+        {
+            _setup.OnDefaultConnectionSet -= _setup_OnDefaultConnectionSet;
         }
     }
 }

@@ -4,6 +4,7 @@ using Cyrena.Desktop.Components.Shared;
 using Cyrena.Desktop.Models;
 using Cyrena.Desktop.Services;
 using Cyrena.Extensions;
+using Cyrena.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Photino.Blazor;
@@ -26,23 +27,21 @@ class Program
 
         appBuilder.RootComponents.Add<App>("app");
         var builder = appBuilder.Services.AddCyrenaRuntime()
-            .AddComponents()
-            .AddExtensa(e =>
-            {
-                e.ExtensionInfoFileName = "extension.json";
-                e.ExtensionsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena", "extensions");
-                e.InstallationsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena", "install");
-            })
-            .AddExtensaComponents()
-            .AddOllama()
-            .AddOpenAI();
+                        .AddExtensa(e =>
+                        {
+                            e.ExtensionInfoFileName = "extension.json";
+                            e.ExtensionsDirectory = Path.Combine(CyrenaBuilder.AppDataDirectory, "extensions");
+                            e.InstallationsDirectory = Path.Combine(CyrenaBuilder.AppDataDirectory, "install");
+                        })
+                        .AddExtension<CyrenaExtension>(CyrenaExtension.Id, CyrenaExtension.Name, CyrenaExtension.Version, CyrenaExtension.Description);
 
         //Platform Specific Implementation
         var files = new FileDialog();
         builder.Services.AddSingleton<IFileDialog>(files);  
+        builder.Services.AddSingleton<ISetupService, SetupService>();
         //
 
-        builder.AddSettingsComponent<Defaults>();
+        builder.AddSettingsComponent<Defaults>("Defaults");
         builder.Build();
 
         var app = appBuilder.Build();

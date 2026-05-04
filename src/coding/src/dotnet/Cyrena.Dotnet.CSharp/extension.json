@@ -1,0 +1,17 @@
+{
+  "id": "cyrena.dotnet.csharp",
+  "name": ".NET Development (C#)",
+  "version": "0.4.0",
+  "entryAssemblyFile": "Cyrena.Dotnet.CSharp.dll",
+  "description": "Builds .NET C# projects and solutions with a strictly enforced structure. All supported project types share a common base layout (Attributes, Contracts, Extensions, Models, Services, Options) with per-type additions for Blazor (Components, wwwroot) and MVC (Controllers, Views, wwwroot). In solution mode, only supported project types are indexed — unsupported projects are ignored rather than blocked. Project and solution descriptor files (.csproj, .sln, .slnx) and JSON configuration files are read-only to the agent and will never be modified.",
+  "dependencies": [
+    {
+      "id": "cyrena.developer",
+      "minVersion": "0.4.0"
+    },
+    {
+      "id": "cyrena.api_references",
+      "minVersion": "0.4.0"
+    }
+  ]
+}

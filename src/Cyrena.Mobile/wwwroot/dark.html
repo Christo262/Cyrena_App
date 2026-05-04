@@ -7,8 +7,8 @@
     <base href="/" />
 
     <link href="_content/BootstrapBlazor/css/bootstrap.blazor.bundle.min.css" rel="stylesheet" />
-    <link href="css/bootstrap.min.css" rel="stylesheet" />
-    <link href="css/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="_content/BootstrapBlazor.BootstrapIcon/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="_content/Cyrena/css/theme.css" />
     <link href="css/app.css" rel="stylesheet" />
 
 </head>
@@ -17,7 +17,16 @@
 
     <div class="status-bar-safe-area"></div>
 
-    <div id="app">Loading...</div>
+    <div id="app">
+        <div class="row m-0 h-100 p-4">
+            <div class="col-md-8 m-auto justify-content-center align-self-center">
+                <div class="d-flex align-items-center">
+                    <strong role="status">Loading...</strong>
+                    <div class="spinner-border ms-auto" aria-hidden="true"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="blazor-error-ui">
         An unhandled error has occurred.
@@ -32,7 +41,8 @@
     <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.js"></script>
 
     <script src="_framework/blazor.webview.js" autostart="false"></script>
-    <script src="js/rene.js"></script>
+    <script src="_content/Cyrena/js/cyrena.js"></script>
+    <script src="_content/Cyrena/js/runtime-scripts.js"></script>
 
 </body>
 

@@ -1,0 +1,158 @@
+<div>
+  <h1 class="fw-bold mb-4">Cyrena.Extensa.Core</h1>
+
+  <p class="lead text-secondary mb-5">
+    Core extension system for Cyréna's dynamic plugin framework. Defines contracts and models that all extensions must implement to be discovered and loaded at runtime by the Extensa loader.
+  </p>
+
+  <div class="alert alert-info">
+    <strong>Namespaces:</strong> <code>Cyrena.Extensa.Contracts</code>, <code>Cyrena.Extensa.Models</code>
+  </div>
+
+  <div class="alert alert-light border mb-4">
+    <p class="mb-0">
+      Extensions are compiled as separate assemblies/DLLs and loaded dynamically with dependency resolution. The Extensa loader scans for manifests, resolves dependencies, loads assemblies, and calls <code>BuildExtension</code> on each <code>IExtension</code> implementation.
+    </p>
+  </div>
+
+  <hr class="my-5">
+
+  <h2 class="fw-bold mb-4">Contracts</h2>
+
+  <h3 id="iextension" class="h5 fw-bold mt-4">IExtension</h3>
+  <p class="text-secondary">The interface all extensions must implement. This is the single entry point for an extension to integrate with Cyréna.</p>
+
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IExtension
+&#123;
+    /// &lt;summary&gt;
+    /// Called by the Extensa.Loader to add the extension to the application dependencies
+    /// &lt;/summary&gt;
+    /// &lt;param name="builder"&gt;&lt;see cref="CyrenaBuilder"/&gt;&lt;/param&gt;
+    void BuildExtension(CyrenaBuilder builder);
+&#125;</code></pre>
+
+  <div class="alert alert-light border-start border-success border-3 mb-4">
+    <p class="fw-bold mb-2">Key behaviors:</p>
+    <ul class="mb-0 text-secondary">
+      <li><code>BuildExtension</code> is called during application startup by the Extensa loader.</li>
+      <li>The <code>CyrenaBuilder</code> parameter provides access to <code>Services</code>, <code>FeatureOptions</code>, <code>FeatureAssemblies</code>, <code>BuildActions</code>, and <code>RunActions</code>.</li>
+      <li>Use this method to register services, add assistant modes, add plugins, configure persistence stores, register UI components, etc.</li>
+      <li>The extension assembly must contain at least one type implementing <code>IExtension</code>.</li>
+    </ul>
+  </div>
+
+  <hr class="my-5">
+
+  <h2 class="fw-bold mb-4">Models</h2>
+
+  <h3 id="extension" class="h5 fw-bold mt-4">Extension (Abstract Base)</h3>
+  <p class="text-secondary">Convenience abstract base class implementing <code>IExtension</code> with an empty <code>BuildExtension</code> method.</p>
+
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public abstract class Extension : IExtension
+&#123;
+    public virtual void BuildExtension(CyrenaBuilder builder) &#123; &#125;
+&#125;</code></pre>
+
+  <p class="text-secondary">Extend this class if your extension needs no build-time configuration, or override <code>BuildExtension</code> to add custom setup.</p>
+
+  <h3 id="extensioninfo" class="h5 fw-bold mt-4">ExtensionInfo</h3>
+  <p class="text-secondary">Metadata describing an extension package. Used by the Extensa loader for discovery, dependency resolution, and UI display.</p>
+
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public class ExtensionInfo
+&#123;
+    public string Id &#123; get; set; &#125; = default!;
+    public string Name &#123; get; set; &#125; = default!;
+    public string? Description &#123; get; set; &#125;;
+    public Version Version &#123; get; set; &#125; = Version.Parse("1.0.0");
+    public string? EntryAssemblyFile &#123; get; set; &#125;;
+    public Dependency[] Dependencies &#123; get; set; &#125; = [];
+&#125;</code></pre>
+
+  <p class="text-secondary"><strong>Properties:</strong></p>
+  <ul class="text-secondary">
+    <li><code>Id</code>: Unique identifier for the extension (e.g., <code>com.example.myextension</code>).</li>
+    <li><code>Name</code>: Human-readable name.</li>
+    <li><code>Description</code>: Optional description.</li>
+    <li><code>Version</code>: Extension version. Defaults to <code>1.0.0</code>.</li>
+    <li><code>EntryAssemblyFile</code>: The main DLL file name containing the <code>IExtension</code> implementation.</li>
+    <li><code>Dependencies</code>: Array of <code>Dependency</code> objects specifying required extensions. Defaults to empty array.</li>
+  </ul>
+
+  <h3 id="dependency" class="h5 fw-bold mt-4">Dependency</h3>
+  <p class="text-secondary">Represents a dependency on another extension with minimum version requirements.</p>
+
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public class Dependency
+&#123;
+    public Dependency() &#123; &#125;
+    public Dependency(string id, Version minVersion);
+
+    public string Id &#123; get; set; &#125; = default!;
+    public Version MinVersion &#123; get; set; &#125; = default!;
+&#125;</code></pre>
+
+  <ul class="text-secondary">
+    <li><code>Id</code>: The <code>Id</code> of the required extension.</li>
+    <li><code>MinVersion</code>: The minimum required version.</li>
+  </ul>
+
+  <hr class="my-5">
+
+  <h2 class="fw-bold mb-4">Extension Loading Process</h2>
+
+  @for (step of loadingSteps; track step.number) {
+  <div class="mb-4">
+    <div class="d-flex align-items-start">
+      <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3"
+        style="width: 36px; height: 36px; font-weight: bold;">
+        {{ step.number }}
+      </div>
+      <div class="flex-grow-1">
+        <h4 class="fw-bold h6 mb-1">{{ step.title }}</h4>
+        <p class="text-secondary mb-0">{{ step.description }}</p>
+      </div>
+    </div>
+  </div>
+  }
+
+  <hr class="my-5">
+
+  <h2 class="fw-bold mb-4">Usage for Extension Developers</h2>
+
+  <p class="text-secondary">Reference <code>Cyrena.Extensa.Core</code> to:</p>
+  <ol class="text-secondary">
+    <li>Implement <code>IExtension</code> (or extend <code>Extension</code>) as the entry point</li>
+    <li>Define <code>ExtensionInfo</code> metadata for the extension manifest</li>
+    <li>Specify <code>Dependency</code> objects for required extensions</li>
+    <li>Use <code>CyrenaBuilder</code> in <code>BuildExtension</code> to register all services, modes, plugins, and UI components</li>
+  </ol>
+
+  <h3 class="h5 fw-bold mt-4">Example — Minimal Extension</h3>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public class MyExtension : Extension
+&#123;
+    public override void BuildExtension(CyrenaBuilder builder)
+    &#123;
+        builder.Services.AddSingleton&lt;IMyService, MyService&gt;();
+    &#125;
+&#125;</code></pre>
+
+  <h3 class="h5 fw-bold mt-4">Example — Extension with Dependencies</h3>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>// In ExtensionInfo (JSON manifest):
+&#123;
+    "Id": "com.example.advanced",
+    "Name": "Advanced Features",
+    "Version": "1.2.0",
+    "Dependencies": [
+        &#123; "Id": "com.example.base", "MinVersion": "1.0.0" &#125;
+    ]
+&#125;</code></pre>
+
+  <h3 class="h5 fw-bold mt-4">Required References for a Typical Extension</h3>
+  <ul class="text-secondary">
+    <li><code>Cyrena.Core</code> — Core contracts and builders</li>
+    <li><code>Cyrena.Extensa.Core</code> — Extension entry point</li>
+    <li><code>Cyrena.Components.Core</code> — If adding UI components</li>
+    <li><code>Cyrena.Persistence.Core</code> — If using data storage</li>
+    <li>Concrete persistence implementation (e.g., <code>Cyrena.Persistence.File</code>)</li>
+    <li><code>Microsoft.SemanticKernel</code> — For kernel plugins and functions</li>
+  </ul>
+</div>

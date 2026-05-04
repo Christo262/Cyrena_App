@@ -1,0 +1,28 @@
+<div class="docs-landing">
+  <div class="text-center mb-5">
+    <h1 class="fw-bold">Cyréna Documentation</h1>
+    <p class="text-secondary">
+      Everything you need to build, deploy, and scale with Cyréna.
+    </p>
+  </div>
+
+  <div class="row g-4">
+    @for (card of docCards(); track card.id) {
+      <div class="col-md-6">
+        <a
+          [routerLink]="card.route"
+          class="card h-100 text-decoration-none border-0 shadow-sm doc-card">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-center mb-3">
+              <div class="icon-wrapper bg-primary bg-opacity-10 rounded-3 p-3 me-3">
+                <i class="bi fs-4" [class]="card.icon"></i>
+              </div>
+              <h5 class="card-title fw-bold mb-0">{{ card.title }}</h5>
+            </div>
+            <p class="card-text text-secondary mb-0">{{ card.description }}</p>
+          </div>
+        </a>
+      </div>
+    }
+  </div>
+</div>

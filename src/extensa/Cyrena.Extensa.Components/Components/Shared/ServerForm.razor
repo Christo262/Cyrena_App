@@ -1,0 +1,20 @@
+
+<EditForm EditContext="_context">
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
+
+    <div class="mb-2">
+        <label class="form-label">Display Name</label>
+        <InputText @bind-Value="Model.Name" class="form-control" />
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">Base URL</label>
+        <InputText @bind-Value="Model.BaseUrl" class="form-control" />
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">Application ID</label>
+        <InputText @bind-Value="Model.ApplicationId" class="form-control" />
+    </div>
+</EditForm>

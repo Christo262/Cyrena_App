@@ -1,6 +1,4 @@
 ﻿using Cyrena.Extensa.Contracts;
-using Cyrena.Extensa.Installer.Contracts;
-using Cyrena.Extensa.Installer.Services;
 using Cyrena.Extensa.Loader.Contracts;
 using Cyrena.Extensa.Loader.Models;
 using Cyrena.Extensa.Loader.Services;
@@ -26,9 +24,19 @@ namespace Cyrena.Extensions
             builder.AddFeatureOption<ExtensaOptions>(o);
             builder.RunStartupUninstaller();
             builder.RunStartupInstaller();
-            builder.Services.AddScoped<IInstaller, InstallerService>();
             var rgstry = new ExtensionRegistry();
             builder.AddFeatureOption<IExtensionRegistry>(rgstry);
+
+            try
+            {
+                var readme_i = Path.Combine(o.InstallationsDirectory, "README.txt");
+                if (!File.Exists(readme_i))
+                {
+                    var readme = Resources.Read(typeof(ExtensionRegistry).Assembly, "Cyrena.Extensa.Resources.install-readme.md");
+                    File.WriteAllText(readme_i, readme);
+                }
+            }
+            catch { }
 
             builder.BuildActions.Add(framework =>
             {
@@ -50,20 +58,17 @@ namespace Cyrena.Extensions
         public static CyrenaBuilder AddExtension<TExtension>(this CyrenaBuilder builder, string id, string name, Version version, string? description = null)
             where TExtension : class, IExtension, new()
         {
-            builder.BuildActions.Add(builder =>
-            {
-                var ext = new TExtension();
-                ext.BuildExtension(builder);
+            var ext = new TExtension();
+            ext.BuildExtension(builder);
 
-                var registry = builder.GetFeatureOption<IExtensionRegistry>();
-                registry.AddExtension(new Extensa.Loader.Models.LoadedExtension()
-                {
-                    Id = id,
-                    Name = name,
-                    Version = version,
-                    Description = description,
-                    Status = Extensa.Loader.Models.ExtensionStatus.Runtime
-                });
+            var registry = builder.GetFeatureOption<IExtensionRegistry>();
+            registry.AddExtension(new Extensa.Loader.Models.LoadedExtension()
+            {
+                Id = id,
+                Name = name,
+                Version = version,
+                Description = description,
+                Status = Extensa.Loader.Models.ExtensionStatus.Runtime
             });
             return builder;
         }
@@ -141,15 +146,12 @@ namespace Cyrena.Extensions
                         if (extensionInfo == null)
                             throw new NullReferenceException($"Unable to deserialize extension info from {path}");
                         loadedExtension.Description = extensionInfo.Description;
-                        loadedExtension.Icon = extensionInfo.Icon;
                         loadedExtension.Id = extensionInfo.Id;
                         loadedExtension.Version = extensionInfo.Version;
                         loadedExtension.Name = extensionInfo.Name;
                         loadedExtension.Status = ExtensionStatus.Unloaded;
                         loadedExtension.EntryAssembly = extensionInfo.EntryAssemblyFile;
-                        loadedExtension.ContentRootDirectory = extensionInfo.ContentRootDirectory;
                         loadedExtension.Dependencies = extensionInfo.Dependencies;
-                        loadedExtension.RequireFrameworkBuilder = extensionInfo.RequireFrameworkBuilder;
                     }
                     catch (Exception ex)
                     {

@@ -2,17 +2,26 @@
 using Cyrena.Extensions;
 using Cyrena.Models;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace Cyrena.Runtime.Services
 {
-    internal class IterationService : IIterationService
+    internal class IterationService : BackgroundService, IIterationService
     {
         private readonly IterationPipeline _pipeline;
+        private readonly InputQueue _queue;
+        private readonly CancellationTokenSource _worker_token;
+        /// <summary>
+        /// Will be set on Iterate()
+        /// </summary>
+        private Kernel _kernel { get; set; } = default!;
         public IterationService()
         {
             _pipeline = new IterationPipeline();
+            _queue = new InputQueue();
+            _worker_token = new CancellationTokenSource();
         }
 
         public string? Input { get; set; }
@@ -20,15 +29,20 @@ namespace Cyrena.Runtime.Services
 
         public void InferenceEnd()
         {
-            Inferring = false;
-            Input = null;
-            _pipeline.InvokeIteration(Inferring);
+            lock (_queue)
+            {
+                Inferring = false;
+                _pipeline.InvokeIteration(Inferring);
+            }
         }
 
         public void InferenceStart()
         {
-            Inferring = true;
-            _pipeline.InvokeIteration(Inferring);
+            lock (_queue)
+            {
+                Inferring = true;
+                _pipeline.InvokeIteration(Inferring);
+            }
         }
 
         public IDisposable OnIterationStart(Action<bool> callback)
@@ -41,89 +55,107 @@ namespace Cyrena.Runtime.Services
             return _pipeline.WatchIterationEnd(callback);
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             _pipeline.Dispose();
+            _worker_token.Cancel();
+            this.StopAsync(_worker_token.Token);
+            _worker_token.Dispose();
         }
 
-        private Task? _handle { get; set; }
         private CancellationTokenSource? _token { get; set; }
-        public void Iterate(AuthorRole role, Kernel kernel)
-        {
-            if (string.IsNullOrEmpty(Input))
-                return;
-            if (_handle != null)
-            {
-                if (_handle.IsCompleted == false)
-                    return;
-                _handle.Dispose();
-                _handle = null;
-            }
-            if (_token != null)
-            {
-                _token.Cancel();
-                _token.Dispose();
-            }
-            _token = new CancellationTokenSource();
-            _handle = Task.Run(async () =>
-            {
-                try
-                {
-                    IConnection connection = kernel.Services.GetRequiredService<IConnection>();
-                    await connection.HandleAsync(role, Input.Trim(), kernel, _token.Token);
-                }
-                catch (TaskCanceledException)
-                {
-                    InferenceEnd();
-                }
-                catch (Exception ex)
-                {
-                    await kernel.GetRequiredService<IChatMessageService>().LogError(ex.Message);
-                    InferenceEnd();
-                }
-            }, _token.Token);
-        }
 
-        public void Iterate(AuthorRole role, Kernel kernel, params AdditionalMessageContent[] items)
+        public void Iterate(AuthorRole role, Kernel kernel, params AdditionalMessageContent[]? items)
         {
+            if(_kernel == null)
+            {
+                _kernel = kernel;
+                this.StartAsync(_worker_token.Token).Wait();
+            }
             if (string.IsNullOrEmpty(Input))
                 return;
-            if (_handle != null)
+            if(IsPausedByAi)
             {
-                if (_handle.IsCompleted == false)
-                    return;
-                _handle.Dispose();
-                _handle = null;
+                _queue.EnqueueAt(0, role, Input.Trim(), items);
+                ContinueQueue();
             }
-            if (_token != null)
-            {
-                _token.Cancel();
-                _token.Dispose();
-            }
-            _token = new CancellationTokenSource();
-            _handle = Task.Run(async () =>
-            {
-                try
-                {
-                    IConnection connection = kernel.Services.GetRequiredService<IConnection>();
-                    await connection.HandleAsync(role, Input.Trim(), kernel, _token.Token, items);
-                }
-                catch (TaskCanceledException)
-                {
-                    InferenceEnd();
-                }
-                catch (Exception ex)
-                {
-                    await kernel.GetRequiredService<IChatMessageService>().LogError(ex.Message);
-                    InferenceEnd();
-                }
-            }, _token.Token);
+            else
+                _queue.Enqueue(role, Input.Trim(), items);
+            Input = null;
         }
 
         public void Cancel()
         {
             if (_token == null || _token.IsCancellationRequested) return;
             _token.Cancel();
+            _queue.Pause();
+        }
+
+        public bool IsPaused => _queue.Paused;
+        public int QueueCount => _queue.Count;
+        public IReadOnlyList<QueuedInput> Queued => _queue.GetSnapshot();
+        public bool IsPausedByAi { get; private set; }
+
+        public void PauseQueue(bool by_ai = false)
+        {
+            IsPausedByAi = by_ai;
+            _queue.Pause();
+        }
+
+        public void ContinueQueue()
+        {
+            IsPausedByAi = false;
+            _queue.Continue();
+        }
+
+        public void CancelInput(string id)
+        {
+            _queue.Pause();
+            _queue.Remove(id);
+        }
+
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                if(_queue.Paused)
+                {
+                    await Task.Delay(100);
+                    continue;
+                }
+                if (!Inferring)
+                {
+                    var q = _queue.Dequeue();
+                    if (q == null)
+                    {
+                        await Task.Delay(100);
+                        continue;
+                    }
+                    var input = q.Content;
+                    var items = q.Items.Count == 0 ? null : q.Items.ToArray();
+                    var role = q.Role;
+                    try
+                    {
+                        _token?.Dispose();
+                        _token = new CancellationTokenSource();
+                        IConnection connection = _kernel.Services.GetRequiredService<IConnection>();
+                        if (items == null)
+                            await connection.HandleAsync(role, input, _kernel, _token.Token);
+                        else
+                            await connection.HandleAsync(role, input, _kernel, _token.Token, items);
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        InferenceEnd();
+                    }
+                    catch (Exception ex)
+                    {
+                        await _kernel.GetRequiredService<IChatMessageService>().LogError(ex.Message);
+                        InferenceEnd();
+                    }
+                }
+                await Task.Delay(2000);
+            }
         }
 
         internal class IterationPipeline : EventPipeline

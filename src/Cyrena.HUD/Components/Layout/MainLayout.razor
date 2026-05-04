@@ -1,17 +1,18 @@
 @using Cyrena.Extensa.Components.Shared
+@inject CyrenaOptions _options
 @inherits LayoutComponentBase
 
 <Preload/>
 <AppBar />
 
 <div class="mt-5 flex-fill overflow-auto">
-    <div class="d-flex flex-row h-100 overflow-auto">
-        <div style="width:350px" class="h-100 mx-2">
-            <div class="p-2 rounded bg-body shadow border border-secondary">
+    <div class="row m-0 h-100" style="max-height:100%">
+        <div class="h-100 col-2 overflow-auto">
+            <div class="p-2 rounded bg-body shadow border">
                 <p>Chats</p>
                 <hr />
 
-                <NavLink Match="NavLinkMatch.All" class="btn btn-outline-dark w-100 text-start border-0" href=""><i class="bi bi-plus"></i> New Chat</NavLink>
+                <NavLink Match="NavLinkMatch.All" class="btn btn-outline-light w-100 text-start border-0" href=""><i class="bi bi-plus"></i> New Chat</NavLink>
 
                 @if(_chats is not null)
                 {
@@ -19,19 +20,7 @@
                     {                    
                         <ContextMenuZone>
                             <ContextMenuTrigger>
-                                @if (IsActive(item))
-                                {
-                                    <NavLink Match="NavLinkMatch.All" class="btn btn-outline-dark w-100 text-start mt-1 border-0 d-flex" href="@($"converse/{item.Id}")">
-                                        <i class="@item[ChatConfiguration.Icon] me-1"></i> 
-                                        @(item.Title ?? "New Chat")
-
-                                        
-                                    </NavLink>
-                                }
-                                else
-                                {
-                                    <NavLink Match="NavLinkMatch.All" class="btn btn-outline-dark w-100 text-start mt-1 border-0" href="@($"converse/{item.Id}")"><i class="@item[ChatConfiguration.Icon]"></i> @(item.Title ?? "New Chat")</NavLink>
-                                }
+                                <KernelWatcherNavLink ChatConfiguration="item"/>
                             </ContextMenuTrigger>
                             <ContextMenu>
                                 @if (_controller.KernelActive(item.Id))
@@ -50,7 +39,7 @@
             {
                 @foreach (var g in _groups.Where(x => !string.IsNullOrEmpty(x)))
                 {
-                    <div class="p-2 rounded bg-body shadow border mt-2 border-secondary">
+                    <div class="p-2 rounded bg-body shadow border mt-2">
                         <p>@g</p>
                         <hr />
                         @if (_chats is not null)
@@ -59,19 +48,7 @@
                             {
                                 <ContextMenuZone>
                                     <ContextMenuTrigger>
-                                        @if (IsActive(item))
-                                        {
-                                            <NavLink Match="NavLinkMatch.All" class="btn btn-outline-dark w-100 text-start mt-1 border-0 d-flex" href="@($"converse/{item.Id}")">
-                                                <i class="@item[ChatConfiguration.Icon] me-1"></i>
-                                                @(item.Title ?? "New Chat")
-
-                                                <i class="bi bi-database-check ms-auto"></i>
-                                            </NavLink>
-                                        }
-                                        else
-                                        {
-                                            <NavLink Match="NavLinkMatch.All" class="btn btn-outline-dark w-100 text-start mt-1 border-0" href="@($"converse/{item.Id}")"><i class="@item[ChatConfiguration.Icon]"></i> @(item.Title ?? "New Chat")</NavLink>
-                                        }
+                                        <KernelWatcherNavLink ChatConfiguration="item"/>
                                     </ContextMenuTrigger>
                                     <ContextMenu>
                                         @if (_controller.KernelActive(item.Id))
@@ -88,8 +65,17 @@
                 }
             }
         </div>
-        <div class="flex-grow-1 container ms-0 overflow-auto bg-body rounded border border-secondary">
-            @Body
+
+
+        <div class="col-8 overflow-auto bg-body rounded border h-100 p-0">
+            <Layout ShowFooter="false" 
+                    UseTabSet TabDefaultUrl="/"
+                    TabContextMenuCloseIcon="bi bi-x-lg" TabContextMenuCloseAllIcon="bi bi-x-lg" TabContextMenuCloseOtherIcon="bi bi-x-lg" TabStyle="TabStyle.Chrome"
+                AdditionalAssemblies="@(_options.GetFeatureAssemblies("blazor").Concat([typeof(MainLayout).Assembly]))">
+                <Main>
+                    @Body
+                </Main>
+            </Layout>
         </div>
     </div>
 </div>
