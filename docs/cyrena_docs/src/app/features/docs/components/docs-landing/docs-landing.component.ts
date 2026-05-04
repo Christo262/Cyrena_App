@@ -21,7 +21,7 @@ export class DocsLandingComponent {
     },
     {
       id: 'dotnet',
-      title: '.NET Development',
+      title: '.NET Development (C#)',
       description: 'Build .NET projects with Cyréna — project scaffolding, code generation, and debugging workflows.',
       route: '/docs/dotnet',
       icon: 'bi-filetype-cs'

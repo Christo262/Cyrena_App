@@ -237,7 +237,7 @@
                     <span class="step-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0"
                           style="width: 32px; height: 32px;">3</span>
                     <div>
-                      <strong>Expand the “.NET Development” shortcuts</strong> and choose your project type or an existing solution.
+                      <strong>Expand the ".NET Development (C#)" shortcuts</strong> and choose your project type or an existing solution.
                     </div>
                   </div>
                 </li>
@@ -564,6 +564,196 @@
               <i class="bi bi-box-arrow-up-right me-2"></i>Get Arduino IDE
             </a>
             <a routerLink="/docs/arduino" class="btn btn-outline-secondary btn-lg px-4">
+              <i class="bi bi-book me-2"></i>Full Documentation
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- Custom Content: Angular Development-specific -->
+  @if (isAngular()) {
+    <section class="py-5 mt-4">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <h2 class="fw-bold mb-4">
+            <i class="bi bi-check-circle me-2 text-primary"></i>Requirements
+          </h2>
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+              <ul class="list-unstyled mb-0">
+                <li class="mb-3">
+                  <div class="d-flex align-items-start">
+                    <i class="bi bi-check-lg text-success fs-5 me-3 mt-1"></i>
+                    <span>Node.js — installed and on your PATH.</span>
+                  </div>
+                </li>
+                <li class="mb-3">
+                  <div class="d-flex align-items-start">
+                    <i class="bi bi-check-lg text-success fs-5 me-3 mt-1"></i>
+                    <span>Angular CLI — installed globally (<code>npm install -g &#64;angular/cli</code>).</span>
+                  </div>
+                </li>
+                <li class="mb-0">
+                  <div class="d-flex align-items-start">
+                    <i class="bi bi-check-lg text-success fs-5 me-3 mt-1"></i>
+                    <span>Cyréna Angular extension (<code>cyrena.angular</code>) installed and enabled.</span>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <h2 class="fw-bold mb-4">
+            <i class="bi bi-folder-tree me-2 text-primary"></i>Enforced Folder Structure
+          </h2>
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+              <p class="text-secondary mb-3">The extension enforces a strict global / feature-scoped layout. Cyréna will not deviate from this structure — it is a hard constraint, not a guideline.</p>
+
+              <h5 class="fw-bold mb-3">Global (src/app/)</h5>
+              <div class="table-responsive mb-4">
+                <table class="table table-sm table-borderless mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Folder / File</th>
+                      <th>Purpose</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td><code>components/</code></td><td>Global reusable components.</td></tr>
+                    <tr><td><code>services/</code></td><td>Global shared services.</td></tr>
+                    <tr><td><code>guards/</code></td><td>Global route guards.</td></tr>
+                    <tr><td><code>pipes/</code></td><td>Global custom pipes.</td></tr>
+                    <tr><td><code>directives/</code></td><td>Global custom directives.</td></tr>
+                    <tr><td><code>models/</code></td><td>Global shared models.</td></tr>
+                    <tr><td><code>interceptors/</code></td><td>Global HTTP interceptors.</td></tr>
+                    <tr><td><code>resolvers/</code></td><td>Global route resolvers.</td></tr>
+                    <tr><td><code>features/</code></td><td>Feature modules (see below).</td></tr>
+                    <tr><td><code>app.component.ts</code></td><td>Root application component.</td></tr>
+                    <tr><td><code>app.config.ts</code></td><td>Application configuration.</td></tr>
+                    <tr><td><code>app.routes.ts</code></td><td>Root route definitions.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h5 class="fw-bold mb-3">Feature Modules (src/app/features/feature-name/)</h5>
+              <p class="text-secondary mb-3">Each feature module mirrors the global structure:</p>
+              <div class="table-responsive">
+                <table class="table table-sm table-borderless mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Folder</th>
+                      <th>Purpose</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td><code>components/</code></td><td>Feature-scoped components.</td></tr>
+                    <tr><td><code>services/</code></td><td>Feature-scoped services.</td></tr>
+                    <tr><td><code>guards/</code></td><td>Feature-scoped route guards.</td></tr>
+                    <tr><td><code>pipes/</code></td><td>Feature-scoped pipes.</td></tr>
+                    <tr><td><code>directives/</code></td><td>Feature-scoped directives.</td></tr>
+                    <tr><td><code>models/</code></td><td>Feature-scoped models.</td></tr>
+                    <tr><td><code>interceptors/</code></td><td>Feature-scoped HTTP interceptors.</td></tr>
+                    <tr><td><code>resolvers/</code></td><td>Feature-scoped route resolvers.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="alert alert-info mt-4 mb-0">
+                <i class="bi bi-info-circle me-2"></i>
+                <strong>Note</strong> — Global concerns belong under <code>src/app/</code>. Feature-specific code belongs under <code>src/app/features/feature-name/</code>. Keeping to this layout guarantees stable and predictable AI behaviour; Cyréna will not restructure the hierarchy.
+              </div>
+            </div>
+          </div>
+
+          <h2 class="fw-bold mb-4">
+            <i class="bi bi-signpost-2 me-2 text-primary"></i>Recommended Workflow
+          </h2>
+          <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+              <ol class="setup-steps mb-0">
+                <li class="mb-4">
+                  <div class="d-flex">
+                    <span class="step-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0"
+                          style="width: 32px; height: 32px;">1</span>
+                    <div>
+                      <strong>Create the project</strong>
+                      <p class="text-secondary mb-0">Use the Angular CLI: <code>ng new my-app</code></p>
+                    </div>
+                  </div>
+                </li>
+                <li class="mb-4">
+                  <div class="d-flex">
+                    <span class="step-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0"
+                          style="width: 32px; height: 32px;">2</span>
+                    <div>
+                      <strong>Open Cyréna</strong> and start a <strong>New Chat</strong>.
+                    </div>
+                  </div>
+                </li>
+                <li class="mb-4">
+                  <div class="d-flex">
+                    <span class="step-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0"
+                          style="width: 32px; height: 32px;">3</span>
+                    <div>
+                      <strong>Expand the “Web Development” shortcuts</strong>.
+                    </div>
+                  </div>
+                </li>
+                <li class="mb-4">
+                  <div class="d-flex">
+                    <span class="step-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0"
+                          style="width: 32px; height: 32px;">4</span>
+                    <div>
+                      <strong>Click Angular</strong>.
+                    </div>
+                  </div>
+                </li>
+                <li class="mb-4">
+                  <div class="d-flex">
+                    <span class="step-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0"
+                          style="width: 32px; height: 32px;">5</span>
+                    <div>
+                      <strong>In the dialog that appears:</strong>
+                      <ul class="text-secondary mt-2 mb-0">
+                        <li>Browse to your project's <code>angular.json</code> file to establish the project root.</li>
+                        <li>Enter a <strong>Title</strong> to identify this project in the sidebar.</li>
+                        <li>Select the <strong>AI Connection</strong> to use.</li>
+                        <li>Toggle any <strong>Activated Features</strong> you need.</li>
+                      </ul>
+                    </div>
+                  </div>
+                </li>
+                <li class="mb-4">
+                  <div class="d-flex">
+                    <span class="step-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0"
+                          style="width: 32px; height: 32px;">6</span>
+                    <div>
+                      <strong>Press Submit</strong>.
+                    </div>
+                  </div>
+                </li>
+                <li class="mb-0">
+                  <div class="d-flex">
+                    <span class="step-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0"
+                          style="width: 32px; height: 32px;">7</span>
+                    <div>
+                      <strong>Begin chatting</strong> with the AI to generate components, services, routes, or reason about your architecture.
+                    </div>
+                  </div>
+                </li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="mt-4 d-flex flex-wrap gap-3">
+            <a href="https://angular.io/cli" target="_blank" rel="noopener"
+               class="btn btn-outline-primary btn-lg px-4">
+              <i class="bi bi-box-arrow-up-right me-2"></i>Get Angular CLI
+            </a>
+            <a routerLink="/docs/angular" class="btn btn-outline-secondary btn-lg px-4">
               <i class="bi bi-book me-2"></i>Full Documentation
             </a>
           </div>

@@ -92,6 +92,10 @@ export const routes: Routes = [
     loadComponent: () => import('./components/privacy-page/privacy-page.component').then(m => m.PrivacyPageComponent)
   },
   {
+    path: 'download',
+    loadComponent: () => import('./features/downloads/components/downloads-page/downloads-page.component').then(m => m.DownloadsPageComponent)
+  },
+  {
     path: '**',
     redirectTo: ''
   }

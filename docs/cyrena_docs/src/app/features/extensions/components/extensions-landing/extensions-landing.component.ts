@@ -35,12 +35,21 @@ export class ExtensionsLandingComponent {
     },
     {
       appId: '11486102-aa19-43d7-be0c-70aba7d9a51a',
-      packageId: 'cyrena.dotnet',
-      title: '.NET Development',
+      packageId: 'cyrena.dotnet.csharp',
+      title: '.NET Development (C#)',
       description: 'Builds .NET projects and solutions with a strictly enforced structure. All supported project types share a common base layout (Attributes, Contracts, Extensions, Models, Services, Options) with per-type additions for Blazor (Components, wwwroot) and MVC (Controllers, Views, wwwroot). In solution mode, only supported project types are indexed — unsupported projects are ignored rather than blocked. Project and solution descriptor files (.csproj, .sln, .slnx) and JSON configuration files are read-only to the agent and will never be modified.',
       icon: 'bi-filetype-cs',
       tags: ['.NET', 'C#', 'Blazor', 'MVC', 'Solution'],
-      route: '/extensions/cyrena.dotnet'
+      route: '/extensions/cyrena.dotnet.csharp'
+    },
+    {
+      appId: '11486102-aa19-43d7-be0c-70aba7d9a51a',
+      packageId: 'cyrena.angular',
+      title: 'Angular Development',
+      description: 'Builds Angular v17+ projects with a strictly enforced global/feature-scoped folder structure. All artifacts are standalone components — no NgModules. Services use inject() not constructor injection. State uses signals (signal, computed, effect). Components use OnPush change detection, input() and output() for communication, and built-in control flow (@if, @for, @switch). The agent will never deviate from this structure.',
+      icon: 'bi-filetype-js',
+      tags: ['Angular', 'Web', 'TypeScript', 'Standalone'],
+      route: '/extensions/cyrena.angular'
     },
     {
       appId: '11486102-aa19-43d7-be0c-70aba7d9a51a',

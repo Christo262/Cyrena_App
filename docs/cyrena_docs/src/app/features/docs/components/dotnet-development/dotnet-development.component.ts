@@ -38,12 +38,12 @@ interface Step {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DotnetDevelopmentComponent {
-  readonly extensionId = 'cyrena.dotnet';
+  readonly extensionId = 'cyrena.dotnet.csharp';
 
   readonly prerequisites = [
     '.NET SDK — installed and on your PATH',
     'IDE — Visual Studio, VS Code, Rider, or any editor that supports .NET projects',
-    'Cyrena .NET Development extension (cyrena.dotnet) — installed and enabled in Cyrena'
+    'Cyrena .NET Development extension (cyrena.dotnet.csharp) — installed and enabled in Cyrena'
   ];
 
   readonly projectTypes: ProjectType[] = [
