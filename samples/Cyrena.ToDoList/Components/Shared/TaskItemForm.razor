@@ -1,0 +1,19 @@
+<EditForm EditContext="_context">
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
+
+    <div class="mb-2">
+        <label class="form-label">Title</label>
+        <InputText @bind-Value="Model.Title" class="form-control"/>
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">Description</label>
+        <InputTextArea @bind-Value="Model.Description" class="form-control form-control-sm" />
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">Date</label>
+        <InputDate @bind-Value="Model.Date" TValue="DateTime" class="form-control" Type="InputDateType.DateTimeLocal"/>
+    </div>
+</EditForm>

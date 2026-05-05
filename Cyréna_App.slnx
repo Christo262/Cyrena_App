@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/samples/">
+    <Project Path="samples/Cyrena.ToDoList/Cyrena.ToDoList.csproj" Id="5db0f7b3-3fca-4f85-a5bc-51f48b104b3b" />
+  </Folder>
   <Folder Name="/sln/">
     <File Path="contributing.md" />
     <File Path="Directory.Packages.props" />
