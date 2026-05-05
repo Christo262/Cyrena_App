@@ -450,3 +450,37 @@
   transform: scale(1.02);
 }
 
+/* Origin Story Section */
+.origin-story-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-left: 4px solid #0d6efd;
+}
+
+.origin-story-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1) !important;
+}
+
+.origin-quote {
+  position: relative;
+  padding: 1.5rem;
+  background: rgba(13, 110, 253, 0.03);
+  border-radius: 1rem;
+  border: 1px solid rgba(13, 110, 253, 0.08);
+}
+
+.origin-quote p {
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.origin-attribution {
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 991.98px) {
+  .origin-quote {
+    margin-top: 1rem;
+  }
+}
+
