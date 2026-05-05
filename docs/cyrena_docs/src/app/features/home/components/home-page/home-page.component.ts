@@ -198,4 +198,8 @@ export class HomePageComponent {
       ]
     }
   ]);
+
+  scrollToOrigin(): void {
+    document.getElementById('origin-story')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }

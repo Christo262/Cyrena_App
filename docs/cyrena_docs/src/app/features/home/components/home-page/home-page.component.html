@@ -28,6 +28,9 @@
           <a routerLink="/docs/getting-started" class="btn btn-light btn-lg fw-bold px-5">
             <i class="bi bi-rocket me-2"></i>Get Started
           </a>
+          <button type="button" class="btn btn-outline-light btn-lg px-5" (click)="scrollToOrigin()">
+            <i class="bi bi-question-circle me-2"></i>Why?
+          </button>
           <a href="https://github.com/Christo262/Cyrena_App" target="_blank" rel="noopener"
             class="btn btn-outline-light btn-lg px-5">
             <i class="bi bi-github me-2"></i>View on GitHub
@@ -56,6 +59,47 @@
   </div>
 </section>
 
+<!-- Origin Story Section -->
+<section id="origin-story" class="py-6 bg-light origin-story-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="text-center mb-5">
+          <span class="text-primary fw-semibold text-uppercase ls-2 small">Why We Built This</span>
+          <h2 class="fw-bold mt-2 mb-3">Built Out of Necessity</h2>
+        </div>
+        <div class="origin-story-card card border-0 shadow-sm">
+          <div class="card-body p-4 p-lg-5">
+            <div class="row align-items-center g-4">
+              <div class="col-lg-8">
+                <p class="text-secondary lead mb-4">
+                  It started with a real problem. I needed internal tooling to manage finances — invoicing, billing, suppliers — but I am not an accountant. I wanted something <strong>I could actually use</strong>, while still making it easy for my accountant to export the data and import it into their more complicated software.
+                </p>
+                <p class="text-secondary mb-4">
+                  I did not have time to build these tools from scratch, as I would normally do. So I turned to Base44, an AI auto-app builder. It worked. The tools got built. But then came the realisation: <strong>I could not host any of it on my own infrastructure.</strong> I still needed Base44. The vendor lock-in was real.
+                </p>
+                <p class="text-secondary mb-0">
+                  That is where Cyréna was born. <span class="text-primary fw-semibold">Offline-first. My own code. My own infrastructure. No vendor lock-in.</span> A platform that helps you build what you need — and lets you keep it.
+                </p>
+              </div>
+              <div class="col-lg-4 text-center">
+                <div class="origin-quote">
+                  <i class="bi bi-quote fs-1 text-primary opacity-25 mb-3 d-block"></i>
+                  <p class="fst-italic text-secondary mb-3">
+                    "I built it in Base44. Then I realised I couldn't actually host it myself. That's when I knew there had to be a better way."
+                  </p>
+                  <div class="origin-attribution">
+                    <span class="badge bg-primary bg-opacity-10 text-primary">The Origin of Cyréna</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 <section class="py-6 bg-dark text-light">
   <div class="container">
     <div class="text-center mb-5">

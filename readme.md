@@ -2,6 +2,22 @@
 
 Cyréna is an **offline-first engineering assistant** that runs *alongside your IDE*, not inside it.
 
+## Why Cyréna Exists
+
+This project started with a real problem.
+
+I needed internal tooling for my own business — invoice management, billing, supplier tracking. Nothing complicated, just tools I could actually use without needing an accountant for every query.
+
+I tried AI app builders. They worked. The tools got built quickly. But then came the realisation: the backend lived inside their closed infrastructure. If they shut down or changed pricing, my tools stopped working. I could not run any of it on my own servers.
+
+So I built my own solution — but not another app builder.
+
+Cyréna is designed for developers. You still need your SDK, your IDE, your stack. What changes is scale. Instead of working through tasks one by one, Cyréna works through them in parallel while you supervise, review, and direct. It can build from scratch using prompts alone, but it is designed to be supervised by a developer to ensure code is safe, maintainable, and understandable.
+
+The first thing I built with Cyréna was the internal tooling I originally needed. It runs on my own infrastructure. I own it completely.
+
+---
+
 It operates as a structured agent inside real projects and helps with:
 
 - building features
