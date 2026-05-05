@@ -1,0 +1,13 @@
+{
+  "id": "cyrena.samples.todo",
+  "name": "To Do",
+  "version": "1.0.0",
+  "entryAssemblyFile": "Cyrena.ToDoList.dll",
+  "description": "Let Cyréna help manage your to-do list.",
+  "dependencies": [
+    {
+      "id": "cyrena",
+      "minVersion": "0.4.0"
+    }
+  ]
+}

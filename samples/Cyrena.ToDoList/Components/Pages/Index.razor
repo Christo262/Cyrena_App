@@ -1,0 +1,144 @@
+@page "/samples/to-do-list"
+@attribute [TabItemOption(Text = "To Do", Icon = "bi bi-check-square")]
+@using Cyrena.ToDoList.Components.Shared
+@inject ITaskItemService TaskService
+@inject DialogService Dialog
+
+<div class="h-100 overflow-auto p-3">
+    <h1 class="mb-3">To Do</h1>
+
+    <!-- Day Browser -->
+    <div class="d-flex align-items-center justify-content-between mb-4 rounded p-2 border">
+        <button class="btn btn-outline-primary btn-sm" @onclick="PreviousDay">
+            <i class="bi bi-chevron-left"></i> Prev
+        </button>
+        <div class="d-flex">
+            <div class="text-center">
+                <div class="fw-bold">@_selectedDate.ToString("dddd, MMM dd")</div>
+                @if (_selectedDate.Date == DateTime.Today)
+                {
+                    <small class="text-muted">Today</small>
+                }
+            </div>
+            <div class="justify-content-center align-self-center ms-1">
+                <button type="button" class="btn btn-sm btn-success" @onclick="AddTask"><i class="bi bi-plus"></i></button>
+            </div>
+        </div>
+        <button class="btn btn-outline-primary btn-sm" @onclick="NextDay">
+            Next <i class="bi bi-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- Task List -->
+    @if (_tasks is null)
+    {
+        <div class="text-center text-muted">Loading...</div>
+    }
+    else if (!_tasks.Any())
+    {
+        <div class="text-center text-muted py-4">No tasks for this day.</div>
+    }
+    else
+    {
+        <div class="p-2 overflow-auto">
+            @foreach (var task in _tasks.OrderBy(t => t.IsComplete).ThenBy(t => t.Title))
+            {
+                <div class="d-flex align-items-center gap-2 rounded border p-2 mb-2">
+                    <div class="form-check m-0">
+                        <input class="form-check-input" type="checkbox" checked="@task.IsComplete" @onchange="() => ToggleComplete(task)" />
+                    </div>
+                    <div class="flex-grow-1" style="cursor:pointer" @onclick="() => StartEdit(task)">
+                        <div class="fw-semibold @(task.IsComplete ? "text-decoration-line-through text-muted" : "")">@task.Title</div>
+                        @if (!string.IsNullOrEmpty(task.Description))
+                        {
+                            <small class="text-muted">@task.Description</small>
+                        }
+                    </div>
+                    <button class="btn btn-outline-danger btn-sm" @onclick="() => DeleteTask(task)" title="Delete">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private DateTime _selectedDate = DateTime.Today;
+    private IEnumerable<TaskItem>? _tasks;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTasks();
+    }
+
+    private async Task LoadTasks()
+    {
+        _tasks = await TaskService.GetByDateAsync(_selectedDate);
+    }
+
+    private async Task PreviousDay()
+    {
+        _selectedDate = _selectedDate.AddDays(-1);
+        await LoadTasks();
+    }
+
+    private async Task NextDay()
+    {
+        _selectedDate = _selectedDate.AddDays(1);
+        await LoadTasks();
+    }
+
+    private async Task AddTask()
+    {
+        var model = new TaskItem() { Date = _selectedDate };
+        var result = await Dialog.ShowModal<TaskItemForm>(new ResultDialogOption()
+        {
+            Size = Size.Medium,
+            Title = "Create Task",
+            ButtonYesText = "Submit",
+            ButtonNoText = "Cancel",
+            ComponentParameters = new()
+            {
+                {"Model", model}
+            }
+        });
+        if(result == DialogResult.Yes)
+        {
+            await TaskService.CreateAsync(model.Title!, model.Description, model.Date);
+            await LoadTasks();
+        }
+    }
+
+    private async Task ToggleComplete(TaskItem task)
+    {
+        await TaskService.ToggleCompleteAsync(task.Id);
+        await LoadTasks();
+    }
+
+    private async Task DeleteTask(TaskItem task)
+    {
+        await TaskService.DeleteAsync(task.Id);
+        await LoadTasks();
+    }
+
+    private async Task StartEdit(TaskItem model)
+    {
+        var result = await Dialog.ShowModal<TaskItemForm>(new ResultDialogOption()
+        {
+            Size = Size.Medium,
+            Title = "Edit Task",
+            ButtonYesText = "Submit",
+            ButtonNoText = "Cancel",
+            ComponentParameters = new()
+            {
+                {"Model", model}
+            }
+        });
+        if (result == DialogResult.Yes)
+        {
+            await TaskService.UpdateAsync(model);
+            await LoadTasks();
+        }
+    }
+}
