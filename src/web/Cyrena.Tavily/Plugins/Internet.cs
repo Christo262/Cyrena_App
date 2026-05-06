@@ -42,13 +42,14 @@ namespace Cyrena.Tavily.Plugins
                 SearchDepth = search_depth,
                 IncludeImages = include_images,
                 IncludeImageDescriptions = include_image_descriptions,
-                IncludeRawContent = include_raw_content,
+                IncludeRawContent = GetIncludeRawContent(include_raw_content),
                 MaxResults = max_results
             };
             try
             {
                 await _context.LogInfo($"Searching {query}");
                 using var response = await _http.PostAsJsonAsync("/search", request);
+                var body = await response.Content.ReadAsStringAsync();
                 var model = await response.Content.ReadFromJsonAsync<SearchResponse>();
                 var content = await response.Content.ReadAsStringAsync();
                 if(model != null) 
@@ -83,6 +84,22 @@ namespace Cyrena.Tavily.Plugins
             catch (Exception ex)
             {
                 return new ExtractResponse() { StatusCode = 500, Error = ex.Message };
+            }
+        }
+
+        private object GetIncludeRawContent(string? include_raw_content)
+        {
+            if (string.IsNullOrEmpty(include_raw_content))
+                return false;
+            if (string.Equals(include_raw_content, "markdown", StringComparison.OrdinalIgnoreCase) || string.Equals(include_raw_content, "text", StringComparison.OrdinalIgnoreCase))
+                return include_raw_content.ToLower();
+            try
+            {
+                return Convert.ToBoolean(include_raw_content);
+            }
+            catch
+            {
+                return false;
             }
         }
     }

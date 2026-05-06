@@ -17,6 +17,6 @@ namespace Cyrena.Tavily.Models
         [System.Text.Json.Serialization.JsonPropertyName("include_image_descriptions")]
         public bool IncludeImageDescriptions { get; set; }
         [System.Text.Json.Serialization.JsonPropertyName("include_raw_content")]
-        public string? IncludeRawContent { get; set; } //none, text, markdown
+        public object? IncludeRawContent { get; set; } //True, False, 'text', 'markdown'
     }
 }
