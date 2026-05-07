@@ -13,10 +13,15 @@
     <Title>Cyréna Core</Title>
     <RepositoryUrl>https://github.com/Christo262/Cyrena_App</RepositoryUrl>
     <PackageProjectUrl>https://cyrena.dev</PackageProjectUrl>
+    <PackageLicenseFile>license.md</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\..\..\cyrena.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\..\license.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>

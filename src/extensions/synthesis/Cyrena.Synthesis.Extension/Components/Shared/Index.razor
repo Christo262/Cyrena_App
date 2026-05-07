@@ -1,0 +1,50 @@
+@using BootstrapBlazor.Components
+<h4>
+    Dynamic Capabilities
+</h4>
+
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th>
+                Function
+            </th>
+            <th>
+                Title
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if(_models.Count() == 0)
+        {
+            <tr>
+                <td colspan="3" class="text-center">
+                    No dynamic capabilities
+                </td>
+            </tr>
+        }
+        @foreach(var item in _models)
+        {
+            <tr>
+                <td>
+                    @item.Id
+                </td>
+                <td>
+                    @item.Title
+                </td>
+                <td>
+                    <Tooltip Title="Edit">
+                        <button @onclick="() => Edit(item)" type="button" class="btn btn-sm btn-info rounded-pill me-1"><i class="bi bi-pen"></i></button>
+                    </Tooltip>
+                    <Tooltip Title="Code">
+                        <a href="dynamic-cap-code/@item.Id" class="btn btn-sm btn-info rounded-pill me-1"><i class="bi bi-braces-asterisk"></i></a>
+                    </Tooltip>
+                    <Tooltip Title="Delete">
+                        <button type="button" class="btn btn-sm btn-danger rounded-pill me-1" @onclick="() => Delete(item)"><i class="bi bi-trash"></i></button>
+                    </Tooltip>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

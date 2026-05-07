@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Cyrena.Synthesis</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\abi-args.md" />
+    <None Remove="Resources\abi-exe-context.md" />
+    <None Remove="Resources\abi-file-system.md" />
+    <None Remove="Resources\abi-logging.md" />
+    <None Remove="Resources\abi-results.md" />
+    <None Remove="Resources\instructions.md" />
+    <None Remove="Resources\prompt.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\abi-args.md" />
+    <EmbeddedResource Include="Resources\abi-exe-context.md" />
+    <EmbeddedResource Include="Resources\abi-file-system.md" />
+    <EmbeddedResource Include="Resources\abi-logging.md" />
+    <EmbeddedResource Include="Resources\abi-results.md" />
+    <EmbeddedResource Include="Resources\instructions.md" />
+    <EmbeddedResource Include="Resources\prompt.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FSharp.Compiler.Service" />
+    <PackageReference Include="FSharp.Core" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+    <PackageReference Include="Cyrena.Components.Core" />
+    <PackageReference Include="Cyrena.Extensa.Core" />
+    <PackageReference Include="Cyrena.Persistence.Core" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cyrena.Synthesis.Core\Cyrena.Synthesis.Core.csproj" />
+  </ItemGroup>
+
+</Project>

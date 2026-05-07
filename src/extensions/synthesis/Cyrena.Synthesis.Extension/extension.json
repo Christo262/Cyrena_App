@@ -1,0 +1,13 @@
+{
+  "id": "cyrena.synthesis",
+  "name": "Synthetic Capabilities",
+  "version": "0.1.0",
+  "entryAssemblyFile": "Cyrena.Synthesis.Extension.dll",
+  "description": "Synthetic Capabilities enables Dynamic Capabilities: runtime-generated capabilities that Cyrena can create, execute, and reuse to extend its functionality in a controlled, permission-scoped environment.",
+  "dependencies": [
+    {
+      "id": "cyrena",
+      "minVersion": "0.4.0"
+    }
+  ]
+}

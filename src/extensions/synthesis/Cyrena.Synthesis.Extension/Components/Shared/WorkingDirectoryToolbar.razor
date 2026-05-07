@@ -1,0 +1,34 @@
+@using Cyrena.Contracts
+@using Cyrena.Synthesis.Options
+@inherits KernelComponentBase
+@inject DialogService _dialog
+
+<Tooltip Title="Dynamic Capabilities">
+    <button class="btn btn-secondary btn-sm rounded-pill me-1" @onclick="OnClick" type="button">
+        <i class="bi bi-folder-symlink"></i>
+    </button>
+</Tooltip>
+
+@code {
+    private async Task OnClick()
+    {
+        var cfg = Kernel.GetRequiredService<IChatConfigurationService>();
+        var workingDir = cfg.Config[SynthesisOptions.WorkingDirectoryKey];
+        var result = await _dialog.ShowModal<WorkingDirectorySelector>(new ResultDialogOption()
+        {
+            Title = "Dynamic Capabilities",
+            Size = Size.Medium,
+            ButtonYesText = "Save",
+            ButtonNoText = "Cancel",
+            ComponentParameters = new()
+            {
+                {"Current", workingDir ?? string.Empty}
+            }
+        });
+        if(result == DialogResult.Yes)
+        {
+            cfg.Config[SynthesisOptions.WorkingDirectoryKey] = workingDir;
+            await cfg.SaveConfigurationAsync();
+        }
+    }
+}

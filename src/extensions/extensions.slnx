@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/sln/">
+    <File Path="readme.md" />
+  </Folder>
+  <Folder Name="/synthesis/">
+    <Project Path="synthesis/Cyrena.Synthesis.Core/Cyrena.Synthesis.Core.csproj" Id="f0586404-ef20-4f42-9cc8-650c2b57fd6c" />
+    <Project Path="synthesis/Cyrena.Synthesis.Extension/Cyrena.Synthesis.Extension.csproj" Id="0169d6fe-0db2-4eef-a661-38aec3968f72" />
+  </Folder>
+</Solution>

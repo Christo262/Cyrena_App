@@ -1,0 +1,15 @@
+
+<EditForm EditContext="_context">
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
+
+    <div class="mb-2">
+        <label class="form-label">Title</label>
+        <InputText @bind-Value="Model.Title" class="form-control"/>
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">Description</label>
+        <InputTextArea @bind-Value="Model.Description" class="form-control form-control-sm" />
+    </div>
+</EditForm>
