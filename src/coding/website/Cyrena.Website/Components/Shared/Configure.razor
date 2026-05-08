@@ -1,0 +1,74 @@
+@implements IResultDialog
+@using Cyrena.Coding.Options
+@using Cyrena.Options
+@using Cyrena.Website.Models
+@using Cyrena.Website.Options
+@using Cyrena.Components.Shared
+
+<div class="p-3">
+    <h5>Create Website</h5>
+    <p class="text-muted">Give your website a name to get started.</p>
+
+    <div class="mb-3">
+        <label class="form-label">Website Name</label>
+        <InputText @bind-Value="_websiteName" class="form-control" placeholder="My Awesome Site" />
+        @if (!string.IsNullOrEmpty(_error))
+        {
+            <div class="text-danger mt-2">@_error</div>
+        }
+    </div>
+
+@*     <div class="mb-3">
+        <label class="form-label">Title</label>
+        <InputText @bind-Value="Model.Title" class="form-control" />
+    </div> *@
+
+    <ConnectionSelector @bind-Value="Model.ConnectionId" />
+
+    <PluginSelector Chat="Model" />
+</div>
+
+@code {
+    [Parameter]
+    public ChatConfiguration Model { get; set; } = default!;
+
+    private string _websiteName = string.Empty;
+    private string _error = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        _websiteName = Model[WebsiteOptions.WebsiteName] ?? string.Empty;
+    }
+
+    public Task<bool> OnClosing(DialogResult result)
+    {
+        if (result != DialogResult.Yes)
+            return Task.FromResult(true);
+
+        if (string.IsNullOrWhiteSpace(_websiteName))
+        {
+            _error = "Please enter a website name.";
+            return Task.FromResult(false);
+        }
+
+        Model[WebsiteOptions.WebsiteName] = _websiteName.Trim();
+        Model.Title = _websiteName.Trim();
+        var sanitizedName = string.Concat(_websiteName.Trim().Split(Path.GetInvalidFileNameChars())).Replace(" ", "-").ToLowerInvariant();
+        var rootDir = Path.Combine(CyrenaBuilder.AppDataDirectory, "websites", sanitizedName);
+        if(!Directory.Exists(rootDir))
+            Directory.CreateDirectory(rootDir);
+        Model[DevelopOptions.RootDirectory] = rootDir;
+        var props = new WebsiteViewModel()
+            {
+                WebsiteProjectId = sanitizedName,
+                WebsiteName = _websiteName.Trim(),
+            };
+        File.WriteAllText(Path.Combine(rootDir, "website.properties.json"), props.ToJson());
+        return Task.FromResult(true);
+    }
+
+    public Task OnClose(DialogResult result)
+    {
+        return Task.CompletedTask;
+    }
+}

@@ -1,0 +1,17 @@
+{
+  "id": "cyrena.website",
+  "name": "Website",
+  "version": "0.1.0",
+  "entryAssemblyFile": "Cyrena.Website.dll",
+  "description": "Build static websites fast and easy",
+  "dependencies": [
+    {
+      "id": "cyrena.developer",
+      "minVersion": "0.4.0"
+    },
+    {
+      "id": "cyrena.api_references",
+      "minVersion": "0.4.0"
+    }
+  ]
+}
