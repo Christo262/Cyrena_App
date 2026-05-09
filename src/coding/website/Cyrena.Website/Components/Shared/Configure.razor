@@ -49,6 +49,8 @@
 @code {
     [Parameter]
     public ChatConfiguration Model { get; set; } = default!;
+    [Parameter]
+    public bool IsEdit{ get; set; }
     [CascadingParameter] public Modal? Dialog{ get; set; }
 
     private string _websiteName = string.Empty;
@@ -57,7 +59,8 @@
     protected override void OnInitialized()
     {
         _websiteName = Model[WebsiteOptions.WebsiteName] ?? string.Empty;
-        PopulateExisting();
+        if(!IsEdit)
+            PopulateExisting();
     }
 
     public Task<bool> OnClosing(DialogResult result)

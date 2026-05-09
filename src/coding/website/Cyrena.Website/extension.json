@@ -1,9 +1,9 @@
 {
   "id": "cyrena.website",
   "name": "Website",
-  "version": "0.1.0",
+  "version": "0.4.1",
   "entryAssemblyFile": "Cyrena.Website.dll",
-  "description": "Build static websites fast and easy",
+  "description": "Static website building support for HTML, CSS, and JavaScript projects.",
   "dependencies": [
     {
       "id": "cyrena.developer",

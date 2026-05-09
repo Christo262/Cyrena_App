@@ -54,7 +54,8 @@ namespace Cyrena.Website.Services
                 Size = Size.Medium,
                 ComponentParameters = new()
                 {
-                    { nameof(Configure.Model), config }
+                    { nameof(Configure.Model), config },
+                    {nameof(Configure.IsEdit), true }
                 },
                 ButtonYesText = "Save",
                 ButtonNoText = "Cancel",
