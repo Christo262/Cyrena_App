@@ -1,0 +1,137 @@
+@implements IResultDialog
+@using Cyrena.Coding.Options
+@using Cyrena.Options
+@using Cyrena.Website.Models
+@using Cyrena.Website.Options
+@using Cyrena.Components.Shared
+@using Newtonsoft.Json
+
+<div class="p-3">
+    @if (_existing.Count > 0)
+    {
+        <div class="accordion accordion-flush" id="accordionFlushExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                        Continue Work
+                    </button>
+                </h2>
+                <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">
+                        @foreach (var item in _existing)
+                        {
+                            <div class="d-flex mb-2 rounded border p-2">
+                                <p class="m-0 justify-content-center align-self-center">@item.WebsiteName</p>
+                                <button type="button" class="btn btn-sm btn-info ms-auto" @onclick="() => Continue(item)">
+                                    <i class="bi bi-arrow-right"></i>
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="mb-3">
+        <label class="form-label">Website Name</label>
+        <InputText @bind-Value="_websiteName" class="form-control" placeholder="My Awesome Site" />
+        @if (!string.IsNullOrEmpty(_error))
+        {
+            <div class="text-danger mt-2">@_error</div>
+        }
+    </div>
+
+    <ConnectionSelector @bind-Value="Model.ConnectionId" />
+
+    <PluginSelector Chat="Model" />
+</div>
+
+@code {
+    [Parameter]
+    public ChatConfiguration Model { get; set; } = default!;
+    [Parameter]
+    public bool IsEdit{ get; set; }
+    [CascadingParameter] public Modal? Dialog{ get; set; }
+
+    private string _websiteName = string.Empty;
+    private string _error = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        _websiteName = Model[WebsiteOptions.WebsiteName] ?? string.Empty;
+        if(!IsEdit)
+            PopulateExisting();
+    }
+
+    public Task<bool> OnClosing(DialogResult result)
+    {
+        if (result != DialogResult.Yes)
+            return Task.FromResult(true);
+
+        if (string.IsNullOrWhiteSpace(_websiteName))
+        {
+            _error = "Please enter a website name.";
+            return Task.FromResult(false);
+        }
+
+        Model[WebsiteOptions.WebsiteName] = _websiteName.Trim();
+        Model.Title = _websiteName.Trim();
+        var sanitizedName = string.Concat(_websiteName.Trim().Split(Path.GetInvalidFileNameChars())).Replace(" ", "-").ToLowerInvariant();
+        var rootDir = Model[DevelopOptions.RootDirectory];
+        if (string.IsNullOrEmpty(rootDir))
+        {
+            rootDir = Path.Combine(CyrenaBuilder.AppDataDirectory, "websites", sanitizedName);
+            if (!Directory.Exists(rootDir))
+                Directory.CreateDirectory(rootDir);
+            Model[DevelopOptions.RootDirectory] = rootDir;
+        }
+        var props = new WebsiteViewModel()
+        {
+            WebsiteProjectId = sanitizedName,
+            WebsiteName = _websiteName.Trim(),
+        };
+        File.WriteAllText(Path.Combine(rootDir, "website.properties"), props.ToJson());
+        return Task.FromResult(true);
+    }
+
+    private async Task Continue(WebsiteViewModel item)
+    {
+        Model[WebsiteOptions.WebsiteName] = item.WebsiteName;
+        Model.Title = item.WebsiteName;
+        Model[DevelopOptions.RootDirectory] = item.RootDirectory;
+        _websiteName = item.WebsiteName;
+        this.StateHasChanged();
+    }
+
+    public Task OnClose(DialogResult result)
+    {
+        return Task.CompletedTask;
+    }
+
+    private List<WebsiteViewModel> _existing { get; set; } = [];
+    private void PopulateExisting()
+    {
+        var dir = Path.Combine(CyrenaBuilder.AppDataDirectory, "websites");
+        if (!Directory.Exists(dir))
+            Directory.CreateDirectory(dir);
+        var dirs = Directory.GetDirectories(dir);
+        foreach (var item in dirs)
+        {
+            var props = Path.Combine(item, "website.properties");
+            if (File.Exists(props))
+            {
+                try
+                {
+                    var json = File.ReadAllText(props);
+                    var vm = JsonConvert.DeserializeObject<WebsiteViewModel>(json);
+                    if (vm is not null)
+                    {
+                        vm.RootDirectory = item;
+                        _existing.Add(vm);
+                    }
+                }
+                catch { }
+            }
+        }
+    }
+}

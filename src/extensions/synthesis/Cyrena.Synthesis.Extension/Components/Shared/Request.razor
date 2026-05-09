@@ -1,0 +1,15 @@
+@using Cyrena.Components.Shared
+
+<EditForm EditContext="_context">
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
+
+    <div class="mb-2">
+        <label class="form-label">Title</label>
+        <InputText @bind-Value="_config.Title" class="form-control"/>
+    </div>
+
+    <ConnectionSelector @bind-Value="_config.ConnectionId"/>
+
+    <PluginSelector Chat="_config"/>
+</EditForm>

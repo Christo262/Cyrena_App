@@ -27,4 +27,7 @@
     <Project Path="src/embedded/Cyrena.ArduinoIDE/Cyrena.ArduinoIDE.csproj" />
     <Project Path="src/embedded/Cyrena.PlatformIO/Cyrena.PlatformIO.csproj" />
   </Folder>
+  <Folder Name="/src/website/">
+    <Project Path="website/Cyrena.Website/Cyrena.Website.csproj" Id="be0cddda-2ddc-4a84-bb87-4267d8627661" />
+  </Folder>
 </Solution>

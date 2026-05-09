@@ -1,0 +1,49 @@
+@page "/dynamic-cap-code/{Id}"
+@using Cyrena.Components.Shared
+@attribute [TabItemOption(Text = "Capability Code", Icon = "bi bi-braces-asterisk")]
+
+@if (_model != null)
+{
+    <div class="h-100 overlfow-auto">
+        <h4>
+            @_model.Title
+        </h4>
+        <hr />
+        <CodeInput Language="fsharp" @bind-Value="_model.Code" />
+
+        <hr />
+        @if (_validation != null)
+        {
+            <div class="row m-0 mb-2">
+                <div class="col-md-8 m-auto">
+                    @if (_validation.IsValid)
+                    {
+                        <div class="alert alert-success" role="alert">
+                            @_validation.Summary
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @_validation.Summary
+                        </div>
+
+                        <ul>
+                            @foreach(var item in _validation.Violations)
+                            {
+                                <li>
+                                    [@item.LineNumber]:[@item.Type] (@item.Pattern) => @item.Reason
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+        }
+
+        <div class="text-center">
+            <button type="button" class="btn btn-success me-1" @onclick="Validate">Validate</button>
+            <button type="button" class="btn btn-primary" @onclick="Save">Save</button>
+        </div>
+    </div>
+}

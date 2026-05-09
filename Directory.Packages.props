@@ -3,16 +3,18 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
-  <!--Third-party-->
   <ItemGroup>
-    <PackageVersion Include="BootstrapBlazor.BootstrapIcon" Version="10.0.0" />
     <PackageVersion Include="Cyrena.Coding.Core" Version="0.4.2" />
-    <PackageVersion Include="Cyrena.Components.Core" Version="0.4.2" />
+    <PackageVersion Include="Cyrena.Components.Core" Version="0.4.3" />
     <PackageVersion Include="Cyrena.Core" Version="0.4.2" />
     <PackageVersion Include="Cyrena.Extensa.Core" Version="0.4.0" />
     <PackageVersion Include="Cyrena.Persistence.Core" Version="0.4.0" />
     <PackageVersion Include="Cyrena.Persistence.File" Version="0.4.0" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.7" />
+    <PackageVersion Include="FSharp.Compiler.Service" Version="43.12.203" />
+    <PackageVersion Include="FSharp.Core" Version="10.1.203" />
+  </ItemGroup>
+  <!--Third-party-->
+  <ItemGroup>
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageVersion Include="Markdig" Version="0.44.0" />
     <PackageVersion Include="PdfPig" Version="0.1.13" />
@@ -24,6 +26,7 @@
     <PackageVersion Include="CommunityToolkit.Maui" Version="14.0.0" />
     <PackageVersion Include="BootstrapBlazor" Version="10.3.0" />
     <PackageVersion Include="BootstrapBlazor.Html2Pdf" Version="10.0.2" />
+    <PackageVersion Include="BootstrapBlazor.BootstrapIcon" Version="10.0.0" />
     <PackageVersion Include="BlazorMonaco" Version="3.4.0" />
   </ItemGroup>
   <!--Microsoft-->
@@ -39,6 +42,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="10.0.30" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="9.0.8" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="10.0.41" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.7" />
   </ItemGroup>
   <!--System-->
   <ItemGroup>

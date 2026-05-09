@@ -14,7 +14,7 @@
           "builder": "@angular-devkit/build-angular:application",
           "options": {
             "outputPath": "dist/cyrena.docs",
-            "index": "src/index.html",
+            "index": "src/docs.html",
             "browser": "src/main.ts",
             "polyfills": [
               "zone.js"

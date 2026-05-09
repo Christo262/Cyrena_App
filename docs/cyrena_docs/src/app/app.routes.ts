@@ -5,15 +5,8 @@ import { DeveloperLayoutComponent } from './features/developer/components/develo
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./features/home/components/home-page/home-page.component').then(m => m.HomePageComponent)
-  },
-  {
-    path: 'extensions',
-    loadComponent: () => import('./features/extensions/components/extensions-landing/extensions-landing.component').then(m => m.ExtensionsLandingComponent)
-  },
-  {
-    path: 'extensions/:packageId',
-    loadComponent: () => import('./features/extensions/components/extension-detail/extension-detail.component').then(m => m.ExtensionDetailComponent)
+    redirectTo: 'docs',
+    pathMatch: 'full'
   },
   {
     path: 'docs',
@@ -62,10 +55,6 @@ export const routes: Routes = [
         loadComponent: () => import('./features/developer/components/developer-landing/developer-landing.component').then(m => m.DeveloperLandingComponent)
       },
       {
-        path: 'extensions',
-        loadComponent: () => import('./features/developer/components/extension-development/extension-development.component').then(m => m.ExtensionDevelopmentComponent)
-      },
-      {
         path: 'core',
         loadComponent: () => import('./features/developer/components/cyrena-core/cyrena-core.component').then(m => m.CyrenaCoreComponent)
       },
@@ -84,6 +73,10 @@ export const routes: Routes = [
       {
         path: 'coding',
         loadComponent: () => import('./features/developer/components/cyrena-coding-core/cyrena-coding-core.component').then(m => m.CyrenaCodingCoreComponent)
+      },
+      {
+        path: 'extensions',
+        loadComponent: () => import('./features/developer/components/extension-development/extension-development.component').then(m => m.ExtensionDevelopmentComponent)
       }
     ]
   },
@@ -92,11 +85,7 @@ export const routes: Routes = [
     loadComponent: () => import('./components/privacy-page/privacy-page.component').then(m => m.PrivacyPageComponent)
   },
   {
-    path: 'download',
-    loadComponent: () => import('./features/downloads/components/downloads-page/downloads-page.component').then(m => m.DownloadsPageComponent)
-  },
-  {
     path: '**',
-    redirectTo: ''
+    redirectTo: 'docs'
   }
 ];
