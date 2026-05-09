@@ -20,52 +20,43 @@ namespace Cyrena.Website.Services
             _plan = plan;
         }
 
-        [KernelFunction("create_html")]
-        [Description("Create a new HTML file in the project root.")]
-        public ToolResult<DevelopFile> CreateHtml(
-            [Description("The file name without extension. Will be appended with .html")] string name)
-        {
-            var fileName = $"{name}.html";
-            var fileId = $"html_{name}";
-            var file = _plan.Plan.CreateFile(fileId, fileName, GetHtmlBoilerplate(name));
-            _plan.InvokeFileCreated(file);
-            return new ToolResult<DevelopFile>(file);
-        }
+        private static string[] _allowedTypes = [".html", ".css", ".js", ".xml", ".json", ".txt", ".webmanifest"];
 
-        [KernelFunction("create_css")]
-        [Description("Create a new CSS file in the css/ folder.")]
-        public ToolResult<DevelopFile> CreateCss(
-            [Description("The file name without extension. Will be appended with .css")] string name)
+        [KernelFunction("create_file")]
+        [Description("Create a new file.")]
+        public ToolResult<DevelopFile> CreateFile(
+            [Description("The file name to create. For example: 'index.html', 'custom-styles.css'. You may create .html, .css, .js, .txt, .xml or .json files.")] string file)
         {
-            var folder = _plan.Plan.GetOrCreateFolder("css", "css");
-            var fileName = $"{name}.css";
-            var fileId = $"css_{name}";
-            var file = _plan.Plan.CreateFile(folder, fileId, fileName, GetCssBoilerplate(name));
-            _plan.InvokeFileCreated(file);
-            return new ToolResult<DevelopFile>(file);
-        }
-
-        [KernelFunction("create_js")]
-        [Description("Create a new JavaScript file in the js/ folder.")]
-        public ToolResult<DevelopFile> CreateJs(
-            [Description("The file name without extension. Will be appended with .js")] string name)
-        {
-            var folder = _plan.Plan.GetOrCreateFolder("js", "js");
-            var fileName = $"{name}.js";
-            var fileId = $"js_{name}";
-            var file = _plan.Plan.CreateFile(folder, fileId, fileName, GetJsBoilerplate(name));
-            _plan.InvokeFileCreated(file);
-            return new ToolResult<DevelopFile>(file);
-        }
-
-        [KernelFunction("create_image_folder")]
-        [Description("Create a subfolder in the images/ directory for organizing image assets.")]
-        public ToolResult<DevelopFolder> CreateImageFolder(
-            [Description("The name of the image subfolder (e.g., 'icons', 'photos', 'logos')")] string name)
-        {
-            var images = _plan.Plan.GetOrCreateFolder("images", "images");
-            var folder = _plan.Plan.CreateFolder(images, $"images_{name}", name);
-            return new ToolResult<DevelopFolder>(folder);
+            var name = Path.GetFileNameWithoutExtension(file);
+            var ext = Path.GetExtension(file);
+            if (!_allowedTypes.Contains(ext))
+                return new ToolResult<DevelopFile>(false, $"{ext} is not an allowed filetype you can create");
+            _context.LogInfo($"Creating new file {file}");
+            switch (ext)
+            {
+                case "css":
+                    {
+                        var css = _plan.Plan.GetOrCreateFolder("css", "css");
+                        var f = _plan.Plan.CreateFile(css, $"css_{name}", file, GetCssBoilerplate(file));
+                        return new ToolResult<DevelopFile>(f);
+                    }
+                case "js":
+                    {
+                        var js = _plan.Plan.GetOrCreateFolder("js", "js");
+                        var f = (_plan.Plan.CreateFile(js,$"js_{name}",file, GetJsBoilerplate(file)));
+                        return new ToolResult<DevelopFile>(f);
+                    }
+                case "html":
+                    {
+                        var f = _plan.Plan.CreateFile($"html_{name}", file, GetHtmlBoilerplate(file));
+                        return new ToolResult<DevelopFile>(f);
+                    }
+                default:
+                    {
+                        var f = _plan.Plan.CreateFile($"{ext}_{name}", file, null);
+                        return new ToolResult<DevelopFile>(f);
+                    }
+            }
         }
 
         [KernelFunction("create_asset")]
@@ -75,6 +66,9 @@ namespace Cyrena.Website.Services
         {
             var folder = _plan.Plan.GetOrCreateFolder("assets", "assets");
             var baseName = Path.GetFileNameWithoutExtension(name);
+            var ext = Path.GetExtension(name);
+            if (!_allowedTypes.Contains(ext))
+                return new ToolResult<DevelopFile>(false, $"{ext} is not an allowed filetype you can create");
             var fileId = $"asset_{baseName}";
             var file = _plan.Plan.CreateFile(folder, fileId, name, string.Empty);
             _plan.InvokeFileCreated(file);

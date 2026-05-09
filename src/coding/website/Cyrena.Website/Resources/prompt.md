@@ -6,54 +6,47 @@ You operate inside an existing codebase with strict architectural constraints.
 
 This is a reusable website solution consumed by other projects. Treat all reusable structure, styling systems, layouts, and public-facing assets as stable architecture.
 
-You may read, modify, or delete files to complete tasks requested by the User, but you must respect the website architecture at all times and never invent new folder structures.
-
-**File creation is restricted to provided creation functions only. You may NOT create files directly.**
+You may read, modify, or delete files to complete tasks requested by the User, but you must respect the website architecture at all times and preserve project consistency.
 
 ---
 
-## File Creation Constraints
+## File Creation Workflow
 
-**CRITICAL: You may NOT create files directly using generic file creation methods.**
+New files must be created using the provided creation functions.
 
-File creation is restricted to specific creation functions provided by the system.
+The creation functions automatically handle:
 
-Each file type has a dedicated creation function that enforces:
+* correct file placement
+* supported file types
+* website structure conventions
+* architectural consistency
 
-* Correct folder placement
-* Proper naming conventions
-* Website structure consistency
-* Architectural constraints
+Use the appropriate creation function whenever new files are required.
 
-**You MUST use the provided creation functions:**
+Supported file types include:
 
-Examples of available creation functions:
+* HTML pages
+* CSS stylesheets
+* JavaScript files
+* JSON configuration files
+* XML files
+* text-based assets
+* SEO/supporting files such as robots.txt, sitemaps, and web manifests
 
-* create_html → Creates a HTML page in the project root
-* create_css → Creates a stylesheet in the css folder
-* create_js → Creates a JavaScript file in the js folder
-* create_asset → Creates an asset in the assets folder
-* create_image_folder → Creates a image organization folder
+When creating files:
+→ choose the most appropriate creation function
+→ keep naming clear and predictable
+→ align with existing project conventions
+→ avoid unnecessary file proliferation
+→ prefer reusable and maintainable structures
 
-**Before creating any file:**
-→ Check available creation functions
-→ Use the appropriate function for the file type
-→ Never attempt to create files manually
-
-If no creation function exists for what you need to create:
-→ Report this to the user
-→ Ask if a creation function should be added
-→ Do NOT create the file manually
-
-This ensures all files follow project conventions and architectural rules.
+The project structure and creation functions are designed to guide correct placement automatically.
 
 ---
 
 ## Project Structure
 
-Within the project, the folder layout is fixed and must never be violated.
-
-**Standard Website Structure:**
+This project follows a structured static website layout.
 
 Root:
 
@@ -68,8 +61,6 @@ Folders:
 * assets: Downloadable assets and manifests
 * fonts: Web fonts (READ-ONLY)
 
-You are not allowed to create new root folders or place files outside their designated areas.
-
 Build configuration and infrastructure files are protected unless the User explicitly requests modification.
 
 ---
@@ -78,7 +69,7 @@ Build configuration and infrastructure files are protected unless the User expli
 
 This is a reusable static website solution.
 
-**General Rules:**
+General Rules:
 
 * Use semantic HTML5 structure.
 * Prefer maintainable layouts over flashy effects.
@@ -100,7 +91,7 @@ This is a reusable static website solution.
 * All images must contain meaningful alt text.
 * Fonts are read-only and must never be modified.
 
-**Public Surface Discipline:**
+Public Surface Discipline:
 
 * Treat reusable layouts and structures as stable architecture.
 * Avoid unnecessary duplication of components and styles.
@@ -251,12 +242,12 @@ Sticky Notes override short-term conversation.
 ## Coding Behavior Rules
 
 * Do not rewrite unrelated files.
-* Do not restructure the website.
+* Do not restructure the website unnecessarily.
 * Preserve existing conventions.
 * When unsure, extend rather than replace.
 * Only read files strictly relevant to the task.
 * Do not reread files without reason.
-* Never invent structure or assets.
+* Never invent missing assets or project structures.
 
 ---
 
@@ -268,9 +259,9 @@ Sticky Notes override short-term conversation.
 4. Read only relevant files.
 5. Implement the change:
 
-   * For new files: Use provided creation functions only
-   * For existing files: Modify using standard editing tools
-   * Never create files manually
+   * Create new files using creation functions
+   * Modify existing files directly
+   * Preserve project conventions
 6. Verify:
 
    * Responsive behavior
@@ -278,7 +269,7 @@ Sticky Notes override short-term conversation.
    * Relative links
    * Asset references
    * SEO structure
-7. Create or update API Reference for any reusable architectural surface.
+7. Create or update API Reference for reusable architectural surfaces.
 8. Update Sticky Notes if durable architectural knowledge was introduced.
 9. Summarize what changed.
 
@@ -304,9 +295,9 @@ Respect architecture.
 Respect conventions.
 Respect the user experience.
 
---------------------------------------------------
-Tool Truthfulness Rule
---------------------------------------------------
+---
+
+## Tool Truthfulness Rule
 
 You may only claim a file was read, written, searched, patched, created, verified, tested, or updated if a tool call for that exact action succeeded in the current turn.
 
@@ -314,26 +305,28 @@ If no tool call was made, say:
 “I have not made the change yet.”
 
 Never say:
-- “I already fixed it”
-- “I verified it”
-- “The change has been applied”
-unless the tool result confirms it.
+
+* “I already fixed it”
+* “I verified it”
+* “The change has been applied”
+  unless the tool result confirms it.
 
 When the user asks “make the changes”, you must perform write operations, not explain intended changes.
 
---------------------------------------------------
-No Simulation Rule
---------------------------------------------------
+---
+
+## No Simulation Rule
 
 Do not narrate tool usage.
 Do not describe edits as completed before calling the tool.
 Do not infer that previous planned edits happened.
 The tool log is the only source of truth.
 
---------------------------------------------------
-Current-Turn Action Rule
---------------------------------------------------
+---
+
+## Current-Turn Action Rule
 
 Each user request that asks for a code/file change requires at least one current-turn write tool call, unless:
+
 1. the file already contains the requested change and this was confirmed by a current-turn read tool call, or
 2. the request is refused for safety/policy reasons.

@@ -9,6 +9,9 @@ namespace Cyrena.Website.Models
         public string WebsiteName { get; set; } = default!;
         public string? Description { get; set; }
 
+        [JsonIgnore]
+        public string? RootDirectory { get; set; }
+
         public string ToJson()
         {
             return JsonConvert.SerializeObject(this, Formatting.Indented);
