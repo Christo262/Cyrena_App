@@ -18,10 +18,11 @@ namespace Cyrena.Runtime.Services
         private readonly IStore<ChatMessage> _store;
         private readonly ChatConfiguration _config;
         private readonly IPromptManager _prompts;
+        private readonly IIterationService _its;
 
         private readonly ChatHistory _kernel;
         private readonly ChatHistory _display;
-        public ChatMessageService(IOptions<ChatOptions> options, ChatConfiguration config, IStore<ChatMessage> store, IPromptManager prompts)
+        public ChatMessageService(IOptions<ChatOptions> options, ChatConfiguration config, IStore<ChatMessage> store, IPromptManager prompts, IIterationService its)
         {
             _options = options.Value;
             _pipeline = new ChatMessagePipeline();
@@ -31,6 +32,7 @@ namespace Cyrena.Runtime.Services
 
             _kernel = new ChatHistory();
             _display = new ChatHistory();
+            _its = its;
         }
 
         public ChatOptions Options => _options;
@@ -41,17 +43,7 @@ namespace Cyrena.Runtime.Services
             var history = new ChatHistory();
             foreach (var item in _prompts.Prompts.OrderBy(x => x.Order))
                 history.AddSystemMessage(item.Content);
-            if (_prompts.ModifyKernelHistoryFunc == null)
-                history.AddRange(_kernel);
-            else
-                try
-                {
-                    history.AddRange(_prompts.ModifyKernelHistoryFunc(_kernel, _options));
-                }
-                catch (Exception ex)
-                {
-                    this.LogError(ex.Message);
-                }
+            history.AddRange(_kernel);
             return history;
         }
 
@@ -87,7 +79,7 @@ namespace Cyrena.Runtime.Services
                 _kernel.Add(content);
                 _pipeline.InvokeKernelHistoryUpdated(_kernel);
                 if (_options.MessagePersistRoles.Contains(content.Role))
-                    await _store.AddAsync(new ChatMessage(content, _config.Id));
+                    await _store.AddAsync(new ChatMessage(content, _config.Id, _its.IterationId));
             }
 
             if(_options.IsDisplayContent(content))
@@ -114,7 +106,7 @@ namespace Cyrena.Runtime.Services
                     foreach (var item in items)
                         content.Items.Add(item.Item);
                 if(_options.MessagePersistRoles.Contains(content.Role))
-                    await _store.AddAsync(new ChatMessage(content, _config.Id, items));
+                    await _store.AddAsync(new ChatMessage(content, _config.Id, _its.IterationId, items));
             }
 
             if (_options.IsDisplayContent(content))

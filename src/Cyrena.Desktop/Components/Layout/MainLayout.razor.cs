@@ -18,12 +18,16 @@ namespace Cyrena.Desktop.Components.Layout
         [Inject] private IKernelController _controller { get; set; } = default!;
         [Inject] private DialogService _dialog { get; set; } = default!;
         [Inject] private NavigationManager _nav { get;set;  } = default!;
+        [Inject] private IViewStart _start { get; set; } = default!;
 
         private IEnumerable<ChatConfiguration>? _chats { get; set; }
         private IEnumerable<string?>? _groups { get; set; }
+        private ViewStart _view_start = default!;
 
         protected override void OnInitialized()
         {
+            _view_start = _start.GetViewStart();
+            _nav.NavigateTo(_view_start.Href);
             base.OnInitialized();
         }
 

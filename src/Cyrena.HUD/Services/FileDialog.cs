@@ -1,7 +1,9 @@
-﻿using Cyrena.Contracts;
+﻿using BootstrapBlazor.Components;
+using Cyrena.Contracts;
 using Microsoft.Win32;
 using System.Diagnostics;
 using System.IO;
+using static System.Net.WebRequestMethods;
 
 namespace Cyrena.HUD.Services
 {
@@ -34,6 +36,21 @@ namespace Cyrena.HUD.Services
                 }
                 bool? result = dialog.ShowDialog();
                 return result == true ? dialog.FileName : null;
+            });
+        }
+
+        public Task<string?> SelectFolder(string title = "Select Folder", string? current = null)
+        {
+            return Task.Run(() =>
+            {
+                var dialog = new Microsoft.Win32.OpenFolderDialog
+                {
+                    Title = title,
+                    DefaultDirectory = current,  
+                    Multiselect = false
+                };
+                bool? result = dialog.ShowDialog();
+                return result == true ? dialog.FolderName : null;
             });
         }
 

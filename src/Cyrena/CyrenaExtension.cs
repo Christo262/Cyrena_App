@@ -1,7 +1,10 @@
-﻿using Cyrena.Extensa.Models;
+﻿using Cyrena.Components.Shared;
+using Cyrena.Extensa.Models;
 using Cyrena.Extensions;
 using Cyrena.Options;
 using Cyrena.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 
 namespace Cyrena
 {
@@ -19,8 +22,7 @@ namespace Cyrena
             builder.AddOllama();
             builder.AddOpenAI();
 
-            builder.AddAssistantMode<DefaultAssistantMode>();
-            builder.AddFeatureAssembly<DefaultAssistantMode>("blazor");
+            builder.AddDefaultAssistant();
         }
     }
 }

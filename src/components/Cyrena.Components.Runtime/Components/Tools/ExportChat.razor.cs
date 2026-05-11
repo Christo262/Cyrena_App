@@ -1,4 +1,5 @@
-﻿using Cyrena.Contracts;
+﻿using Cyrena.Attributes;
+using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,13 +9,8 @@ namespace Cyrena.Components.Tools
 {
     public partial class ExportChat
     {
-        private IChatMessageService _chat = default!;
+        [KernelInject] private IChatMessageService _chat { get; set; } = default!;
         [Inject] private IFileDialog _file { get; set; } = default!;
-
-        protected override void OnInitialized()
-        {
-            _chat = Kernel.Services.GetRequiredService<IChatMessageService>();
-        }
 
         private async Task ExportChatAsync()
         {

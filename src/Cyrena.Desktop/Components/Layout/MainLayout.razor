@@ -3,8 +3,11 @@
 @inherits LayoutComponentBase
 
 <Preload />
-<Layout ShowCollapseBar ShowFooter="false" SideWidth="0" IsPage IsFullSide IsFixedHeader
-        ShowSplitBar SidebarMinWidth="200" SidebarMaxWidth="350" ShowTabInHeader UseTabSet TabDefaultUrl="/" MenuBarIcon="bi bi-layout-sidebar-inset"
+<Cyrena.Components.Tools.DisplayServiceComponent/>
+<Layout ShowCollapseBar ShowFooter="false" SideWidth="0" IsPage IsFullSide="false" IsFixedHeader
+        ShowSplitBar SidebarMinWidth="200" SidebarMaxWidth="350" ShowTabInHeader UseTabSet 
+        TabDefaultUrl="@(_view_start.Href)" 
+        MenuBarIcon="bi bi-layout-sidebar-inset"
         TabContextMenuCloseIcon="bi bi-x-lg" TabContextMenuCloseAllIcon="bi bi-x-lg" TabContextMenuCloseOtherIcon="bi bi-x-lg" TabStyle="TabStyle.Chrome"
         AdditionalAssemblies="@(_options.GetFeatureAssemblies("blazor").Concat([typeof(MainLayout).Assembly]))">
     <Header>

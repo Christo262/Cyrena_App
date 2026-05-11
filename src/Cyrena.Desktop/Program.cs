@@ -1,4 +1,5 @@
-﻿using Cyrena.Contracts;
+﻿using Cyrena.Components.Shared;
+using Cyrena.Contracts;
 using Cyrena.Desktop.Components;
 using Cyrena.Desktop.Components.Shared;
 using Cyrena.Desktop.Models;
@@ -25,6 +26,7 @@ class Program
 #endif
             });
 
+        appBuilder.RootComponents.Add<HeadOutlet>("head-outlet");
         appBuilder.RootComponents.Add<App>("app");
         var builder = appBuilder.Services.AddCyrenaRuntime()
                         .AddExtensa(e =>
@@ -53,6 +55,12 @@ class Program
             .SetTitle("Cyréna")
             .Load("index.html")
             .Center();
+
+#if DEBUG
+        app.MainWindow.SetDevToolsEnabled(true);
+#else
+        app.MainWindow.SetDevToolsEnabled(false);
+#endif
 
         app.MainWindow.Height = photino.Height;
         app.MainWindow.Width = photino.Width;

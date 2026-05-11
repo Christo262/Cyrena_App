@@ -74,6 +74,8 @@ namespace Cyrena.Runtime.Services
                     await plugin.LoadAsync(cyrenaKernelBuilder);
             }
             cyrenaKernelBuilder.Services.AddSingleton<IPromptManager>(promptManager);
+            cyrenaKernelBuilder.Services.AddSingleton<IAutoFunctionInvocationFilter, ConnectionFunctionInformerFilter>();
+            cyrenaKernelBuilder.Services.AddSingleton<IFileHandlerFactory, FileHandlerFactory>();
             var kernel = builder.Build();
             if (!_instances.TryAdd(config.Id, kernel))
             {

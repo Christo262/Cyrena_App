@@ -17,6 +17,7 @@ namespace Cyrena.Runtime.Services
         /// Will be set on Iterate()
         /// </summary>
         private Kernel _kernel { get; set; } = default!;
+        private Ulid? _iteration_id { get; set; }
         public IterationService()
         {
             _pipeline = new IterationPipeline();
@@ -33,6 +34,7 @@ namespace Cyrena.Runtime.Services
             {
                 Inferring = false;
                 _pipeline.InvokeIteration(Inferring);
+                _iteration_id = null;
             }
         }
 
@@ -42,8 +44,11 @@ namespace Cyrena.Runtime.Services
             {
                 Inferring = true;
                 _pipeline.InvokeIteration(Inferring);
+                _iteration_id = Ulid.NewUlid();
             }
         }
+
+        public string? IterationId => _iteration_id?.ToString();
 
         public IDisposable OnIterationStart(Action<bool> callback)
         {

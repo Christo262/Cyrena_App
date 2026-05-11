@@ -12,6 +12,7 @@
     <PackageVersion Include="Cyrena.Persistence.File" Version="0.4.0" />
     <PackageVersion Include="FSharp.Compiler.Service" Version="43.12.203" />
     <PackageVersion Include="FSharp.Core" Version="10.1.203" />
+    <PackageVersion Include="Ulid" Version="1.4.1" />
   </ItemGroup>
   <!--Third-party-->
   <ItemGroup>
@@ -24,8 +25,8 @@
   <ItemGroup>
     <PackageVersion Include="Photino.Blazor" Version="4.0.13" />
     <PackageVersion Include="CommunityToolkit.Maui" Version="14.0.0" />
-    <PackageVersion Include="BootstrapBlazor" Version="10.3.0" />
-    <PackageVersion Include="BootstrapBlazor.Html2Pdf" Version="10.0.2" />
+    <PackageVersion Include="BootstrapBlazor" Version="10.6.0" />
+    <PackageVersion Include="BootstrapBlazor.Html2Pdf" Version="10.0.6" />
     <PackageVersion Include="BootstrapBlazor.BootstrapIcon" Version="10.0.0" />
     <PackageVersion Include="BlazorMonaco" Version="3.4.0" />
   </ItemGroup>

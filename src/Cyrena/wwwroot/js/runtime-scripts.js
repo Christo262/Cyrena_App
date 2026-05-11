@@ -15,6 +15,7 @@
 
     const instances = new Map();
     const pasteHandlers = new Map();
+    const dropHandlers = new Map();
 
     /**
      * Initializes a runtime instance for the given element.
@@ -103,23 +104,32 @@
         }
 
         const handler = async function (e) {
+            const files = e.clipboardData?.files;
+
+            if (files && files.length > 0) {
+                e.preventDefault();
+
+                for (const file of files) {
+                    readAndSendFile(file, dotNetHelper, 'pasted');
+                }
+
+                return;
+            }
+
+            // Optional fallback for pasted screenshots/images where files is empty
             const items = e.clipboardData?.items;
             if (!items) return;
 
             for (let i = 0; i < items.length; i++) {
                 const item = items[i];
-                if (item.type.indexOf('image') === 0) {
-                    e.preventDefault();
-                    const blob = item.getAsFile();
-                    if (!blob) continue;
 
-                    const reader = new FileReader();
-                    reader.onload = function (event) {
-                        const base64 = event.target.result;
-                        dotNetHelper.invokeMethodAsync('OnImagePasted', base64, item.type)
-                            .catch(err => console.error('Cyrena.Runtime: Error invoking OnImagePasted:', err));
-                    };
-                    reader.readAsDataURL(blob);
+                if (item.kind === 'file') {
+                    const file = item.getAsFile();
+                    if (!file) continue;
+
+                    e.preventDefault();
+
+                    readAndSendFile(file, dotNetHelper, 'pasted');
                 }
             }
         };
@@ -127,6 +137,71 @@
         textarea.addEventListener('paste', handler);
         pasteHandlers.set(textarea, handler);
         //console.log('Cyrena.Runtime: Paste handler registered for textarea.');
+    };
+
+    function readAndSendFile(file, dotNetHelper, source) {
+        const reader = new FileReader();
+
+        reader.onload = function (event) {
+            dotNetHelper.invokeMethodAsync(
+                'OnFilePasted',
+                event.target.result,
+                file.name || `${source}-file`,
+                file.type || 'application/octet-stream',
+                file.size
+            ).catch(err => console.error(`Cyrena.Runtime: Error invoking OnFilePasted from ${source}:`, err));
+        };
+
+        reader.readAsDataURL(file);
+    };
+
+    window.Cyrena.Runtime.registerChatDropHandler = function (element, dotNetHelper) {
+        if (!element) {
+            console.error('Cyrena.Runtime: element is required for registerChatDropHandler.');
+            return;
+        }
+
+        if (dropHandlers.has(element)) {
+            console.warn('Cyrena.Runtime: Drop handler already registered for this element.');
+            return;
+        }
+
+        const dragOverHandler = function (e) {
+            if (!e.dataTransfer?.types?.includes('Files')) return;
+
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+            element.classList.add('cyrena-file-drag-over');
+        };
+
+        const dragLeaveHandler = function (e) {
+            if (!element.contains(e.relatedTarget)) {
+                element.classList.remove('cyrena-file-drag-over');
+            }
+        };
+
+        const dropHandler = function (e) {
+            const files = e.dataTransfer?.files;
+
+            if (!files || files.length === 0) return;
+
+            e.preventDefault();
+            element.classList.remove('cyrena-file-drag-over');
+
+            for (const file of files) {
+                readAndSendFile(file, dotNetHelper, 'dropped');
+            }
+        };
+
+        element.addEventListener('dragover', dragOverHandler);
+        element.addEventListener('dragleave', dragLeaveHandler);
+        element.addEventListener('drop', dropHandler);
+
+        dropHandlers.set(element, {
+            dragOverHandler,
+            dragLeaveHandler,
+            dropHandler
+        });
     };
 
     /**
@@ -145,6 +220,20 @@
         textarea.removeEventListener('paste', handler);
         pasteHandlers.delete(textarea);
         //console.log('Cyrena.Runtime: Paste handler unregistered for textarea.');
+    };
+
+    window.Cyrena.Runtime.unregisterChatDropHandler = function (element) {
+        if (!element) return;
+
+        const handlers = dropHandlers.get(element);
+        if (!handlers) return;
+
+        element.removeEventListener('dragover', handlers.dragOverHandler);
+        element.removeEventListener('dragleave', handlers.dragLeaveHandler);
+        element.removeEventListener('drop', handlers.dropHandler);
+
+        element.classList.remove('cyrena-file-drag-over');
+        dropHandlers.delete(element);
     };
 
 })();

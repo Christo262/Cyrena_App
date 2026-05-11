@@ -52,6 +52,7 @@ namespace Cyrena.Runtime.Services
             _prompts.Add(np);
         }
 
+        [Obsolete]
         public Func<ChatHistory, ChatOptions, IEnumerable<ChatMessageContent>>? ModifyKernelHistoryFunc { get; set; }
     }
 }

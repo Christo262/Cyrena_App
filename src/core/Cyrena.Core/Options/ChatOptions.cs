@@ -17,7 +17,7 @@ namespace Cyrena.Options
             LogSuccess = new AuthorRole("LogSuccess");
             LogWarn = new AuthorRole("LogWarn");
             LogError = new AuthorRole("LogError");
-            MessagePersistRoles = [Assistant, User];
+            MessagePersistRoles = [Assistant, User, Tool];
         }
 
         public ChatOptions(AuthorRole system, AuthorRole assistant, AuthorRole user, AuthorRole tool, AuthorRole info, AuthorRole success, AuthorRole warn, AuthorRole error)

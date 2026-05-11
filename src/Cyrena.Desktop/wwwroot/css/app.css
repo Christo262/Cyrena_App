@@ -179,6 +179,9 @@ html, body {
 .layout-side {
     overflow-x: hidden;
     overflow-y: auto;
+    background-color: var(--bs-dark) !important;
+    border-radius: 0 5px 5px 0;
+    border-right: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
 }
 
 .tabs-body {

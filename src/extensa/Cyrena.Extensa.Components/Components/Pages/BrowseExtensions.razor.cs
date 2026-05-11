@@ -12,7 +12,7 @@ namespace Cyrena.Extensa.Components.Pages
         [Inject] private IPluginServerService _servers { get; set; } = default!;
         [Inject] private IExtensionRegistry _registry { get; set; } = default!;
         [Inject] private DialogService _dialog { get; set;  } = default!;
-        private IEnumerable<Package>? _models { get; set; }
+        private IEnumerable<Package> _models { get; set; } = Enumerable.Empty<Package>();
         private IEnumerable<PluginServer> _distros = Enumerable.Empty<PluginServer>();
 
         public void Dispose()

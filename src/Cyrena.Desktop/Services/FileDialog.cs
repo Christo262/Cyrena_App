@@ -55,5 +55,13 @@ namespace Cyrena.Desktop.Services
                 Process.Start("xdg-open", $"\"{folderPath}\"");
             }
         }
+
+        public async Task<string?> SelectFolder(string title = "Select Folder", string? current = null)
+        {
+            var output = await _window.ShowOpenFolderAsync(title, current, false);
+            if(output.Length == 0)
+                return null;
+            return output[0];
+        }
     }
 }

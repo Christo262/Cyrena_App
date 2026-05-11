@@ -1,0 +1,29 @@
+@page "/platform-test-start"
+@attribute [TabItemOption(Text = "Test View", Icon = "bi bi-stopwatch")]
+@inject IFileDialog _files
+
+<div class="h-100 overlfow-auto">
+    <div class="container">
+        <h1>
+            Test View Start
+        </h1>
+
+        @if (!string.IsNullOrEmpty(folder))
+        {
+            <p>
+                @folder
+            </p>
+        }
+
+        <button type="button" class="btn btn-primary" @onclick="TestFolder">Test Folder</button>
+    </div>
+</div>
+
+@code {
+    private string? folder { get; set; }
+
+    private async Task TestFolder()
+    {
+        folder = await _files.SelectFolder("Test Folder", folder);
+    }
+}

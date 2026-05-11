@@ -1,4 +1,5 @@
 ﻿using BootstrapBlazor.Components;
+using Cyrena.Attributes;
 using Cyrena.Contracts;
 using Cyrena.Models;
 using Microsoft.AspNetCore.Components;
@@ -15,17 +16,12 @@ namespace Cyrena.Components.Shared
         public EventCallback<AdditionalMessageContent[]> OnItemsAdded { get; set; }
         [Inject] private IJSRuntime _js { get; set; } = default!;
         [Inject] private ToastService _toasts { get; set; } = default!;
-        private ConnectionInfo _info = default!;
+        [KernelInject] private IFileHandlerFactory _factory { get; set; } = default!;
         private string? _accepts { get; set; }
         protected override void OnInitialized()
         {
-            _info = Kernel.Services.GetRequiredService<ConnectionInfo>();
-            var handlers = Kernel.Services.GetServices<IFileHandler>();
-            if (handlers.Count() == 0) return;
-            var mimes = new List<string>();
-            foreach (var handler in handlers)
-                mimes.AddRange(handler.GetSupportedMimeTypes());
-            _accepts = string.Join(',', mimes.ToArray());
+            if (!_factory.HasFileHandlers) return;
+            _accepts = string.Join(',', _factory.GetSupportedMimeTypes());
         }
 
         private async Task TriggerFileUpload()
@@ -45,20 +41,11 @@ namespace Cyrena.Components.Shared
                 try
                 {
                     using var stream = file.OpenReadStream(maxAllowedSize: 50 * 1024 * 1024); // 50MB limit
-                    var handlers = Kernel.Services.GetServices<IFileHandler>();
-                    AdditionalMessageContent? content = null;
-                    foreach (var handler in handlers)
-                    {
-                        if(handler.HandlesType(file.ContentType, file.Name))
-                        {
-                            content = await handler.GetMessageContent(stream, file.ContentType, file.Name);
-                            if (content != null)
-                                break;
-                        }
-                    }
+                    AdditionalMessageContent? content = await _factory.GetMessageContent(stream, file.ContentType, file.Name);
                     if (content == null)
-                        throw new Exception("File type is not supported");
-                    models.Add(content);
+                        await _toasts.Error($"{file.Name} Error", "File type is not supported in the current chat.");
+                    else
+                        models.Add(content);
                 }catch (Exception ex)
                 {
                     await _toasts.Error($"{file.Name} Error", ex.Message);

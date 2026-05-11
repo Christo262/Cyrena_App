@@ -1,0 +1,13 @@
+{
+  "id": "cyrena.platform.tests",
+  "name": "Platform Tests",
+  "version": "1.0.0",
+  "entryAssemblyFile": "Cyrena.Platform.Tests.dll",
+  "description": "Space to test core application services and interactions",
+  "dependencies": [
+    {
+      "id": "cyrena",
+      "minVersion": "0.4.0"
+    }
+  ]
+}
