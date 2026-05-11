@@ -67,5 +67,20 @@ namespace Cyrena.Models
         /// Marks which plugins should be invoked. <see cref="Cyrena.Contracts.IAssistantPlugin"/>
         /// </summary>
         public List<string> PluginIds { get; set; }
+
+        /// <summary>
+        /// Use in future expansions to sanbox file system access for the AI.
+        /// </summary>
+        public string? WorkingDirectory
+        {
+            get
+            {
+                return this["working.directory"];
+            }
+            set
+            {
+                this["working.directory"] = value;
+            }
+        }
     }
 }

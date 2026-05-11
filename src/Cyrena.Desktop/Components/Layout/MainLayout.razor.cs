@@ -8,6 +8,7 @@ using Cyrena.Persistence.Contracts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.DependencyInjection;
+using Photino.NET;
 
 namespace Cyrena.Desktop.Components.Layout
 {
@@ -19,6 +20,7 @@ namespace Cyrena.Desktop.Components.Layout
         [Inject] private DialogService _dialog { get; set; } = default!;
         [Inject] private NavigationManager _nav { get;set;  } = default!;
         [Inject] private IViewStart _start { get; set; } = default!;
+        [Inject] private PhotinoWindow _window { get; set; } = default!;
 
         private IEnumerable<ChatConfiguration>? _chats { get; set; }
         private IEnumerable<string?>? _groups { get; set; }
@@ -45,6 +47,9 @@ namespace Cyrena.Desktop.Components.Layout
                 });
             });
             await Refresh();
+
+            if (Environment.OSVersion.Platform == PlatformID.Unix)
+                await WebViewResize();
         }
 
         private async Task Refresh()
@@ -52,6 +57,14 @@ namespace Cyrena.Desktop.Components.Layout
             _chats = await _store.FindManyAsync(x => true, new OrderBy<ChatConfiguration>(x => x.LastModified, SortDirection.Descending));
             _groups = _chats.Select(x => x[ChatConfiguration.Group]).Distinct();
             this.StateHasChanged();
+        }
+
+        private async Task WebViewResize()
+        {
+            var size = _window.Size;
+            _window.SetSize(size.Width +1, size.Height +1);
+            await Task.Delay(50);
+            _window.SetSize(size);
         }
 
         private Task Unload(ChatConfiguration config)
