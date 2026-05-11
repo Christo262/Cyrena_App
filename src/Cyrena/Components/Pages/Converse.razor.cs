@@ -4,9 +4,9 @@ using Cyrena.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.SemanticKernel;
 
-namespace Cyrena.Desktop.Components.Pages
+namespace Cyrena.Components.Pages
 {
-    public partial class Converse : IDisposable
+    public partial class Converse
     {
         [Parameter] public string? Id { get; set; }
         [CascadingParameter]
@@ -34,13 +34,13 @@ namespace Cyrena.Desktop.Components.Pages
                 _kernel = await _controller.LoadAsync(Id);
                 if (_kernel == null)
                     throw new Exception($"Kernel not loaded");
-                if(Item != null)
+                if (Item != null)
                 {
                     var config = _kernel.GetRequiredService<IChatConfigurationService>();
                     Item.SetHeader(config.Config.Title ?? "New Chat", config.Config[ChatConfiguration.Icon]);
                     _watcher = _controller.OnChatUnload((cfg) =>
                     {
-                        if(cfg.Id == config.Config.Id)
+                        if (cfg.Id == config.Config.Id)
                             Parent?.RemoveTab(Item);
                     });
                     _updater = _controller.OnChatUpdate((cfg) =>

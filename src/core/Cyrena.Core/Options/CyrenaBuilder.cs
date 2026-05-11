@@ -7,6 +7,7 @@ namespace Cyrena.Options
     public sealed class CyrenaBuilder
     {
         public static string AppDataDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena");
+        public static string UserContentDirectory = Path.Combine(AppDataDirectory, "public");
         private readonly CancellationTokenSource _lifetime_cts;
         public CyrenaBuilder(IServiceCollection services)
         {

@@ -38,7 +38,7 @@ namespace Cyrena.Runtime.Ollama.Services
             await _chat.AddMessage(role, input);
             var settings = new OllamaPromptExecutionSettings
             {
-                FunctionChoiceBehavior = FunctionChoiceBehavior.None(), //Doesnt actually do anything for this release
+                FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
                 Temperature = _options.Temperature,
                 ExtensionData = new Dictionary<string, object>(),
                 TopK = _options.TopK,

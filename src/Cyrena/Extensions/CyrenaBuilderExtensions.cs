@@ -13,10 +13,6 @@ namespace Cyrena.Extensions
         {
             builder.AddAssistantMode<DefaultAssistantMode>();
             builder.AddFeatureAssembly<DefaultAssistantMode>("blazor");
-            var pub = Path.Combine(CyrenaBuilder.AppDataDirectory, "public");
-            if(!Directory.Exists(pub))
-                Directory.CreateDirectory(pub);
-            builder.Services.AddSingleton<IFileProvider>(new PhysicalFileProvider(pub));
             builder.AddSettingsComponent<CustomizationSettings>("Personalization");
             builder.Services.AddScoped<HeadOutletStateChangeTracker>();
             builder.Services.AddScoped<IViewStart, ViewStartService>();
