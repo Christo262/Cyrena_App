@@ -1,8 +1,8 @@
 ﻿# Cyréna
 
-Cyréna is an AI-native engineering workspace that adapts to your workflow through extensions.
+Cyréna is an AI-native desktop engineering workspace that adapts to your workflow through extensions.
 
-It runs alongside your IDE — not inside it.
+It runs alongside your IDE, not inside it. Extensions let you install only what you need instead of shipping a massive monolithic app.
 
 Cyréna helps developers build, maintain, and evolve real software projects across multiple engineering domains including .NET, embedded systems, firmware, web platforms, and static websites.
 
@@ -13,15 +13,11 @@ Cyréna orchestrates the workflow.
 
 ## Why Cyréna Exists
 
-Cyréna started from a practical problem.
+Cyréna was built from a practical problem.
 
-I needed internal business tooling — invoicing, billing, supplier management, operational systems — and wanted to move faster using AI.
+AI app builders could generate software quickly, but the infrastructure, hosting, and execution environment remained locked behind proprietary platforms. The software was not truly mine.
 
-AI app builders helped generate software quickly, but the infrastructure, hosting, and execution environment remained locked behind proprietary platforms. The software was not truly mine. I could not fully control deployment, infrastructure, or long-term ownership.
-
-Cyréna was built to solve that problem.
-
-Instead of replacing developers, Cyréna operates as an engineering workspace that works alongside them. It helps developers build software faster while keeping ownership, architecture, infrastructure, and deployment fully under their control.
+Cyréna solves that by helping developers move faster with AI while keeping full control over their code, architecture, infrastructure, and deployment.
 
 The goal is not magic.
 
@@ -31,27 +27,28 @@ The goal is disciplined AI-assisted engineering inside real projects.
 
 ## What Cyréna Actually Is
 
-Cyréna is not:
+Cyréna is a desktop application for AI-assisted engineering.
 
-* a chatbot
-* a code autocomplete plugin
-* a cloud-dependent SaaS
-* a “one-click app builder”
-* a replacement for engineering discipline
+It works with OpenAI and Ollama, allowing you to use cloud or local models and switch between them depending on the task.
 
-Cyréna is an engineering workspace built around structured workflows, project awareness, persistent technical memory, and extension-driven domain support.
+Cyréna is designed to slot into your existing workflows and tools, enhancing and accelerating them rather than disrupting them.
 
-It operates directly inside real projects and helps with:
+It can:
 
-* feature implementation
-* architecture enforcement
-* compile-error repair loops
-* technical documentation
-* project memory persistence
-* iterative engineering workflows
-* multi-domain development
+* implement features
+* modify existing codebases
+* repair build failures
+* generate documentation
+* retain project-specific knowledge
+* support repeatable engineering workflows
 
-The platform is designed to keep developers in control while dramatically increasing engineering throughput.
+Cyréna is built around extensions.
+
+Extensions allow support for different engineering domains such as .NET, Angular, Arduino, PlatformIO, and static websites.
+
+The extension model also allows Cyréna to expand beyond software engineering into entirely new domains over time.
+
+Developers remain in control of their code, infrastructure, and workflows.
 
 ---
 
