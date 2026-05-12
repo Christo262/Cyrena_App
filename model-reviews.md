@@ -1,4 +1,4 @@
-# Model Reviews
+# Models I’ve Used with Cyréna
 
 A quick look at how different LLMs perform inside my custom desktop development‑agent app.
 
@@ -30,6 +30,8 @@ A quick look at how different LLMs perform inside my custom desktop development�
 * **Arduino/PlatformIO** – Works nicely when the project uses only the `arduino` framework.  
 * **ESP‑IDF** – Tends to output outdated or obsolete code. It will only search the web if you explicitly ask it to.  
 * **.NET** – Handles simple errors well, provided there are clear API references. Struggles with larger, more complex solutions.
+
+*Pro Tip*: Ask the model to create API References for updated lookups
 
 #### **Ollama – qwen3‑coder:30B**
 * **Chat** – Not ideal; the model loves to “think out loud”.  

@@ -9,6 +9,10 @@ Cyréna helps developers build, maintain, and evolve real software projects acro
 You choose the model.
 Cyréna orchestrates the workflow.
 
+[Download (alpha)](https://cyrena.dev/download.html) | [Cyréna HUD (Windows)](docs/hud.md) | [Website](https://cyrena.dev) | [Docs](https://cyrena.dev/docs.html) | [Screenshots](docs/screenshots.md) | [My Model Experience](docs/model-reviews.md)
+
+![Cyréna](images/new_chat.png)
+
 ---
 
 ## Why Cyréna Exists
@@ -43,6 +47,8 @@ It can:
 * support repeatable engineering workflows
 
 Cyréna is built around extensions.
+
+![Cyréna with IDEs](images/cyrena_with_ide.png)
 
 Extensions allow support for different engineering domains such as .NET, Angular, Arduino, PlatformIO, and static websites.
 

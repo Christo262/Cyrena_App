@@ -1,42 +1,39 @@
-# Cyréna Screenshots
+## Personalization
 
-## Launch Window
+Make the workspace your own
 
-![Launch Window](../images/home.png)
+![Custom](../images/new_chat_custom.png)
 
-## Working
+## Real Project Workflow
+Working inside active engineering projects
 
 ![Working Window](../images/working.png)
 
-## HUD
+## AI-Assisted Development
+Prompt-driven engineering workflows
 
-![HUD Mode](../images/hud/hud.png)
+![HUD Mode](../images/new_chat_agent.png)
 
-#### HUD Settings
+## Local Or Cloud Models (Ollama)
+Configure local AI providers
 
-![HUD Settings](../images/hud/hud_settings.png)
+![Ollama](../images/ollama_config.png)
 
-## OpenAI Integration
+## Cloud Models (OpenAI)
+Connect cloud AI providers
 
-*Old UI*
-![OpenAI Integration](../images/openai-gpt5-test.jpg)
-
-Cyréna operating with OpenAI models inside a real project workflow.
-
-The agent respects architecture and modifies real files safely.
+![OpenAI](../images/openai_config.png)
 
 ---
 
-## Arduino Firmware Development
-*Old UI*
-![Arduino IDE](../images/arduino_3.jpg)
+## Application Settings
+Configure platform behavior
 
-Cyréna assisting with Arduino firmware:
+![OpenAI](../images/openai_settings.png)
 
-- constrained embedded workflows
-- library awareness
-- safe sketch modification
-- project specifications
-- repair loops
+---
 
-The same agent architecture, applied to a different domain.
+## Extension Management
+Extend Cyréna with domain-specific capabilities
+
+![OpenAI](../images/extensions.png)
