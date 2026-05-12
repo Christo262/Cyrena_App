@@ -58,6 +58,18 @@ Developers remain in control of their code, infrastructure, and workflows.
 
 ---
 
+## Demo
+
+Watch Cyréna perform a real prompt → build → repair workflow:
+
+👉 https://cyrena.dev
+
+This is not autocomplete.
+
+This is structured AI-assisted engineering inside real projects.
+
+---
+
 ## Core Platform Concepts
 
 ### Extension-Driven Architecture
@@ -282,28 +294,6 @@ The Website extension supports:
 * multi-page websites
 
 This extension was used to rebuild the Cyréna marketing website from Angular-rendered landing pages into static crawlable content.
-
----
-
-## Screenshots & Documentation
-
-* 📸 [Screenshots](./docs/screenshots.md)
-* 🧠 [Architecture Overview](./docs/code_overview.md)
-* 📸 [UI Overview](./docs/ui_overview.md)
-* 🤝 [Contributing](./contributing.md)
-* 👉 [Getting Started](https://cyrena.dev)
-
----
-
-## Demo
-
-Watch Cyréna perform a real prompt → build → repair workflow:
-
-👉 https://cyrena.dev
-
-This is not autocomplete.
-
-This is structured AI-assisted engineering inside real projects.
 
 ---
 
