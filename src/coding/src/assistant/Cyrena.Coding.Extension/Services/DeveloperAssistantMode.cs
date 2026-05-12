@@ -8,9 +8,7 @@ using Cyrena.Extensions;
 using Cyrena.Models;
 using Cyrena.Options;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace Cyrena.Coding.Services
 {
@@ -27,35 +25,38 @@ namespace Cyrena.Coding.Services
         public async Task ConfigureAsync(CyrenaKernelBuilder builder)
         {
             var config = builder.ChatConfiguration;
+            //Migrate previous projects
+            if (config.Properties.ContainsKey("dev.root-dir"))
+            {
+                if (string.IsNullOrEmpty(config.WorkingDirectory))
+                    config.WorkingDirectory = config["dev.root-dir"];
+                config.Properties.Remove("dev.root-dir");
+            }
+
             if (string.IsNullOrWhiteSpace(config[DevelopOptions.BuilderId]))
                 throw new InvalidOperationException($"{DevelopOptions.BuilderId} not set, unable to configure");
-            if (string.IsNullOrEmpty(config[DevelopOptions.RootDirectory]) || !Directory.Exists(config[DevelopOptions.RootDirectory]))
-                throw new InvalidOperationException($"{DevelopOptions.RootDirectory} not set, unable to configure");
+            if (string.IsNullOrEmpty(config.WorkingDirectory) || !Directory.Exists(config.WorkingDirectory))
+                throw new InvalidOperationException($"RootDirectory not set, unable to configure");
 
             var sln_builder = _services.GetServices<ICodeBuilder>().FirstOrDefault(x => x.Id == config[DevelopOptions.BuilderId]);
             if (sln_builder == null)
                 throw new NullReferenceException($"Unable to find solution builder with id {config[DevelopOptions.BuilderId]}");
 
-            var persistence = builder.AddFilePersistence(Path.Combine(config[DevelopOptions.RootDirectory]!, "./.cyrena"));
+            var persistence = builder.AddFilePersistence(Path.Combine(config.WorkingDirectory, ".cyrena"));
             builder.Services.Configure<ChatOptions>(o =>
             {
                 o.IncludeLogsInDisplay = true;
             });
-            var prompts = builder.GetFeatureOption<IPromptManager>();
-            prompts.ModifyKernelHistoryFunc = (hst, options) =>
-            {
-                var targets = hst.Where(x => x.Role == options.User || x.Role == options.Assistant).TakeLast(4);
-                return targets;
-            };
             persistence.AddSingletonStore<StickyNote>("sticky_notes");
             var plan = await sln_builder.ConfigureAsync(builder);
             var plan_service = new DevelopPlanService(plan);
             builder.Services.AddSingleton<IDevelopPlanService>(plan_service);
             builder.Services.AddSingleton<IVersionControl, VersionControl>();
-            builder.Plugins.AddFromType<FileActions>();
-            builder.Plugins.AddFromType<ProjectInformation>();
+            builder.Plugins.AddFromType<BaseFileKernelFunctions>("File");
+            builder.Plugins.AddFromType<ProjectInformation>("Project");
             builder.AddToolbarComponent<VersionControlViewer>(ToolbarAlignment.Start);
             builder.KernelBuilder.AddStartupTask<DevelopPlanWatcher>();
+            builder.Services.AddSingleton<IConversationHistoryTransformer, CodingConversationHistoryTransformer>();
         }
 
         public Task DeleteAsync(ChatConfiguration config)

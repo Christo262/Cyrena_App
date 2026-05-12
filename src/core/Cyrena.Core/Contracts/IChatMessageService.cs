@@ -33,7 +33,7 @@ namespace Cyrena.Contracts
         IDisposable OnDisplayHistoryChanged(Action<ChatHistory> callback);
         IDisposable OnKernelHistoryChanged(Action<ChatHistory> callback);
         IDisposable OnHistoryLoaded(Action<ChatHistory> callback);
-        ChatHistory GetKernelHistory();
+        Task<ChatHistory> GetKernelHistory();
 
         /// <summary>
         /// Manually loads history

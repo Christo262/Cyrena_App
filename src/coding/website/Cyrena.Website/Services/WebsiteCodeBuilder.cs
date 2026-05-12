@@ -27,7 +27,7 @@ namespace Cyrena.Website.Services
 
         public Task<DevelopPlan> ConfigureAsync(CyrenaKernelBuilder options)
         {
-            var rootDir = options.ChatConfiguration[DevelopOptions.RootDirectory];
+            var rootDir = options.ChatConfiguration.WorkingDirectory;
             var plan = new DevelopPlan(rootDir!);
             plan.IndexStaticWebsiteDefaultPlan();
 

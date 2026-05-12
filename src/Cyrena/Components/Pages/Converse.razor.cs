@@ -38,10 +38,14 @@ namespace Cyrena.Components.Pages
                 {
                     var config = _kernel.GetRequiredService<IChatConfigurationService>();
                     Item.SetHeader(config.Config.Title ?? "New Chat", config.Config[ChatConfiguration.Icon]);
-                    _watcher = _controller.OnChatUnload((cfg) =>
+                    _watcher = _controller.OnChatUnload(async (cfg) =>
                     {
                         if (cfg.Id == config.Config.Id)
-                            Parent?.RemoveTab(Item);
+                        {
+                            _nav.NavigateTo("");
+                            if(Parent != null && Item != null)
+                                await Parent.RemoveTab(Item);
+                        }
                     });
                     _updater = _controller.OnChatUpdate((cfg) =>
                     {

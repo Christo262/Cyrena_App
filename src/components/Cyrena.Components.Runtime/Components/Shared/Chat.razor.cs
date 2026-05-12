@@ -92,30 +92,12 @@ namespace Cyrena.Components.Shared
             StateHasChanged();
         }
 
-        private static string EnsureFileNameHasExtension(string fileName, string mimeType)
+        private string EnsureFileNameHasExtension(string fileName, string mimeType)
         {
             if (Path.HasExtension(fileName))
                 return fileName;
-#warning TODO get from IFileHandler
-            var extension = mimeType.ToLowerInvariant() switch
-            {
-                "image/png" => ".png",
-                "image/jpeg" => ".jpg",
-                "image/gif" => ".gif",
-                "image/webp" => ".webp",
-                "application/pdf" => ".pdf",
-                "text/plain" => ".txt",
-                "application/json" => ".json",
-                "text/csv" => ".csv",
-                "application/xml" => ".xml",
-                "text/xml" => ".xml",
-                "text/html" => ".html",
-                "text/css" => ".css",
-                "application/javascript" => ".js",
-                "text/javascript" => ".js",
-                _ => ""
-            };
 
+            var extension = _files.GetExtension(mimeType);
             return string.IsNullOrEmpty(extension)
                 ? fileName
                 : $"{fileName}{extension}";

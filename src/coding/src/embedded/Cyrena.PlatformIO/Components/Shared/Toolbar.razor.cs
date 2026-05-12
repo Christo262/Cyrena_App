@@ -36,7 +36,7 @@ namespace Cyrena.PlatformIO.Components.Shared
 
                 var envName = _environment.Current.Name.Replace("env:", "");
                 var sdkName = $"sdkconfig.{envName}";
-                var sdkPath = Path.Combine(_config.Config[DevelopOptions.RootDirectory]!, sdkName);
+                var sdkPath = Path.Combine(_config.Config.WorkingDirectory!, sdkName);
 
                 if (File.Exists(sdkPath) && !_plan.Plan.TryFindFileByName(sdkName, out _))
                 {

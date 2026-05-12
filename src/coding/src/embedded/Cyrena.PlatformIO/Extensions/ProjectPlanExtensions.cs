@@ -37,7 +37,7 @@ namespace Cyrena.PlatformIO.Extensions
                 plan.IndexFiles(internals, "h", $"include_{featureName}_internals_h_");
 
                 // Index any stray .h files directly in the feature folder (read-only — outside structured sub-folders)
-                plan.IndexFiles(featureFolder, "h", $"include_{featureName}_h_", true);
+                plan.IndexFiles(featureFolder, "h", $"include_{featureName}_h_");
             }
 
             // ===== src/ =====
@@ -68,8 +68,10 @@ namespace Cyrena.PlatformIO.Extensions
                 plan.IndexFiles(internals, "c", $"src_{featureName}_internals_c_");
                 plan.IndexFiles(internals, "cpp", $"src_{featureName}_internals_cpp_");
 
-                // Index any stray .h files directly in the feature folder (read-only — outside structured sub-folders)
-                plan.IndexFiles(featureFolder, "h", $"src_{featureName}_h_", true);
+                // Index any stray .h/.c/.cpp files directly in the feature folder (read-only — outside structured sub-folders)
+                plan.IndexFiles(featureFolder, "h", $"src_{featureName}_h_");
+                plan.IndexFiles(featureFolder, "c", $"src_{featureName}_c_");
+                plan.IndexFiles(featureFolder, "cpp", $"src_{featureName}_cpp_");
             }
 
             // ===== lib/ (read-only) =====

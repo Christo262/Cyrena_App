@@ -1,270 +1,131 @@
-# Cyrena.Persistence.Core SDK
+## Overview
 
-**Version:** 0.3.0  
-**Target Framework:** .NET 10.0  
-**Core Dependency:** `Cyrena.Core`
+`Cyrena.Persistence.Core` provides the persistence abstraction layer for the Cyréna framework. It defines the generic repository contract `IStore<T>`, the persistence builder interface `ICyrenaPersistenceBuilder`, and extension methods for convenient querying. Concrete implementations (e.g., `Cyrena.Persistence.File`) provide the actual storage backend.
 
-Cyrena.Persistence.Core is a thin persistence abstraction library that provides the `IStore<T>` repository pattern interface for long-term data storage within the Cyrena AI application. This library does not contain implementations—it defines contracts that persistence providers (e.g., MongoDB, SQLite, CosmosDB) must implement.
-
----
-
-## Architecture Overview
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Cyrena Application                       │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────────┐                                        │
-│  │ Cyrena.Core     │  ← Provides IEntity, CyrenaBuilder     │
-│  └────────┬────────┘                                        │
-│           │                                                 │
-│  ┌────────▼──────────────────────────────────────────────┐  │
-│  │           Cyrena.Persistence.Core                     │  │
-│  │                                                      │   │
-│  │  Contracts:     IStore<T>                             │  │
-│  │  Options:       ICyrenaPersistenceBuilder             │  │
-│  │  Extensions:    StoreExtensions                      │   │
-│  │                  CyrenaBuilderExtensions              │  │
-│  └────────────────────────┬───────────────────────────────┘   │
-│                           │                                   │
-│  ┌────────────────────────▼───────────────────────────────┐ │
-│  │     Persistence Provider (e.g., MongoDB, SQLite)       │ │
-│  │     → Implements IStore<T> for each entity type         │ │
-│  └──────────────────────────────────────────────────────────┘ │
-└──────────────────────────────────────────────────────────────┘
-```
-
-**Purpose:** This library enables application plugins and features to define custom entities for long-term storage without coupling to a specific persistence technology.
+**Target Framework:** .NET 10.0
+**Namespaces:** `Cyrena.Persistence.Contracts`, `Cyrena.Persistence.Options`, `Cyrena.Extensions`
 
 ---
 
 ## Contracts
 
-### IStore<T>
-
-Main repository pattern interface for CRUD operations on entities. Implement this interface to provide persistence for any type that implements `IEntity`.
+### `IStore<T>`
+Generic repository interface for entity persistence. Supports CRUD operations, querying with specifications, ordering, and paging.
 
 ```csharp
 public interface IStore<T> : IDisposable
-        where T : class, IEntity
+    where T : class, IEntity
 {
-    // Access to raw queryable data
     IQueryable<T> QueryableData { get; }
-    
-    // Save entity (upsert - insert or update)
     Task SaveAsync(T entity, CancellationToken cancellationToken = default);
-    
-    // Insert new entity
     Task AddAsync(T entity, CancellationToken cancellationToken = default);
-    
-    // Insert multiple entities
     Task AddManyAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default);
-    
-    // Update existing entity
     Task UpdateAsync(T entity, CancellationToken cancellationToken = default);
-    
-    // Delete single entity
     Task DeleteAsync(T entity, CancellationToken cancellationToken = default);
-    
-    // Delete entities matching specification
     Task<int> DeleteManyAsync(ISpecification<T> specification, CancellationToken cancellationToken = default);
-    
-    // Query entities with specification, ordering, and pagination
-    Task<IEnumerable<T>> FindManyAsync(
-        ISpecification<T> specification,
-        IOrderBy<T>? orderBy = default,
-        IPaging? paging = default,
-        CancellationToken cancellationToken = default);
-    
-    // Count entities matching specification
+    Task<IEnumerable<T>> FindManyAsync(ISpecification<T> specification, IOrderBy<T>? orderBy = default, IPaging? paging = default, CancellationToken cancellationToken = default);
     Task<int> CountAsync(ISpecification<T> specification, CancellationToken cancellationToken = default);
-    
-    // Find single entity matching specification
     Task<T?> FindAsync(ISpecification<T> specification, CancellationToken cancellationToken = default);
 }
 ```
 
-**Key Design Points:**
-- Generic `T` must implement `IEntity` (provides `Id` property)
-- `ISpecification<T>` pattern for query composition (from LinqKit.Core)
-- `IOrderBy<T>` and `IPaging` for sorting and pagination
-- Implements `IDisposable` for resource cleanup
+**Key behaviors:**
+- `SaveAsync`: Upsert operation. Auto-generates `Id` if null.
+- `AddAsync`: Insert operation. Auto-generates `Id` if null.
+- `QueryableData`: Direct LINQ queryable access to the underlying collection.
+- All operations are async and support cancellation.
 
----
-
-## Options
-
-### ICyrenaPersistenceBuilder
-
-Helper interface for registering entity stores during dependency injection configuration.
+### `ICyrenaPersistenceBuilder`
+Helper interface for registering entity stores during DI configuration.
 
 ```csharp
 public interface ICyrenaPersistenceBuilder
 {
-    // Register store as scoped (new instance per request)
     void AddScopedStore<TEntity>(string collectionName) where TEntity : class, IEntity;
-    
-    // Register store as singleton (shared instance)
     void AddSingletonStore<TEntity>(string collectionName) where TEntity : class, IEntity;
 }
 ```
 
-**Usage:** Used internally by extension methods to wire up stores. The `collectionName` parameter allows persistence providers to map entities to storage collections/tables.
+- `AddScopedStore`: Registers `IStore<TEntity>` as a scoped service (one per chat/kernel).
+- `AddSingletonStore`: Registers `IStore<TEntity>` as a singleton service (application-wide).
+- `collectionName`: Logical collection/table name for the entity type.
 
 ---
 
 ## Extension Methods
 
-### StoreExtensions
-
-Helper methods providing LINQ expression-based queries as an alternative to specification-based queries.
-
-```csharp
-public static class StoreExtensions
-{
-    // Find single entity using LINQ expression (converted to AnySpecification)
-    public static Task<T?> FindAsync<T>(
-        this IStore<T> store,
-        Expression<Func<T, bool>> predicate,
-        CancellationToken ct = default) where T : class, IEntity;
-    
-    // Find many entities using LINQ expression
-    public static Task<IEnumerable<T>> FindManyAsync<T>(
-        this IStore<T> store,
-        Expression<Func<T, bool>> predicate,
-        OrderBy<T>? orderBy = null,
-        Paging? paging = null,
-        CancellationToken ct = default) where T : class, IEntity;
-    
-    // Count using LINQ expression
-    public static Task<int> CountAsync<T>(
-        this IStore<T> store,
-        Expression<Func<T, bool>> predicate,
-        CancellationToken ct = default) where T : class, IEntity;
-    
-    // Delete many using LINQ expression
-    public static Task<int> DeleteManyAsync<T>(
-        this IStore<T> store,
-        Expression<Func<T, bool>> predicate,
-        CancellationToken ct = default) where T : class, IEntity;
-}
-```
-
-**Internal Implementation:** Uses `AnySpecification<T>` wrapper to convert `Expression<Func<T, bool>>` to `ISpecification<T>`.
-
-### CyrenaBuilderExtensions
-
-Extension methods for registering stores via the `CyrenaBuilder`.
+### `CyrenaBuilderExtensions` (in `Cyrena.Extensions`)
 
 ```csharp
 public static class CyrenaBuilderExtensions
 {
-    // Add scoped store to application
-    public static CyrenaBuilder AddScopedStore<TEntity>(
-        this CyrenaBuilder builder,
-        string collectionName) where TEntity : class, IEntity;
+    public static CyrenaBuilder AddScopedStore<TEntity>(this CyrenaBuilder builder, string collectionName) 
+        where TEntity : class, IEntity;
     
-    // Add singleton store to application
-    public static CyrenaBuilder AddSingletonStore<TEntity>(
-        this CyrenaBuilder builder,
-        string collectionName) where TEntity : class, IEntity;
+    public static CyrenaBuilder AddSingletonStore<TEntity>(this CyrenaBuilder builder, string collectionName) 
+        where TEntity : class, IEntity;
 }
 ```
 
----
+These methods delegate to the `ICyrenaPersistenceBuilder` registered in `CyrenaBuilder.FeatureOptions`. The persistence implementation package (e.g., `Cyrena.Persistence.File`) must be added first.
 
-## Data Model Dependencies
+### `StoreExtensions` (in `Cyrena.Extensions`)
 
-This library depends on models defined in **Cyrena.Core**:
-
-### IEntity
-Base interface requiring an `Id` property.
+Convenience overloads using `Expression<Func<T, bool>>` predicates instead of `ISpecification<T>`.
 
 ```csharp
-public interface IEntity
+public static class StoreExtensions
 {
-    string Id { get; }
+    public static Task<T?> FindAsync<T>(this IStore<T> store, Expression<Func<T, bool>> predicate, CancellationToken ct = default)
+        where T : class, IEntity;
+    
+    public static Task<IEnumerable<T>> FindManyAsync<T>(this IStore<T> store, Expression<Func<T, bool>> predicate, 
+        OrderBy<T>? orderBy = null, Paging? paging = null, CancellationToken ct = default)
+        where T : class, IEntity;
+    
+    public static Task<int> CountAsync<T>(this IStore<T> store, Expression<Func<T, bool>> predicate, CancellationToken ct = default) 
+        where T : class, IEntity;
+    
+    public static Task<int> DeleteManyAsync<T>(this IStore<T> store, Expression<Func<T, bool>> predicate, CancellationToken ct = default) 
+        where T : class, IEntity;
 }
 ```
 
-### Specification<T>
-Abstract base for query specifications (from LinqKit.Core).
-
-### IOrderBy<T>, IPaging
-Supporting interfaces for sorting and pagination queries.
+These extensions wrap the predicate in an internal `AnySpecification<T>` that implements `ISpecification<T>`.
 
 ---
 
-## Usage Example
+## Related Types (Defined in Implementation Packages)
 
-### Registering a Custom Entity Store
+The following types are referenced by `IStore<T>` and `StoreExtensions` but defined in concrete persistence implementation packages:
 
+- `ISpecification<T>` - Query specification interface
+- `Specification<T>` - Base specification implementation
+- `IOrderBy<T>` - Ordering specification interface
+- `OrderBy<T>` - Ordering implementation
+- `IPaging` - Paging specification interface
+- `Paging` - Paging implementation
+
+When using `Cyrena.Persistence.Core`, you must also reference a concrete implementation package that provides these types.
+
+---
+
+## Usage for Extension Developers
+
+Reference `Cyrena.Persistence.Core` to:
+1. Define custom entities that implement `IEntity`
+2. Use `IStore<TEntity>` for data access in services
+3. Register stores via `CyrenaBuilder.AddScopedStore<TEntity>()` or `AddSingletonStore<TEntity>()`
+4. Query data using LINQ expressions via `StoreExtensions`
+
+**Example:**
 ```csharp
-// In your plugin's startup configuration
-public class MyPluginStartup : IStartupTask
-{
-    public int Order => 0;
-    
-    public Task ExecuteAsync(IServiceProvider serviceProvider, CancellationToken ct)
-    {
-        var builder = serviceProvider.GetRequiredService<CyrenaBuilder>();
-        
-        // Register your entity store
-        builder.AddScopedStore<MyCustomEntity>("my-entities");
-        
-        return Task.CompletedTask;
-    }
-}
+// Define entity
+public class MyData : Entity { public string Value { get; set; } }
+
+// Register store in extension
+builder.AddScopedStore<MyData>("my-data");
+
+// Use in service
+public class MyService(IStore<MyData> store) { ... }
 ```
-
-### Using the Store in a Service
-
-```csharp
-public class MyService
-{
-    private readonly IStore<MyCustomEntity> _store;
-    
-    public MyService(IStore<MyCustomEntity> store)
-    {
-        _store = store;
-    }
-    
-    public async Task<MyCustomEntity?> GetByIdAsync(string id, CancellationToken ct)
-    {
-        // Using specification pattern
-        return await _store.FindAsync(
-            new SimpleSpecification<MyCustomEntity>(e => e.Id == id),
-            ct);
-    }
-    
-    public async Task<IEnumerable<MyCustomEntity>> GetActiveAsync(int page, int pageSize, CancellationToken ct)
-    {
-        // Using LINQ expression extension
-        return await _store.FindManyAsync(
-            e => e.IsActive && !e.IsDeleted,
-            orderBy: new OrderBy<MyCustomEntity>(e => e.CreatedAt, descending: true),
-            paging: new Paging(page, pageSize),
-            ct);
-    }
-    
-    public async Task SaveAsync(MyCustomEntity entity, CancellationToken ct)
-    {
-        await _store.SaveAsync(entity, ct);
-    }
-}
-```
-
----
-
-## Package Dependencies
-
-- **Cyrena.Core** — Core library providing `IEntity`, `CyrenaBuilder`, and base models
-- **LinqKit.Core** — LINQ expression extensions for specification pattern
-
----
-
-## Notes
-
-- This library is an abstraction layer. Actual persistence implementations are provided by separate packages (e.g., Cyrena.Persistence.Mongo).
-- The `ISpecification<T>`, `IOrderBy<T>`, and `IPaging` interfaces are re-exported from dependencies for convenience.
-- All stores should be registered during application startup via `CyrenaBuilderExtensions`.

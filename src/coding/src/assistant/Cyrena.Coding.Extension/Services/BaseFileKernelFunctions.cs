@@ -10,19 +10,19 @@ using System.Text;
 
 namespace Cyrena.Coding.Services
 {
-    internal class FileActions
+    internal class BaseFileKernelFunctions
     {
         private readonly IDevelopPlanService _plan;
         private readonly IChatMessageService _context;
         private readonly IVersionControl _version;
-        public FileActions(IDevelopPlanService plan, IChatMessageService context, IVersionControl version)
+        public BaseFileKernelFunctions(IDevelopPlanService plan, IChatMessageService context, IVersionControl version)
         {
             _plan = plan;
             _context = context;
             _version = version;
         }
 
-        [KernelFunction("read_file")]
+        [KernelFunction("read")]
         [Description("Returns the full text content of the specified file.")]
         public string ReadFileContent(
             [Description(
@@ -64,6 +64,7 @@ namespace Cyrena.Coding.Services
                 _context.LogInfo($"Reading file lines {file!.RelativePath}");
                 if (!_plan.Plan.TryReadFileLines(file!, out var fileContent))
                     return new ToolResult<DevelopFileLines>(false, $"Unable to read file with id {fileId}.");
+                
                 return new ToolResult<DevelopFileLines>(fileContent!);
             }
             catch (Exception ex)
@@ -72,7 +73,7 @@ namespace Cyrena.Coding.Services
             }
         }
 
-        [KernelFunction("write_content")]
+        [KernelFunction("write")]
         [Description(
             "Writes the supplied text to the specified file, overwriting any existing content.")]
         public ToolResult<DevelopFileContent> WriteFileContent(

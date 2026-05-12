@@ -28,7 +28,7 @@ namespace Cyrena.PlatformIO.Services
 
         public Task<DevelopPlan> ConfigureAsync(CyrenaKernelBuilder options)
         {
-            var plan = new DevelopPlan(options.ChatConfiguration[DevelopOptions.RootDirectory]!);
+            var plan = new DevelopPlan(options.ChatConfiguration.WorkingDirectory!);
             plan.IndexFiles("ini", "ini_", true);
             if (!plan.TryFindFile("ini_platformio", out var pio, false))
                 throw new InvalidOperationException("platformio.ini not found");

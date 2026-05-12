@@ -52,10 +52,7 @@ namespace Cyrena.Runtime.Ollama.Services
                 settings.ExtensionData["think"] = _options.Thinking;
 
             _responseBuilder = new StringBuilder();
-            var history = _chat.GetKernelHistory();
-            var transformers = _services.GetServices<IConversationHistoryTransformer>();
-            foreach(var transformer in transformers)
-                history = await transformer.TransformPreIterationHistory(history);
+            var history = await _chat.GetKernelHistory();
             await foreach (var chunk in _completion.GetStreamingChatMessageContentsAsync(history, settings, kernel, ct))
             {
                 var delta = chunk.Content;
@@ -66,6 +63,8 @@ namespace Cyrena.Runtime.Ollama.Services
                 }
                 _chat.Stream(delta);
             }
+
+            var transformers = _services.GetServices<IConversationHistoryTransformer>();
             foreach (var transformer in transformers)
                 await transformer.ApplyPostStreamModification(history);
 
@@ -150,10 +149,7 @@ namespace Cyrena.Runtime.Ollama.Services
                 settings.ExtensionData["think"] = _options.Thinking;
 
             _responseBuilder = new StringBuilder();
-            var history = _chat.GetKernelHistory();
-            var transformers = _services.GetServices<IConversationHistoryTransformer>();
-            foreach (var transformer in transformers)
-                history = await transformer.TransformPreIterationHistory(history);
+            var history = await _chat.GetKernelHistory();
 
             await foreach (var chunk in _completion.GetStreamingChatMessageContentsAsync(history, settings, kernel, ct))
             {
@@ -167,6 +163,7 @@ namespace Cyrena.Runtime.Ollama.Services
                 _chat.Stream(delta);
             }
 
+            var transformers = _services.GetServices<IConversationHistoryTransformer>();
             foreach (var transformer in transformers)
                 await transformer.ApplyPostStreamModification(history);
 

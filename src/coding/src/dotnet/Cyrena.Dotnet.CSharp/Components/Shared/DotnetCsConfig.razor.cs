@@ -42,7 +42,7 @@ namespace Cyrena.Dotnet.CSharp.Components.Shared
                     return false;
                 Model.Title = _model.Title;
                 Model.ConnectionId = _model.ConnectionId!;
-                Model[DevelopOptions.RootDirectory] = new FileInfo(_model.ProjectFilePath).DirectoryName;
+                Model.WorkingDirectory = new FileInfo(_model.ProjectFilePath).DirectoryName;
                 Model[DotnetOptions.ProjectFilePath] = _model.ProjectFilePath;
             }
             return valid;

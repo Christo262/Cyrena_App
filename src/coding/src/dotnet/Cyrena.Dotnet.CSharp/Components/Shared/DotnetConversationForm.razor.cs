@@ -41,7 +41,7 @@ namespace Cyrena.Dotnet.CSharp.Components.Shared
                     return false;
                 Configuration.Title = _model.Title;
                 Configuration.ConnectionId = _model.ConnectionId!;
-                Configuration[DevelopOptions.RootDirectory] = new FileInfo(_model.SolutionFilePath).DirectoryName;
+                Configuration.WorkingDirectory = new FileInfo(_model.SolutionFilePath).DirectoryName;
                 Configuration[DotnetOptions.SolutionFilePath] = _model.SolutionFilePath;
             }
             return valid;

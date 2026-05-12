@@ -18,7 +18,7 @@ namespace Cyrena.Services
             await data.CopyToAsync(ms);
             ms.Position = 0;
             var pdfText = ExtractTextFromPdf(ms, name);
-            var c = new TextContent(pdfText);
+            var c = new TextContent($"[FILE_START name='{name}']\n\n{pdfText}\n\n[FILE_END]") { MimeType = contentType };
             var content = new AdditionalMessageContent(name, c);
             return content;
         }
@@ -30,9 +30,32 @@ namespace Cyrena.Services
             using var ms = new MemoryStream(data);
             ms.Position = 0;
             var pdfText = ExtractTextFromPdf(ms, name);
-            var c = new TextContent(pdfText);
+            var c = new TextContent($"[FILE_START name='{name}']\n\n{pdfText}\n\n[FILE_END]") { MimeType = contentType };
             var content = new AdditionalMessageContent(name, c);
             return content;
+        }
+
+        public async Task<KernelContent?> GetKernelContent(Stream data, string contentType, string name)
+        {
+            if (!HandlesType(contentType, name))
+                return null;
+            using var ms = new MemoryStream();
+            await data.CopyToAsync(ms);
+            ms.Position = 0;
+            var pdfText = ExtractTextFromPdf(ms, name);
+            var c = new TextContent(pdfText) { MimeType = contentType };
+            return c;
+        }
+
+        public async Task<KernelContent?> GetKernelContent(byte[] data, string contentType, string name)
+        {
+            if (!HandlesType(contentType, name))
+                return null;
+            using var ms = new MemoryStream(data);
+            ms.Position = 0;
+            var pdfText = ExtractTextFromPdf(ms, name);
+            var c = new TextContent(pdfText) { MimeType = contentType };
+            return c;
         }
 
         public string[] GetSupportedMimeTypes()
@@ -44,6 +67,11 @@ namespace Cyrena.Services
         {
             return contentType == "application/pdf" ||
                    fileName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
+        }
+
+        public Dictionary<string, string> GetExtensionMimeTypeMapping()
+        {
+            return new() { { ".pdf", "application/pdf" } };
         }
 
         private string ExtractTextFromPdf(Stream pdfStream, string fileName)

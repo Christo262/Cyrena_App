@@ -54,7 +54,7 @@ namespace Cyrena.PlatformIO.Components.Shared
                 if (files != null)
                 {
                     var info = new FileInfo(files);
-                    Model[DevelopOptions.RootDirectory] = info.DirectoryName ?? string.Empty;
+                    Model.WorkingDirectory = info.DirectoryName ?? string.Empty;
                     Model[PlatformIOOptions.IniFile] = files;
                     _model.IniFilePath = files;
                 }

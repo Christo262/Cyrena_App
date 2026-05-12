@@ -1,9 +1,7 @@
 ﻿using Cyrena.Contracts;
 using Cyrena.Models;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Microsoft.SemanticKernel;
 
 namespace Cyrena.Runtime.Services
 {
@@ -53,6 +51,34 @@ namespace Cyrena.Runtime.Services
                 if (handler.HandlesType(contentType, name))
                     return handler.GetMessageContent(data, contentType, name);
             return Task.FromResult<AdditionalMessageContent?>(null);
+        }
+
+        public string? GetExtension(string mimeType)
+        {
+            mimeType = mimeType.ToLower();
+            foreach(var handler in _handlers)
+            {
+                var mapping = handler.GetExtensionMimeTypeMapping();
+                foreach(var m in mapping)
+                    if(m.Value ==  mimeType) return m.Key;
+            }
+            return null;
+        }
+
+        public Task<KernelContent?> GetKernelContent(Stream data, string contentType, string name)
+        {
+            foreach (var handler in _handlers)
+                if (handler.HandlesType(contentType, name))
+                    return handler.GetKernelContent(data, contentType, name);
+            return Task.FromResult<KernelContent?>(null);
+        }
+
+        public Task<KernelContent?> GetKernelContent(byte[] data, string contentType, string name)
+        {
+            foreach (var handler in _handlers)
+                if (handler.HandlesType(contentType, name))
+                    return handler.GetKernelContent(data, contentType, name);
+            return Task.FromResult<KernelContent?>(null);
         }
     }
 }

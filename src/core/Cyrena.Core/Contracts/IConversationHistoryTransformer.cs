@@ -28,7 +28,7 @@ namespace Cyrena.Contracts
             return Task.CompletedTask;
         }
 
-        public Task<ChatHistory> TransformPreIterationHistory(ChatHistory history)
+        public virtual Task<ChatHistory> TransformPreIterationHistory(ChatHistory history)
         {
             return Task.FromResult(history);
         }

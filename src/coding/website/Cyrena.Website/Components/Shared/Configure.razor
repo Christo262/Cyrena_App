@@ -77,13 +77,13 @@
         Model[WebsiteOptions.WebsiteName] = _websiteName.Trim();
         Model.Title = _websiteName.Trim();
         var sanitizedName = string.Concat(_websiteName.Trim().Split(Path.GetInvalidFileNameChars())).Replace(" ", "-").ToLowerInvariant();
-        var rootDir = Model[DevelopOptions.RootDirectory];
+        var rootDir = Model.WorkingDirectory;
         if (string.IsNullOrEmpty(rootDir))
         {
             rootDir = Path.Combine(CyrenaBuilder.AppDataDirectory, "websites", sanitizedName);
             if (!Directory.Exists(rootDir))
                 Directory.CreateDirectory(rootDir);
-            Model[DevelopOptions.RootDirectory] = rootDir;
+            Model.WorkingDirectory = rootDir;
         }
         var props = new WebsiteViewModel()
         {
@@ -98,7 +98,7 @@
     {
         Model[WebsiteOptions.WebsiteName] = item.WebsiteName;
         Model.Title = item.WebsiteName;
-        Model[DevelopOptions.RootDirectory] = item.RootDirectory;
+        Model.WorkingDirectory = item.RootDirectory;
         _websiteName = item.WebsiteName;
         this.StateHasChanged();
     }

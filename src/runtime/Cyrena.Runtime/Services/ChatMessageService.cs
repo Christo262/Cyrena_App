@@ -5,6 +5,7 @@ using Cyrena.Options;
 using Cyrena.Persistence;
 using Cyrena.Persistence.Contracts;
 using Cyrena.Runtime.Models;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -19,10 +20,11 @@ namespace Cyrena.Runtime.Services
         private readonly ChatConfiguration _config;
         private readonly IPromptManager _prompts;
         private readonly IIterationService _its;
+        private readonly IServiceProvider _services;
 
         private readonly ChatHistory _kernel;
         private readonly ChatHistory _display;
-        public ChatMessageService(IOptions<ChatOptions> options, ChatConfiguration config, IStore<ChatMessage> store, IPromptManager prompts, IIterationService its)
+        public ChatMessageService(IOptions<ChatOptions> options, ChatConfiguration config, IStore<ChatMessage> store, IPromptManager prompts, IIterationService its, IServiceProvider services)
         {
             _options = options.Value;
             _pipeline = new ChatMessagePipeline();
@@ -33,18 +35,25 @@ namespace Cyrena.Runtime.Services
             _kernel = new ChatHistory();
             _display = new ChatHistory();
             _its = its;
+            _services = services;
         }
 
         public ChatOptions Options => _options;
         public IReadOnlyList<ChatMessageContent> KernelHistory => _kernel;
         public IReadOnlyList<ChatMessageContent> DisplayHistory => _display;
-        public ChatHistory GetKernelHistory()
+        public async Task<ChatHistory> GetKernelHistory()
         {
-            var history = new ChatHistory();
+            var history = new ChatHistory(_kernel.Where(x => x.Role != _options.System));
+            var transformers = _services.GetServices<IConversationHistoryTransformer>();
+            foreach (var interceptor in transformers)
+                history = await interceptor.TransformPreIterationHistory(history);
+
+            var final = new ChatHistory();
             foreach (var item in _prompts.Prompts.OrderBy(x => x.Order))
-                history.AddSystemMessage(item.Content);
-            history.AddRange(_kernel);
-            return history;
+                final.AddSystemMessage(item.Content);
+            final.AddRange(history);
+
+            return final;
         }
 
         public IDisposable OnStreamToken(Action<string?> callback) => _pipeline.WatchStreamToken(callback);

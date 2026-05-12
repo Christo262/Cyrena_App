@@ -62,7 +62,7 @@ namespace Cyrena.Dotnet.CSharp.Services
                     project_type.IndexPlan(project);
                 }
             }
-            var sln_model = new SolutionViewModel(options.ChatConfiguration[DevelopOptions.RootDirectory]!);
+            var sln_model = new SolutionViewModel(options.ChatConfiguration.WorkingDirectory!);
             sln_model.Projects.AddRange(projects);
             if(sln_model.Projects.Where(x => x.Plan != null).Count() == 0)
                 throw new InvalidOperationException($"Solution requires at least one supported project");

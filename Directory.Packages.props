@@ -4,17 +4,12 @@
     <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Cyrena.Coding.Core" Version="0.4.2" />
-    <PackageVersion Include="Cyrena.Components.Core" Version="0.4.3" />
-    <PackageVersion Include="Cyrena.Core" Version="0.4.2" />
-    <PackageVersion Include="Cyrena.Extensa.Core" Version="0.4.0" />
-    <PackageVersion Include="Cyrena.Persistence.Core" Version="0.4.0" />
-    <PackageVersion Include="Cyrena.Persistence.File" Version="0.4.0" />
-    <PackageVersion Include="Photino.Native" Version="4.0.22" />
-    <PackageVersion Include="Photino.NET" Version="4.0.16" />
-    <PackageVersion Include="PhotinoX" Version="4.2.0" />
-    <PackageVersion Include="PhotinoX.Blazor" Version="4.2.0" />
-    <PackageVersion Include="PhotinoX.Native" Version="4.2.0" />
+    <PackageVersion Include="Cyrena.Coding.Core" Version="0.5.0" />
+    <PackageVersion Include="Cyrena.Components.Core" Version="0.5.0" />
+    <PackageVersion Include="Cyrena.Core" Version="0.5.0" />
+    <PackageVersion Include="Cyrena.Extensa.Core" Version="0.5.0" />
+    <PackageVersion Include="Cyrena.Persistence.Core" Version="0.5.0" />
+    <PackageVersion Include="Cyrena.Persistence.File" Version="0.5.0" />
   </ItemGroup>
   <!--Third-party-->
   <ItemGroup>
@@ -28,6 +23,11 @@
   <!--FE-->
   <ItemGroup>
     <PackageVersion Include="Photino.Blazor" Version="4.0.13" />
+    <PackageVersion Include="Photino.Native" Version="4.0.22" />
+    <PackageVersion Include="Photino.NET" Version="4.0.16" />
+    <PackageVersion Include="PhotinoX" Version="4.2.0" />
+    <PackageVersion Include="PhotinoX.Blazor" Version="4.2.0" />
+    <PackageVersion Include="PhotinoX.Native" Version="4.2.0" />
     <PackageVersion Include="CommunityToolkit.Maui" Version="14.0.0" />
     <PackageVersion Include="BootstrapBlazor" Version="10.6.0" />
     <PackageVersion Include="BootstrapBlazor.Html2Pdf" Version="10.0.6" />

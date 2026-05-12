@@ -1,124 +1,111 @@
-# Cyrena.Components SDK
+## Overview
 
-**Core Dependency:** Cyrena.Core
+`Cyrena.Components.Core` is the Blazor component library providing UI contracts, base classes, and extension methods for building UI components that integrate with Cyréna's kernel-scoped services. Extensions that add UI elements (toolbars, settings pages, shortcuts) must reference this package.
 
-Cyrena.Components is the UI framework library for the Cyrena AI assistant application, built on **BootstrapBlazor**. It provides reusable Blazor components, base classes for kernel-aware components, contract interfaces for UI integration points, and extension methods for component registration.
-
----
-
-## Architecture Overview
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Cyrena.Application                          │
-│                    (Consumer of SDK)                          │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                   Cyrena.Components                            │
-│  ┌──────────────────────────────────────────────────────────┐   │
-│  │  Contracts (Integration Interfaces)                      │   │
-│  │  • ICapability        - Component capability declaration │   │
-│  │  • IShortcut          - UI shortcuts with actions        │   │
-│  │  • IToolbarComponent   - Toolbar component registration   │   │
-│  └──────────────────────────────────────────────────────────┘   │
-│  ┌──────────────────────────────────────────────────────────┐   │
-│  │  Models (Base Classes)                                   │   │
-│  │  • CapabilityComponentBase - Base for capability comps  │   │
-│  │  • KernelComponentBase      - Base for toolbar components│   │
-│  └──────────────────────────────────────────────────────────┘   │
-│  ┌──────────────────────────────────────────────────────────┐   │
-│  │  Options (Configuration)                                │   │
-│  │  • ComponentOptions    - Router, navigation, settings    │   │
-│  │  • CodeLanguages        - File extension → language map   │   │
-│  └──────────────────────────────────────────────────────────┘   │
-│  ┌──────────────────────────────────────────────────────────┐   │
-│  │  Extensions (Registration)                               │   │
-│  │  • CyrenaBuilderExtensions  - App-level registration    │   │
-│  │  • KernelBuilderExtensions  - Kernel-level registration │   │
-│  │  • ComponentBaseExtensions   - Render helpers            │   │
-│  └──────────────────────────────────────────────────────────┘   │
-│  ┌──────────────────────────────────────────────────────────┐   │
-│  │  Services (Internal)                                     │   │
-│  │  • ComponentAssistantsPlugin - Adds BootstrapBlazor      │   │
-│  └──────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                   Cyrena.Core                                  │
-│         (Semantic Kernel infrastructure)                      │
-└─────────────────────────────────────────────────────────────────┘
-```
+**Version:** 0.5.0
+**Target Framework:** .NET 10.0
+**Namespaces:** `Cyrena.Contracts`, `Cyrena.Models`, `Cyrena.Options`, `Cyrena.Extensions`, `Cyrena.Attributes`, `Cyrena.Components.Shared`
 
 ---
 
 ## Contracts
 
-### ICapability
-Declares a capability component type. Used to register components that extend AI assistant capabilities.
+### `IDisplayService` (Kernel-locked)
+Service for showing dialogs, toast notifications, and navigation in the Blazor UI.
 
 ```csharp
-namespace Cyrena.Contracts
+public interface IDisplayService
 {
-    public interface ICapability
-    {
-        Type Component { get; }
-    }
-
-    internal class Capability : ICapability
-    {
-        public Capability(Type component);
-        public Type Component { get; }
-    }
+    Task<DialogResult> ShowModal<TComponent>(ResultDialogOption option, Dialog? dialog = null) 
+        where TComponent : IComponent, IResultDialog;
+    
+    Task<DialogResult> ShowModal(string title, string content, ResultDialogOption? option = null, Dialog? dialog = null);
+    
+    Task ShowToast(ToastOption option, ToastContainer? toastContainer = null);
+    Task ShowErrorToast(string? title = null, string? content = null, bool autoHide = true);
+    Task ShowWarnToast(string? title = null, string? content = null, bool autoHide = true);
+    Task ShowSuccessToast(string? title = null, string? content = null, bool autoHide = true);
+    Task ShowInfoToast(string? title = null, string? content = null, bool autoHide = true);
+    
+    void NavigateTo(string url);
 }
 ```
 
-### IShortcut
-Defines a keyboard shortcut with visual metadata and click handler.
+**Dependencies:** Requires `BootstrapBlazor` components (`Dialog`, `ToastContainer`, `ToastOption`, `ResultDialogOption`, `DialogResult`).
+
+**Implementation:** `DisplayService` in `Cyrena.Components.Runtime` implements this interface.
+
+### `IShortcut`
+Defines a keyboard shortcut or quick action that appears in the UI.
 
 ```csharp
-namespace Cyrena.Contracts
+public interface IShortcut
 {
-    public interface IShortcut
-    {
-        string Title { get; }
-        string Description { get; }
-        string Icon { get; }
-        string Color { get; }
-        string Category { get; }
-        string[] Tags { get; }
-
-        Task OnClick();
-    }
+    string Title { get; }
+    string Description { get; }
+    string Icon { get; }
+    string Color { get; }
+    string Category { get; }
+    string[] Tags { get; }
+    Task OnClick();
 }
 ```
 
-### IToolbarComponent
-Registers a component for display in the chat toolbar.
+### `IToolbarComponent`
+Defines a component that renders in the chat toolbar.
 
 ```csharp
-namespace Cyrena.Contracts
+public interface IToolbarComponent
 {
-    public interface IToolbarComponent
-    {
-        Type Component { get; }
-        ToolbarAlignment Alignment { get; }
-    }
+    Type Component { get; }
+    ToolbarAlignment Alignment { get; }
+}
 
-    public enum ToolbarAlignment
-    {
-        Start,
-        End
-    }
+public enum ToolbarAlignment
+{
+    Start, End
+}
+```
 
-    internal class ToolbarComponent : IToolbarComponent
-    {
-        public ToolbarComponent(Type component, ToolbarAlignment alignment);
-        public Type Component { get; }
-        public ToolbarAlignment Alignment { get; }
-    }
+- `Component`: The `Type` of the Blazor component to render.
+- `Alignment`: `Start` (left side) or `End` (right side) of the toolbar.
+
+### `IViewStartProvider`
+Provides optional `ViewStart` entries for user-configurable starting views.
+
+```csharp
+public interface IViewStartProvider
+{
+    IEnumerable<ViewStart> Provide();
+}
+```
+
+---
+
+## Attributes
+
+### `KernelInjectAttribute`
+Indicates that the associated property should have a value injected from the `KernelComponentBase.Kernel` service provider. Overrides `ComponentBase.OnParametersSet`.
+
+```csharp
+[AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
+public sealed class KernelInjectAttribute : Attribute
+{
+    public object? Key { get; init; }
+}
+```
+
+- `Key`: Optional keyed service key for `GetKeyedService` resolution.
+
+**Usage:**
+```csharp
+public class MyToolbarComponent : KernelComponentBase
+{
+    [KernelInject]
+    public IChatMessageService ChatService { get; set; } = default!;
+    
+    [KernelInject(Key = "my-key")]
+    public IMyService MyService { get; set; } = default!;
 }
 ```
 
@@ -126,299 +113,237 @@ namespace Cyrena.Contracts
 
 ## Models
 
-### CapabilityComponentBase
-Abstract base class for capability components. These components are invoked by the AI to perform specialized tasks.
+### `KernelComponentBase`
+Base class for Blazor components that need access to the current `Kernel` and its services via `[KernelInject]`.
 
 ```csharp
-namespace Cyrena.Models
+public abstract class KernelComponentBase : ComponentBase
 {
-    public abstract class CapabilityComponentBase : ComponentBase
-    {
-        [Parameter]
-        [EditorRequired]
-        public Kernel Kernel { get; set; }
-
-        [Parameter]
-        public EventCallback<AdditionalMessageContent[]> OnItemsAdded { get; set; }
-    }
+    [Parameter]
+    [EditorRequired]
+    public Kernel Kernel { get; set; } = default!;
 }
 ```
 
-**Usage:** Create subclasses to implement AI-triggered capabilities (e.g., file operations, code execution, search).
+Components extending this class receive the active kernel instance as a parameter. When `Kernel` is set, all properties marked with `[KernelInject]` are automatically resolved from `Kernel.Services`.
 
-### KernelComponentBase
-Abstract base class for kernel-aware components used in the UI toolbar.
+### `ViewStart`
+Information for a configurable starting view.
 
 ```csharp
-namespace Cyrena.Models
+public sealed class ViewStart
 {
-    public abstract class KernelComponentBase : ComponentBase
-    {
-        [Parameter]
-        [EditorRequired]
-        public Kernel Kernel { get; set; }
-    }
+    public string Href { get; set; } = default!;
+    public string Title { get; set; } = default!;
+    public string? Description { get; set; }
 }
 ```
-
-**Usage:** Create subclasses for toolbar buttons, menus, or other UI elements that need access to the Semantic Kernel.
 
 ---
 
 ## Options
 
-### ComponentOptions
-Configuration for Blazor routing, navigation components, and settings components.
+### `ComponentOptions`
+Configuration for UI components, particularly settings pages.
 
 ```csharp
-namespace Cyrena.Options
+public class ComponentOptions
 {
-    public class ComponentOptions
-    {
-        public ComponentOptions();
+    internal List<ComponentMetaData> SettingsComponents { get; set; }
+    public ComponentMetaData[] GetSettingsComponents();
+}
 
-        internal List<Assembly> RouterAssemblies { get; set; }
-        internal List<Type> NavigationComponents { get; set; }
-        internal List<Type> SettingsComponents { get; set; }
+public record ComponentMetaData(Type Component, string? Section, int Order);
+```
 
-        public Assembly[] GetRouterAssemblies();
-        public Type[] GetNavigationComponents();
-        public Type[] GetSettingsComponents();
-    }
+- `SettingsComponents`: Collection of registered settings component metadata (internal).
+- `GetSettingsComponents()`: Returns all registered settings components as an array.
+- `ComponentMetaData`: Record describing a settings component with its type, section group, and display order.
 
-    public static class ComponentOptionsExtensions
-    {
-        public static void AddRouterAssembly(this ComponentOptions options, Assembly assembly);
-        public static void AddRouterAssembly<T>(this ComponentOptions options);
-        public static void AddNavigationComponent<TComponent>(this ComponentOptions options) where TComponent : ComponentBase;
-        public static void AddSettingsComponent<TComponent>(this ComponentOptions options) where TComponent : ComponentBase;
-    }
+### `ComponentOptionsExtensions`
+Extension methods for registering settings components:
+
+```csharp
+public static class ComponentOptionsExtensions
+{
+    [Obsolete("Use new section mapping API")]
+    public static void AddSettingsComponent<TComponent>(this ComponentOptions options)
+        where TComponent : ComponentBase;
+
+    public static void AddSettingsComponent<TComponent>(this ComponentOptions options, string section);
+
+    public static void AddSettingsComponent<TComponent>(this ComponentOptions options, string section, int order);
 }
 ```
 
-### CodeLanguages
-Maps file extensions to Pygments-compatible language identifiers for syntax highlighting in code editors.
+- All overloads prevent duplicate registration by checking if the component type already exists.
+- The no-parameter overload is **obsolete** — use section overloads instead.
+
+### `CodeLanguages`
+Maps file extensions to syntax highlighting language identifiers.
 
 ```csharp
-namespace Cyrena.Options
+public class CodeLanguages
 {
-    public class CodeLanguages
-    {
-        public CodeLanguages();
-
-        public string GetFileLanguage(string extension);
-
-        // Supported mappings:
-        // c, h → c
-        // cpp, hpp, ino → cpp
-        // cs → csharp
-        // razor → html
-        // css → css
-        // js → javascript
-        // md → markdown
-        // csproj, xml → xml
-        // json → json
-        // (unmatched) → plaintext
-    }
+    public string GetFileLanguage(string extension);
 }
 ```
+
+**Supported mappings:**
+- `.c`, `.h` → `c`
+- `.cpp`, `.hpp`, `.ino` → `cpp`
+- `.cs` → `csharp`
+- `.razor` → `html`
+- `.css` → `css`
+- `.js` → `javascript`
+- `.md` → `markdown`
+- `.csproj`, `.xml` → `xml`
+- `.json` → `json`
+- Default → `plaintext`
 
 ---
 
 ## Extension Methods
 
-### CyrenaBuilderExtensions
-Application-level registration for UI components.
+### `CyrenaBuilderExtensions`
 
 ```csharp
-namespace Cyrena.Extensions
+public static class CyrenaBuilderExtensions
 {
-    public static class CyrenaBuilderExtensions
-    {
-        // Initialize the UI framework (call once during startup)
-        public static CyrenaBuilder AddComponents(this CyrenaBuilder builder);
+    [Obsolete("Use new section mapping API")]
+    public static CyrenaBuilder AddSettingsComponent<TComponent>(this CyrenaBuilder builder)
+        where TComponent : ComponentBase;
 
-        // Register a navigation component (appears in nav bar)
-        public static CyrenaBuilder AddNavigationComponent<TComponent>(this CyrenaBuilder builder) 
-            where TComponent : ComponentBase;
+    public static CyrenaBuilder AddSettingsComponent<TComponent>(this CyrenaBuilder builder, string section)
+        where TComponent : ComponentBase;
 
-        // Register a settings component (appears in settings panel)
-        public static CyrenaBuilder AddSettingsComponent<TComponent>(this CyrenaBuilder builder) 
-            where TComponent : ComponentBase;
+    public static CyrenaBuilder AddSettingsComponent<TComponent>(this CyrenaBuilder builder, string section, int order)
+        where TComponent : ComponentBase;
 
-        // Add assemblies for Blazor router discovery
-        public static CyrenaBuilder AddRouterAssembly<T>(this CyrenaBuilder builder);
-
-        // Register a keyboard shortcut
-        public static CyrenaBuilder AddShortcut<TShortcut>(this CyrenaBuilder builder) 
-            where TShortcut : class, IShortcut;
-    }
+    public static CyrenaBuilder AddShortcut<TShortcut>(this CyrenaBuilder builder)
+        where TShortcut : class, IShortcut;
 }
 ```
 
-### KernelBuilderExtensions
-Kernel-level registration for capability and toolbar components.
+- `AddSettingsComponent`: Registers a Blazor component as a settings tab under the specified section with optional order.
+- `AddShortcut`: Registers a shortcut action in the UI as a scoped `IShortcut` service.
+
+### `CyrenaKernelBuilderExtensions`
 
 ```csharp
-namespace Cyrena.Extensions
+public static class CyrenaKernelBuilderExtensions
 {
-    public static class KernelBuilderExtensions
-    {
-        // Register a capability component
-        public static void AddCapability<TComponent>(this IKernelBuilder builder) 
-            where TComponent : CapabilityComponentBase;
+    public static void AddToolbarComponent<TComponent>(this CyrenaKernelBuilder builder, ToolbarAlignment alignment)
+        where TComponent : KernelComponentBase;
 
-        // Register a toolbar component with alignment
-        public static void AddToolbarComponent<TComponent>(this IKernelBuilder builder, ToolbarAlignment alignment) 
-            where TComponent : KernelComponentBase;
-    }
+    [Obsolete]
+    public static void AddToolbarComponent<TComponent>(this IKernelBuilder builder, ToolbarAlignment alignment)
+        where TComponent : KernelComponentBase;
 }
 ```
 
-### ComponentBaseExtensions
-Render fragment helpers for dynamic component rendering.
+- `AddToolbarComponent`: Registers a component to render in the chat toolbar for the current kernel/chat.
+- The obsolete overload on `IKernelBuilder` is deprecated; prefer `CyrenaKernelBuilder`.
+
+### `ComponentBaseExtensions`
 
 ```csharp
-namespace Cyrena.Extensions
+public static class ComponentBaseExtensions
 {
-    public static class ComponentBaseExtensions
-    {
-        // Render a component with no parameters
-        public static RenderFragment Render(this ComponentBase cmp, Type type);
-
-        // Render a component with parameters
-        public static RenderFragment Render(this ComponentBase cmp, Type type, Dictionary<string, object?> parameters);
-    }
+    public static RenderFragment Render(this ComponentBase cmp, Type type);
+    public static RenderFragment Render(this ComponentBase cmp, Type type, Dictionary<string, object?> parameters);
 }
 ```
+
+Helper methods for dynamically rendering Blazor components from code with optional parameter passing.
 
 ---
 
-## Services
+## Shared Blazor Components
 
-### ComponentAssistantsPlugin (Internal)
-Internal `IAssistantPlugin` implementation that bootstraps BootstrapBlazor integration.
+### `CodeInput.razor`
+Monaco code editor wrapper (BlazorMonaco) with syntax highlighting, dark theme, and two-way value binding.
 
+**Parameters:**
+- `Value` / `ValueChanged` — Two-way bound editor content
+- `Language` — Monaco language mode (default: `"plaintext"`)
+
+### `ConnectionSelector.razor`
+Dropdown of available AI connections from all registered `IConnectionProvider` services.
+
+**Parameters:**
+- `Value` / `ValueChanged` — Two-way bound selected connection ID
+- `Label` — Dropdown label (default: `"AI Connection"`)
+
+**Behavior:** Populates connections on first render and on click. Displays `Name (Source)` per option.
+
+### `PluginSelector.razor`
+Checkbox list for activating/deactivating `IAssistantPlugin` instances filtered by the current chat's assistant mode.
+
+**Parameters:**
+- `Chat` (`ChatConfiguration`, required) — Chat whose `PluginIds` will be updated
+
+**Behavior:**
+- Filters plugins by mode compatibility
+- Required plugins are always selected and disabled
+- If `Chat.PluginIds` is empty, all plugins are selected by default
+- Updates `Chat.PluginIds` on every selection change
+
+---
+
+## Usage for Extension Developers
+
+Reference `Cyrena.Components.Core` to:
+1. Implement `IShortcut` for quick actions
+2. Implement `IToolbarComponent` for toolbar buttons
+3. Extend `KernelComponentBase` for kernel-aware UI components
+4. Use `IDisplayService` for dialogs and toasts
+5. Use `[KernelInject]` for automatic service injection from kernel scope
+6. Register settings components via `AddSettingsComponent`
+7. Register toolbar components via `AddToolbarComponent`
+8. Implement `IViewStartProvider` for custom starting views
+
+**Example - Toolbar Component:**
 ```csharp
-namespace Cyrena.Services
+public class MyToolbarComponent : KernelComponentBase 
+{ 
+    [KernelInject]
+    public IChatMessageService ChatService { get; set; } = default!;
+}
+
+// In IAssistantPlugin.LoadAsync:
+builder.AddToolbarComponent<MyToolbarComponent>(ToolbarAlignment.End);
+```
+
+**Example - Shortcut:**
+```csharp
+public class MyShortcut : IShortcut
 {
-    internal class ComponentAssistantsPlugin : IAssistantPlugin
+    public string Title => "My Action";
+    public string Description => "Does something";
+    public string Icon => "fa-solid fa-star";
+    public string Color => "primary";
+    public string Category => "My Category";
+    public string[] Tags => ["my"];
+    public Task OnClick() { ... }
+}
+
+// In extension BuildExtension:
+builder.AddShortcut<MyShortcut>();
+```
+
+**Example - Settings Component:**
+```csharp
+builder.AddSettingsComponent<MySettingsComponent>("General", 1);
+```
+
+**Example - View Start Provider:**
+```csharp
+public class MyViewStartProvider : IViewStartProvider
+{
+    public IEnumerable<ViewStart> Provide()
     {
-        public ComponentAssistantsPlugin(DialogService dialog, ToastService toasts);
-
-        public string[] Modes => [];
-
-        public int Priority => 10;
-
-        public Task LoadAsync(CyrenaKernelBuilder builder);
+        yield return new ViewStart { Href = "/my-page", Title = "My Page" };
     }
 }
 ```
-
-**What it does:**
-1. Registers `DialogService` and `ToastService` in the kernel service collection
-2. Adds the `ExportChat` component as a toolbar component with `ToolbarAlignment.End`
-3. Automatically called when `AddComponents()` is invoked on the builder
-
----
-
-## Blazor Integration
-
-### _Imports.razor
-Standard using directives for all Blazor components:
-
-```razor
-@using System.Net.Http
-@using System.Net.Http.Json
-@using Microsoft.AspNetCore.Components.Forms
-@using Microsoft.AspNetCore.Components.Routing
-@using Microsoft.AspNetCore.Components.Web
-@using Microsoft.AspNetCore.Components.Web.Virtualization
-@using Microsoft.JSInterop
-@using BootstrapBlazor.Components
-@using Cyrena.Models
-@using Cyrena.Contracts
-```
-
----
-
-## Usage Examples
-
-### Registering Navigation Components
-
-```csharp
-// In Program.cs or startup
-builder.AddComponents();
-builder.AddNavigationComponent<MyNavComponent>();
-builder.AddSettingsComponent<MySettingsComponent>();
-```
-
-### Creating a Capability Component
-
-```csharp
-public class FileSearchCapability : CapabilityComponentBase
-{
-    protected override async Task OnInitializedAsync()
-    {
-        // Access Kernel for AI integration
-        // Use OnItemsAdded to emit content to chat
-    }
-}
-
-// Register in startup
-kernelBuilder.AddCapability<FileSearchCapability>();
-```
-
-### Creating a Toolbar Component
-
-```csharp
-public class ExportButton : KernelComponentBase
-{
-    [Inject]
-    private DialogService? Dialog { get; set; }
-
-    protected async Task OnClick()
-    {
-        // Use Kernel context if needed
-        // Show dialogs using DialogService
-    }
-}
-
-// Register in plugin
-builder.AddToolbarComponent<ExportButton>(ToolbarAlignment.End);
-```
-
-### File Language Detection
-
-```csharp
-var languages = new CodeLanguages();
-string lang = languages.GetFileLanguage(".cs");      // "csharp"
-string lang = languages.GetFileLanguage("hpp");      // "cpp"
-string lang = languages.GetFileLanguage(".unknown"); // "plaintext"
-```
-
----
-
-## Package Dependencies
-
-- **BootstrapBlazor** - UI component library
-- **BootstrapBlazor.Html2Pdf** - PDF generation
-- **Microsoft.AspNetCore.Components.Web** - Blazor web assembly support
-- **BlazorMonaco** - Code editor component
-- **Markdig** - Markdown parsing
-- **PdfPig** - PDF text extraction
-- **Cyrena.Core** - Core Semantic Kernel infrastructure
-
----
-
-## NuGet Package
-
-```
-Package: Cyrena.Components
-Version: 0.3.0
-Authors: Vaya Nova
-Description: Key components and shared components for Cyrena AI assistant
-Target: browser (WebAssembly)
-```
-
-The package is automatically copied to `../../../sdk` after build via the `PostPack` target.

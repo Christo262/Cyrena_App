@@ -24,6 +24,8 @@ namespace Cyrena.Components.Pages
         {
             var options = _settings.Read<OpenAIOptions>(OpenAIOptions.Key);
             _model.ApiKey = options?.ApiKey;
+            _model.ModelId = "gpt-5";
+            _model.DisplayName = "GPT5";
         }
 
         private async Task Submit()

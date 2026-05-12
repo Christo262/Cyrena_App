@@ -1,0 +1,102 @@
+.doc-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #1a1a2e;
+  line-height: 1.6;
+}
+
+.doc-header {
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.doc-header h1 {
+  font-size: 2.5rem;
+  margin: 0 0 0.5rem;
+  color: #0f3460;
+}
+
+.doc-lead {
+  font-size: 1.15rem;
+  color: #555;
+  margin: 0;
+}
+
+.doc-section {
+  margin-bottom: 3rem;
+}
+
+.doc-section h2 {
+  font-size: 1.75rem;
+  color: #0f3460;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.image-placeholder {
+  background: #f5f7fa;
+  border: 2px dashed #c0c8d0;
+  border-radius: 8px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  color: #889;
+  font-size: 1.1rem;
+}
+
+.numbered-list {
+  padding-left: 1.5rem;
+  margin: 0;
+}
+
+.numbered-list li {
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+}
+
+.numbered-list li strong {
+  color: #0f3460;
+}
+
+.detail {
+  margin: 0.35rem 0 0 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.callout {
+  padding: 1rem 1.25rem;
+  border-radius: 6px;
+  margin-top: 1.5rem;
+}
+
+.callout.info {
+  background: #e8f4fd;
+  border-left: 4px solid #2196f3;
+}
+
+.callout p {
+  margin: 0;
+}
+
+.doc-footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.back-link {
+  color: #2196f3;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}

@@ -1,4 +1,5 @@
 ﻿using Cyrena.Models;
+using Microsoft.SemanticKernel;
 
 namespace Cyrena.Contracts
 {
@@ -12,5 +13,8 @@ namespace Cyrena.Contracts
         string[] GetSupportedMimeTypes();
         Task<AdditionalMessageContent?> GetMessageContent(Stream data, string contentType, string name);
         Task<AdditionalMessageContent?> GetMessageContent(byte[] data, string contentType, string name);
+        Task<KernelContent?> GetKernelContent(Stream data, string contentType, string name);
+        Task<KernelContent?> GetKernelContent(byte[] data, string contentType, string name);
+        string? GetExtension(string mimeType);
     }
 }

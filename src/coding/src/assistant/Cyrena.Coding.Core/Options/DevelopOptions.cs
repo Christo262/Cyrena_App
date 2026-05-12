@@ -4,6 +4,9 @@
     {
         public const string AssistantModeId = "developer";
         public const string BuilderId = "dev.builder-id";
-        public const string RootDirectory = "dev.root-dir";
+
+        //[Obsolete]
+        /////use ChatConfiguration.WorkingDirectory
+        //public const string RootDirectory = "dev.root-dir";
     }
 }
