@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyréna — LLM Model Reviews & Insights</title>
+    <meta name="description" content="Hands-on reviews and comparisons of LLMs used inside the Cyréna desktop development-agent app. Offline and cloud models rated for coding, chat, and real-world tasks.">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="index.html" class="logo" aria-label="Cyréna Home">Cyréna</a>
+            <nav class="main-nav" aria-label="Main navigation">
+                <ul class="nav-list">
+                    <li><a href="#quick-reference">Quick Reference</a></li>
+                    <li><a href="#offline">Offline Models</a></li>
+                    <li><a href="#cloud">Cloud Models</a></li>
+                    <li><a href="#tips">Tips</a></li>
+                </ul>
+            </nav>
+            <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="main-nav">
+                <span class="hamburger"></span>
+            </button>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <section class="hero" aria-labelledby="hero-heading">
+            <div class="container">
+                <h1 id="hero-heading">Models I've Used with Cyréna</h1>
+                <p class="hero-subtitle">A quick look at how different LLMs perform inside my custom desktop development-agent app — from tiny offline models to massive cloud behemoths.</p>
+                <div class="hero-actions">
+                    <a href="#quick-reference" class="btn btn-primary">See the Comparison Table</a>
+                    <a href="#tips" class="btn btn-secondary">Read the Tips</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="quick-reference" class="quick-reference" aria-labelledby="quick-reference-heading">
+            <div class="container">
+                <h2 id="quick-reference-heading">Quick-Reference Table</h2>
+                <p class="section-intro">A side-by-side look at every model I've tested, what it's good for, and where it falls short.</p>
+                <div class="table-wrapper">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Category</th>
+                                <th scope="col">Model (provider)</th>
+                                <th scope="col">Size</th>
+                                <th scope="col">Best-use case(s)</th>
+                                <th scope="col">Thinking mode</th>
+                                <th scope="col">Key Strengths / Weaknesses</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="tag tag-offline">Offline</span></td>
+                                <td><strong>Ollama – gpt-oss:20B</strong></td>
+                                <td>20 B</td>
+                                <td>General chat, Arduino/PlatformIO (arduino framework)</td>
+                                <td>Low</td>
+                                <td>Good for simple Arduino sketches. Obsolete ESP-IDF code; needs explicit web-search.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-offline">Offline</span></td>
+                                <td><strong>Ollama – qwen3-coder:30B</strong></td>
+                                <td>30 B</td>
+                                <td>Embedded dev (Arduino, ESP-IDF), .NET (simple)</td>
+                                <td>Low-Medium</td>
+                                <td>Better ESP-IDF awareness than 20B. Talks aloud; rarely searches on its own.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-offline">Offline</span></td>
+                                <td>Ollama – qwen2.5-coder:14B / llama3.2:3B</td>
+                                <td>14 B / 3 B</td>
+                                <td>Pure chat</td>
+                                <td>N/A</td>
+                                <td>Too small for meaningful code generation or function calling.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-cloud">Cloud</span></td>
+                                <td><strong>Ollama – gpt-oss:120B-cloud</strong></td>
+                                <td>120 B</td>
+                                <td>Chat and most dev tasks</td>
+                                <td>Low-Medium</td>
+                                <td>Produces code quickly. Occasionally omits parts for brevity (needs a reminder).</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-cloud">Cloud</span></td>
+                                <td><strong>OpenAI – gpt-5</strong></td>
+                                <td>—</td>
+                                <td>All scenarios</td>
+                                <td>—</td>
+                                <td>Outstanding overall; only occasional prompts needed for web-search or newer .NET versions.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-cloud">Cloud</span></td>
+                                <td>Ollama – qwen3-coder:480B-cloud</td>
+                                <td>480 B</td>
+                                <td>.NET (tried)</td>
+                                <td>—</td>
+                                <td>Very unstable — "feels threatened", skips code, invents nonsense, rarely calls functions.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-cloud">Cloud</span></td>
+                                <td>Ollama – deepseek-v3.1:671B-cloud</td>
+                                <td>671 B</td>
+                                <td>Cyréna (experimental)</td>
+                                <td>—</td>
+                                <td>Extremely lazy — will not act unless forced to do a web query, then gives generic "I did the search".</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-cloud">Cloud</span></td>
+                                <td>Ollama – minimax-m2.7:cloud</td>
+                                <td>—</td>
+                                <td>Single-project .NET</td>
+                                <td>—</td>
+                                <td>Works well when given very explicit, structured instructions (sticky notes, API-reference overview). Great for function calling.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-cloud">Cloud</span></td>
+                                <td><strong>kimi-k2.6</strong></td>
+                                <td>—</td>
+                                <td>All dev tasks</td>
+                                <td>—</td>
+                                <td>My favourite — takes time to understand the project and structure before making changes; never dives in blind.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="offline" class="reviews" aria-labelledby="offline-heading">
+            <div class="container">
+                <h2 id="offline-heading">Offline Models</h2>
+                <p class="section-intro">Detailed notes on the models that run entirely on my local machine.</p>
+                <div class="review-grid">
+                    <article class="review-card">
+                        <div class="review-header">
+                            <h3>Ollama – gpt-oss:20B</h3>
+                            <span class="tag tag-offline">Offline</span>
+                        </div>
+                        <ul class="review-points">
+                            <li><strong>Chat</strong> — Excellent for casual conversation.</li>
+                            <li><strong>Thinking parameter</strong> — Keep it on <strong>Low</strong>. Medium becomes sluggish; High makes the model over-think.</li>
+                            <li><strong>Arduino/PlatformIO</strong> — Works nicely when the project uses only the <code>arduino</code> framework.</li>
+                            <li><strong>ESP-IDF</strong> — Tends to output outdated or obsolete code. It will only search the web if you explicitly ask it to.</li>
+                            <li><strong>.NET</strong> — Handles simple errors well, provided there are clear API references. Struggles with larger, more complex solutions.</li>
+                        </ul>
+                        <p class="review-tip"><strong>Pro Tip:</strong> Ask the model to create API References for updated lookups.</p>
+                    </article>
+
+                    <article class="review-card">
+                        <div class="review-header">
+                            <h3>Ollama – qwen3-coder:30B</h3>
+                            <span class="tag tag-offline">Offline</span>
+                        </div>
+                        <ul class="review-points">
+                            <li><strong>Chat</strong> — Not ideal; the model loves to "think out loud".</li>
+                            <li><strong>Embedded dev</strong> — Better than the 20B model for ESP-IDF, but still needs a manual prompt to look up recent changes.</li>
+                            <li><strong>.NET</strong> — Similar to gpt-oss:20B but can manage slightly more complexity. The "thinking out loud" habit can cause long, meandering responses.</li>
+                        </ul>
+                    </article>
+
+                    <article class="review-card">
+                        <div class="review-header">
+                            <h3>qwen2.5-coder:14B &amp; llama3.2:3B</h3>
+                            <span class="tag tag-offline">Offline</span>
+                        </div>
+                        <ul class="review-points">
+                            <li>Both are <strong>too small</strong> for serious code generation or function calling.</li>
+                            <li>Use them strictly for <strong>"Just Chatting"</strong> or quick brainstorming.</li>
+                        </ul>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="cloud" class="reviews reviews-cloud" aria-labelledby="cloud-heading">
+            <div class="container">
+                <h2 id="cloud-heading">Cloud Models</h2>
+                <p class="section-intro">Every cloud model I tested that is ≥ 120 B responds well to casual conversation. Here is how they differ when it comes to real work.</p>
+                <div class="review-grid">
+                    <article class="review-card">
+                        <div class="review-header">
+                            <h3>Ollama – gpt-oss:120B-cloud</h3>
+                            <span class="tag tag-cloud">Cloud</span>
+                        </div>
+                        <ul class="review-points">
+                            <li>Works well with <strong>Low</strong> or <strong>Medium</strong> thinking.</li>
+                            <li><strong>Heavy</strong> mode is far too slow.</li>
+                            <li>Occasionally <strong>omits code</strong> for brevity, as if it "forgot" it was writing code — remind it to be exhaustive.</li>
+                        </ul>
+                    </article>
+
+                    <article class="review-card review-featured">
+                        <div class="review-header">
+                            <h3>OpenAI – gpt-5</h3>
+                            <span class="tag tag-cloud">Cloud</span>
+                            <span class="badge">Outstanding</span>
+                        </div>
+                        <ul class="review-points">
+                            <li><strong>Outstanding</strong> across all use-cases (chat, Arduino, ESP-IDF, .NET, etc.).</li>
+                            <li>Occasionally needs a prompt to perform a web search, especially for brand-new releases (e.g., .NET 10.0).</li>
+                            <li>Rarely refuses to answer; when it does, a short "look it up online" cue resolves the issue.</li>
+                        </ul>
+                    </article>
+
+                    <article class="review-card">
+                        <div class="review-header">
+                            <h3>Ollama – qwen3-coder:480B-cloud</h3>
+                            <span class="tag tag-cloud">Cloud</span>
+                        </div>
+                        <ul class="review-points">
+                            <li><strong>Very poor experience</strong> (only tried with .NET).</li>
+                            <li>The model becomes defensive, starts cutting code, and fabricates details.</li>
+                            <li>Function calling is unreliable — it may describe an intention without actually invoking it.</li>
+                        </ul>
+                    </article>
+
+                    <article class="review-card">
+                        <div class="review-header">
+                            <h3>Ollama – deepseek-v3.1:671B-cloud</h3>
+                            <span class="tag tag-cloud">Cloud</span>
+                        </div>
+                        <ul class="review-points">
+                            <li><strong>Lazy</strong> — responds to the prompt but then does nothing until you explicitly say "do the research".</li>
+                            <li>Even after a web query it replies with a vague "I did the search" and provides no concrete results.</li>
+                        </ul>
+                    </article>
+
+                    <article class="review-card review-featured">
+                        <div class="review-header">
+                            <h3>kimi-k2.6</h3>
+                            <span class="tag tag-cloud">Cloud</span>
+                            <span class="badge">Favourite</span>
+                        </div>
+                        <ul class="review-points">
+                            <li><strong>My current favourite</strong> across dev tasks.</li>
+                            <li>Stands out for taking time to <strong>understand the project and its structure</strong> before making any changes — it never just dives in blind.</li>
+                            <li>This careful, context-first approach means fewer mistakes and less back-and-forth correcting misunderstood scope.</li>
+                        </ul>
+                    </article>
+
+                    <article class="review-card">
+                        <div class="review-header">
+                            <h3>Ollama – minimax-m2.7:cloud</h3>
+                            <span class="tag tag-cloud">Cloud</span>
+                        </div>
+                        <ul class="review-points">
+                            <li>Works well for <strong>single-project .NET</strong> development.</li>
+                            <li>Success hinges on <strong>very explicit, structured prompts</strong>:
+                                <ul>
+                                    <li>Use <strong>sticky notes</strong> to capture hard rules.</li>
+                                    <li>Keep an <strong>"Overview"</strong> of the application in an "API References" sticky note.</li>
+                                </ul>
+                            </li>
+                            <li>With these constraints the model can build entire applications that are easy to test, maintain, and debug — and continuously update the API References &amp; sticky notes as it learns, making it ideal for <strong>function calling</strong>.</li>
+                        </ul>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="tips" class="tips" aria-labelledby="tips-heading">
+            <div class="container">
+                <h2 id="tips-heading">General Tips for Getting the Most Out of These Models</h2>
+                <div class="tips-grid">
+                    <article class="tip-card">
+                        <div class="tip-number" aria-hidden="true">1</div>
+                        <h3>Set the thinking level</h3>
+                        <p>Low for speed, medium for more thoroughness, high only when you truly need deep reasoning (and are okay with longer latency).</p>
+                    </article>
+                    <article class="tip-card">
+                        <div class="tip-number" aria-hidden="true">2</div>
+                        <h3>Force web searches</h3>
+                        <p>Most models will not search unless you ask. Example: <em>"Please look up the latest ESP-IDF API changes and summarize them."</em></p>
+                    </article>
+                    <article class="tip-card">
+                        <div class="tip-number" aria-hidden="true">3</div>
+                        <h3>Structure your prompts</h3>
+                        <p>For the larger cloud models (especially minimax-m2.7): begin with a brief overview, list hard rules as bullet points, provide any relevant API reference, and end with a clear action request.</p>
+                    </article>
+                    <article class="tip-card">
+                        <div class="tip-number" aria-hidden="true">4</div>
+                        <h3>Remind about full code</h3>
+                        <p>When a model omits code, gently remind it: <em>"Please include the full implementation of the function; do not skip any lines."</em></p>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <p class="footer-brand">Cyréna</p>
+            <p class="footer-copy">&copy; <span id="year"></span> Cyréna. All rights reserved.</p>
+            <nav class="footer-nav" aria-label="Footer navigation">
+                <ul>
+                    <li><a href="#quick-reference">Quick Reference</a></li>
+                    <li><a href="#offline">Offline</a></li>
+                    <li><a href="#cloud">Cloud</a></li>
+                    <li><a href="#tips">Tips</a></li>
+                </ul>
+            </nav>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

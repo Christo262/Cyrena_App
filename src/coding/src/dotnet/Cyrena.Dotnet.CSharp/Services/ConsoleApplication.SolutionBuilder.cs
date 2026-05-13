@@ -34,7 +34,7 @@ namespace Cyrena.Dotnet.CSharp.Services
                 throw new NullReferenceException("Project file path not set");
             var csproj = ProjectParser.ParseProject(proj);
             options.ChatConfiguration[DotnetOptions.Namespace] = csproj.RootNamespace;
-            options.ChatConfiguration[DevelopOptions.RootDirectory] = Path.GetDirectoryName(proj);
+            options.ChatConfiguration.WorkingDirectory = Path.GetDirectoryName(proj);
 
             var project = new ProjectModel()
             {
@@ -42,12 +42,12 @@ namespace Cyrena.Dotnet.CSharp.Services
                 ConversationId = options.ChatConfiguration.Id,
                 ProjectFilePath = proj,
                 ProjectName = Path.GetFileName(proj),
-                ProjectDirectory = options.ChatConfiguration[DevelopOptions.RootDirectory]!,
+                ProjectDirectory = options.ChatConfiguration.WorkingDirectory!,
                 ProjectTypeId = Id,
                 ProjectTypeName = ConsoleApplication.Name
             };
 
-            var sln_model = new SolutionViewModel(options.ChatConfiguration[DevelopOptions.RootDirectory]!);
+            var sln_model = new SolutionViewModel(options.ChatConfiguration.WorkingDirectory!);
             sln_model.Projects.Add(project);
             var idxer = new ConsoleAppProjectType();
             var plan = idxer.IndexPlan(project);

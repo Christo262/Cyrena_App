@@ -1,0 +1,54 @@
+
+<h4>Personalization</h4>
+
+<EditForm Model="_model">
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
+    <div class="row m-0">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label">Background Color</label>
+                <ColorPicker Value="@_model.Background.BackgroundColor" ValueChanged="BackgroundColorChanged" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Background Opacity</label>
+                <Slider TValue="int" Value="_bg_opa" Min="0" Max="100" Step="5" ValueChanged="BackgroundOpacityChanged"/>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label">Wallpaper</label><br />
+                <button type="button" @onclick="TriggerFileUpload" class="btn btn-secondary btn-sm">
+                    <i class="bi bi-image"></i> Select
+                </button>
+                <button type="button" @onclick="NoWallpaper" class="btn btn-secondary btn-sm">
+                    <i class="bi bi-slash-circle"></i> No Wallpaper
+                </button>
+                <!-- Hidden File Input -->
+                <InputFile @ref="_fileInput"
+                           OnChange="HandleFilesSelected"
+                           accept="image/*"
+                           style="display: none;" />
+            </div>
+
+            <div class="mb-3">
+                <button type="button" class="btn btn-sm btn-danger" @onclick="ResetToDefault">Reset to Defaults</button>
+            </div>
+        </div>
+    </div>
+
+    <hr />
+
+    <div class="row m-0">
+        <div class="col-md-6">
+            <label class="form-label">Starting View</label>
+            <select @bind="_model.ViewStart" @bind:after="SaveCustomsSilent" class="form-control form-control-sm">
+                @foreach(var item in _view_starts)
+                {
+                    <option value="@item.Href">@item.Title</option>
+                }
+            </select>
+        </div>
+    </div>
+</EditForm>

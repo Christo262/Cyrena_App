@@ -1,4 +1,5 @@
 @implements IResultDialog
+@inject IFileDialog _files
 @using Cyrena.Coding.Options
 @using Cyrena.Options
 @using Cyrena.Website.Models
@@ -6,132 +7,68 @@
 @using Cyrena.Components.Shared
 @using Newtonsoft.Json
 
-<div class="p-3">
-    @if (_existing.Count > 0)
-    {
-        <div class="accordion accordion-flush" id="accordionFlushExample">
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                        Continue Work
-                    </button>
-                </h2>
-                <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-                    <div class="accordion-body">
-                        @foreach (var item in _existing)
-                        {
-                            <div class="d-flex mb-2 rounded border p-2">
-                                <p class="m-0 justify-content-center align-self-center">@item.WebsiteName</p>
-                                <button type="button" class="btn btn-sm btn-info ms-auto" @onclick="() => Continue(item)">
-                                    <i class="bi bi-arrow-right"></i>
-                                </button>
-                            </div>
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
+<EditForm EditContext="_context">
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
+
     <div class="mb-3">
-        <label class="form-label">Website Name</label>
-        <InputText @bind-Value="_websiteName" class="form-control" placeholder="My Awesome Site" />
+        <label class="form-label">Project Name</label>
+        <InputText @bind-Value="Model.Title" class="form-control" placeholder="My Awesome Site" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Working Directory</label>
+        <div class="input-group">
+            <InputText @bind-Value="Model.WorkingDirectory" class="form-control" />
+            <button class="btn btn-secondary" type="button" @onclick="ChooseFolder"><i class="bi bi-file"></i></button>
+        </div>
+        <p class="m-0 small">
+            <span class="text-danger">*</span> The folder where your website files will be created
+        </p>
         @if (!string.IsNullOrEmpty(_error))
         {
-            <div class="text-danger mt-2">@_error</div>
+            <span class="text-danger">@_error</span>
         }
     </div>
 
     <ConnectionSelector @bind-Value="Model.ConnectionId" />
 
     <PluginSelector Chat="Model" />
-</div>
+</EditForm>
 
 @code {
     [Parameter]
     public ChatConfiguration Model { get; set; } = default!;
-    [Parameter]
-    public bool IsEdit{ get; set; }
-    [CascadingParameter] public Modal? Dialog{ get; set; }
 
-    private string _websiteName = string.Empty;
-    private string _error = string.Empty;
+    private EditContext _context = default!;
+    private string? _error{ get; set; }
 
     protected override void OnInitialized()
     {
-        _websiteName = Model[WebsiteOptions.WebsiteName] ?? string.Empty;
-        if(!IsEdit)
-            PopulateExisting();
+        _context = new EditContext(Model);
     }
 
-    public Task<bool> OnClosing(DialogResult result)
+    public async Task<bool> OnClosing(DialogResult result)
     {
-        if (result != DialogResult.Yes)
-            return Task.FromResult(true);
-
-        if (string.IsNullOrWhiteSpace(_websiteName))
+        if (result != DialogResult.Yes) return true;
+        var valid = _context.Validate();
+        if (string.IsNullOrEmpty(Model.WorkingDirectory) || !Directory.Exists(Model.WorkingDirectory))
         {
-            _error = "Please enter a website name.";
-            return Task.FromResult(false);
+            _error = "Please select a valid working directory";
+            this.StateHasChanged();
+            return false;
         }
-
-        Model[WebsiteOptions.WebsiteName] = _websiteName.Trim();
-        Model.Title = _websiteName.Trim();
-        var sanitizedName = string.Concat(_websiteName.Trim().Split(Path.GetInvalidFileNameChars())).Replace(" ", "-").ToLowerInvariant();
-        var rootDir = Model[DevelopOptions.RootDirectory];
-        if (string.IsNullOrEmpty(rootDir))
-        {
-            rootDir = Path.Combine(CyrenaBuilder.AppDataDirectory, "websites", sanitizedName);
-            if (!Directory.Exists(rootDir))
-                Directory.CreateDirectory(rootDir);
-            Model[DevelopOptions.RootDirectory] = rootDir;
-        }
-        var props = new WebsiteViewModel()
-        {
-            WebsiteProjectId = sanitizedName,
-            WebsiteName = _websiteName.Trim(),
-        };
-        File.WriteAllText(Path.Combine(rootDir, "website.properties"), props.ToJson());
-        return Task.FromResult(true);
+        return valid;
     }
 
-    private async Task Continue(WebsiteViewModel item)
+    public async Task ChooseFolder()
     {
-        Model[WebsiteOptions.WebsiteName] = item.WebsiteName;
-        Model.Title = item.WebsiteName;
-        Model[DevelopOptions.RootDirectory] = item.RootDirectory;
-        _websiteName = item.WebsiteName;
-        this.StateHasChanged();
+        var folder = await _files.SelectFolder("Select Working Directory", Model.WorkingDirectory);
+        Model.WorkingDirectory = folder;
     }
 
     public Task OnClose(DialogResult result)
     {
         return Task.CompletedTask;
-    }
-
-    private List<WebsiteViewModel> _existing { get; set; } = [];
-    private void PopulateExisting()
-    {
-        var dir = Path.Combine(CyrenaBuilder.AppDataDirectory, "websites");
-        if (!Directory.Exists(dir))
-            Directory.CreateDirectory(dir);
-        var dirs = Directory.GetDirectories(dir);
-        foreach (var item in dirs)
-        {
-            var props = Path.Combine(item, "website.properties");
-            if (File.Exists(props))
-            {
-                try
-                {
-                    var json = File.ReadAllText(props);
-                    var vm = JsonConvert.DeserializeObject<WebsiteViewModel>(json);
-                    if (vm is not null)
-                    {
-                        vm.RootDirectory = item;
-                        _existing.Add(vm);
-                    }
-                }
-                catch { }
-            }
-        }
     }
 }

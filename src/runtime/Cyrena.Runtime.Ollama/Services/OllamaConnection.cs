@@ -8,6 +8,7 @@ using Cyrena.Runtime.Ollama.Models;
 using System.Text;
 using Cyrena.Extensions;
 using OllamaSharp;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Cyrena.Runtime.Ollama.Services
 {
@@ -17,13 +18,19 @@ namespace Cyrena.Runtime.Ollama.Services
         private readonly IChatMessageService _chat;
         private readonly IChatCompletionService _completion;
         private readonly OllamaConnectionInfo _options;
-        public OllamaConnection(IIterationService its, IChatMessageService chat, IChatCompletionService completion, OllamaConnectionInfo options)
+        private readonly IServiceProvider _services;
+        private readonly object _lock;
+        public OllamaConnection(IIterationService its, IChatMessageService chat, IChatCompletionService completion, OllamaConnectionInfo options, IServiceProvider services)
         {
             _its = its;
             _chat = chat;
             _completion = completion;
             _options = options;
+            _lock = new object();
+            _services = services;
         }
+
+        private StringBuilder? _responseBuilder { get; set; }
 
         public async Task HandleAsync(AuthorRole role, string input, Kernel kernel, CancellationToken ct = default)
         {
@@ -31,7 +38,7 @@ namespace Cyrena.Runtime.Ollama.Services
             await _chat.AddMessage(role, input);
             var settings = new OllamaPromptExecutionSettings
             {
-                FunctionChoiceBehavior = FunctionChoiceBehavior.None(), //Doesnt actually do anything for this release
+                FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
                 Temperature = _options.Temperature,
                 ExtensionData = new Dictionary<string, object>(),
                 TopK = _options.TopK,
@@ -44,18 +51,25 @@ namespace Cyrena.Runtime.Ollama.Services
             if (!string.IsNullOrEmpty(_options.Thinking))
                 settings.ExtensionData["think"] = _options.Thinking;
 
-            var sb = new StringBuilder();
-
-            await foreach (var chunk in _completion.GetStreamingChatMessageContentsAsync(_chat.GetKernelHistory(), settings, kernel, ct))
+            _responseBuilder = new StringBuilder();
+            var history = await _chat.GetKernelHistory();
+            await foreach (var chunk in _completion.GetStreamingChatMessageContentsAsync(history, settings, kernel, ct))
             {
                 var delta = chunk.Content;
                 if (string.IsNullOrEmpty(delta)) continue;
-
-                sb.Append(delta);
+                lock (_lock)
+                {
+                    _responseBuilder.Append(delta);
+                }
                 _chat.Stream(delta);
             }
 
-            var text = sb.ToString();
+            var transformers = _services.GetServices<IConversationHistoryTransformer>();
+            foreach (var transformer in transformers)
+                await transformer.ApplyPostStreamModification(history);
+
+            var text = _responseBuilder.ToString();
+            _responseBuilder = null;
             if (string.IsNullOrEmpty(text))
             {
                 await _chat.AddMessage(AuthorRole.Assistant, text);
@@ -134,18 +148,27 @@ namespace Cyrena.Runtime.Ollama.Services
             if (!string.IsNullOrEmpty(_options.Thinking))
                 settings.ExtensionData["think"] = _options.Thinking;
 
-            var sb = new StringBuilder();
+            _responseBuilder = new StringBuilder();
+            var history = await _chat.GetKernelHistory();
 
-            await foreach (var chunk in _completion.GetStreamingChatMessageContentsAsync(_chat.GetKernelHistory(), settings, kernel, ct))
+            await foreach (var chunk in _completion.GetStreamingChatMessageContentsAsync(history, settings, kernel, ct))
             {
                 var delta = chunk.Content;
                 if (string.IsNullOrEmpty(delta)) continue;
 
-                sb.Append(delta);
+                lock (_lock)
+                {
+                    _responseBuilder.Append(delta);
+                }
                 _chat.Stream(delta);
             }
 
-            var text = sb.ToString();
+            var transformers = _services.GetServices<IConversationHistoryTransformer>();
+            foreach (var transformer in transformers)
+                await transformer.ApplyPostStreamModification(history);
+
+            var text = _responseBuilder.ToString();
+            _responseBuilder = null;
             if (string.IsNullOrEmpty(text))
             {
                 await _chat.AddMessage(AuthorRole.Assistant, text);
@@ -202,6 +225,14 @@ namespace Cyrena.Runtime.Ollama.Services
             finally
             {
                 _its.InferenceEnd();
+            }
+        }
+
+        public void FunctionCallStart()
+        {
+            lock (_lock)
+            {
+                _responseBuilder?.Clear();
             }
         }
 

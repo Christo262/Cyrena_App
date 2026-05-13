@@ -5,6 +5,7 @@ using Cyrena.Options;
 using Cyrena.Persistence;
 using Cyrena.Persistence.Contracts;
 using Cyrena.Runtime.Models;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -18,10 +19,12 @@ namespace Cyrena.Runtime.Services
         private readonly IStore<ChatMessage> _store;
         private readonly ChatConfiguration _config;
         private readonly IPromptManager _prompts;
+        private readonly IIterationService _its;
+        private readonly IServiceProvider _services;
 
         private readonly ChatHistory _kernel;
         private readonly ChatHistory _display;
-        public ChatMessageService(IOptions<ChatOptions> options, ChatConfiguration config, IStore<ChatMessage> store, IPromptManager prompts)
+        public ChatMessageService(IOptions<ChatOptions> options, ChatConfiguration config, IStore<ChatMessage> store, IPromptManager prompts, IIterationService its, IServiceProvider services)
         {
             _options = options.Value;
             _pipeline = new ChatMessagePipeline();
@@ -31,28 +34,26 @@ namespace Cyrena.Runtime.Services
 
             _kernel = new ChatHistory();
             _display = new ChatHistory();
+            _its = its;
+            _services = services;
         }
 
         public ChatOptions Options => _options;
         public IReadOnlyList<ChatMessageContent> KernelHistory => _kernel;
         public IReadOnlyList<ChatMessageContent> DisplayHistory => _display;
-        public ChatHistory GetKernelHistory()
+        public async Task<ChatHistory> GetKernelHistory()
         {
-            var history = new ChatHistory();
+            var history = new ChatHistory(_kernel.Where(x => x.Role != _options.System));
+            var transformers = _services.GetServices<IConversationHistoryTransformer>();
+            foreach (var interceptor in transformers)
+                history = await interceptor.TransformPreIterationHistory(history);
+
+            var final = new ChatHistory();
             foreach (var item in _prompts.Prompts.OrderBy(x => x.Order))
-                history.AddSystemMessage(item.Content);
-            if (_prompts.ModifyKernelHistoryFunc == null)
-                history.AddRange(_kernel);
-            else
-                try
-                {
-                    history.AddRange(_prompts.ModifyKernelHistoryFunc(_kernel, _options));
-                }
-                catch (Exception ex)
-                {
-                    this.LogError(ex.Message);
-                }
-            return history;
+                final.AddSystemMessage(item.Content);
+            final.AddRange(history);
+
+            return final;
         }
 
         public IDisposable OnStreamToken(Action<string?> callback) => _pipeline.WatchStreamToken(callback);
@@ -87,7 +88,7 @@ namespace Cyrena.Runtime.Services
                 _kernel.Add(content);
                 _pipeline.InvokeKernelHistoryUpdated(_kernel);
                 if (_options.MessagePersistRoles.Contains(content.Role))
-                    await _store.AddAsync(new ChatMessage(content, _config.Id));
+                    await _store.AddAsync(new ChatMessage(content, _config.Id, _its.IterationId));
             }
 
             if(_options.IsDisplayContent(content))
@@ -114,7 +115,7 @@ namespace Cyrena.Runtime.Services
                     foreach (var item in items)
                         content.Items.Add(item.Item);
                 if(_options.MessagePersistRoles.Contains(content.Role))
-                    await _store.AddAsync(new ChatMessage(content, _config.Id, items));
+                    await _store.AddAsync(new ChatMessage(content, _config.Id, _its.IterationId, items));
             }
 
             if (_options.IsDisplayContent(content))

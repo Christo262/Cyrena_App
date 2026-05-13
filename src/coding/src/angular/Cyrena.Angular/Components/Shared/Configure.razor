@@ -71,7 +71,7 @@
             _angularJsonPath = result;
             _projectRoot = Path.GetDirectoryName(result) ?? string.Empty;
             Model[AngularOptions.AngularJson] = result;
-            Model[DevelopOptions.RootDirectory] = _projectRoot;
+            Model.WorkingDirectory = _projectRoot;
         }
     }
 
@@ -84,7 +84,7 @@
             _error = "Please select an angular.json file.";
             return Task.FromResult(false);
         }
-        Model[DevelopOptions.RootDirectory] = Path.GetDirectoryName(Model[AngularOptions.AngularJson]);
+        Model.WorkingDirectory = Path.GetDirectoryName(Model[AngularOptions.AngularJson]);
         return Task.FromResult(true);
     }
 

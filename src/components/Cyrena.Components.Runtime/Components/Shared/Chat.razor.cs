@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Cyrena.Models;
 using BootstrapBlazor.Components;
+using Cyrena.Attributes;
 
 namespace Cyrena.Components.Shared
 {
@@ -20,17 +21,15 @@ namespace Cyrena.Components.Shared
         private ElementReference _scrollHost;
         private Markdig.MarkdownPipeline _mdp = default!;
 
-        private IIterationService _its = default!;
-        private IChatMessageService _msg = default!;
-        private ConnectionInfo _info = default!;
+        [KernelInject] private IIterationService _its { get; set; } = default!;
+        [KernelInject] private IChatMessageService _msg { get; set; } = default!;
+        [KernelInject] private ConnectionInfo _info { get; set; } = default!;
+        [KernelInject] private IFileHandlerFactory _files { get; set; } = default!;
 
         private DotNetObjectReference<Chat>? _dotNetRef;
 
         protected override void OnInitialized()
         {
-            _info = Kernel.Services.GetRequiredService<ConnectionInfo>();
-            _its = Kernel.Services.GetRequiredService<IIterationService>();
-            _msg = Kernel.Services.GetRequiredService<IChatMessageService>();
             _its_start = _its.OnIterationStart(OnIterationEvent);
             _its_end = _its.OnIterationEnd(OnIterationEvent);
             _dsp_hst = _msg.OnDisplayHistoryChanged(OnDisplayHistoryChanged);
@@ -48,49 +47,60 @@ namespace Cyrena.Components.Shared
 
             _dotNetRef = DotNetObjectReference.Create(this);
             await _js.InvokeVoidAsync("Cyrena.Runtime.registerChatPasteHandler", _area, _dotNetRef);
+            await _js.InvokeVoidAsync("Cyrena.Runtime.registerChatDropHandler", _dropZone, _dotNetRef);
         }
 
         [JSInvokable]
-        public async Task OnImagePasted(string base64DataUrl, string mimeType)
+        public async Task OnFilePasted(
+            string base64DataUrl,
+            string? fileName,
+            string? mimeType,
+            long size)
         {
-            var handlers = Kernel.Services.GetServices<IFileHandler>();
-            if(handlers.Count() == 0)
+            if (!_files.HasFileHandlers)
             {
                 await _toasts.Error("File Support Error", "Files are not supported in this chat.");
                 return;
             }
-            if (string.IsNullOrEmpty(mimeType))
-                mimeType = "image/png";
-            var extension = mimeType switch
+
+            if (string.IsNullOrWhiteSpace(fileName))
+                fileName = "pasted-file";
+
+            if (string.IsNullOrWhiteSpace(mimeType))
+                mimeType = "application/octet-stream";
+
+            var name = EnsureFileNameHasExtension(fileName, mimeType);
+            if (!_files.CanHandleType(mimeType, name))
             {
-                "image/png" => "png",
-                "image/jpeg" => "jpg",
-                "image/gif" => "gif",
-                "image/webp" => "webp",
-                _ => "png"
-            };
-            var name = $"pasted-image.{extension}";
-            AdditionalMessageContent? content = null;
-            foreach (var handler in handlers)
-            {
-                if(handler.HandlesType(mimeType, name))
-                {
-                    var base64Data = base64DataUrl.Contains(',')
-                        ? base64DataUrl.Split(',')[1]
-                        : base64DataUrl;
-                    var bytes = Convert.FromBase64String(base64Data);
-                    content = await handler.GetMessageContent(bytes, mimeType, name);
-                    if (content != null)
-                        break;
-                }
-            }
-            if(content ==null)
-            {
-                await _toasts.Error("Not Supported", "File type is not supported");
+                await _toasts.Error("Not Supported", $"File type is not supported: {mimeType}");
                 return;
             }
+
+            var base64Data = base64DataUrl.Contains(',')
+                    ? base64DataUrl.Split(',', 2)[1]
+                    : base64DataUrl;
+            var bytes = Convert.FromBase64String(base64Data);
+
+            AdditionalMessageContent? content = await _files.GetMessageContent(bytes, mimeType, name);
+            if (content == null)
+            {
+                await _toasts.Error("Not Supported", $"File type is not supported: {mimeType}");
+                return;
+            }
+
             _items.Add(content);
-            this.StateHasChanged();
+            StateHasChanged();
+        }
+
+        private string EnsureFileNameHasExtension(string fileName, string mimeType)
+        {
+            if (Path.HasExtension(fileName))
+                return fileName;
+
+            var extension = _files.GetExtension(mimeType);
+            return string.IsNullOrEmpty(extension)
+                ? fileName
+                : $"{fileName}{extension}";
         }
 
         private List<AdditionalMessageContent> _items = new List<AdditionalMessageContent>();
@@ -183,6 +193,7 @@ namespace Cyrena.Components.Shared
         }
 
         private ElementReference _area = default!;
+        private ElementReference _dropZone = default!;
         private async Task AutoGrow(ChangeEventArgs e)
         {
             _its.Input = e.Value?.ToString() ?? "";
@@ -199,6 +210,7 @@ namespace Cyrena.Components.Shared
             if (_dotNetRef is not null)
             {
                 _ = _js.InvokeVoidAsync("Cyrena.Runtime.unregisterChatPasteHandler", _area);
+                _ = _js.InvokeVoidAsync("Cyrena.Runtime.unregisterChatDropHandler", _dropZone);
                 _dotNetRef.Dispose();
             }
             _its_end.Dispose();

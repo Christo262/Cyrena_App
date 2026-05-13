@@ -10,6 +10,6 @@
     private void OnClick()
     {
         var config = Kernel.GetRequiredService<IChatConfigurationService>();
-        _files.ExploreFolder(config.Config[DevelopOptions.RootDirectory]!);
+        _files.ExploreFolder(config.Config.WorkingDirectory!);
     }
 }

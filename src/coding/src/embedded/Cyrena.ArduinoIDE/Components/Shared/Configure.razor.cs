@@ -64,7 +64,7 @@ namespace Cyrena.ArduinoIDE.Components.Shared
                     var info = new FileInfo(files);
                     Model["ino"] = files;
                     _model.InoPath = files;
-                    Model[DevelopOptions.RootDirectory] = info.DirectoryName;
+                    Model.WorkingDirectory = info.DirectoryName;
                 }
             }
             catch (Exception ex)

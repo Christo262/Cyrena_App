@@ -1,0 +1,25 @@
+﻿
+
+<div class="row m-0">
+    <div class="col-1 justify-content-center align-self-center">
+        @if(_current != null)
+        {
+            <button type="button" class="btn btn-sm btn-outline-light border-0" @onclick="Previous">
+                <i class="bi bi-chevron-compact-left"></i>
+            </button>
+        }
+    </div>
+    <div class="col-10">
+        <div class="text-center">
+            <img src="@MascotPath()" height="@(_current?.Height ?? 200)" />
+        </div>
+    </div>
+    <div class="col-1 justify-content-center align-self-center">
+        @if(_current != null)
+        {
+            <button type="button" class="btn btn-sm btn-outline-light border-0" @onclick="Next">
+                <i class="bi bi-chevron-compact-right"></i>
+            </button>
+        }
+    </div>
+</div>

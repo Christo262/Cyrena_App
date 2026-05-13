@@ -4,48 +4,52 @@
     <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Cyrena.Coding.Core" Version="0.4.2" />
-    <PackageVersion Include="Cyrena.Components.Core" Version="0.4.3" />
-    <PackageVersion Include="Cyrena.Core" Version="0.4.2" />
-    <PackageVersion Include="Cyrena.Extensa.Core" Version="0.4.0" />
-    <PackageVersion Include="Cyrena.Persistence.Core" Version="0.4.0" />
-    <PackageVersion Include="Cyrena.Persistence.File" Version="0.4.0" />
-    <PackageVersion Include="FSharp.Compiler.Service" Version="43.12.203" />
-    <PackageVersion Include="FSharp.Core" Version="10.1.203" />
+    <PackageVersion Include="Cyrena.Coding.Core" Version="0.5.0" />
+    <PackageVersion Include="Cyrena.Components.Core" Version="0.5.0" />
+    <PackageVersion Include="Cyrena.Core" Version="0.5.0" />
+    <PackageVersion Include="Cyrena.Extensa.Core" Version="0.5.0" />
+    <PackageVersion Include="Cyrena.Persistence.Core" Version="0.5.0" />
+    <PackageVersion Include="Cyrena.Persistence.File" Version="0.5.0" />
   </ItemGroup>
   <!--Third-party-->
   <ItemGroup>
+    <PackageVersion Include="FSharp.Compiler.Service" Version="43.12.203" />
+    <PackageVersion Include="FSharp.Core" Version="10.1.203" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageVersion Include="Markdig" Version="0.44.0" />
-    <PackageVersion Include="PdfPig" Version="0.1.13" />
-    <PackageVersion Include="LinqKit.Core" Version="1.2.4" />
+    <PackageVersion Include="Markdig" Version="1.1.3" />
+    <PackageVersion Include="PdfPig" Version="0.1.14" />
+    <PackageVersion Include="LinqKit.Core" Version="1.2.11" />
   </ItemGroup>
   <!--FE-->
   <ItemGroup>
     <PackageVersion Include="Photino.Blazor" Version="4.0.13" />
+    <PackageVersion Include="Photino.Native" Version="4.0.22" />
+    <PackageVersion Include="Photino.NET" Version="4.0.16" />
+    <PackageVersion Include="PhotinoX" Version="4.2.0" />
+    <PackageVersion Include="PhotinoX.Blazor" Version="4.2.0" />
+    <PackageVersion Include="PhotinoX.Native" Version="4.2.0" />
     <PackageVersion Include="CommunityToolkit.Maui" Version="14.0.0" />
-    <PackageVersion Include="BootstrapBlazor" Version="10.3.0" />
-    <PackageVersion Include="BootstrapBlazor.Html2Pdf" Version="10.0.2" />
+    <PackageVersion Include="BootstrapBlazor" Version="10.6.0" />
+    <PackageVersion Include="BootstrapBlazor.Html2Pdf" Version="10.0.6" />
     <PackageVersion Include="BootstrapBlazor.BootstrapIcon" Version="10.0.0" />
     <PackageVersion Include="BlazorMonaco" Version="3.4.0" />
   </ItemGroup>
   <!--Microsoft-->
   <ItemGroup>
-    <PackageVersion Include="Microsoft.SemanticKernel" Version="1.74.0" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.2" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.5" />
-    <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.2" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="10.0.3" />
-    <PackageVersion Include="Microsoft.SemanticKernel.Connectors.Ollama" Version="1.74.0-alpha" />
-    <PackageVersion Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.74.0" />
-    <PackageVersion Include="Microsoft.Maui.Controls" Version="10.0.30" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="10.0.30" />
+    <PackageVersion Include="Microsoft.SemanticKernel" Version="1.75.0" />
+    <PackageVersion Include="Microsoft.SemanticKernel.Connectors.Ollama" Version="1.75.0-alpha" />
+    <PackageVersion Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.75.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="10.0.7" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="10.0.60" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.7" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="10.0.41" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.7" />
   </ItemGroup>
   <!--System-->
   <ItemGroup>
-    <PackageVersion Include="System.Security.Cryptography.ProtectedData" Version="10.0.3" />
+    <PackageVersion Include="System.Security.Cryptography.ProtectedData" Version="10.0.7" />
+    <PackageVersion Include="Ulid" Version="1.4.1" />
   </ItemGroup>
 </Project>

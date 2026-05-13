@@ -1,7 +1,10 @@
-﻿using Cyrena.Extensa.Models;
+﻿using Cyrena.Components.Shared;
+using Cyrena.Extensa.Models;
 using Cyrena.Extensions;
 using Cyrena.Options;
 using Cyrena.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 
 namespace Cyrena
 {
@@ -10,7 +13,7 @@ namespace Cyrena
         public const string Id = "cyrena";
         public const string Name = "Cyréna";
         public const string Description = "Cyréna core runtime. Provides the application version to the extension framework.";
-        public static Version Version = System.Version.Parse("0.4.0");
+        public static Version Version = System.Version.Parse("0.5.0");
 
         public override void BuildExtension(CyrenaBuilder builder)
         {
@@ -19,8 +22,7 @@ namespace Cyrena
             builder.AddOllama();
             builder.AddOpenAI();
 
-            builder.AddAssistantMode<DefaultAssistantMode>();
-            builder.AddFeatureAssembly<DefaultAssistantMode>("blazor");
+            builder.AddDefaultAssistant();
         }
     }
 }

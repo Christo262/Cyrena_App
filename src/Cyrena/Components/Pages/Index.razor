@@ -1,0 +1,28 @@
+@page "/"
+@using Cyrena.Components.Shared
+@attribute [TabItemOption(Text = "New Chat", Icon = "bi bi-chat-dots")]
+
+<style>
+    .setup-shadow {
+        box-shadow: 0 0.1rem 4rem rgba(var(--bs-info-rgb), 0.8) !important;
+    }
+</style>
+
+<div class="h-100 row m-0 position-relative overflow-auto">
+
+    <div class="position-absolute w-auto top-0 start-0 overflow-auto d-flex mt-4">
+        <Shortcuts/>
+    </div>
+
+    <div class="col-md-8 m-auto">
+        <Mascot></Mascot>
+
+        <div class="bg-body p-2 rounded">
+            <ChatStart />
+        </div>
+    </div>
+
+    <div class="position-absolute end-0 bottom-0 p-2 text-end">
+        <a href="app-setup" class="btn btn-info btn-lg text-uppercase fw-bolder setup-shadow"><i class="bi bi-magic"></i> Setup Wizard</a>
+    </div>
+</div>

@@ -9,11 +9,11 @@ namespace Cyrena.Runtime.Services
         public async Task<AdditionalMessageContent?> GetMessageContent(Stream data, string contentType, string name)
         {
             if (!contentType.StartsWith("image/"))
-                return null;    
+                return null;
             using var ms = new MemoryStream();
             await data.CopyToAsync(ms);
             ms.Position = 0;
-            var c = new ImageContent(ms.ToArray(), contentType);
+            var c = new ImageContent(ms.ToArray(), contentType) { MimeType = contentType };
             var content = new AdditionalMessageContent(name, c);
             return content;
         }
@@ -22,14 +22,46 @@ namespace Cyrena.Runtime.Services
         {
             if (!contentType.StartsWith("image/"))
                 return null;
-            var c = new ImageContent(data, contentType);
+            var c = new ImageContent(data, contentType) { MimeType = contentType };
             var content = new AdditionalMessageContent(name, c);
             return content;
+        }
+
+        public async Task<KernelContent?> GetKernelContent(Stream data, string contentType, string name)
+        {
+            if (!contentType.StartsWith("image/"))
+                return null;
+            using var ms = new MemoryStream();
+            await data.CopyToAsync(ms);
+            ms.Position = 0;
+            var c = new ImageContent(ms.ToArray(), contentType) { MimeType = contentType };
+            return c;
+        }
+
+        public async Task<KernelContent?> GetKernelContent(byte[] data, string contentType, string name)
+        {
+            if (!contentType.StartsWith("image/"))
+                return null;
+            var c = new ImageContent(data, contentType) { MimeType = contentType };
+            return c;
         }
 
         public string[] GetSupportedMimeTypes()
         {
             return ["image/*"];
+        }
+
+        public Dictionary<string, string> GetExtensionMimeTypeMapping()
+        {
+            return new()
+            {
+                {".png", "image/png" },
+                {".jpg", "image/jpeg" },
+                {".jpeg", "image/jpeg" },
+                {".gif", "image/gif" },
+                {".webp", "image/webp" },
+                {".ico", "image/x-icon" }
+            };
         }
 
         public bool HandlesType(string contentType, string fileName)

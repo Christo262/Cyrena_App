@@ -18,6 +18,12 @@ namespace Cyrena.HUD.Services
             OnDefaultConnectionSet?.Invoke(this, EventArgs.Empty);
         }
 
+        public Task<string?> GetDefaultConnection()
+        {
+            var model = _settings.Read<WindowOptions>(WindowOptions.Key) ?? new WindowOptions();
+            return Task.FromResult(model.DefaultConnectionId);
+        }
+
         public Task SetDefaultConnectionId(string connectionId)
         {
             var model = _settings.Read<WindowOptions>(WindowOptions.Key) ?? new WindowOptions();

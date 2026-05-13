@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Cyréna",
+    "file": "cyrena_default.png"
+  },
+  {
+    "name": "Cyréna Okay",
+    "file": "cyrena_fallout.png"
+  },
+  {
+    "name": "Cyréna Ollama",
+    "file": "cyrena_ollama.png"
+  },
+  {
+    "name": "Go-Cyréna",
+    "file": "cyrena_dragon_ball.png"
+  },
+  {
+    "name": "<Cyréna/>",
+    "file": "cyrena_coder.png"
+  },
+  {
+    "name": "Cyréna-San",
+    "file": "cyrena_samurai.png"
+  },
+  {
+    "name": "Cyréna Skywalker",
+    "file": "cyrena_skywalker.png"
+  },
+  {
+    "name": "Uzumaki Cyréna",
+    "file": "cyrena_naruto.png"
+  },
+  {
+    "name": "Cyréna Potter",
+    "file": "cyrena_potter.png"
+  },
+  {
+    "name": "Astro Cyréna",
+    "file": "cyrena_astro.png"
+  }
+]

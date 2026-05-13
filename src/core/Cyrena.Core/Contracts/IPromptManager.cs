@@ -31,10 +31,10 @@ namespace Cyrena.Contracts
         void RemovePrompt(string id);
 
         /// <summary>
+        /// [OBSOLETE] use <see cref="IConversationHistoryTransformer"/>.
         /// Allows modification of the history that is returned in <see cref="IChatMessageService.GetKernelHistory"/>. 
-        /// Leave null if no modification should take place. Helps to reduce context to only the required data the model needs and still retain
-        /// history for the user
         /// </summary>
+        [Obsolete]
         Func<ChatHistory, ChatOptions, IEnumerable<ChatMessageContent>>? ModifyKernelHistoryFunc { get; set; }
     }
 }

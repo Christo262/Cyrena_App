@@ -15,6 +15,10 @@ namespace Cyrena.Contracts
         string? Input { get; set; }
         bool Inferring { get; }
         /// <summary>
+        /// Assigned when <see cref="InferenceStart"/> is called
+        /// </summary>
+        string? IterationId { get; }
+        /// <summary>
         /// <see cref="IConnection"/> invokes this
         /// </summary>
         void InferenceStart();

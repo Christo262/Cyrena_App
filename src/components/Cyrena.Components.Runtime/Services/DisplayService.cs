@@ -6,20 +6,40 @@ namespace Cyrena.Services
 {
     internal class DisplayService : IDisplayService
     {
+        private readonly SemaphoreSlim _dialogLock = new(1, 1);
+
         private DialogService? _dialog;
         private ToastService? _toasts;
         private NavigationManager? _nav;
-        public Task<DialogResult> ShowModal<TComponent>(ResultDialogOption option, Dialog? dialog = null) where TComponent : IComponent, IResultDialog
+        public async Task<DialogResult> ShowModal<TComponent>(ResultDialogOption option, Dialog? dialog = null) where TComponent : IComponent, IResultDialog
         {
             if (_dialog == null)
                 throw new Exception("DialogService not set");
-            return _dialog.ShowModal<TComponent>(option, dialog);
+            await _dialogLock.WaitAsync();
+            try
+            {
+                return await _dialog.ShowModal<TComponent>(option, dialog);
+            }
+            finally
+            {
+                await Task.Delay(1000);
+                _dialogLock.Release();
+            }
         }
-        public Task<DialogResult> ShowModal(string title, string content, ResultDialogOption? option = null, Dialog? dialog = null)
+        public async Task<DialogResult> ShowModal(string title, string content, ResultDialogOption? option = null, Dialog? dialog = null)
         {
             if (_dialog == null)
                 throw new Exception("DialogService not set");
-            return _dialog.ShowModal(title, content, option, dialog);
+            await _dialogLock.WaitAsync();
+            try
+            {
+                return await _dialog.ShowModal(title, content, option, dialog);
+            }
+            finally
+            {
+                await Task.Delay(1000);
+                _dialogLock.Release();
+            }
         }
 
         public Task ShowToast(ToastOption option, ToastContainer? toastContainer = null)

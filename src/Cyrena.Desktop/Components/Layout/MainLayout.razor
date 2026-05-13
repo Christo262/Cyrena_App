@@ -3,24 +3,17 @@
 @inherits LayoutComponentBase
 
 <Preload />
-<Layout ShowCollapseBar ShowFooter="false" SideWidth="0" IsPage IsFullSide IsFixedHeader
-        ShowSplitBar SidebarMinWidth="200" SidebarMaxWidth="350" ShowTabInHeader UseTabSet TabDefaultUrl="/" MenuBarIcon="bi bi-layout-sidebar-inset"
+<Cyrena.Components.Tools.DisplayServiceComponent/>
+<Layout ShowCollapseBar ShowFooter="false" SideWidth="0" IsPage IsFullSide="false" IsFixedHeader
+        ShowSplitBar SidebarMinWidth="200" SidebarMaxWidth="350" ShowTabInHeader UseTabSet 
+        TabDefaultUrl="@(_view_start.Href)" 
+        MenuBarIcon="bi bi-layout-sidebar-inset"
         TabContextMenuCloseIcon="bi bi-x-lg" TabContextMenuCloseAllIcon="bi bi-x-lg" TabContextMenuCloseOtherIcon="bi bi-x-lg" TabStyle="TabStyle.Chrome"
         AdditionalAssemblies="@(_options.GetFeatureAssemblies("blazor").Concat([typeof(MainLayout).Assembly]))">
     <Header>
-        <div class="dropdown ms-1">
-            <button class="btn btn-outline-light btn-sm me-1 rounded-pill" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-boxes"></i>
-            </button>
-            <ul class="dropdown-menu">
-                <li>
-                    <a class="dropdown-item" href="browse-extensions"><i class="bi bi-cloud-download"></i> Browse Extensions</a>
-                </li>
-                <li>
-                    <a class="dropdown-item" href="manage-extensions"><i class="bi bi-boxes"></i> Installed Extensions</a>
-                </li>
-            </ul>
-        </div>
+        <Tooltip Title="Extensions">
+            <a href="app-extensions" class="btn btn-outline-light btn-sm rounded-pill mx-1"><i class="bi bi-boxes"></i></a>
+        </Tooltip>
 
         <Tooltip Title="Settings">
             <a href="settings" class="btn btn-outline-light btn-sm rounded-pill"><i class="bi bi-gear"></i></a>

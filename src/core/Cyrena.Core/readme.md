@@ -1,6 +1,5 @@
 # Cyrena.Core SDK
 
-**Version:** 0.3.0  
 **Target Framework:** .NET 10.0  
 **Core Dependency:** Microsoft.SemanticKernel
 
@@ -61,233 +60,258 @@ implementations into the DI container.
 
 ---
 
+## Overview
+
+`Cyrena.Core` is the foundational class library of the Cyréna AI assistant framework. It defines all core contracts, data models, application builders, and extension methods that the rest of the solution depends on. Any extension or plugin for Cyréna must reference this package.
+
+**Namespace:** `Cyrena` (contracts, models, options, extensions)
+**Target Framework:** .NET 10.0
+
+---
+
 ## Contracts
 
-### Assistant Mode System
-
-#### IAssistantMode
-Defines behavior configuration for a Semantic Kernel instance. Modes represent different operational contexts (e.g., "default", "code-assist", "creative").
+### `IAssistantMode`
+Configures behavior surrounding the `Microsoft.SemanticKernel.Kernel` for a specific assistant mode.
 
 ```csharp
 public interface IAssistantMode
 {
-    // Unique identifier for this mode
+    public const string AssistantModeDefault = "assistant-default";
     string Id { get; }
-    
-    // Configure kernel behavior for this mode
-    Task ConfigureAsync(CyrenaKernelBuilder builder, CancellationToken cancellationToken = default);
-    
-    // Handle deletion
-    Task DeleteAsync(CancellationToken cancellationToken = default);
-    
-    // Handle editing
-    Task EditAsync(CancellationToken cancellationToken = default);
+    Task ConfigureAsync(CyrenaKernelBuilder builder);
+    Task DeleteAsync(ChatConfiguration config);
+    Task EditAsync(ChatConfiguration config, IServiceProvider services);
 }
-
-// Default mode identifier
-const string IAssistantMode.Default = "assistant-default";
 ```
 
-#### IAssistantPlugin
-**NOT an application plugin.** A DI service that configures one or many `IAssistantMode` implementations into the kernel.
+- `Id`: Unique identifier for the mode.
+- `ConfigureAsync`: Called when a kernel is loaded for this mode. Use to add plugins, prompts, and services.
+- `DeleteAsync`: Called when a chat using this mode is deleted.
+- `EditAsync`: Called when a chat configuration is edited.
+
+### `IAssistantPlugin`
+Adds additional services, features, or functions to an `IAssistantMode`.
 
 ```csharp
-public interface IAssistantPlugin : IAssistantMode
+public interface IAssistantPlugin
 {
-    // Which modes this plugin configures
-    IReadOnlyList<string> Modes { get; }
-    
-    // Execution priority (lower = runs first)
+    string Id { get; }
+    string[] Modes { get; }      // Empty = applicable to all modes
     int Priority { get; }
-    
-    // Apply all modes to the kernel builder
-    Task LoadAsync(CyrenaKernelBuilder builder, CancellationToken cancellationToken = default);
+    bool Required { get; }       // false = can be deactivated
+    string Title { get; }
+    Task LoadAsync(CyrenaKernelBuilder builder);
 }
 ```
 
-**Key Distinction:**
-- **IAssistantMode** = A single kernel configuration (what to add to the kernel)
-- **IAssistantPlugin** = A service in DI that registers one or more modes into the kernel
-
----
-
-### Kernel Management
-
-#### IKernelController
-Manages all Semantic Kernel instances in the application. Each chat has its own kernel instance.
+### `IChatMessageService` (Kernel-locked)
+Maintains chat history with separate kernel and display histories.
 
 ```csharp
-public interface IKernelController
+public interface IChatMessageService : IDisposable
 {
-    // Plugin/Mode management
-    Task LoadPluginAsync(string chatId, IAssistantPlugin plugin, CancellationToken cancellationToken = default);
-    Task UnloadPluginAsync(string chatId, string pluginId, CancellationToken cancellationToken = default);
+    IReadOnlyList<ChatMessageContent> KernelHistory { get; }
+    IReadOnlyList<ChatMessageContent> DisplayHistory { get; }
+    ChatOptions Options { get; }
     
-    // Kernel lifecycle
-    Task<Kernel> CreateKernelAsync(string chatId, CancellationToken cancellationToken = default);
-    Task UpdateKernelAsync(string chatId, CancellationToken cancellationToken = default);
-    Task DeleteKernelAsync(string chatId, CancellationToken cancellationToken = default);
+    IDisposable OnStreamToken(Action<string?> callback);
+    IDisposable OnDisplayHistoryChanged(Action<ChatHistory> callback);
+    IDisposable OnKernelHistoryChanged(Action<ChatHistory> callback);
+    IDisposable OnHistoryLoaded(Action<ChatHistory> callback);
+    Task<ChatHistory> GetKernelHistory();
     
-    // Event subscriptions
-    EventPipe OnChatDelete { get; }
-    EventPipe OnChatCreate { get; }
-    EventPipe OnChatUpdate { get; }
-    EventPipe OnChatUnload { get; }
+    void LoadHistory(IEnumerable<ChatMessageContent> kernelHistory, IEnumerable<ChatMessageContent>? displayHistory);
+    Task LoadHistoryAsync();
+    Task AddMessage(ChatMessageContent content);
+    Task AddMessage(AuthorRole role, string? content);
+    Task AddMessage(AuthorRole role, string? input, params AdditionalMessageContent[] items);
+    Task ClearHistoryAsync();
+    void Stream(string? token);
 }
 ```
 
-#### IConnection
-Connection to an LLM service provider. **Kernel-locked.**
-
-```csharp
-public interface IConnection
-{
-    // Send message and get response
-    Task<AuthorRole> HandleAsync(ChatMessageContent input, KernelFunctionMetadata[] tools, CancellationToken cancellationToken = default);
-    
-    // Stream response tokens
-    IAsyncEnumerable<StreamingChatMessageContent> HandleStreamingAsync(ChatMessageContent input, KernelFunctionMetadata[] tools, CancellationToken cancellationToken = default);
-    
-    // Get role for returned content
-    AuthorRole GetRole();
-    
-    // Check if message should go to kernel
-    bool GoesToKernel(KernelContent content);
-}
-```
-
-#### IConnectionProvider
-Provides available LLM connections.
-
-```csharp
-public interface IConnectionProvider
-{
-    // List all available connections
-    Task<IList<ConnectionInfo>> ListConnectionsAsync(CancellationToken cancellationToken = default);
-    
-    // Check if connection exists
-    Task<bool> HasConnectionAsync(string connectionId, CancellationToken cancellationToken = default);
-    
-    // Get connection info
-    Task<ConnectionInfo> AttachAsync(string connectionId, CancellationToken cancellationToken = default);
-}
-```
-
----
-
-### Chat & History Management
-
-#### IChatMessageService
-Maintains chat history with dual history model. **Kernel-locked.**
-
-```csharp
-public interface IChatMessageService
-{
-    // Current configuration
-    ChatConfiguration Configuration { get; }
-    
-    // Kernel-visible history (all messages including internal)
-    IList<ChatMessageContent> KernelHistory { get; }
-    
-    // User-visible history (display-only messages)
-    IList<ChatMessageContent> DisplayHistory { get; }
-    
-    // Current streaming tokens
-    IList<StreamingChatMessageContent> StreamingTokens { get; }
-    
-    // Load history from storage
-    Task LoadHistoryAsync(string chatId, CancellationToken cancellationToken = default);
-    
-    // Add message to history
-    Task AddMessageAsync(ChatMessageContent message, CancellationToken cancellationToken = default);
-    
-    // Get messages for kernel
-    IList<ChatMessageContent> GetMessages();
-    
-    // Clear current history
-    Task ClearAsync(CancellationToken cancellationToken = default);
-}
-```
-
-#### IIterationService
-Manages inference iterations (user message → model response). **Kernel-locked.**
-
-```csharp
-public interface IIterationService
-{
-    bool InInferring { get; }
-    
-    // Start/end inference cycle
-    void StartInferring();
-    void EndInferring();
-    
-    // Callback hooks
-    Action OnIterationStart { get; set; }
-    Action<AuthorRole, bool> OnIterationEnd { get; set; }
-}
-```
-
-#### IChatConfigurationService
-Access to current chat configuration.
+### `IChatConfigurationService`
+Provides access to the current chat's persistent configuration.
 
 ```csharp
 public interface IChatConfigurationService
 {
-    ChatConfiguration Current { get; }
-    
-    // Save configuration
-    Task SaveAsync(ChatConfiguration configuration, CancellationToken cancellationToken = default);
+    ChatConfiguration Config { get; }
+    Task SaveConfigurationAsync();
 }
 ```
 
----
+### `IConnection` (Kernel-locked)
+Connection to an LLM service provider.
 
-### Settings & Dialogs
+```csharp
+public interface IConnection
+{
+    Task HandleAsync(AuthorRole role, string input, Kernel kernel, CancellationToken ct = default);
+    Task HandleAsync(AuthorRole role, string input, Kernel kernel, CancellationToken ct = default, params AdditionalMessageContent[] items);
+    void FunctionCallStart();
+}
+```
 
-#### ISettingsService
-Generic key-value persistence for plugins.
+### `IConnectionProvider`
+Manages available LLM connections and attaches them to kernels.
+
+```csharp
+public interface IConnectionProvider
+{
+    Task<IEnumerable<ConnectionInfo>> ListConnectionsAsync();
+    Task<bool> HasConnectionAsync(string id);
+    Task<ConnectionInfo> AttachAsync(IKernelBuilder builder, string connectionId);
+}
+```
+
+### `IConversationHistoryTransformer` (Kernel-locked)
+Used to modify the conversation history to ensure context is short.
+
+```csharp
+public interface IConversationHistoryTransformer
+{
+    Task ApplyPostStreamModification(ChatHistory history);
+    Task<ChatHistory> TransformPreIterationHistory(ChatHistory history);
+}
+
+public abstract class ConversationHistoryTransformer : IConversationHistoryTransformer
+{
+    public virtual Task ApplyPostStreamModification(ChatHistory history) => Task.CompletedTask;
+    public virtual Task<ChatHistory> TransformPreIterationHistory(ChatHistory history) => Task.FromResult(history);
+}
+```
+
+### `IFileHandler` (Kernel-locked)
+Handles file attachments in chat messages. Determines supported file types and converts file data into `AdditionalMessageContent`.
+
+```csharp
+public interface IFileHandler
+{
+    bool HandlesType(string contentType, string fileName);
+    Task<AdditionalMessageContent?> GetMessageContent(Stream data, string contentType, string name);
+    Task<AdditionalMessageContent?> GetMessageContent(byte[] data, string contentType, string name);
+    Task<KernelContent?> GetKernelContent(Stream data, string contentType, string name);
+    Task<KernelContent?> GetKernelContent(byte[] data, string contentType, string name);
+    string[] GetSupportedMimeTypes();
+    Dictionary<string, string> GetExtensionMimeTypeMapping();
+}
+```
+
+### `IFileHandlerFactory` (Kernel-locked)
+Provides easier access to all `IFileHandler` instances in a `Kernel`.
+
+```csharp
+public interface IFileHandlerFactory
+{
+    bool HasFileHandlers { get; }
+    bool CanHandleType(string contentType, string fileName);
+    string[] GetSupportedMimeTypes();
+    Task<AdditionalMessageContent?> GetMessageContent(Stream data, string contentType, string name);
+    Task<AdditionalMessageContent?> GetMessageContent(byte[] data, string contentType, string name);
+    Task<KernelContent?> GetKernelContent(Stream data, string contentType, string name);
+    Task<KernelContent?> GetKernelContent(byte[] data, string contentType, string name);
+    string? GetExtension(string mimeType);
+}
+```
+
+### `IKernelController`
+Manages all `Kernel` instances, loading, creating, updating, and unloading them.
+
+```csharp
+public interface IKernelController : IDisposable
+{
+    Task<Kernel> LoadAsync(ChatConfiguration config);
+    Task<Kernel> LoadAsync(string id);
+    Task Delete(ChatConfiguration config);
+    Task<Kernel> Create(ChatConfiguration config);
+    Task UpdateAsync(ChatConfiguration config, bool reload = false);
+    Kernel? GetKernel(string id);
+    bool KernelActive(string id);
+    void Unload(ChatConfiguration config);
+    
+    IDisposable OnChatDelete(Action<ChatConfiguration> cb);
+    IDisposable OnChatCreate(Action<ChatConfiguration> cb);
+    IDisposable OnChatUpdate(Action<ChatConfiguration> cb);
+    IDisposable OnChatUnload(Action<ChatConfiguration> cb);
+    IDisposable OnChatLoaded(Action<ChatConfiguration> cb);
+}
+```
+
+### `IPromptManager` (Kernel-locked)
+Dynamic system prompt configuration.
+
+```csharp
+public interface IPromptManager
+{
+    IReadOnlyList<Prompt> Prompts { get; }
+    string AddPrompt(int order, string content);
+    void UpdatePrompt(string id, string content);
+    void RemovePrompt(string id);
+    [Obsolete("Use IConversationHistoryTransformer instead")]
+    Func<ChatHistory, ChatOptions, IEnumerable<ChatMessageContent>>? ModifyKernelHistoryFunc { get; set; }
+}
+```
+
+### `IIterationService` (Kernel-locked)
+Manages a single chat iteration from user input to model completion.
+
+```csharp
+public interface IIterationService : IDisposable
+{
+    string? Input { get; set; }
+    bool Inferring { get; }
+    string? IterationId { get; }
+    bool IsPaused { get; }
+    int QueueCount { get; }
+    bool IsPausedByAi { get; }
+    IReadOnlyList<QueuedInput> Queued { get; }
+    
+    void InferenceStart();
+    void InferenceEnd();
+    IDisposable OnIterationStart(Action<bool> callback);
+    IDisposable OnIterationEnd(Action<bool> callback);
+    void Iterate(AuthorRole role, Kernel kernel, params AdditionalMessageContent[]? items);
+    void Cancel();
+    void PauseQueue(bool by_ai = false);
+    void ContinueQueue();
+    void CancelInput(string id);
+}
+```
+
+### `ISettingsService`
+Encrypted settings storage.
 
 ```csharp
 public interface ISettingsService
 {
-    // Save value to settings
-    Task SaveAsync<T>(string key, T value, CancellationToken cancellationToken = default);
-    
-    // Read value from settings
-    Task<T?> ReadAsync<T>(string key, CancellationToken cancellationToken = default);
+    void Save<T>(string key, T value) where T : class;
+    T? Read<T>(string key) where T : class;
 }
 ```
 
-#### IFileDialog
-Abstracted file dialog interface.
+### `IFileDialog`
+Cross-platform file dialog abstraction.
 
 ```csharp
 public interface IFileDialog
 {
-    // Open file dialog
-    Task<string?> OpenAsync(string? filter = null, string? title = null);
-    
-    // Save file dialog
-    Task<string?> SaveAsync(string? filter = null, string? title = null);
-    
-    // Folder picker
-    Task<string?> FolderAsync(string? title = null);
+    Task<string?> OpenAsync(string title, (string filterName, string[] extensions)? ftr);
+    Task<string?> ShowSaveFileAsync(string title, (string filterName, string[] extensions)? ftr, string? defaultPath = null);
+    void ExploreFolder(string folderPath);
+    Task<string?> SelectFolder(string title = "Select Folder", string? current = null);
 }
 ```
 
----
-
-### Startup System
-
-#### IStartupTask
-Tasks that execute after `IServiceProvider` is built.
+### `IStartupTask`
+Post-DI-build startup task with ordered execution.
 
 ```csharp
 public interface IStartupTask
 {
     int Order { get; }
-    
-    Task ExecuteAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken = default);
+    Task RunAsync(CancellationToken cancellationToken = default);
 }
 ```
 
@@ -295,346 +319,295 @@ public interface IStartupTask
 
 ## Models
 
-### ChatConfiguration
-Saved chat configuration with mode and connection selection.
+### `ChatConfiguration` (extends `Entity`)
+Persistent configuration for each chat conversation.
 
 ```csharp
-public class ChatConfiguration : Entity
+public sealed class ChatConfiguration : Entity
 {
-    public string Title { get; set; }
-    public string AssistantModeId { get; set; }
-    public string ConnectionId { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime ModifiedAt { get; set; }
-    public Dictionary<string, object> Properties { get; set; }
+    public const string Icon = "icon";
+    public const string Group = "group";
+    
+    public string? this[string key] { get; set; }
+    public string? Title { get; set; }
+    public string AssistantModeId { get; set; } = default!;
+    public DateTime Created { get; set; }
+    public DateTime LastModified { get; set; }
+    [Required]
+    public string ConnectionId { get; set; } = default!;
+    public Dictionary<string, string?> Properties { get; set; }
+    public List<string> PluginIds { get; set; }
+    public string? WorkingDirectory { get; set; }
 }
 ```
 
-### CyrenaKernelBuilder
-Wrapper around `IKernelBuilder` for mode configuration.
+### `CyrenaKernelBuilder`
+Per-chat kernel configuration builder passed to modes and plugins.
 
 ```csharp
-public class CyrenaKernelBuilder
+public sealed class CyrenaKernelBuilder
 {
+    public CyrenaKernelBuilder(ChatConfiguration chatConfiguration, IKernelBuilder kernelBuilder);
+    public ChatConfiguration ChatConfiguration { get; }
     public IKernelBuilder KernelBuilder { get; }
-    public ChatConfiguration Configuration { get; }
-    public IDictionary<string, FeatureOptions> FeatureOptions { get; }
+    public IDictionary<string, object> FeatureOptions { get; }
+    public IServiceCollection Services => KernelBuilder.Services;
+    public IKernelBuilderPlugins Plugins => KernelBuilder.Plugins;
 }
 ```
 
-### ConnectionInfo
-Record containing connection details.
+### `CyrenaBuilder`
+Application-level DI builder.
 
 ```csharp
-public record ConnectionInfo(
-    string Id,
-    string Name,
-    string Source,
-    string ModelId,
-    IConnectionProvider Provider
-);
+public sealed class CyrenaBuilder
+{
+    public static string AppDataDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena");
+    public static string UserContentDirectory = Path.Combine(AppDataDirectory, "public");
+    
+    public IServiceCollection Services { get; }
+    public IDictionary<string, IList<Assembly>> FeatureAssemblies { get; }
+    public IDictionary<string, object> FeatureOptions { get; }
+    public IList<Action<CyrenaBuilder>> BuildActions { get; }
+    public IList<Action<IServiceProvider, CancellationToken>> RunActions { get; }
+    
+    public void AddBuildAction(Action<CyrenaBuilder> action);
+    public void AddRunAction(Action<IServiceProvider, CancellationToken> action);
+    public CancellationToken GetLifetimeCT();
+    public void CancelLifetimeCT();
+    public void Build();
+}
 ```
 
-### AdditionalMessageContent
-Extended message metadata for kernel content.
+### `CyrenaOptions`
+Holds feature assemblies for runtime lookup.
+
+```csharp
+public sealed class CyrenaOptions
+{
+    public CyrenaOptions(IDictionary<string, IList<Assembly>> featureAssemblies);
+    public IDictionary<string, IList<Assembly>> FeatureAssemblies { get; }
+}
+```
+
+### `EventPipeline`
+Custom publish/subscribe event system with automatic cleanup.
+
+```csharp
+public abstract class EventPipeline : IDisposable
+{
+    protected void InvokePipeline(string key);
+    protected void InvokePipeline<T>(string key, T value);
+    protected IDisposable ConfigurePipe(string key, Action cb);
+    protected IDisposable ConfigurePipe<T>(string key, Action<T> cb);
+}
+```
+
+### `Entity` / `IEntity`
+Base entity with `Id`.
+
+```csharp
+public interface IEntity { string Id { get; set; } }
+public abstract class Entity : IEntity { public virtual string Id { get; set; } = default!; }
+```
+
+### `AdditionalMessageContent`
+Named wrapper for `KernelContent`.
 
 ```csharp
 public class AdditionalMessageContent
 {
-    public KernelContent Content { get; set; }
+    public AdditionalMessageContent(string name, KernelContent item);
     public string Name { get; set; }
+    public KernelContent Item { get; set; }
 }
 ```
 
-### InfoMessageContentItem
-Display-only kernel content for showing informational items (e.g., file names).
+### `ConnectionInfo`
+LLM connection metadata.
 
 ```csharp
-public class InfoMessageContentItem : KernelContent
+public record ConnectionInfo(string Id, string Name, string Source, string ModelId, IConnectionProvider Provider, bool SupportImages, bool SupportFiles);
+```
+
+### `Prompt`
+System prompt with ordering.
+
+```csharp
+public sealed class Prompt : Entity
 {
-    public InfoMessageContentItem(string text, string? metadata = null);
+    public Prompt();
+    public int Order { get; init; }
+    public string Content { get; init; } = default!;
 }
 ```
 
-### ToolResult<T>
-Generic result wrapper for tool operations.
+### `QueuedInput`
+Represents a single queued chat input message.
 
 ```csharp
-public class ToolResult<T> : IJsonSerializable
+public sealed class QueuedInput
 {
-    public bool Success { get; }
-    public string Message { get; }
-    public T? Result { get; }
+    public QueuedInput(AuthorRole role, string? content, AdditionalMessageContent[]? items);
+    public string Id { get; }
+    public AuthorRole Role { get; }
+    public string Content { get; set; }
+    public List<AdditionalMessageContent> Items { get; set; }
 }
 ```
 
-### EventPipeline / EventPipe
-Event subscription system with automatic cleanup.
+### `ToolResult` / `ToolResult<T>`
+Function call result wrapper.
 
 ```csharp
-public class EventPipeline
+public class ToolResult : IJsonSerializable
 {
-    public EventPipe CreatePipe();
-    public EventPipe<T> CreatePipe<T>();
+    public ToolResult();
+    public ToolResult(bool success, string? message);
+    public bool Success { get; set; }
+    public string? Message { get; set; }
+    public string ToJson();
 }
 
-public class EventPipe
+public class ToolResult<T> : ToolResult where T : class
 {
-    // Invoke all handlers
-    public virtual void Invoke();
-    
-    // Remove handler after first invoke
-    public virtual IDisposable Subscribe(Action handler);
-}
-
-public class EventPipe<T> : IDisposable
-{
-    public virtual void Invoke(T args);
-    public virtual IDisposable Subscribe(Action<T> handler);
+    public ToolResult();
+    public ToolResult(bool success, string? message) : base(success, message);
+    public ToolResult(T result, bool success = true, string? message = null) : base(success, message);
+    public T? Result { get; set; }
 }
 ```
 
-### Entity / IEntity
-Base class with identifier.
+### `InfoMessageContentItem`
+Display-only content item extending `KernelContent`.
 
 ```csharp
-public interface IEntity
+public sealed class InfoMessageContentItem : KernelContent
 {
-    string Id { get; }
+    public InfoMessageContentItem();
+    public InfoMessageContentItem(string fileName);
+    public string FileName { get; set; } = default!;
 }
+```
 
-public class Entity : IEntity
-{
-    public string Id { get; set; }
-}
+### `IJsonSerializable` / `JsonStringObject`
+JSON serialization marker interface.
+
+```csharp
+public interface IJsonSerializable { string ToJson(); }
+[Obsolete]
+public abstract class JsonStringObject : IJsonSerializable { public string ToJson(); }
 ```
 
 ---
 
 ## Options
 
-### ChatOptions
-Configuration for chat message handling and role mappings.
+### `ChatOptions`
+Role configuration for chat messages.
 
 ```csharp
-public class ChatOptions
+public sealed class ChatOptions
 {
-    // Author role mappings
-    public AuthorRole SystemRole { get; set; }
-    public AuthorRole AssistantRole { get; set; }
-    public AuthorRole UserRole { get; set; }
-    public AuthorRole ToolRole { get; set; }
-    
-    // Logging role mappings
-    public AuthorRole LogInfoRole { get; set; }
-    public AuthorRole LogSuccessRole { get; set; }
-    public AuthorRole LogWarnRole { get; set; }
-    public AuthorRole LogErrorRole { get; set; }
-    
-    // Behavior flags
-    public bool IncludeLogsInDisplay { get; set; }
-    public bool AutoSave { get; set; }
+    public AuthorRole System { get; }
+    public AuthorRole Assistant { get; }
+    public AuthorRole User { get; }
+    public AuthorRole Tool { get; }
+    public AuthorRole LogInfo { get; }
+    public AuthorRole LogSuccess { get; }
+    public AuthorRole LogWarn { get; }
+    public AuthorRole LogError { get; }
+    public bool IncludeLogsInDisplay { get; set; } = true;
+    public AuthorRole[] MessagePersistRoles { get; set; }  // Defaults to [Assistant, User, Tool]
 }
-```
-
-### CyrenaBuilder
-Main application builder for registering modes and plugins.
-
-```csharp
-public class CyrenaBuilder
-{
-    // Feature assemblies for plugin discovery
-    public IList<Assembly> FeatureAssemblies { get; }
-    
-    // Feature options per feature ID
-    public IDictionary<string, FeatureOptions> FeatureOptions { get; }
-    
-    // Lifecycle hooks
-    public IList<Action<IServiceProvider>> BuildActions { get; }
-    public IList<Func<IServiceProvider, CancellationToken, Task>> RunActions { get; }
-}
-```
-
-### FeatureOptions
-Empty marker class for typed feature options dictionary.
-
-```csharp
-public class FeatureOptions { }
 ```
 
 ---
 
 ## Extension Methods
 
-### CyrenaBuilderExtensions
-Application-level registration.
+### `CyrenaBuilderExtensions`
 
 ```csharp
 public static class CyrenaBuilderExtensions
 {
-    // Add feature options
-    public static CyrenaBuilder AddFeatureOptions(this CyrenaBuilder builder, string featureId, FeatureOptions options);
-    
-    // Add feature assembly for discovery
-    public static CyrenaBuilder AddFeatureAssembly(this CyrenaBuilder builder, Assembly assembly);
-    
-    // Add startup task
-    public static CyrenaBuilder AddStartupTask<T>(this CyrenaBuilder builder) where T : class, IStartupTask;
-    
-    // Add assistant mode
-    public static CyrenaBuilder AddAssistantMode<T>(this CyrenaBuilder builder, string modeId) where T : class, IAssistantMode;
-    
-    // Add plugin (registers IAssistantPlugin as DI service)
-    public static CyrenaBuilder AddAssistantPlugin<T>(this CyrenaBuilder builder, string modeId) where T : class, IAssistantPlugin;
+    public static void AddFeatureOption<T>(this CyrenaBuilder builder, T option) where T : class;
+    public static object? GetFeatureOption(this CyrenaBuilder builder, string name);
+    public static T GetFeatureOption<T>(this CyrenaBuilder builder) where T : class;
+    public static void AddFeatureAssembly(this CyrenaBuilder builder, string key, Assembly assembly);
+    public static void AddFeatureAssembly<T>(this CyrenaBuilder builder, string key);
+    public static IList<Assembly> GetFeatureAssemblies(this CyrenaOptions builder, string key);
+    public static void AddStartupTask<TStartupTask>(this CyrenaBuilder builder) where TStartupTask : class, IStartupTask;
+    public static void AddAssistantMode<TAssistantMode>(this CyrenaBuilder builder) where TAssistantMode : class, IAssistantMode;
+    public static void AddAssistantPlugin<TAssistantPlugin>(this CyrenaBuilder builder) where TAssistantPlugin : class, IAssistantPlugin;
 }
 ```
 
-### CyrenaKernelBuilderExtensions
-Kernel-level feature configuration.
+### `CyrenaKernelBuilderExtensions`
 
 ```csharp
 public static class CyrenaKernelBuilderExtensions
 {
-    public static CyrenaKernelBuilder AddFeatureOptions(this CyrenaKernelBuilder builder, string featureId, FeatureOptions options);
+    public static void AddFeatureOption<T>(this CyrenaKernelBuilder builder, T option) where T : class;
+    public static object? GetFeatureOption(this CyrenaKernelBuilder builder, string name);
+    public static T GetFeatureOption<T>(this CyrenaKernelBuilder builder) where T : class;
 }
 ```
 
-### KernelBuilderExtensions
-Semantic Kernel setup helpers.
-
-```csharp
-public static class KernelBuilderExtensions
-{
-    public static IKernelBuilder AddStartupTask<T>(this IKernelBuilder builder) where T : class, IStartupTask;
-    
-    public static IKernelBuilder AddSystemPrompt(this IKernelBuilder builder, string prompt);
-}
-```
-
-### ChatMessageServiceExtensions
-Chat message helpers.
+### `ChatMessageServiceExtensions`
 
 ```csharp
 public static class ChatMessageServiceExtensions
 {
-    // Logging helpers
-    public static Task LogInfoAsync(this IChatMessageService service, string message);
-    public static Task LogWarnAsync(this IChatMessageService service, string message);
-    public static Task LogErrorAsync(this IChatMessageService service, string message);
-    public static Task LogSuccessAsync(this IChatMessageService service, string message);
-    
-    // Add message helpers
-    public static Task AddSystemMessageAsync(this IChatMessageService service, string content);
-    public static Task AddUserMessageAsync(this IChatMessageService service, string content);
-    public static Task AddAssistantMessageAsync(this IChatMessageService service, string content);
-    public static Task AddToolMessageAsync(this IChatMessageService service, string content, string? toolName = null);
+    public static Task LogInfo(this IChatMessageService service, string? message);
+    public static Task LogSuccess(this IChatMessageService service, string? message);
+    public static Task LogWarn(this IChatMessageService service, string? message);
+    public static Task LogError(this IChatMessageService service, string? message);
+    public static Task AddSystemMessage(this IChatMessageService service, string? message);
+    public static Task AddAssistantMessage(this IChatMessageService service, string? message);
+    public static Task AddUserMessage(this IChatMessageService service, string? message);
+    public static Task AddToolMessage(this IChatMessageService service, string? message);
 }
 ```
 
-### ChatOptionsExtensions
-Determines message routing.
+### `ChatOptionsExtensions`
 
 ```csharp
 public static class ChatOptionsExtensions
 {
-    // Returns true if content is display-only (not sent to kernel)
-    public static bool IsDisplayContent(this ChatOptions options, KernelContent content);
-    
-    // Returns true if content goes to kernel
-    public static bool IsKernelContent(this ChatOptions options, KernelContent content);
+    public static bool IsDisplayContent(this ChatOptions options, ChatMessageContent content);
+    public static bool IsKernelContent(this ChatOptions options, ChatMessageContent content);
 }
 ```
 
-### Resources
-Reads embedded resources from assemblies.
+### `KernelBuilderExtensions`
+
+```csharp
+public static class KernelBuilderExtensions
+{
+    public static void AddStartupTask<TStartupTask>(this IKernelBuilder builder) where TStartupTask : class, IStartupTask;
+}
+```
+
+### `Resources`
 
 ```csharp
 public static class Resources
 {
-    public static string Read(this Assembly assembly, string resourceName);
+    public static string Read(Assembly assembly, string resourceName);
 }
 ```
 
 ---
 
-## Architecture Patterns
+## Usage for Extension Developers
 
-### Kernel Locking
-Several services (`IConnection`, `IChatMessageService`, `IIterationService`) are **kernel-locked**. Operations require holding the kernel context and should not be called concurrently with other kernel operations.
-
-### Dual History Model
-`IChatMessageService` maintains two separate histories:
-- **KernelHistory**: All messages including tool calls and internal content
-- **DisplayHistory**: Only user-visible messages (excludes system logs, tool calls, etc.)
-
-### Feature Options Pattern
-Configuration is passed to modes/plugins via the `FeatureOptions` dictionary at both application level (`CyrenaBuilder`) and kernel level (`CyrenaKernelBuilder`).
-
-### Event Pipeline
-Custom event system with automatic handler disposal. Handlers are removed after first invoke or on error.
-
-### Plugin Registration Flow
-Application plugins (loaded from external assemblies) can register:
-1. `IAssistantPlugin` - A DI service that configures one or more modes
-2. `IAssistantMode` - Direct mode registrations
-
-These are consumed by `IKernelController` when creating kernel instances for each chat.
-
----
-
-## Usage Example
-
-### Registering a Plugin Service (in application startup)
-
-```csharp
-// Register IAssistantPlugin as a DI service
-builder.AddAssistantPlugin<MyAssistantPlugin>("my-mode");
-
-// In MyAssistantPlugin implementation
-public class MyAssistantPlugin : IAssistantPlugin
-{
-    public IReadOnlyList<string> Modes => ["my-mode"];
-    public int Priority => 100;
-    
-    public async Task LoadAsync(CyrenaKernelBuilder builder, CancellationToken ct)
-    {
-        // Add services to kernel
-        builder.KernelBuilder.Services.AddSingleton<IMyService, MyService>();
-        
-        // Configure with feature options
-        if (builder.FeatureOptions.TryGetValue("my-feature", out var options))
-        {
-            // Apply feature configuration
-        }
-    }
-}
-```
-
-### Registering a Direct Mode (alternative)
-
-```csharp
-// Register IAssistantMode directly
-builder.AddAssistantMode<MyAssistantMode>("my-mode");
-
-public class MyAssistantMode : IAssistantMode
-{
-    public string Id => "my-mode";
-    
-    public Task ConfigureAsync(CyrenaKernelBuilder builder, CancellationToken ct)
-    {
-        builder.KernelBuilder.Services.AddSingleton<IMyService, MyService>();
-        return Task.CompletedTask;
-    }
-}
-```
-
----
-
-## Package Dependencies
-
-- `Microsoft.SemanticKernel` (Semantic Kernel abstractions)
-- `Microsoft.Extensions.Configuration` (Configuration support)
-- `Microsoft.Extensions.DependencyInjection.Abstractions` (DI abstractions)
-- `Microsoft.Extensions.Options` (Options pattern)
-- `Microsoft.Extensions.Options.ConfigurationExtensions` (Options from config)
-- `Newtonsoft.Json` (JSON serialization)
+Reference `Cyrena.Core` to:
+1. Implement `IAssistantMode` or `IAssistantPlugin`
+2. Access chat services like `IChatMessageService`, `IPromptManager`, `IIterationService`
+3. Use `CyrenaBuilder` and `CyrenaKernelBuilder` to configure DI and kernel
+4. Use `ChatConfiguration` and `Entity` for data models
+5. Use `EventPipeline` for custom events
+6. Use `ToolResult` for function call results
+7. Use `IFileHandler` and `IFileHandlerFactory` for file attachment support
+8. Use `IConversationHistoryTransformer` for history modification

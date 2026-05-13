@@ -1,0 +1,12 @@
+<style>
+    .popover{
+        max-height:50%;
+        overflow: auto
+    }
+</style>
+
+
+@foreach(var item in _categories)
+{
+    <_ShortcutViewer Category="@item" Shorcuts="_models"/>
+}

@@ -1,0 +1,46 @@
+﻿<Popover @ref="_ref" Placement="Placement.Bottom" Title="@Category" Trigger="click" CustomClass="bg-body w-25">
+    <ChildContent>
+        <div class="p-2 bg-body rounded border mx-2 cursor-pointer">
+            <p class="m-0 fw-bold small">
+                @Category
+            </p>
+        </div>
+    </ChildContent>
+    <Template>
+        @foreach (var item in Shorcuts.Where(x => x.Category == Category))
+        {
+            <div class="my-1 p-2 rounded cursor-pointer border" @onclick="() => OnClick(item)">
+                <p class="m-0">
+                    <i class="@item.Icon text-@item.Color"></i>
+                    @item.Title
+                </p>
+                <p class="small m-0">
+                    @item.Description
+                </p>
+                <p class="m-0">
+                    @foreach (var tag in item.Tags)
+                    {
+                        <span class="badge text-bg-dark">@tag</span>
+                    }
+                </p>
+            </div>
+        }
+    </Template>
+</Popover>
+
+@code {
+    [EditorRequired]
+    [Parameter] public string Category { get; set; } = default!;
+
+    [Parameter]
+    [EditorRequired]
+    public IEnumerable<IShortcut> Shorcuts { get; set; } = default!;
+
+    private Popover _ref = default!;
+
+    private async Task OnClick(IShortcut item)
+    {
+        await _ref.Hide();
+        await item.OnClick();
+    }
+}

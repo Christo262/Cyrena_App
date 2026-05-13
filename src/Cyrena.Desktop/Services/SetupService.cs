@@ -13,6 +13,12 @@ namespace Cyrena.Desktop.Services
 
         public event EventHandler<EventArgs>? OnDefaultConnectionSet;
 
+        public Task<string?> GetDefaultConnection()
+        {
+            var model = _settings.Read<WindowOptions>(WindowOptions.Key) ?? new WindowOptions();
+            return Task.FromResult(model.DefaultConnectionId);
+        }
+
         public void InvokeDefaultConnectionSet()
         {
             OnDefaultConnectionSet?.Invoke(this, EventArgs.Empty);

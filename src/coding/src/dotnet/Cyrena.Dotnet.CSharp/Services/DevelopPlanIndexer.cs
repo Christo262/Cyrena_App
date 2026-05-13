@@ -79,7 +79,7 @@ namespace Cyrena.Dotnet.CSharp.Services
 
             var csproj = ProjectParser.ParseProject(absolute_proj_path);
             _config.Config[DotnetOptions.Namespace] = csproj.RootNamespace;
-            _config.Config[DevelopOptions.RootDirectory] = Path.GetDirectoryName(absolute_proj_path);
+            _config.Config.WorkingDirectory = Path.GetDirectoryName(absolute_proj_path);
             var id = _sln.Current.Id;
             var typeId = _sln.Current.ProjectTypeId;
             var name = _sln.Current.ProjectTypeName;
@@ -90,7 +90,7 @@ namespace Cyrena.Dotnet.CSharp.Services
                 ConversationId = _config.Config.Id,
                 ProjectFilePath = absolute_proj_path,
                 ProjectName = Path.GetFileName(absolute_proj_path),
-                ProjectDirectory = _config.Config[DevelopOptions.RootDirectory]!,
+                ProjectDirectory = _config.Config.WorkingDirectory!,
                 ProjectTypeId = typeId,
                 ProjectTypeName = name
             };

@@ -42,11 +42,11 @@ namespace Cyrena.Runtime.Plugins
 
         [KernelFunction("now")]
         [Description("Gets the current date, time & time zone offset.")]
-        public AiDateTime DateTimeNow()
+        public TextContent DateTimeNow()
         {
-            var dt = System.DateTime.Now;
+            string formatted = System.DateTime.Now.ToString("dddd, dd MMMM yyyy, HH:mm:ss");
             var tz = TimeZoneInfo.Local;
-            return new AiDateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, tz.BaseUtcOffset.Hours);
+            return $"{formatted} {tz.BaseUtcOffset}";
         }
     }
 }

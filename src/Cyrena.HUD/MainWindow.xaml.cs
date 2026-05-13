@@ -5,7 +5,10 @@ using Cyrena.HUD.Options;
 using Cyrena.HUD.Services;
 using Cyrena.Options;
 using Microsoft.AspNetCore.Components.WebView;
+using Microsoft.AspNetCore.Components.WebView.Wpf;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 using System.Windows;
 
 namespace Cyrena.HUD
@@ -20,9 +23,7 @@ namespace Cyrena.HUD
         private readonly CyrenaBuilder _builder;
         public MainWindow()
         {
-            InitializeComponent();
             DataContext = this;
-            mainView.BlazorWebViewInitialized += OnBlazorWebViewInitialized;
 
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddWpfBlazorWebView();
@@ -50,11 +51,16 @@ namespace Cyrena.HUD
             _builder.Build();
             var sp = serviceCollection.BuildServiceProvider();
             Resources.Add("services", sp);
+
+            InitializeComponent();
+            mainView.BlazorWebViewInitialized += OnBlazorWebViewInitialized;
             _settings = sp.GetRequiredService<ISettingsService>();
 
             //TODO: need to move this out of constructor
             foreach (var item in _builder.RunActions)
                 item.Invoke(sp, _builder.GetLifetimeCT());
+
+            var fsp = sp.GetServices<IFileProvider>();
         }
 
         private void OnBlazorWebViewInitialized(object? sender, BlazorWebViewInitializedEventArgs e)
@@ -134,6 +140,18 @@ namespace Cyrena.HUD
         {
             _hotkeyService?.Dispose();
             base.OnClosed(e);
+        }
+    }
+
+    internal class CustomBlazorWebView : BlazorWebView
+    {
+        public override IFileProvider CreateFileProvider(string contentRootDir)
+        {
+            var defaultProvider = base.CreateFileProvider(contentRootDir);
+            if(!Directory.Exists(CyrenaBuilder.UserContentDirectory))
+                Directory.CreateDirectory(CyrenaBuilder.UserContentDirectory);
+            var user = new PhysicalFileProvider(CyrenaBuilder.UserContentDirectory);
+            return new CompositeFileProvider(defaultProvider, user);
         }
     }
 }

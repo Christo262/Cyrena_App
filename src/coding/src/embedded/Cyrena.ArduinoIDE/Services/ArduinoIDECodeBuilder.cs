@@ -29,7 +29,7 @@ namespace Cyrena.ArduinoIDE.Services
         {
             options.Plugins.AddFromType<Arduino>();
             
-            var plan = new DevelopPlan(options.ChatConfiguration[DevelopOptions.RootDirectory]!);
+            var plan = new DevelopPlan(options.ChatConfiguration.WorkingDirectory!);
             plan.IndexFiles("ino", "ino_");
             plan.IndexFiles("h", "h_");
             plan.IndexFiles("cpp", "cpp_");

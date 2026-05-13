@@ -20,6 +20,7 @@
         Task<string?> ShowSaveFileAsync(string title, (string filterName, string[] extensions)? ftr, string? defaultPath = null);
 
         void ExploreFolder(string folderPath);
-    }
 
+        Task<string?> SelectFolder(string title = "Select Folder", string? current = null);
+    }
 }

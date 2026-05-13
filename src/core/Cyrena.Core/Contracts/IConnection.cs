@@ -11,5 +11,7 @@ namespace Cyrena.Contracts
     {
         Task HandleAsync(AuthorRole role, string input, Kernel kernel, CancellationToken ct = default);
         Task HandleAsync(AuthorRole role, string input, Kernel kernel, CancellationToken ct = default, params AdditionalMessageContent[] items);
+
+        void FunctionCallStart();
     }
 }

@@ -11,12 +11,14 @@ namespace Cyrena.Runtime.Models
     {
         public ChatMessage()
         {
+            Id = Ulid.NewUlid().ToString();
             Date = DateTime.Now;
             AdditionalFiles = new List<string>();
         }
 
         public ChatMessage(string conversationId, AuthorRole role, string? content)
         {
+            Id = Ulid.NewUlid().ToString();
             ConversationId = conversationId;
             Date = DateTime.Now;
             Label = role.Label;
@@ -24,18 +26,21 @@ namespace Cyrena.Runtime.Models
             AdditionalFiles = new List<string>();
         }
 
-        public ChatMessage(ChatMessageContent content, string conversationId, AdditionalMessageContent[]? items = null)
+        public ChatMessage(ChatMessageContent content, string conversationId, string? iterationId = null, AdditionalMessageContent[]? items = null)
         {
+            Id = Ulid.NewUlid().ToString();
             ConversationId = conversationId;
             Date = DateTime.Now;
             Label = content.Role.Label;
             Content = content.Content;
             AdditionalFiles = new List<string>();
+            IterationId = iterationId;
             if (items != null)
                 AdditionalFiles.AddRange(items.Select(x => x.Name));
         }
 
         public string ConversationId { get; set; } = default!;
+        public string? IterationId { get; set; }
         public DateTime Date { get; set; }
         public string Label { get; set; } = default!;
         public string? Content { get; set; }
