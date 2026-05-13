@@ -9,7 +9,7 @@ Cyréna helps developers build, maintain, and evolve real software projects acro
 You choose the model.
 Cyréna orchestrates the workflow.
 
-[Download (alpha)](https://cyrena.dev/download.html) | [Cyréna HUD (Windows)](docs/hud.md) | [Website](https://cyrena.dev) | [Docs](https://cyrena.dev/docs.html) | [Screenshots](docs/screenshots.md) | [My Model Experience](docs/model-reviews.md)
+[Download (alpha)](https://cyrena.dev/download.html) | [Cyréna HUD (Windows)](docs/hud.md) | [Website](https://cyrena.dev) | [Docs](https://cyrena.dev/docs.html) | [Screenshots](docs/screenshots.md) | [My Model Experience](model-reviews.md)
 
 ![Cyréna](images/new_chat.png)
 
