@@ -14,6 +14,7 @@
     <Title>Cyréna Developer (Coding Assistant)</Title>
     <RepositoryUrl>https://github.com/Christo262/Cyrena_App</RepositoryUrl>
     <PackageProjectUrl>https://cyrena.dev</PackageProjectUrl>
+    <PackageLicenseFile>license.md</PackageLicenseFile>
   </PropertyGroup>
 
   <Target Name="PostPack" AfterTargets="Pack">
@@ -26,6 +27,10 @@
 
   <ItemGroup>
     <None Include="..\..\..\..\..\cyrena.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\..\..\..\license.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>

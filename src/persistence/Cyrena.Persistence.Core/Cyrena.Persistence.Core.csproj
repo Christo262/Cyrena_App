@@ -14,10 +14,15 @@
     <PackageProjectUrl>https://cyrena.dev</PackageProjectUrl>
     <PackageIcon>cyrena.png</PackageIcon>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <PackageLicenseFile>license.md</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\..\..\cyrena.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\..\license.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
