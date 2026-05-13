@@ -13,6 +13,8 @@ Cyréna orchestrates the workflow.
 
 ![Cyréna](images/new_chat.png)
 
+👉 [Getting Started(YouTube)](https://cyrena.dev/docs.html#/docs/getting-started)
+
 ---
 
 ## Why Cyréna Exists
@@ -60,9 +62,8 @@ Developers remain in control of their code, infrastructure, and workflows.
 
 ## Demo
 
-Watch Cyréna perform a real prompt → build → repair workflow:
-
-👉 https://cyrena.dev
+👉 [.Net(YouTube)](https://youtu.be/fXxOaspi9s8)
+👉 [Arduino(YouTube)](https://youtu.be/ZVLid5-ZZAw)
 
 This is not autocomplete.
 
