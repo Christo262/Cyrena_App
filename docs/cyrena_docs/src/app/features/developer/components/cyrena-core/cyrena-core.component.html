@@ -1,10 +1,73 @@
 <div>
-  <h1 class="fw-bold mb-4">Cyrena.Core</h1>
+  <h1 class="fw-bold mb-4">Cyrena.Core SDK</h1>
 
-  <p class="lead text-secondary mb-5">
-    <code>Cyrena.Core</code> is the foundational class library of the Cyréna AI assistant framework.
-    It defines all core contracts, data models, application builders, and extension methods that the rest of the solution depends on.
-    Any extension or plugin for Cyréna must reference this package.
+  <div class="alert alert-info mb-4">
+    <strong>Target Framework:</strong> <code>.NET 10.0</code><br>
+    <strong>Core Dependency:</strong> <code>Microsoft.SemanticKernel</code>
+  </div>
+
+  <p class="lead text-secondary mb-4">
+    Cyrena.Core is the core library for the Cyrena AI assistant application. It provides Semantic Kernel integration, chat management, LLM connection handling, and assistant mode configuration. <strong>This library does not define application plugins</strong> — it provides the underlying infrastructure that plugins consume.
+  </p>
+
+  <hr class="my-5">
+
+  <!-- Architecture Overview -->
+  <h2 class="fw-bold mb-4">Architecture Overview</h2>
+
+  <h3 class="h5 fw-bold mt-4">Relationship Between Concepts</h3>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>┌─────────────────────────────────────────────────────────────────┐
+│                    Application Runtime                          │
+│                                                                 │
+│  ┌──────────────────┐     ┌─────────────────────────────────┐  │
+│  │  Application     │     │       Cyrena.Core               │  │
+│  │  Plugins         │     │                                 │  │
+│  │  (loaded from    │────▶│  ┌───────────────────────────┐   │  │
+│  │   other          │     │  │  IAssistantPlugin        │   │  │
+│  │   assemblies)    │     │  │  (service in DI)         │   │  │
+│  │                  │     │  │  Configures modes        │   │  │
+│  └──────────────────┘     │  └───────────┬───────────────┘   │  │
+│         │                  │              │                   │  │
+│         │ Adds to DI:      │              │ Registers         │  │
+│         │ • IAssistantPlugin│              │                   │  │
+│         │ • IAssistantMode │◀─────────────┘                   │  │
+│         │                  │                                  │  │
+│         │                  │  ┌───────────────────────────┐   │  │
+│         │                  │  │  IAssistantMode           │   │  │
+│         │                  │  │  (kernel configuration)   │   │  │
+│         │                  │  └───────────────────────────┘   │  │
+│         │                  │                                  │  │
+│         │                  │  ┌───────────────────────────┐   │  │
+│         │                  │  │  IKernelController        │   │  │
+│         │                  │  │  (manages per-chat        │   │  │
+│         │                  │  │   kernel instances)       │   │  │
+│         │                  │  └───────────────────────────┘   │  │
+│         │                  │                                  │  │
+│         │                  │  ┌───────────────────────────┐   │  │
+│         │                  │  │  IChatMessageService      │   │  │
+│         │                  │  │  (dual history model)     │   │  │
+│         │                  │  └───────────────────────────┘   │  │
+│         │                  │                                  │  │
+│         │                  │  ┌───────────────────────────┐   │  │
+│         │                  │  │  IConnection              │   │  │
+│         │                  │  │  (LLM provider adapter)   │   │  │
+│         │                  │  └───────────────────────────┘   │  │
+│         │                  └─────────────────────────────────┘  │
+│         │                                                       │
+└─────────┴───────────────────────────────────────────────────────┘
+
+Key Point: IAssistantPlugin is NOT the application plugin. It is a DI service
+used to configure kernel behavior. Application plugins are loaded separately
+from other assemblies and may register IAssistantPlugin or IAssistantMode
+implementations into the DI container.</code></pre>
+
+  <hr class="my-5">
+
+  <!-- Overview -->
+  <h2 class="fw-bold mb-4">Overview</h2>
+
+  <p class="text-secondary">
+    <code>Cyrena.Core</code> is the foundational class library of the Cyréna AI assistant framework. It defines all core contracts, data models, application builders, and extension methods that the rest of the solution depends on. Any extension or plugin for Cyréna must reference this package.
   </p>
 
   <div class="alert alert-info">
@@ -57,7 +120,7 @@
     IDisposable OnDisplayHistoryChanged(Action&lt;ChatHistory&gt; callback);
     IDisposable OnKernelHistoryChanged(Action&lt;ChatHistory&gt; callback);
     IDisposable OnHistoryLoaded(Action&lt;ChatHistory&gt; callback);
-    ChatHistory GetKernelHistory();
+    Task&lt;ChatHistory&gt; GetKernelHistory();
 
     void LoadHistory(IEnumerable&lt;ChatMessageContent&gt; kernelHistory, IEnumerable&lt;ChatMessageContent&gt;? displayHistory);
     Task LoadHistoryAsync();
@@ -68,7 +131,7 @@
     void Stream(string? token);
 &#125;</code></pre>
 
-  <h3 id="ichatconfigurationservice" class="h5 fw-bold mt-4">IChatConfigurationService <span class="badge bg-secondary">Kernel-locked</span></h3>
+  <h3 id="ichatconfigurationservice" class="h5 fw-bold mt-4">IChatConfigurationService</h3>
   <p class="text-secondary">Provides access to the current chat's persistent configuration.</p>
   <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IChatConfigurationService
 &#123;
@@ -82,6 +145,7 @@
 &#123;
     Task HandleAsync(AuthorRole role, string input, Kernel kernel, CancellationToken ct = default);
     Task HandleAsync(AuthorRole role, string input, Kernel kernel, CancellationToken ct = default, params AdditionalMessageContent[] items);
+    void FunctionCallStart();
 &#125;</code></pre>
 
   <h3 id="iconnectionprovider" class="h5 fw-bold mt-4">IConnectionProvider</h3>
@@ -93,6 +157,20 @@
     Task&lt;ConnectionInfo&gt; AttachAsync(IKernelBuilder builder, string connectionId);
 &#125;</code></pre>
 
+  <h3 id="iconversationhistorytransformer" class="h5 fw-bold mt-4">IConversationHistoryTransformer <span class="badge bg-secondary">Kernel-locked</span></h3>
+  <p class="text-secondary">Used to modify the conversation history to ensure context is short.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IConversationHistoryTransformer
+&#123;
+    Task ApplyPostStreamModification(ChatHistory history);
+    Task&lt;ChatHistory&gt; TransformPreIterationHistory(ChatHistory history);
+&#125;
+
+public abstract class ConversationHistoryTransformer : IConversationHistoryTransformer
+&#123;
+    public virtual Task ApplyPostStreamModification(ChatHistory history) =&gt; Task.CompletedTask;
+    public virtual Task&lt;ChatHistory&gt; TransformPreIterationHistory(ChatHistory history) =&gt; Task.FromResult(history);
+&#125;</code></pre>
+
   <h3 id="ifilehandler" class="h5 fw-bold mt-4">IFileHandler <span class="badge bg-secondary">Kernel-locked</span></h3>
   <p class="text-secondary">Handles file attachments in chat messages. Determines supported file types and converts file data into <code>AdditionalMessageContent</code>.</p>
   <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IFileHandler
@@ -100,7 +178,24 @@
     bool HandlesType(string contentType, string fileName);
     Task&lt;AdditionalMessageContent?&gt; GetMessageContent(Stream data, string contentType, string name);
     Task&lt;AdditionalMessageContent?&gt; GetMessageContent(byte[] data, string contentType, string name);
+    Task&lt;KernelContent?&gt; GetKernelContent(Stream data, string contentType, string name);
+    Task&lt;KernelContent?&gt; GetKernelContent(byte[] data, string contentType, string name);
     string[] GetSupportedMimeTypes();
+    Dictionary&lt;string, string&gt; GetExtensionMimeTypeMapping();
+&#125;</code></pre>
+
+  <h3 id="ifilehandlerfactory" class="h5 fw-bold mt-4">IFileHandlerFactory <span class="badge bg-secondary">Kernel-locked</span></h3>
+  <p class="text-secondary">Provides easier access to all <code>IFileHandler</code> instances in a <code>Kernel</code>.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IFileHandlerFactory
+&#123;
+    bool HasFileHandlers &#123; get; &#125;
+    bool CanHandleType(string contentType, string fileName);
+    string[] GetSupportedMimeTypes();
+    Task&lt;AdditionalMessageContent?&gt; GetMessageContent(Stream data, string contentType, string name);
+    Task&lt;AdditionalMessageContent?&gt; GetMessageContent(byte[] data, string contentType, string name);
+    Task&lt;KernelContent?&gt; GetKernelContent(Stream data, string contentType, string name);
+    Task&lt;KernelContent?&gt; GetKernelContent(byte[] data, string contentType, string name);
+    string? GetExtension(string mimeType);
 &#125;</code></pre>
 
   <h3 id="ikernelcontroller" class="h5 fw-bold mt-4">IKernelController</h3>
@@ -120,6 +215,7 @@
     IDisposable OnChatCreate(Action&lt;ChatConfiguration&gt; cb);
     IDisposable OnChatUpdate(Action&lt;ChatConfiguration&gt; cb);
     IDisposable OnChatUnload(Action&lt;ChatConfiguration&gt; cb);
+    IDisposable OnChatLoaded(Action&lt;ChatConfiguration&gt; cb);
 &#125;</code></pre>
 
   <h3 id="ipromptmanager" class="h5 fw-bold mt-4">IPromptManager <span class="badge bg-secondary">Kernel-locked</span></h3>
@@ -130,6 +226,7 @@
     string AddPrompt(int order, string content);
     void UpdatePrompt(string id, string content);
     void RemovePrompt(string id);
+    [Obsolete("Use IConversationHistoryTransformer instead")]
     Func&lt;ChatHistory, ChatOptions, IEnumerable&lt;ChatMessageContent&gt;&gt;? ModifyKernelHistoryFunc &#123; get; set; &#125;
 &#125;</code></pre>
 
@@ -139,13 +236,21 @@
 &#123;
     string? Input &#123; get; set; &#125;
     bool Inferring &#123; get; &#125;
+    string? IterationId &#123; get; &#125;
+    bool IsPaused &#123; get; &#125;
+    int QueueCount &#123; get; &#125;
+    bool IsPausedByAi &#123; get; &#125;
+    IReadOnlyList&lt;QueuedInput&gt; Queued &#123; get; &#125;
+
     void InferenceStart();
     void InferenceEnd();
     IDisposable OnIterationStart(Action&lt;bool&gt; callback);
     IDisposable OnIterationEnd(Action&lt;bool&gt; callback);
-    void Iterate(AuthorRole role, Kernel kernel);
-    void Iterate(AuthorRole role, Kernel kernel, params AdditionalMessageContent[] items);
+    void Iterate(AuthorRole role, Kernel kernel, params AdditionalMessageContent[]? items);
     void Cancel();
+    void PauseQueue(bool by_ai = false);
+    void ContinueQueue();
+    void CancelInput(string id);
 &#125;</code></pre>
 
   <h3 id="isettingsservice" class="h5 fw-bold mt-4">ISettingsService</h3>
@@ -163,6 +268,7 @@
     Task&lt;string?&gt; OpenAsync(string title, (string filterName, string[] extensions)? ftr);
     Task&lt;string?&gt; ShowSaveFileAsync(string title, (string filterName, string[] extensions)? ftr, string? defaultPath = null);
     void ExploreFolder(string folderPath);
+    Task&lt;string?&gt; SelectFolder(string title = "Select Folder", string? current = null);
 &#125;</code></pre>
 
   <h3 id="istartuptask" class="h5 fw-bold mt-4">IStartupTask</h3>
@@ -190,15 +296,18 @@
     public string AssistantModeId &#123; get; set; &#125; = default!;
     public DateTime Created &#123; get; set; &#125;
     public DateTime LastModified &#123; get; set; &#125;
+    [Required]
     public string ConnectionId &#123; get; set; &#125; = default!;
     public Dictionary&lt;string, string?&gt; Properties &#123; get; set; &#125;
     public List&lt;string&gt; PluginIds &#123; get; set; &#125;
+    public string? WorkingDirectory &#123; get; set; &#125;
 &#125;</code></pre>
 
   <h3 id="cyrenakernelbuilder" class="h5 fw-bold mt-4">CyrenaKernelBuilder</h3>
   <p class="text-secondary">Per-chat kernel configuration builder passed to modes and plugins.</p>
   <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public sealed class CyrenaKernelBuilder
 &#123;
+    public CyrenaKernelBuilder(ChatConfiguration chatConfiguration, IKernelBuilder kernelBuilder);
     public ChatConfiguration ChatConfiguration &#123; get; &#125;
     public IKernelBuilder KernelBuilder &#123; get; &#125;
     public IDictionary&lt;string, object&gt; FeatureOptions &#123; get; &#125;
@@ -210,6 +319,9 @@
   <p class="text-secondary">Application-level DI builder.</p>
   <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public sealed class CyrenaBuilder
 &#123;
+    public static string AppDataDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena");
+    public static string UserContentDirectory = Path.Combine(AppDataDirectory, "public");
+
     public IServiceCollection Services &#123; get; &#125;
     public IDictionary&lt;string, IList&lt;Assembly&gt;&gt; FeatureAssemblies &#123; get; &#125;
     public IDictionary&lt;string, object&gt; FeatureOptions &#123; get; &#125;
@@ -221,6 +333,14 @@
     public CancellationToken GetLifetimeCT();
     public void CancelLifetimeCT();
     public void Build();
+&#125;</code></pre>
+
+  <h3 id="cyrenaoptions" class="h5 fw-bold mt-4">CyrenaOptions</h3>
+  <p class="text-secondary">Holds feature assemblies for runtime lookup.</p>
+  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public sealed class CyrenaOptions
+&#123;
+    public CyrenaOptions(IDictionary&lt;string, IList&lt;Assembly&gt;&gt; featureAssemblies);
+    public IDictionary&lt;string, IList&lt;Assembly&gt;&gt; FeatureAssemblies &#123; get; &#125;
 &#125;</code></pre>
 
   <h3 id="eventpipeline" class="h5 fw-bold mt-4">EventPipeline</h3>
@@ -266,6 +386,7 @@ public abstract class Entity : IEntity
   <p class="text-secondary">System prompt with ordering.</p>
   <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public sealed class Prompt : Entity
 &#123;
+    public Prompt();
     public int Order &#123; get; init; &#125;
     public string Content &#123; get; init; &#125; = default!;
 &#125;</code></pre>
@@ -275,7 +396,6 @@ public abstract class Entity : IEntity
   <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public sealed class QueuedInput
 &#123;
     public QueuedInput(AuthorRole role, string? content, AdditionalMessageContent[]? items);
-
     public string Id &#123; get; &#125;
     public AuthorRole Role &#123; get; &#125;
     public string Content &#123; get; set; &#125;
@@ -286,6 +406,8 @@ public abstract class Entity : IEntity
   <p class="text-secondary">Function call result wrapper.</p>
   <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public class ToolResult : IJsonSerializable
 &#123;
+    public ToolResult();
+    public ToolResult(bool success, string? message);
     public bool Success &#123; get; set; &#125;
     public string? Message &#123; get; set; &#125;
     public string ToJson();
@@ -293,6 +415,9 @@ public abstract class Entity : IEntity
 
 public class ToolResult&lt;T&gt; : ToolResult where T : class
 &#123;
+    public ToolResult();
+    public ToolResult(bool success, string? message) : base(success, message);
+    public ToolResult(T result, bool success = true, string? message = null) : base(success, message);
     public T? Result &#123; get; set; &#125;
 &#125;</code></pre>
 
@@ -300,6 +425,8 @@ public class ToolResult&lt;T&gt; : ToolResult where T : class
   <p class="text-secondary">Display-only content item extending <code>KernelContent</code>.</p>
   <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public sealed class InfoMessageContentItem : KernelContent
 &#123;
+    public InfoMessageContentItem();
+    public InfoMessageContentItem(string fileName);
     public string FileName &#123; get; set; &#125; = default!;
 &#125;</code></pre>
 
@@ -331,7 +458,7 @@ public abstract class JsonStringObject : IJsonSerializable
     public AuthorRole LogWarn &#123; get; &#125;
     public AuthorRole LogError &#123; get; &#125;
     public bool IncludeLogsInDisplay &#123; get; set; &#125; = true;
-    public AuthorRole[] MessagePersistRoles &#123; get; set; &#125;  // Defaults to [Assistant, User]
+    public AuthorRole[] MessagePersistRoles &#123; get; set; &#125;  // Defaults to [Assistant, User, Tool]
 &#125;</code></pre>
 
   <hr class="my-5">
@@ -406,5 +533,7 @@ public abstract class JsonStringObject : IJsonSerializable
     <li>Use <code>ChatConfiguration</code> and <code>Entity</code> for data models</li>
     <li>Use <code>EventPipeline</code> for custom events</li>
     <li>Use <code>ToolResult</code> for function call results</li>
+    <li>Use <code>IFileHandler</code> and <code>IFileHandlerFactory</code> for file attachment support</li>
+    <li>Use <code>IConversationHistoryTransformer</code> for history modification</li>
   </ol>
 </div>

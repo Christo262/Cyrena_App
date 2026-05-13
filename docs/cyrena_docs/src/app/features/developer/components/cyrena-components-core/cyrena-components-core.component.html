@@ -1,10 +1,13 @@
 <div>
   <h1 class="fw-bold mb-4">Cyrena.Components.Core</h1>
 
-  <p class="lead text-secondary mb-5">
+  <p class="lead text-secondary mb-2">
     <code>Cyrena.Components.Core</code> is the Blazor component library providing UI contracts, base classes, and
     extension methods for building UI components that integrate with Cyréna's kernel-scoped services. Extensions that
     add UI elements (toolbars, settings pages, shortcuts) must reference this package.
+  </p>
+  <p class="text-secondary mb-5">
+    <strong>Version:</strong> <code>0.5.0</code> &nbsp;|&nbsp; <strong>Target Framework:</strong> <code>.NET 10.0</code>
   </p>
 
   <div class="alert alert-info">
@@ -25,21 +28,7 @@
   <p class="text-secondary">
     Service for showing dialogs, toast notifications, and navigation in the Blazor UI.
   </p>
-  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IDisplayService
-&#123;
-    Task&lt;DialogResult&gt; ShowModal&lt;TComponent&gt;(ResultDialogOption option, Dialog? dialog = null)
-        where TComponent : IComponent, IResultDialog;
-
-    Task&lt;DialogResult&gt; ShowModal(string title, string content, ResultDialogOption? option = null, Dialog? dialog = null);
-
-    Task ShowToast(ToastOption option, ToastContainer? toastContainer = null);
-    Task ShowErrorToast(string? title = null, string? content = null, bool autoHide = true);
-    Task ShowWarnToast(string? title = null, string? content = null, bool autoHide = true);
-    Task ShowSuccessToast(string? title = null, string? content = null, bool autoHide = true);
-    Task ShowInfoToast(string? title = null, string? content = null, bool autoHide = true);
-
-    void NavigateTo(string url);
-&#125;</code></pre>
+  <pre class="bg-dark text-light p-3 rounded"><code>{{ idisplayServiceCode }}</code></pre>
   <p class="text-secondary mb-3">
     <strong>Dependencies:</strong> Requires <code>BootstrapBlazor</code> components
     (<code>Dialog</code>, <code>ToastContainer</code>, <code>ToastOption</code>, <code>ResultDialogOption</code>,
@@ -71,33 +60,19 @@
 
   <h3 id="ishortcut" class="h5 fw-bold mt-4">IShortcut</h3>
   <p class="text-secondary">Defines a keyboard shortcut or quick action that appears in the UI.</p>
-  <pre class="bg-dark text-light p-3 rounded mb-5" ngNonBindable><code>public interface IShortcut
-&#123;
-    string Title &#123; get; &#125;
-    string Description &#123; get; &#125;
-    string Icon &#123; get; &#125;
-    string Color &#123; get; &#125;
-    string Category &#123; get; &#125;
-    string[] Tags &#123; get; &#125;
-    Task OnClick();
-&#125;</code></pre>
+  <pre class="bg-dark text-light p-3 rounded mb-5"><code>{{ ishortcutCode }}</code></pre>
 
   <h3 id="itoolbarcomponent" class="h5 fw-bold mt-4">IToolbarComponent</h3>
   <p class="text-secondary">Defines a component that renders in the chat toolbar.</p>
-  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public interface IToolbarComponent
-&#123;
-    Type Component &#123; get; &#125;
-    ToolbarAlignment Alignment &#123; get; &#125;
-&#125;
-
-public enum ToolbarAlignment
-&#123;
-    Start, End
-&#125;</code></pre>
+  <pre class="bg-dark text-light p-3 rounded"><code>{{ itoolbarComponentCode }}</code></pre>
   <ul class="text-secondary mb-5">
     <li><code>Component</code>: The <code>Type</code> of the Blazor component to render.</li>
     <li><code>Alignment</code>: <code>Start</code> (left side) or <code>End</code> (right side) of the toolbar.</li>
   </ul>
+
+  <h3 id="iviewstartprovider" class="h5 fw-bold mt-4">IViewStartProvider</h3>
+  <p class="text-secondary">Provides optional <code>ViewStart</code> entries for user-configurable starting views.</p>
+  <pre class="bg-dark text-light p-3 rounded mb-5"><code>{{ iviewStartProviderCode }}</code></pre>
 
   <hr class="my-5">
 
@@ -108,16 +83,32 @@ public enum ToolbarAlignment
   <p class="text-secondary">
     Base class for Blazor components that need access to the current <code>Kernel</code>.
   </p>
-  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public abstract class KernelComponentBase : ComponentBase
-&#123;
-    [Parameter]
-    [EditorRequired]
-    public Kernel Kernel &#123; get; set; &#125; = default!;
-&#125;</code></pre>
+  <pre class="bg-dark text-light p-3 rounded"><code>{{ kernelComponentBaseCode }}</code></pre>
   <p class="text-secondary mb-5">
-    Components extending this class receive the active kernel instance as a parameter. Use this for toolbar components,
-    chat overlays, or any UI that interacts with the current chat's kernel.
+    Components extending this class receive the active kernel instance as a parameter. When <code>Kernel</code> is set,
+    all properties marked with <code>[KernelInject]</code> are automatically resolved from <code>Kernel.Services</code>.
   </p>
+
+  <h3 id="viewstart" class="h5 fw-bold mt-4">ViewStart</h3>
+  <p class="text-secondary">Information for a configurable starting view.</p>
+  <pre class="bg-dark text-light p-3 rounded mb-5"><code>{{ viewStartCode }}</code></pre>
+
+  <hr class="my-5">
+
+  <!-- Attributes -->
+  <h2 class="fw-bold mb-4">Attributes</h2>
+
+  <h3 id="kernelinjectattribute" class="h5 fw-bold mt-4">KernelInjectAttribute</h3>
+  <p class="text-secondary">
+    Indicates that the associated property should have a value injected from the
+    <code>KernelComponentBase.Kernel</code> service provider. Overrides <code>ComponentBase.OnParametersSet</code>.
+  </p>
+  <pre class="bg-dark text-light p-3 rounded"><code>{{ kernelInjectAttributeCode }}</code></pre>
+  <ul class="text-secondary mb-5">
+    <li><code>Key</code>: Optional keyed service key for <code>GetKeyedService</code> resolution.</li>
+  </ul>
+  <p class="text-secondary mb-3"><strong>Usage:</strong></p>
+  <pre class="bg-dark text-light p-3 rounded mb-5"><code>{{ kernelInjectUsageCode }}</code></pre>
 
   <hr class="my-5">
 
@@ -126,13 +117,7 @@ public enum ToolbarAlignment
 
   <h3 id="componentoptions" class="h5 fw-bold mt-4">ComponentOptions</h3>
   <p class="text-secondary">Configuration for UI components, particularly settings pages.</p>
-  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public class ComponentOptions
-&#123;
-    internal List&lt;ComponentMetaData&gt; SettingsComponents &#123; get; set; &#125;
-    public ComponentMetaData[] GetSettingsComponents();
-&#125;
-
-public record ComponentMetaData(Type Component, string? Section, int Order);</code></pre>
+  <pre class="bg-dark text-light p-3 rounded"><code>{{ componentOptionsCode }}</code></pre>
   <ul class="text-secondary mb-5">
     <li><code>SettingsComponents</code>: Collection of registered settings component metadata (internal).</li>
     <li><code>GetSettingsComponents()</code>: Returns all registered settings components as an array.</li>
@@ -141,16 +126,7 @@ public record ComponentMetaData(Type Component, string? Section, int Order);</co
 
   <h3 id="componentoptionsextensions" class="h5 fw-bold mt-4">ComponentOptionsExtensions</h3>
   <p class="text-secondary">Extension methods for registering settings components:</p>
-  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public static class ComponentOptionsExtensions
-&#123;
-    [Obsolete("Use new section mapping API")]
-    public static void AddSettingsComponent&lt;TComponent&gt;(this ComponentOptions options)
-        where TComponent : ComponentBase;
-
-    public static void AddSettingsComponent&lt;TComponent&gt;(this ComponentOptions options, string section);
-
-    public static void AddSettingsComponent&lt;TComponent&gt;(this ComponentOptions options, string section, int order);
-&#125;</code></pre>
+  <pre class="bg-dark text-light p-3 rounded"><code>{{ componentOptionsExtensionsCode }}</code></pre>
   <ul class="text-secondary mb-5">
     <li>All overloads prevent duplicate registration by checking if the component type already exists.</li>
     <li>The no-parameter overload is <strong>obsolete</strong> — use section overloads instead.</li>
@@ -177,10 +153,7 @@ public record ComponentMetaData(Type Component, string? Section, int Order);</co
 
   <h3 id="codelanguages" class="h5 fw-bold mt-4">CodeLanguages</h3>
   <p class="text-secondary">Maps file extensions to syntax highlighting language identifiers.</p>
-  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public class CodeLanguages
-&#123;
-    public string GetFileLanguage(string extension);
-&#125;</code></pre>
+  <pre class="bg-dark text-light p-3 rounded"><code>{{ codeLanguagesCode }}</code></pre>
   <p class="text-secondary mb-3"><strong>Supported mappings:</strong></p>
   <div class="table-responsive mb-5">
     <table class="table table-bordered">
@@ -211,21 +184,7 @@ public record ComponentMetaData(Type Component, string? Section, int Order);</co
   <h2 class="fw-bold mb-4">Extension Methods</h2>
 
   <h3 id="cyrenabuilderextensions" class="h5 fw-bold mt-4">CyrenaBuilderExtensions</h3>
-  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public static class CyrenaBuilderExtensions
-&#123;
-    [Obsolete("Use new section mapping API")]
-    public static CyrenaBuilder AddSettingsComponent&lt;TComponent&gt;(this CyrenaBuilder builder)
-        where TComponent : ComponentBase;
-
-    public static CyrenaBuilder AddSettingsComponent&lt;TComponent&gt;(this CyrenaBuilder builder, string section)
-        where TComponent : ComponentBase;
-
-    public static CyrenaBuilder AddSettingsComponent&lt;TComponent&gt;(this CyrenaBuilder builder, string section, int order)
-        where TComponent : ComponentBase;
-
-    public static CyrenaBuilder AddShortcut&lt;TShortcut&gt;(this CyrenaBuilder builder)
-        where TShortcut : class, IShortcut;
-&#125;</code></pre>
+  <pre class="bg-dark text-light p-3 rounded"><code>{{ cyrenaBuilderExtensionsCode }}</code></pre>
   <ul class="text-secondary mb-5">
     <li><code>AddSettingsComponent</code>: Registers a Blazor component as a settings tab under the specified section with optional order.</li>
     <li><code>AddShortcut</code>: Registers a shortcut action in the UI as a scoped <code>IShortcut</code> service.</li>
@@ -251,26 +210,14 @@ public record ComponentMetaData(Type Component, string? Section, int Order);</co
   </div>
 
   <h3 id="cyrenakernelbuilderextensions" class="h5 fw-bold mt-4">CyrenaKernelBuilderExtensions</h3>
-  <pre class="bg-dark text-light p-3 rounded" ngNonBindable><code>public static class CyrenaKernelBuilderExtensions
-&#123;
-    public static void AddToolbarComponent&lt;TComponent&gt;(this CyrenaKernelBuilder builder, ToolbarAlignment alignment)
-        where TComponent : KernelComponentBase;
-
-    [Obsolete]
-    public static void AddToolbarComponent&lt;TComponent&gt;(this IKernelBuilder builder, ToolbarAlignment alignment)
-        where TComponent : KernelComponentBase;
-&#125;</code></pre>
+  <pre class="bg-dark text-light p-3 rounded"><code>{{ cyrenaKernelBuilderExtensionsCode }}</code></pre>
   <ul class="text-secondary mb-5">
     <li><code>AddToolbarComponent</code>: Registers a component to render in the chat toolbar for the current kernel/chat.</li>
     <li>The obsolete overload on <code>IKernelBuilder</code> is deprecated; prefer <code>CyrenaKernelBuilder</code>.</li>
   </ul>
 
   <h3 id="componentbaseextensions" class="h5 fw-bold mt-4">ComponentBaseExtensions</h3>
-  <pre class="bg-dark text-light p-3 rounded mb-5" ngNonBindable><code>public static class ComponentBaseExtensions
-&#123;
-    public static RenderFragment Render(this ComponentBase cmp, Type type);
-    public static RenderFragment Render(this ComponentBase cmp, Type type, Dictionary&lt;string, object?&gt; parameters);
-&#125;</code></pre>
+  <pre class="bg-dark text-light p-3 rounded mb-5"><code>{{ componentBaseExtensionsCode }}</code></pre>
   <p class="text-secondary mb-5">
     Helper methods for dynamically rendering Blazor components from code with optional parameter passing.
   </p>
@@ -364,37 +311,45 @@ public record ComponentMetaData(Type Component, string? Section, int Order);</co
   <!-- Usage -->
   <h2 class="fw-bold mb-4">Usage for Extension Developers</h2>
 
-  <p class="text-secondary">Reference <code>Cyrena.Components.Core</code> to:</p>
   <ol class="text-secondary mb-5">
     <li>Implement <code>IShortcut</code> for quick actions</li>
     <li>Implement <code>IToolbarComponent</code> for toolbar buttons</li>
     <li>Extend <code>KernelComponentBase</code> for kernel-aware UI components</li>
     <li>Use <code>IDisplayService</code> for dialogs and toasts</li>
+    <li>Use <code>[KernelInject]</code> for automatic service injection from kernel scope</li>
     <li>Register settings components via <code>AddSettingsComponent</code></li>
     <li>Register toolbar components via <code>AddToolbarComponent</code></li>
+    <li>Implement <code>IViewStartProvider</code> for custom starting views</li>
   </ol>
 
   <h3 class="h5 fw-bold mb-3">Example — Toolbar Component</h3>
-  <pre class="bg-dark text-light p-3 rounded mb-3" ngNonBindable><code>public class MyToolbarComponent : KernelComponentBase &#123; ... &#125;
-
-// In IAssistantPlugin.LoadAsync:
-builder.AddToolbarComponent&lt;MyToolbarComponent&gt;(ToolbarAlignment.End);</code></pre>
+  <pre class="bg-dark text-light p-3 rounded mb-3"><code>{{ toolbarExampleCode }}</code></pre>
 
   <h3 class="h5 fw-bold mb-3">Example — Shortcut</h3>
-  <pre class="bg-dark text-light p-3 rounded mb-3" ngNonBindable><code>public class MyShortcut : IShortcut
-&#123;
-    public string Title =&gt; "My Action";
-    public string Description =&gt; "Does something";
-    public string Icon =&gt; "fa-solid fa-star";
-    public string Color =&gt; "primary";
-    public string Category =&gt; "My Category";
-    public string[] Tags =&gt; ["my"];
-    public Task OnClick() &#123; ... &#125;
-&#125;
-
-// In extension BuildExtension:
-builder.AddShortcut&lt;MyShortcut&gt;();</code></pre>
+  <pre class="bg-dark text-light p-3 rounded mb-3"><code>{{ shortcutExampleCode }}</code></pre>
 
   <h3 class="h5 fw-bold mb-3">Example — Settings Component</h3>
-  <pre class="bg-dark text-light p-3 rounded mb-5" ngNonBindable><code>builder.AddSettingsComponent&lt;MySettingsComponent&gt;("General", 1);</code></pre>
+  <pre class="bg-dark text-light p-3 rounded mb-5"><code>{{ settingsExampleCode }}</code></pre>
+
+  <h3 class="h5 fw-bold mb-3">Example — View Start Provider</h3>
+  <pre class="bg-dark text-light p-3 rounded mb-5"><code>{{ viewStartExampleCode }}</code></pre>
+
+  <hr class="my-5">
+
+  <!-- Package Information -->
+  <h2 class="fw-bold mb-4">Package Information</h2>
+
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <tbody>
+        <tr><td><strong>PackageId</strong></td><td><code>Cyrena.Components.Core</code></td></tr>
+        <tr><td><strong>Version</strong></td><td><code>0.5.0</code></td></tr>
+        <tr><td><strong>Authors</strong></td><td>Vaya Nova</td></tr>
+        <tr><td><strong>Description</strong></td><td>Blazor component library providing UI contracts, base classes, and extension methods for Cyréna extensions</td></tr>
+        <tr><td><strong>Title</strong></td><td>Cyréna Components Core</td></tr>
+        <tr><td><strong>Repository</strong></td><td><a href="https://github.com/Christo262/Cyrena_App" target="_blank">https://github.com/Christo262/Cyrena_App</a></td></tr>
+        <tr><td><strong>ProjectUrl</strong></td><td><a href="https://cyrena.dev" target="_blank">https://cyrena.dev</a></td></tr>
+      </tbody>
+    </table>
+  </div>
 </div>

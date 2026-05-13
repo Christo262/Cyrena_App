@@ -415,6 +415,8 @@ Configuration constants for the developer SDK.
 ```csharp
 public const string AssistantModeId = "developer";
 public const string BuilderId = "dev.builder-id";
+[Obsolete]
+//Removed, uses new ChatConfiguration.WorkingDirectory.
 public const string RootDirectory = "dev.root-dir";
 ```
 
