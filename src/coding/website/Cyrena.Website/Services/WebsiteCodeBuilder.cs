@@ -28,7 +28,9 @@ namespace Cyrena.Website.Services
         public Task<DevelopPlan> ConfigureAsync(CyrenaKernelBuilder options)
         {
             var rootDir = options.ChatConfiguration.WorkingDirectory;
-            var plan = new DevelopPlan(rootDir!);
+            if (string.IsNullOrEmpty(rootDir))
+                throw new InvalidOperationException($"Working Directory is not set.");
+            var plan = new DevelopPlan(rootDir);
             plan.IndexStaticWebsiteDefaultPlan();
 
             options.Plugins.AddFromType<WebsiteKernelFunctions>("Content");
@@ -55,7 +57,6 @@ namespace Cyrena.Website.Services
                 ComponentParameters = new()
                 {
                     { nameof(Configure.Model), config },
-                    {nameof(Configure.IsEdit), true }
                 },
                 ButtonYesText = "Save",
                 ButtonNoText = "Cancel",
