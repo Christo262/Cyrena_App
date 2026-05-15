@@ -30,7 +30,7 @@ namespace Cyrena.Services
             var prompt = Resources.Read(typeof(DefaultAssistantMode).Assembly, "Cyrena.Resources.prompt.md");
             prompts.AddPrompt(0, prompt);
             builder.Plugins.AddFromType<Chat>();
-            builder.Services.AddSingleton<IConversationHistoryTransformer, DefaultAssistantConversationHistoryTransformer>();
+            //builder.Services.AddSingleton<IConversationHistoryTransformer, DefaultAssistantConversationHistoryTransformer>();
             return Task.CompletedTask;
         }
 

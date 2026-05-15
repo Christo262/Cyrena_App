@@ -1,0 +1,13 @@
+{
+  "id": "cyrena.ltm",
+  "name": "Long-term Memory",
+  "version": "0.1.0",
+  "entryAssemblyFile": "Cyrena.LTM.dll",
+  "description": "Allows Cyréna default assistant to remember things across conversations",
+  "dependencies": [
+    {
+      "id": "cyrena",
+      "minVersion": "0.5.0"
+    }
+  ]
+}

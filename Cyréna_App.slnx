@@ -34,6 +34,9 @@
     <Project Path="src/extensa/Cyrena.Extensa.Core/Cyrena.Extensa.Core.csproj" Id="cd2ba511-0d80-4544-b5d4-46d4c735cdfb" />
     <Project Path="src/extensa/Cyrena.Extensa.Runtime/Cyrena.Extensa.Runtime.csproj" Id="251829e2-237b-49a7-be18-eb994e7df6f8" />
   </Folder>
+  <Folder Name="/src/memory/">
+    <Project Path="src/memory/Cyrena.LTM/Cyrena.LTM.csproj" Id="8c3944be-eace-459c-84e1-f12cf69a2f14" />
+  </Folder>
   <Folder Name="/src/persistence/">
     <Project Path="src/persistence/Cyrena.Persistence.Core/Cyrena.Persistence.Core.csproj" Id="ce98ccdb-4675-4713-ae9c-536a5ad67df0" />
     <Project Path="src/persistence/Cyrena.Persistence.File/Cyrena.Persistence.File.csproj" Id="75bb36fa-c316-4ab7-8476-d5ff6cb39064" />
