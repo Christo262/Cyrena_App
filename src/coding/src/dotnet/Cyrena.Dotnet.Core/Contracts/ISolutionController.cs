@@ -9,9 +9,10 @@ namespace Cyrena.Dotnet.Contracts
     {
         Task SetTargetProject(ProjectModel current);
         IEnumerable<ProjectModel> GetValidProjects();
-        void RefreshProjectPlans();
         ProjectModel Current { get; }
         SolutionViewModel Sln { get; }
         IDisposable OnProjectChange(Action<ProjectModel> cb);
+        IEnumerable<ProjectModel> GetAllProjects();
+        Task OverrideProjectType(string projectId, string? projectTypeId);
     }
 }

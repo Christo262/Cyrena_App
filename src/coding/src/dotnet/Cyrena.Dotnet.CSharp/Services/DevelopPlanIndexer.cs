@@ -38,12 +38,13 @@ namespace Cyrena.Dotnet.CSharp.Services
             var info = SolutionParser.GetProjectDetails(absolute_sln_path);
             var sln_dir = Path.GetDirectoryName(absolute_sln_path);
             var current_id = _sln.Current.Id;
-            _sln.Sln.Projects.Clear();
+            var models = new List<ProjectModel>();
             foreach (var item in info)
             {
-                var project_type = _project_types.FirstOrDefault(x => x.IsOfType(item));
                 var fi = new FileInfo(item.AbsolutePath);
                 var id = $"{fi.DirectoryName?.Replace(sln_dir ?? "", "").Replace("\\", "_")}_{item.ProjectName}";
+                var ext = _sln.Sln.Projects.FirstOrDefault(x => x.Id == id);
+                var project_type = _project_types.FirstOrDefault(x => x.Id == ext?.ProjectTypeId || x.IsOfType(item));
                 ProjectModel project = new ProjectModel()
                 {
                     ConversationId = _config.Config.Id,
@@ -52,9 +53,9 @@ namespace Cyrena.Dotnet.CSharp.Services
                     ProjectDirectory = fi.DirectoryName!,
                     ProjectTypeId = project_type?.Id,
                     ProjectTypeName = project_type?.ProjectTypeName,
-                    Id = $"{fi.DirectoryName?.Replace(sln_dir ?? "", "").Replace("\\", "_")}_{item.ProjectName}"
+                    Id = id
                 };
-                _sln.Sln.Projects.Add(project);
+                models.Add(project);
 
                 if (project_type != null)
                 {
@@ -63,6 +64,8 @@ namespace Cyrena.Dotnet.CSharp.Services
                     project_type.IndexPlan(project);
                 }
             }
+            _sln.Sln.Projects.Clear();
+            _sln.Sln.Projects.AddRange(models);
             var new_current = _sln.GetValidProjects().FirstOrDefault(x => x.Id == current_id);
             if(new_current != null)
             {

@@ -1,0 +1,29 @@
+﻿@inherits KernelComponentBase
+
+<div class="overflow-auto" style="max-height:50vh">
+    @foreach (var item in _sln.GetAllProjects())
+    {
+        <div class="mb-2 p-2 rounded border d-flex">
+            <div>
+                <p class="m-0 text-truncate">@item.ProjectName</p>
+                <select class="form-select form-select-sm" @bind="item.ProjectTypeId" @bind:after="() => Override(item)">
+                    <option value="">Hidden</option>
+                    @foreach(var proj in _projects)
+                    {
+                        <option value="@proj.Id">@proj.ProjectTypeName</option>
+                    }
+                </select>
+            </div>
+            <div class="justify-content-center align-self-center ms-auto">
+                @if (!string.IsNullOrEmpty(item.ProjectTypeId) && _sln.Current.Id != item.Id)
+                {
+                    <Tooltip Title="Set Active">
+                        <button type="button" class="btn btn-sm btn-primary rounded-pill" @onclick="() => SetActive(item)">
+                            <i class="bi bi-check2-square"></i>
+                        </button>
+                    </Tooltip>
+                }
+            </div>
+        </div>
+    }
+</div>
