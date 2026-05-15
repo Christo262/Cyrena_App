@@ -1,10 +1,7 @@
 @inherits KernelComponentBase
 
-<div style="width:250px" class="me-1">
-    <select @bind="_sln_id" @bind:after="OnValueChange" disabled="@_its.Inferring" class="form-control form-control-sm">
-        @foreach (var item in _sln.GetValidProjects())
-        {
-            <option value="@item.Id">@item.ProjectName</option>
-        }
-    </select>
-</div>
+<Tooltip Title="Projects">
+    <button type="button" class="btn btn-sm btn-primary rounded-pill me-1 px-2" @onclick="OnClick" disabled="@_its.Inferring">
+        <i class="bi bi-card-checklist"></i> @_sln.Current?.ProjectName
+    </button>
+</Tooltip>

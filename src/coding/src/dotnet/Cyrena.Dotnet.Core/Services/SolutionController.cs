@@ -42,6 +42,11 @@ namespace Cyrena.Dotnet.Services
             return _sln.Projects.Where(x => x.Plan != null);
         }
 
+        public IEnumerable<ProjectModel> GetAllProjects()
+        {
+            return _sln.Projects;
+        }
+
         public IDisposable OnProjectChange(Action<ProjectModel> cb) => _pipe.WatchProjectChange(cb);
 
         public ProjectModel Current => _current;
@@ -62,10 +67,9 @@ namespace Cyrena.Dotnet.Services
             }
         }
 
-        internal class SolutionPipeline : EventPipeline
+        public Task OverrideProjectType(string projectId, string? projectTypeId)
         {
-            public IDisposable WatchProjectChange(Action<ProjectModel> callback) => this.ConfigurePipe("proj_change", callback);
-            public void InvokeProjectChange(ProjectModel proj) => this.InvokePipeline("proj_change", proj);
+            throw new NotImplementedException("Cannot override project type in project mode");
         }
     }
 }

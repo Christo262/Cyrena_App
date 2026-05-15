@@ -13,6 +13,7 @@ using Cyrena.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Cyrena.Dotnet.Extensions;
+using Cyrena.Persistence.Options;
 
 namespace Cyrena.Dotnet.CSharp.Services
 {
@@ -59,29 +60,30 @@ namespace Cyrena.Dotnet.CSharp.Services
                 {
                     project.ProjectTypeId = project_type.Id;
                     project.ProjectTypeName = project_type.ProjectTypeName;
-                    project_type.IndexPlan(project);
+                    //project_type.IndexPlan(project); //Index later on in DevelopPlanIndexer, no need to do it here
                 }
             }
             var sln_model = new SolutionViewModel(options.ChatConfiguration.WorkingDirectory!);
             sln_model.Projects.AddRange(projects);
-            if(sln_model.Projects.Where(x => x.Plan != null).Count() == 0)
+            if (sln_model.Projects.Count == 0)
                 throw new InvalidOperationException($"Solution requires at least one supported project");
             ProjectModel active;
             if (string.IsNullOrEmpty(options.ChatConfiguration[DotnetOptions.LastProject]))
-                active = sln_model.Projects.FirstOrDefault(x => x.Plan != null)!;
+                active = sln_model.Projects.OrderBy(x => x.Plan != null).FirstOrDefault()!;
             else
             {
                 var act_t = sln_model.Projects.FirstOrDefault(x => x.Id == options.ChatConfiguration[DotnetOptions.LastProject]);
-                if(act_t == null || act_t.Plan == null)
-                    active = sln_model.Projects.FirstOrDefault(x => x.Plan != null)!;
+                if(act_t == null)
+                    active = sln_model.Projects.OrderBy(x => x.Plan != null).FirstOrDefault()!;
                 else
                     active = act_t;
             }
 
             options.ChatConfiguration[DotnetOptions.LastProject] = active.Id;
+            var persistence = options.GetFeatureOption<ICyrenaPersistenceBuilder>();
             options.Services.AddSingleton(sln_model);
             options.Services.AddSingleton(project_types);
-            options.AddSolutionController();
+            options.AddSolutionControllerWithProjectOverride();
             options.Plugins.AddFromType<DotnetSolution>();
             options.Plugins.AddFromType<DotnetTools>();
             options.Plugins.AddFromType<Blazor>();

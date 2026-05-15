@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Cyrena.Coding.Core" />
+    <PackageReference Include="Cyrena.Persistence.Core" />
   </ItemGroup>
 
 </Project>
