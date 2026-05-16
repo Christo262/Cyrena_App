@@ -76,7 +76,7 @@ namespace Cyrena.Runtime.Services
         {
             var data = await _store.FindManyAsync(x => x.ConversationId == _config.Id, new OrderBy<ChatMessage>(x => x.Date, SortDirection.Ascending));
             var k_history = data.Select(x => new ChatMessageContent(new AuthorRole(x.Label), x.Content));
-            var d_history = data.Select(x => x.ToDisplayMessageContent());
+            var d_history = data.Where(x => x.NoDisplay == false).Select(x => x.ToDisplayMessageContent());
             d_history = d_history.Where(x => _options.IsDisplayContent(x));
             LoadHistory(k_history, d_history);
         }
@@ -96,6 +96,29 @@ namespace Cyrena.Runtime.Services
                 _display.Add(content);
                 _pipeline.InvokeDisplayHistoryUpdated(_display);
             }
+        }
+
+        public async Task AddMessage(ChatMessageContent content, bool no_display)
+        {
+            if (_options.IsKernelContent(content))
+            {
+                _kernel.Add(content);
+                _pipeline.InvokeKernelHistoryUpdated(_kernel);
+                if (_options.MessagePersistRoles.Contains(content.Role))
+                    await _store.AddAsync(new ChatMessage(content, _config.Id, _its.IterationId) { NoDisplay = no_display});
+            }
+
+            if (no_display == false && _options.IsDisplayContent(content))
+            {
+                _display.Add(content);
+                _pipeline.InvokeDisplayHistoryUpdated(_display);
+            }
+        }
+
+        public async Task AddMessage(AuthorRole role, string? content, bool no_display)
+        {
+            var model = new ChatMessageContent(role, content);
+            await AddMessage(model, no_display);
         }
 
         public async Task AddMessage(AuthorRole role, string? content)

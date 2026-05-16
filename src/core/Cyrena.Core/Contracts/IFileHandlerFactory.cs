@@ -15,6 +15,11 @@ namespace Cyrena.Contracts
         Task<AdditionalMessageContent?> GetMessageContent(byte[] data, string contentType, string name);
         Task<KernelContent?> GetKernelContent(Stream data, string contentType, string name);
         Task<KernelContent?> GetKernelContent(byte[] data, string contentType, string name);
+        /// <summary>
+        /// Gets the file extension associated with a mimetype. 
+        /// </summary>
+        /// <param name="mimeType"></param>
+        /// <returns>'.{file extension}' or NULL if the mimetype is not supported in current Kernel instance file handlers</returns>
         string? GetExtension(string mimeType);
     }
 }

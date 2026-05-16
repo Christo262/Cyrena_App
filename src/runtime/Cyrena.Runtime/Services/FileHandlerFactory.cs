@@ -55,7 +55,7 @@ namespace Cyrena.Runtime.Services
 
         public string? GetExtension(string mimeType)
         {
-            mimeType = mimeType.ToLower();
+            mimeType = mimeType.ToLowerInvariant();
             foreach(var handler in _handlers)
             {
                 var mapping = handler.GetExtensionMimeTypeMapping();

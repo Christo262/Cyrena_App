@@ -4,10 +4,11 @@ using System.Reflection;
 
 namespace Cyrena.Options
 {
-    public sealed class CyrenaBuilder
+    public sealed class CyrenaBuilder : IDisposable
     {
-        public static string AppDataDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena");
-        public static string UserContentDirectory = Path.Combine(AppDataDirectory, "public");
+        public static readonly string AppDataDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena");
+        public static readonly string UserContentDirectory = Path.Combine(AppDataDirectory, "public");
+
         private readonly CancellationTokenSource _lifetime_cts;
         public CyrenaBuilder(IServiceCollection services)
         {
@@ -50,6 +51,17 @@ namespace Cyrena.Options
             for (int i = 0; i < BuildActions.Count; i++)
                 BuildActions[i].Invoke(this);
             Services.AddSingleton(new CyrenaOptions(FeatureAssemblies));
+        }
+
+        private bool _disposed { get; set; }
+        public void Dispose()
+        {
+            if (!_disposed)
+            {
+                _lifetime_cts.Cancel();
+                _lifetime_cts.Dispose();
+                _disposed = true;
+            }
         }
     }
 

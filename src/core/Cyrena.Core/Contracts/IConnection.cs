@@ -12,6 +12,9 @@ namespace Cyrena.Contracts
         Task HandleAsync(AuthorRole role, string input, Kernel kernel, CancellationToken ct = default);
         Task HandleAsync(AuthorRole role, string input, Kernel kernel, CancellationToken ct = default, params AdditionalMessageContent[] items);
 
+        /// <summary>
+        /// Used by a dedicated function invocation filter to inform when a function call starts to help suppress "thinking" messages and reduce context
+        /// </summary>
         void FunctionCallStart();
     }
 }

@@ -19,25 +19,25 @@
                 if (_msg.DisplayHistory[i].Role == _msg.Options.LogError)
                 {
                     <div class="d-flex mb-3 justify-content-start">
-                        <div class="text-danger small" style="white-space: pre-wrap;">@((MarkupString)_msg.DisplayHistory[i].Content)</div>
+                        <div class="text-danger small" style="white-space: pre-wrap;">@((MarkupString)(_msg.DisplayHistory[i].Content ?? ""))</div>
                     </div>
                 }
                 else if (_msg.DisplayHistory[i].Role == _msg.Options.LogWarn)
                 {
                     <div class="d-flex mb-3 justify-content-start">
-                        <div class="text-warning small" style="white-space: pre-wrap;">@((MarkupString)_msg.DisplayHistory[i].Content)</div>
+                        <div class="text-warning small" style="white-space: pre-wrap;">@((MarkupString)(_msg.DisplayHistory[i].Content ?? ""))</div>
                     </div>
                 }
                 else if (_msg.DisplayHistory[i].Role == _msg.Options.LogSuccess)
                 {
                     <div class="d-flex mb-3 justify-content-start">
-                        <div class="text-success small" style="white-space: pre-wrap;">@((MarkupString)_msg.DisplayHistory[i].Content)</div>
+                        <div class="text-success small" style="white-space: pre-wrap;">@((MarkupString)(_msg.DisplayHistory[i].Content ?? ""))</div>
                     </div>
                 }
                 else if (_msg.DisplayHistory[i].Role == _msg.Options.LogInfo)
                 {
                     <div class="d-flex mb-3 justify-content-start">
-                        <div class="text-muted small" style="white-space: pre-wrap;">@((MarkupString)_msg.DisplayHistory[i].Content)</div>
+                        <div class="text-muted small" style="white-space: pre-wrap;">@((MarkupString)(_msg.DisplayHistory[i].Content ?? ""))</div>
                     </div>
                 }
                 else

@@ -55,6 +55,11 @@ namespace Cyrena.Services
                 var item = collection.FirstOrDefault(x => x.Id == entity.Id);
                 if (item == null)
                     collection!.Add(entity);
+                else
+                {
+                    var index = collection.IndexOf(item);
+                    if (index >= 0) collection[index] = entity;
+                }
                 var json = JsonConvert.SerializeObject(entity);
                 var path = Path.Combine(_options.Value.BaseDirectory, collectionName, $"{entity.Id}.{_options.Value.FileExtension}");
                 File.WriteAllText(path, json);

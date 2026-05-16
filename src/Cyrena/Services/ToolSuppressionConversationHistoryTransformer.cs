@@ -22,11 +22,14 @@ namespace Cyrena.Services
                     if (i is FunctionCallContent fnc)
                     {
                         functionName = fnc.FunctionName;
+                        var text = System.Text.Json.JsonSerializer.Serialize(fnc, new System.Text.Json.JsonSerializerOptions() { WriteIndented = true });
+                        await _chat.AddMessage(item.Role, text, true);
                     }
                     if (i is FunctionResultContent fnr)
                     {
-                        var tool_text = $"[FUNCTION={functionName ?? "unknown"} RESULT OMITTED FOR BREVITY]";
-                        await _chat.AddMessage(item.Role, tool_text);
+                        var fnn = new FunctionResultContent(fnr.FunctionName ?? functionName, fnr.PluginName, fnr.CallId, "[OMITTED for brevity. CALL FUNCTION for updated results]");
+                        var tool_text = System.Text.Json.JsonSerializer.Serialize(fnn, new System.Text.Json.JsonSerializerOptions() { WriteIndented = true });
+                        await _chat.AddMessage(item.Role, tool_text, true);
                     }
                 }
             }

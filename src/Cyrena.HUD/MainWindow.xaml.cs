@@ -139,6 +139,7 @@ namespace Cyrena.HUD
         protected override void OnClosed(EventArgs e)
         {
             _hotkeyService?.Dispose();
+            _builder.Dispose();
             base.OnClosed(e);
         }
     }

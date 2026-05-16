@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
+using Microsoft.SemanticKernel;
 
 namespace Cyrena.Components.Shared
 {
-    public partial class ChatStart
+    public partial class ChatStart : IDisposable
     {
-        [Inject] private ISettingsService _settings { get; set; } = default!;
         [Inject] private IKernelController _kernels { get; set; } = default!;
         [Inject] private NavigationManager _nav { get; set; } = default!;
         [Inject] private ToastService _toasts { get; set; } = default!;

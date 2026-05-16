@@ -30,7 +30,7 @@ namespace Cyrena.Options
             LogSuccess = success;
             LogWarn = warn;
             LogError = error;
-            MessagePersistRoles = [Assistant, User];
+            MessagePersistRoles = [Assistant, User, Tool];
         }
 
         public AuthorRole System { get; }

@@ -44,6 +44,11 @@ namespace Cyrena.Runtime.Models
         public DateTime Date { get; set; }
         public string Label { get; set; } = default!;
         public string? Content { get; set; }
+        /// <summary>
+        /// Only applicable to <see cref="Cyrena.Options.ChatOptions.User"/> and <see cref="Cyrena.Options.ChatOptions.Assistant"/>.
+        /// Allows overriding the Display logic to exclude a message from display history. Default false.
+        /// </summary>
+        public bool NoDisplay { get; set; } = false;
 
         public List<string> AdditionalFiles { get; set; }
 

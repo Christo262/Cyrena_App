@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Cyrena</RootNamespace>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.5.0</Version>
+    <Version>0.6.0</Version>
     <Authors>Vaya Nova</Authors>
     <Description>Core models, interfaces &amp; services to develop extensions for Cyréna</Description>
     <PackageIcon>cyrena.png</PackageIcon>

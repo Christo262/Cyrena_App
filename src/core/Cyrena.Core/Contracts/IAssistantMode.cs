@@ -17,7 +17,6 @@ namespace Cyrena.Contracts
         /// <summary>
         /// Configures the kernel
         /// </summary>
-        /// <param name="config"></param>
         /// <param name="builder"></param>
         /// <returns></returns>
         Task ConfigureAsync(CyrenaKernelBuilder builder);

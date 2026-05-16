@@ -1,4 +1,4 @@
-﻿using Cyrena.Contracts;
+using Cyrena.Contracts;
 using Cyrena.Models;
 using Cyrena.Runtime.OpenAI.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,71 +40,57 @@ namespace Cyrena.Runtime.OpenAI.Services
         {
             _its.InferenceStart();
             await _chat.AddMessage(role, input);
-            OpenAIPromptExecutionSettings settings = new OpenAIPromptExecutionSettings()
-            {
-                FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
-                Temperature = _model.Temperature,
-                TopP = _model.TopP,
-            };
-
-            _responseBuilder = new StringBuilder();
-            var history = await _chat.GetKernelHistory();          
-
-            await foreach (var chunk in _completion.GetStreamingChatMessageContentsAsync(history, settings, kernel, ct))
-            {
-                var delta = chunk.Content;
-                if (string.IsNullOrEmpty(delta)) continue;
-
-                lock (_lock)
-                {
-                    _responseBuilder.Append(delta);
-                }
-                _chat.Stream(delta);
-            }
-            var transformers = _services.GetServices<IConversationHistoryTransformer>();
-            foreach (var transformer in transformers)
-                await transformer.ApplyPostStreamModification(history);
-
-            await _chat.AddMessage(AuthorRole.Assistant, _responseBuilder.ToString());
-            _its.InferenceEnd();
-            _responseBuilder = null;
-            return;
+            await RunInferenceAsync(kernel, ct);
         }
 
         public async Task HandleAsync(AuthorRole role, string input, Kernel kernel, CancellationToken ct = default, params AdditionalMessageContent[] items)
         {
             _its.InferenceStart();
             await _chat.AddMessage(role, input, items);
-            OpenAIPromptExecutionSettings settings = new OpenAIPromptExecutionSettings()
+            await RunInferenceAsync(kernel, ct);
+        }
+
+        private async Task RunInferenceAsync(Kernel kernel, CancellationToken ct)
+        {
+            try
+            {
+                var settings = CreateExecutionSettings();
+                _responseBuilder = new StringBuilder();
+                var history = await _chat.GetKernelHistory();
+
+                await foreach (var chunk in _completion.GetStreamingChatMessageContentsAsync(history, settings, kernel, ct))
+                {
+                    var delta = chunk.Content;
+                    if (string.IsNullOrEmpty(delta)) continue;
+
+                    lock (_lock)
+                    {
+                        _responseBuilder.Append(delta);
+                    }
+                    _chat.Stream(delta);
+                }
+
+                var transformers = _services.GetServices<IConversationHistoryTransformer>();
+                foreach (var transformer in transformers)
+                    await transformer.ApplyPostStreamModification(history);
+
+                await _chat.AddMessage(AuthorRole.Assistant, _responseBuilder.ToString());
+            }
+            finally
+            {
+                _its.InferenceEnd();
+                _responseBuilder = null;
+            }
+        }
+
+        private OpenAIPromptExecutionSettings CreateExecutionSettings()
+        {
+            return new OpenAIPromptExecutionSettings()
             {
                 FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
                 Temperature = _model.Temperature,
                 TopP = _model.TopP,
             };
-
-            _responseBuilder = new StringBuilder();
-            var history = await _chat.GetKernelHistory();
-
-            await foreach (var chunk in _completion.GetStreamingChatMessageContentsAsync(history, settings, kernel, ct))
-            {
-                var delta = chunk.Content;
-                if (string.IsNullOrEmpty(delta)) continue;
-
-                lock( _lock)
-                {
-                    _responseBuilder.Append(delta);
-                }
-                _chat.Stream(delta);
-            }
-
-            var transformers = _services.GetServices<IConversationHistoryTransformer>();
-            foreach (var transformer in transformers)
-                await transformer.ApplyPostStreamModification(history);
-
-            await _chat.AddMessage(AuthorRole.Assistant, _responseBuilder.ToString());
-            _its.InferenceEnd();
-            _responseBuilder = null;
-            return;
         }
     }
 }
