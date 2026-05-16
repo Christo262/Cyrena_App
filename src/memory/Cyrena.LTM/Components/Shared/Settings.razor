@@ -1,0 +1,61 @@
+
+<h4>
+    Long-Term Memory
+</h4>
+
+<EditForm Model="_model">
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
+
+    <div class="row m-0">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" @bind="_model.Enabled" @bind:after="SaveChanges">
+                    <label class="form-check-label">
+                        Memory Context Injection
+                    </label>
+                </div>
+                <p class="small m-0">
+                    <span class="text-danger">*</span> If Enabled, the application will use your input to preemptively search for relevant long-term memories and inject them into the conversation.
+                </p>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Memory Injection Limit (@_model.MaxMemoriesToInject)</label>
+                <Slider @bind-Value="_model.MaxMemoriesToInject" @bind-Value:after="SaveChanges" Min="2" Max="15"/>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Maximum Memory Age</label>
+                <InputNumber @bind-Value="_model.MaxAgeDays" class="form-control" @bind-Value:after="SaveChanges"/>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label">Minimum Relevance Threshold (@_model.MinRelevanceThreshold)</label>
+                <Slider @bind-Value="_relevanceThreshold" @bind-Value:after="SaveRelevance" Min="0" Max="10" />
+            </div>
+
+            <div class="mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" @bind="_model.IncludeFacts" @bind:after="SaveChanges">
+                    <label class="form-check-label">
+                        Include Facts per Memory
+                    </label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Maximum Facts per Memory (@_model.MaxFactsPerMemory)</label>
+                <Slider @bind-Value="_model.MaxFactsPerMemory" @bind-Value:after="SaveChanges" Min="2" Max="15" />
+            </div>
+
+            <div class="mb-3">
+                <button type="button" class="btn btn-danger" @onclick="ClearMemory">
+                    <i class="bi bi-trash"></i> Erase Long-Term Memory
+                </button>
+            </div>
+        </div>
+    </div>
+</EditForm>

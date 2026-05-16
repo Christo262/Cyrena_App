@@ -56,7 +56,6 @@ namespace Cyrena.Coding.Services
             builder.Plugins.AddFromType<ProjectInformation>("Project");
             builder.AddToolbarComponent<VersionControlViewer>(ToolbarAlignment.Start);
             builder.KernelBuilder.AddStartupTask<DevelopPlanWatcher>();
-            builder.Services.AddSingleton<IConversationHistoryTransformer, CodingConversationHistoryTransformer>();
         }
 
         public Task DeleteAsync(ChatConfiguration config)
