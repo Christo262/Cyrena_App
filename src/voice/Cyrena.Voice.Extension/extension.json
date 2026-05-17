@@ -1,0 +1,13 @@
+{
+  "id": "cyrena.voice",
+  "name": "Voice Mode",
+  "version": "0.5.0",
+  "entryAssemblyFile": "Cyrena.Voice.Extension.dll",
+  "description": "Adds speaking capabilities in a conversation",
+  "dependencies": [
+    {
+      "id": "cyrena",
+      "minVersion": "0.5.0"
+    }
+  ]
+}

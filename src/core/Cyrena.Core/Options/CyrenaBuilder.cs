@@ -4,12 +4,11 @@ using System.Reflection;
 
 namespace Cyrena.Options
 {
-    public sealed class CyrenaBuilder : IDisposable
+    public sealed class CyrenaBuilder
     {
         public static readonly string AppDataDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena");
         public static readonly string UserContentDirectory = Path.Combine(AppDataDirectory, "public");
 
-        private readonly CancellationTokenSource _lifetime_cts;
         public CyrenaBuilder(IServiceCollection services)
         {
             Services = services;
@@ -17,7 +16,6 @@ namespace Cyrena.Options
             FeatureOptions = new Dictionary<string, object>();
             BuildActions = new List<Action<CyrenaBuilder>>();
             RunActions = new List<Action<IServiceProvider, CancellationToken>>();
-            _lifetime_cts = new CancellationTokenSource();
         }
 
         public IServiceCollection Services { get; }
@@ -36,16 +34,6 @@ namespace Cyrena.Options
             RunActions.Add(action);
         }
 
-        public CancellationToken GetLifetimeCT()
-        {
-            return _lifetime_cts.Token;
-        }
-
-        public void CancelLifetimeCT()
-        {
-            _lifetime_cts.Cancel();
-        }
-
         public void Build()
         {
             for (int i = 0; i < BuildActions.Count; i++)
@@ -54,15 +42,6 @@ namespace Cyrena.Options
         }
 
         private bool _disposed { get; set; }
-        public void Dispose()
-        {
-            if (!_disposed)
-            {
-                _lifetime_cts.Cancel();
-                _lifetime_cts.Dispose();
-                _disposed = true;
-            }
-        }
     }
 
     public sealed class CyrenaOptions

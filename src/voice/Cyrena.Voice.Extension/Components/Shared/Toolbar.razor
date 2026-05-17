@@ -1,0 +1,101 @@
+@inherits KernelComponentBase
+
+@if (_initialized)
+{
+    @if (_recording)
+    {
+        <Tooltip Title="Stop Recording">
+            <button type="button" class="btn btn-sm btn-danger rounded-pill me-1" @onclick="StopRecording">
+                <i class="bi bi-mic"></i>
+            </button>
+        </Tooltip>
+    }
+    else if (_processing)
+    {
+        <Tooltip Title="Processing...">
+            <button type="button" class="btn btn-sm btn-primary rounded-pill me-1" disabled>
+                <i class="bi bi-mic"></i>
+            </button>
+        </Tooltip>
+    }
+    else
+    {
+        <Tooltip Title="Start Recording">
+            <button type="button" class="btn btn-sm btn-primary rounded-pill me-1" @onclick="StartRecording">
+                <i class="bi bi-mic"></i>
+            </button>
+        </Tooltip>
+    }
+
+    @if (_voice_mode)
+    {
+        <div class="fixed-top vh-100 w-100 top-0 start-0">
+            <div class="d-flex h-100 w-100 bg-body bg-opacity-50 position-relative">
+                <div class="m-auto justify-content-center align-self-center">
+                    <style>
+                        .btn-recording {
+                                        --bs-btn-bg: #ff7851;
+                                        --bs-btn-border-color: #ff7851;
+                                        --bs-btn-disabled-bg: #ff7851;
+                                        --bs-btn-disabled-border-color: #ff7851;
+                                        --bs-btn-hover-bg: #f05530;
+                                        --bs-btn-active-bg: #d43d18;
+                                        --bs-btn-hover-border-color: #f05530;
+                                        --bs-btn-active-border-color: #f05530;
+                                        border-radius: 5rem !important;
+                                        --bs-btn-padding-y: 1.5rem;
+                                        --bs-btn-padding-x: 2rem;
+                                        --bs-btn-font-size: 2rem;
+                                        box-shadow: 0rem 0rem 5rem rgba(245, 73, 39, 0.8) !important;
+                        }
+
+                                    .btn-record {
+                                        --bs-btn-bg: #78c2ad;
+                                        --bs-btn-border-color: #78c2ad;
+                                        --bs-btn-disabled-bg: #78c2ad;
+                                        --bs-btn-disabled-border-color: #78c2ad;
+                                        --bs-btn-hover-bg: #609b8a;
+                                        --bs-btn-active-bg: #4f8072;
+                                        --bs-btn-hover-border-color: #609b8a;
+                                        --bs-btn-active-border-color: #609b8a;
+                                        border-radius: 5rem !important;
+                                        --bs-btn-padding-y: 1.5rem;
+                                        --bs-btn-padding-x: 2rem;
+                                        --bs-btn-font-size: 2rem;
+                                        box-shadow: 0rem 0rem 5rem rgba(120, 194, 173, 0.8) !important;
+                                    }
+                    </style>
+                    @if (_processing)
+                    {
+                        <div class="spinner-grow" style="width: 3rem; height: 3rem;" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    }
+                    else if(_recording)
+                    {
+                        <Tooltip Title="Stop Recording">
+                            <button type="button" class="btn btn-recording" @onclick="StopRecording">
+                                <i class="bi bi-mic"></i>
+                            </button>
+                        </Tooltip>
+                    }
+                    else
+                    {
+                        <Tooltip Title="Start Recording">
+                            <button type="button" class="btn btn-record" @onclick="StartRecording">
+                                <i class="bi bi-mic"></i>
+                            </button>
+                        </Tooltip>
+                    }
+
+                    <div class="position-absolute p-3" style="top:50px; right:10px">
+                        <Tooltip Title="Exit Voice Mode">
+                            <button type="button" class="btn btn-close" @onclick="Exit">
+                            </button>
+                        </Tooltip>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

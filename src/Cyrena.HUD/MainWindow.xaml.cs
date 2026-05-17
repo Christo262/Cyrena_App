@@ -21,10 +21,11 @@ namespace Cyrena.HUD
         private HotkeyService? _hotkeyService;
         private readonly ISettingsService _settings;
         private readonly CyrenaBuilder _builder;
+        private readonly CancellationTokenSource _cts;
         public MainWindow()
         {
             DataContext = this;
-
+            _cts = new CancellationTokenSource();
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddWpfBlazorWebView();
             serviceCollection.AddBootstrapBlazor();
@@ -50,17 +51,20 @@ namespace Cyrena.HUD
             _builder.AddSettingsComponent<Defaults>("Defaults");
             _builder.Build();
             var sp = serviceCollection.BuildServiceProvider();
+            _settings = sp.GetRequiredService<ISettingsService>();
             Resources.Add("services", sp);
 
             InitializeComponent();
+            Loaded += MainWindow_Loaded;
             mainView.BlazorWebViewInitialized += OnBlazorWebViewInitialized;
-            _settings = sp.GetRequiredService<ISettingsService>();
+        }
 
-            //TODO: need to move this out of constructor
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            Loaded -= MainWindow_Loaded;
+            var sp = (IServiceProvider)Resources["services"];
             foreach (var item in _builder.RunActions)
-                item.Invoke(sp, _builder.GetLifetimeCT());
-
-            var fsp = sp.GetServices<IFileProvider>();
+                item.Invoke(sp, _cts.Token);
         }
 
         private void OnBlazorWebViewInitialized(object? sender, BlazorWebViewInitializedEventArgs e)
@@ -139,7 +143,8 @@ namespace Cyrena.HUD
         protected override void OnClosed(EventArgs e)
         {
             _hotkeyService?.Dispose();
-            _builder.Dispose();
+            _cts.Cancel();
+            _cts.Dispose();
             base.OnClosed(e);
         }
     }

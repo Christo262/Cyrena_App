@@ -17,9 +17,8 @@
   <ItemGroup>
     <PackageReference Include="BootstrapBlazor" />
     <PackageReference Include="PdfPig" />
-    <PackageReference Include="PhotinoX" />
-    <PackageReference Include="PhotinoX.Blazor" />
-    <PackageReference Include="PhotinoX.Native" />
+    <PackageReference Include="Photino.Blazor" />
+    <PackageReference Include="Photino.Native" />
   </ItemGroup>
 
   <ItemGroup>

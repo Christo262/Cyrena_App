@@ -41,7 +41,7 @@ namespace Cyrena.Extensa.Services
                 var next = _manager.GetNextDownload();
                 if (next == null)
                 {
-                    await Task.Delay(100);
+                    await Task.Delay(100, stoppingToken);
                     continue;
                 }
 
@@ -111,7 +111,7 @@ namespace Cyrena.Extensa.Services
                 finally
                 {
                     _manager.ReportCurrentDownloadProgress(null, 0);
-                    await Task.Yield();
+                    await Task.Delay(500, stoppingToken);
                 }
             }
         }

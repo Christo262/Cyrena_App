@@ -1,31 +1,24 @@
-﻿using Cyrena.Components.Shared;
-using Cyrena.Contracts;
+﻿using Cyrena.Contracts;
 using Cyrena.Desktop.Components;
 using Cyrena.Desktop.Components.Shared;
 using Cyrena.Desktop.Models;
 using Cyrena.Desktop.Services;
 using Cyrena.Extensions;
 using Cyrena.Options;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.WebView;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using Photino.Blazor;
-using Photino.NET;
-using System.Runtime.InteropServices;
-using System.Threading.Channels;
 
 namespace Cyrena.Desktop;
 
 class Program
 {
+    private static PhotinoBlazorApp? _app { get; set; }
     [STAThread]
     static void Main(string[] args)
     {
+        using var cts = new CancellationTokenSource();
         if (!Directory.Exists(CyrenaBuilder.UserContentDirectory))
             Directory.CreateDirectory(CyrenaBuilder.UserContentDirectory);
         var fpd = new PhysicalFileProvider(Path.Combine(AppContext.BaseDirectory, "wwwroot"));
@@ -54,60 +47,58 @@ class Program
         var files = new FileDialog();
         builder.Services.AddSingleton<IFileDialog>(files);  
         builder.Services.AddSingleton<ISetupService, SetupService>();
+        builder.AddSettingsComponent<Defaults>("Defaults");
         //
 
-        builder.AddSettingsComponent<Defaults>("Defaults");
         builder.Build();
 
-        var app = appBuilder.Build();
-        files.SetWindow(app.MainWindow);
+        _app = appBuilder.Build();
+        files.SetWindow(_app.MainWindow);
         var settings = builder.GetFeatureOption<ISettingsService>();    
-        var photino = settings.Read<WindowOptions>(WindowOptions.Key) ?? new WindowOptions();   
-        app.MainWindow
+        var photino = settings.Read<WindowOptions>(WindowOptions.Key) ?? new WindowOptions();
+        _app.MainWindow
             .SetIconFile("favicon.ico")
             .SetTitle("Cyréna")
             .Load("index.html")
             .Center();
 
 #if DEBUG
-        app.MainWindow.SetDevToolsEnabled(true);
+        _app.MainWindow.SetDevToolsEnabled(true);
 #else
-        app.MainWindow.SetDevToolsEnabled(false);
+        _app.MainWindow.SetDevToolsEnabled(false);
 #endif
 
-        app.MainWindow.Height = photino.Height;
-        app.MainWindow.Width = photino.Width;
+        _app.MainWindow.Height = photino.Height;
+        _app.MainWindow.Width = photino.Width;
 
-        app.MainWindow.WindowSizeChanged += (sender, args) =>
-        {
-            var m = settings.Read<WindowOptions>(WindowOptions.Key) ?? new WindowOptions();
-            m.Height = args.Height;
-            m.Width = args.Width;
-            settings.Save(WindowOptions.Key, m);
-        };
+        _app.MainWindow.WindowSizeChanged += OnWindowSizeChanged;
 
-        AppDomain.CurrentDomain.UnhandledException += (sender, error) =>
-        {
-            var text = error.ExceptionObject?.ToString() ?? "Unknown crash";
-            var path = $"./crash_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.log";
-
-            try { File.WriteAllText(path, text); } catch { }
-
-            try { app.MainWindow?.ShowMessage("Fatal exception", text); } catch { }
-        };
-
-
+        AppDomain.CurrentDomain.UnhandledException += OnUnhandledError;
 
         foreach (var item in builder.RunActions)
-            item.Invoke(app.Services, builder.GetLifetimeCT());
+            item.Invoke(_app.Services, cts.Token);
+        _app.Run();
 
-        try
-        {
-            app.Run();
-        }
-        finally
-        {
-            builder.Dispose();
-        }
+        _app.MainWindow.WindowSizeChanged -= OnWindowSizeChanged;
+        AppDomain.CurrentDomain.UnhandledException -= OnUnhandledError;
+    }
+
+    private static void OnUnhandledError(object sender, UnhandledExceptionEventArgs error)
+    {
+        var text = error.ExceptionObject?.ToString() ?? "Unknown crash";
+        var path = $"./crash_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.log";
+
+        try { File.WriteAllText(path, text); } catch { }
+        try { _app?.MainWindow?.ShowMessage("Fatal exception", text); } catch { }
+    }
+
+    private static void OnWindowSizeChanged(object? sender, System.Drawing.Size args)
+    {
+        if (_app == null) return;
+        var settings = _app.Services.GetRequiredService<ISettingsService>();
+        var m = settings.Read<WindowOptions>(WindowOptions.Key) ?? new WindowOptions();
+        m.Height = args.Height;
+        m.Width = args.Width;
+        settings.Save(WindowOptions.Key, m);
     }
 }

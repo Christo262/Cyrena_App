@@ -1,0 +1,82 @@
+
+<h4>
+    Voice Settings
+</h4>
+
+<EditForm Model="_options" Context="edt">
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
+
+    <div class="row m-0">
+        <div class="col-md-9 m-auto">
+            <div class="mb-3">
+                <label class="form-label">Voice Service</label>
+                <Select @bind-Value="_options.DefaultVoiceChain" @bind-Value:after="Save" Items="_items">
+                    <ItemTemplate>
+                        <div class="rounded border p-2">
+                            @if (string.IsNullOrEmpty(context.Value))
+                            {
+                                <p class="m-0">Disabled</p>
+                                <p class="m-0 small">Voice mode is disabled globally</p>
+                            }
+                            else
+                            {
+                                var item = _chains.First(x => x.Id == context.Value);
+                                <p class="m-0">@item.Name</p>
+                                <p class="m-0 small">@item.Description</p>
+                            }
+                        </div>
+                    </ItemTemplate>
+                </Select>
+            </div>
+            @if(_options.DefaultVoiceChain == Cyrena.Voice.Services.WebViewWhisperVoiceChain.Key)
+            {
+                <div class="mb-3">
+                    <label class="form-label">Whisper Model Path</label>
+                    <div class="input-group">
+                        <InputText @bind-Value="_options.WhisperModelPath" @bind-Value:after="Save" class="form-control" placeholder="/path/to/ggml.bin" />
+                        <button class="btn btn-outline-secondary" @onclick="SelectGgml" type="button">
+                            <i class="bi bi-file-earmark-plus"></i>
+                        </button>
+                    </div>
+
+                    <p class="m-0 small">
+                        <span class="text-danger">*</span> Whisper requires a local GGML Whisper model file. <br />
+                        Download a model from <a href="https://huggingface.co/ggerganov/whisper.cpp/tree/main" target="_blank">Hugging Face</a>, then select the downloaded .bin file here.
+                        <br /><br />
+                        Recommended:<br />
+                        - tiny.en: fastest, lower accuracy<br />
+                        - base.en: good default<br />
+                        - small.en: better accuracy, slower<br />
+                    </p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Voice</label>
+                    <select @bind="_options.WebViewVoice" @bind:after="Save" class="form-select">
+                        <option value="">Default</option>
+                        @foreach(var item in _voices)
+                        {
+                            <option value="@item.Name">@item.Name - @item.Lang</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Speak Rate</label>
+                    <Slider @bind-Value="_r" @bind-Value:after="Save" Min="5" Max="20"/>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Speak Pitch</label>
+                    <Slider @bind-Value="_p" @bind-Value:after="Save" Min="5" Max="15" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Volume</label>
+                    <Slider @bind-Value="_v" @bind-Value:after="Save" Min="0" Max="10" />
+                </div>
+            }
+        </div>
+    </div>
+</EditForm>

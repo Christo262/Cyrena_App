@@ -46,6 +46,10 @@
     <Project Path="src/runtime/Cyrena.Runtime.OpenAI/Cyrena.Runtime.OpenAI.csproj" Id="9b0cc0d4-2e15-437c-90b4-2fb1d8b9b669" />
     <Project Path="src/runtime/Cyrena.Runtime/Cyrena.Runtime.csproj" Id="5eb6171f-3aea-4340-aaa9-2f70da7f0d79" />
   </Folder>
+  <Folder Name="/src/voice/">
+    <Project Path="src/voice/Cyrena.Voice.Core/Cyrena.Voice.Core.csproj" Id="c9ae0a0a-426e-48d0-9cdc-cc978f3ad48b" />
+    <Project Path="src/voice/Cyrena.Voice.Extension/Cyrena.Voice.Extension.csproj" Id="9e9ed299-da33-436e-b7c8-a157c27665dc" />
+  </Folder>
   <Folder Name="/src/web/">
     <Project Path="src/web/Cyrena.Tavily/Cyrena.Tavily.csproj" Id="a52527de-2b8d-4184-949d-49f7669e0409" />
   </Folder>
