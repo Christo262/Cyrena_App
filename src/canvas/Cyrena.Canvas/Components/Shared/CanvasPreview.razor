@@ -1,0 +1,33 @@
+@inherits KernelComponentBase
+
+@if(_current == null)
+{
+    <div class="p-2">
+        @foreach(var item in _items)
+        {
+            <div class="d-flex p-2 rounded border">
+                <h5 class="m-0">@item.Id</h5>
+                <button type="button" class="btn btn-sm btn-primary rounded-pill ms-auto" @onclick="() => Activate(item)"><i class="bi bi-eye"></i></button>
+            </div>
+        }
+    </div>
+}
+
+@if(_previewHtml != null && _current != null)
+{
+    <style>
+        .canvas-preview-frame {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
+            background: white;
+        }
+    </style>
+
+    <iframe class="canvas-preview-frame" id="@_current.Id"
+            sandbox="allow-scripts allow-forms allow-popups allow-modals"
+            srcdoc="@_previewHtml">
+    </iframe>
+}
+

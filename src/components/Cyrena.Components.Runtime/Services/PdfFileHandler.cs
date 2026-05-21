@@ -44,9 +44,6 @@ namespace Cyrena.Services
                 using var document = PdfDocument.Open(pdfStream);
                 var textBuilder = new StringBuilder();
 
-                textBuilder.AppendLine($"--- PDF: {fileName} ---");
-                textBuilder.AppendLine();
-
                 foreach (Page page in document.GetPages())
                 {
                     textBuilder.AppendLine($"[Page {page.Number}]");

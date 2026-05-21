@@ -46,6 +46,7 @@ namespace Cyrena.HUD
             var files = new FileDialog();
             _builder.Services.AddSingleton<IFileDialog>(files);
             _builder.Services.AddSingleton<ISetupService, SetupService>();
+            _builder.Services.AddSingleton<IBrowserService, BrowserService>();
             //
 
             _builder.AddSettingsComponent<Defaults>("Defaults");
@@ -157,7 +158,11 @@ namespace Cyrena.HUD
             if(!Directory.Exists(CyrenaBuilder.UserContentDirectory))
                 Directory.CreateDirectory(CyrenaBuilder.UserContentDirectory);
             var user = new PhysicalFileProvider(CyrenaBuilder.UserContentDirectory);
-            return new CompositeFileProvider(defaultProvider, user);
+            if (!Directory.Exists(CyrenaBuilder.ConversationsData))
+                Directory.CreateDirectory(CyrenaBuilder.ConversationsData);
+
+            var cv = new PhysicalFileProvider(CyrenaBuilder.ConversationsData);
+            return new CompositeFileProvider(defaultProvider, user, cv);
         }
     }
 }

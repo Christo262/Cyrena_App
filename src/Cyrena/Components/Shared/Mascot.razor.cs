@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Cyrena.Components.Shared
 {
@@ -76,8 +77,11 @@ namespace Cyrena.Components.Shared
 
     internal class MascotInfo
     {
+        [JsonPropertyName("name")]
         public string? Name { get; set; }
+        [JsonPropertyName("file")]
         public string? File { get; set; }
+        [JsonPropertyName("height")]
         public int Height { get; set; } = 400;
     }
 }

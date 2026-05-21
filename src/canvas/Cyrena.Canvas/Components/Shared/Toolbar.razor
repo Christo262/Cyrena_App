@@ -1,57 +1,8 @@
 @using Cyrena.Components.Shared
 @inherits KernelComponentBase
 
-<button type="button" class="btn btn-sm btn-primary rounded-pill me-1" @onclick="Toggle">
-    <i class="bi bi-layout-text-sidebar-reverse"></i>
-</button>
-
-<Drawer @bind-IsOpen="_open" Width="70%" Height="100%" Placement="Placement.Right" ShowBackdrop>
-
-
-    <style>
-            .custom-tabs > .tabs, .custom-tabs > .tabs > .tabs-body, .custom-tabs > .tabs > .tabs-body > .tabs-body-content {
-                height: 100%;
-            }
-
-            .canvas-preview-frame {
-                width: 100%;
-                height: 100%;
-                border: 0;
-                display: block;
-                background: white;
-            }
-    </style>
-
-    <div class="d-flex flex-column h-100">
-        <div class="text-end mb-1">
-            <button type="button" class="btn btn-close" @onclick="Toggle"></button>
-        </div>
-        <div class="mh-100 flex-fill custom-tabs">
-            <Tab TabStyle="TabStyle.Capsule" ShowClose="false"  
-            ShowRefreshToolbarButton="false" 
-            ShowToolbar="true">
-                <ChildContent>
-                    <TabItem Text="Canvas">
-
-                        @if (_current != null)
-                        {
-                            <CodeInput @ref="_code" Language="@_lang" @bind-Value="_current.Content" @bind-Value:after="SaveAsync"></CodeInput>
-                        }
-                    </TabItem>
-                    <TabItem Text="Preview">
-                        @if (!string.IsNullOrEmpty(_previewHtml) && _current != null)
-                        {
-                            <iframe class="canvas-preview-frame" id="@_current.Id" @ref="_i_frame"
-                                    sandbox="allow-scripts allow-forms allow-popups allow-modals"
-                                    srcdoc="@_previewHtml">
-                            </iframe>
-                        }
-                    </TabItem>
-                </ChildContent>
-                <ToolbarTemplate>
-                    <TabToolbarButton OnClickAsync="Print" Icon="bi bi-printer"></TabToolbarButton>
-                </ToolbarTemplate>
-            </Tab>
-        </div>
-    </div>
-</Drawer>
+<Tooltip Title="Canvas">
+    <button type="button" class="btn btn-sm btn-primary rounded-pill me-1" @onclick="Toggle">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+    </button>
+</Tooltip>

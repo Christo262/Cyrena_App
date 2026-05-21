@@ -1,6 +1,7 @@
 ﻿using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Models;
+using Cyrena.Options;
 using Cyrena.Persistence.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
@@ -54,6 +55,57 @@ namespace Cyrena.Runtime.Services
                     if(m.Value ==  mimeType) return m.Key;
             }
             return null;
+        }
+
+        public async Task<IEnumerable<FileAttachment>> ListAttachmentsAsync(CancellationToken cancellationToken = default)
+        {
+            if(!HasFileHandlers)
+                return Enumerable.Empty<FileAttachment>();
+            return await _store.FindManyAsync(x => true, ct:cancellationToken);
+        }
+
+        public async Task<byte[]> GetFileDataAsync(string id, CancellationToken cancellationToken = default)
+        {
+            if (!HasFileHandlers)
+                throw new InvalidOperationException("No file handlers available");
+            var att = await _store.FindAsync(x => x.Id == id, ct:cancellationToken);
+            if (att == null)
+                throw new NullReferenceException("Unable to find record of file");
+            if (!File.Exists(att.Path))
+                throw new FileNotFoundException("Unable to find file on disk");
+            return File.ReadAllBytes(att.Path);
+        }
+
+        public async Task DeleteFileAttachmentAsync(string id, CancellationToken cancellationToken = default)
+        {
+            if (!HasFileHandlers)
+                throw new InvalidOperationException("No file handlers available");
+            var att = await _store.FindAsync(x => x.Id == id, ct: cancellationToken);
+            if(att != null)
+            {
+                await _store.DeleteAsync(att, cancellationToken);
+                if(File.Exists(att.Path))
+                    File.Delete(att.Path);
+            }
+        }
+
+        public async Task<FileAttachment> CreateAsync(string name, string contentType, byte[] content, CancellationToken cancellationToken = default)
+        {
+            var att = await SaveFileAttachment(contentType, name, cancellationToken);
+            if (!Directory.Exists(_config.Config.FileStoragePath))
+                Directory.CreateDirectory(Path.Combine(_config.Config.FileStoragePath));
+            File.WriteAllBytes(att.Path, content);
+            return att;
+        }
+
+        public async Task UpdateAsync(FileAttachment att, CancellationToken cancellationToken = default)
+        {
+            var ext = await _store.FindAsync(x => x.Id == att.Id, ct: cancellationToken);
+            if (ext == null)
+                throw new FileNotFoundException($"Unable to find file with id {att.Id}");
+            ext.Properties = att.Properties;
+            ext.Tools = att.Tools;
+            await _store.SaveAsync(att, cancellationToken);
         }
 
         public async Task<KernelContent> GetKernelContent(string fileId, CancellationToken cancellationToken = default)
@@ -124,6 +176,7 @@ namespace Cyrena.Runtime.Services
             await _store.SaveAsync(att, cancellationToken);
             return att;
         }
+
 #pragma warning disable SKEXP0110
         public async Task CancelAsync(KernelContent item, CancellationToken cancellationToken = default)
         {
@@ -137,5 +190,11 @@ namespace Cyrena.Runtime.Services
             }
         }
 #pragma warning restore SKEXP0110
+
+        public async Task<FileAttachment?> GetAttachmentAsync(string id, CancellationToken cancellationToken = default)
+        {
+            var item = await _store.FindAsync(x => x.Id ==  id, cancellationToken);
+            return item;
+        }
     }
 }

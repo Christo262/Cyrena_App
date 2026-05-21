@@ -1,6 +1,8 @@
-﻿namespace Cyrena.Canvas.Models
+﻿using Cyrena.Models;
+
+namespace Cyrena.Canvas.Models
 {
-    public class CanvasDocumentLines
+    public class CanvasDocumentLines : ISuppressibleResult
     {
         public CanvasDocumentLines(CanvasDocument doc)
         {
@@ -24,6 +26,11 @@
         public string DocumentId { get; set; }
 
         public List<CanvasDocumentLine> Lines { get; set; }
+
+        public string Suppress()
+        {
+            return $"[CANVAS_DOCUMENT {DocumentId} omitted, lines={Lines.Count}, call Canvas_activate/Canvas_get_active for update]";
+        }
     }
 
     public class CanvasDocumentLine

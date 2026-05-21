@@ -8,6 +8,7 @@ namespace Cyrena.Options
     {
         public static readonly string AppDataDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena");
         public static readonly string UserContentDirectory = Path.Combine(AppDataDirectory, "public");
+        public static readonly string ConversationsData = Path.Combine(AppDataDirectory, "conversations");
 
         public CyrenaBuilder(IServiceCollection services)
         {

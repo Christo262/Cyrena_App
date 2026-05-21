@@ -52,6 +52,7 @@ namespace Cyrena.Models
     public abstract class EventPipeline : IDisposable
     {
         private readonly ConcurrentDictionary<string, List<IEventPipe>> _pipes;
+        private readonly object _lock = new object();
         protected EventPipeline()
         {
             _pipes = new ConcurrentDictionary<string, List<IEventPipe>>();
@@ -61,7 +62,7 @@ namespace Cyrena.Models
         {
             if (_pipes.ContainsKey(key))
             {
-                var pipes = _pipes[key];
+                var pipes = new List<IEventPipe>(_pipes[key]);
                 foreach (var pipe in pipes)
                     if (!pipe.IsDisposed)
                         try
@@ -80,7 +81,7 @@ namespace Cyrena.Models
         {
             if (_pipes.ContainsKey(key))
             {
-                var pipes = _pipes[key];
+                var pipes = new List<IEventPipe>(_pipes[key]);
                 foreach (var pipe in pipes)
                     if (!pipe.IsDisposed)
                         try

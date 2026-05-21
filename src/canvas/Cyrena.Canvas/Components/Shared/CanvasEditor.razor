@@ -1,0 +1,7 @@
+@inherits KernelComponentBase
+@using Cyrena.Components.Shared
+
+@if (_current != null)
+{
+    <CodeInput @ref="_code" Language="@_lang" @bind-Value="_current.Content" @bind-Value:after="SaveAsync"></CodeInput>
+}

@@ -1,70 +1,104 @@
 ﻿using Cyrena.Canvas.Contracts;
 using Cyrena.Canvas.Models;
 using Cyrena.Contracts;
-using Cyrena.Extensions;
 using Cyrena.Models;
-using Cyrena.Persistence;
-using Cyrena.Persistence.Contracts;
+using Microsoft.SemanticKernel;
+using System.Text;
 
 namespace Cyrena.Canvas.Services
 {
     internal class CanvasService : ICanvasService
     {
-        private readonly IStore<CanvasDocument> _store;
-        private readonly IChatConfigurationService _config;
+        internal const string CanvasTitle = "canvas.title";
+        private readonly IFileHandlerFactory _files;
         private readonly CanvasPipeline _pipeline;
-        public CanvasService(IStore<CanvasDocument> store, IChatConfigurationService config)
+        public CanvasService(IFileHandlerFactory files)
         {
-            _store = store;
-            _config = config;
+            _files = files;
             _pipeline = new CanvasPipeline();
         }
 
-        public CanvasDocument? Current { get; private set; }
-
-        public async Task<IEnumerable<CanvasDocument>> ListAsync(CancellationToken cancellationToken = default)
+        public CanvasDocument? Current { get; private set; }      
+        
+        public async Task<CanvasDocument> CreateAsync(string title, CanvasDocumentType type, CancellationToken cancellationToken = default)
         {
-            return await _store.FindManyAsync(x => x.ConversationId == _config.Config.Id, new OrderBy<CanvasDocument>(x => x.Title, SortDirection.Ascending), ct:cancellationToken);
-        }
-
-        public async Task DeleteAsync(string id, CancellationToken cancellationToken = default)
-        {
-            var ext = await _store.FindAsync(x => x.Id == id && x.ConversationId == _config.Config.Id, ct:cancellationToken);
-            if(ext != null)
+            string name;
+            string content;
+            string contentType;
+            switch (type)
             {
-                await _store.DeleteAsync(ext);
-                _pipeline.InvokeDocumentDelete(ext);
+                case CanvasDocumentType.Html:
+                    name = $"{title}.html";
+                    content = $"<body style=\"background-color:white;\"><h1>{title}</h1></body>";
+                    contentType = "text/html" ;
+                    break;
+                case CanvasDocumentType.Markdown:
+                    name = $"{title}.md";
+                    content = $"# {title}";
+                    contentType= "text/markdown" ;
+                    break;
+                default:
+                    name = $"{title}.txt";
+                    content = title;
+                    contentType = "text/plain" ;
+                    break;
             }
-        }
-
-        public async Task<CanvasDocument> CreateAsync(string title, CanvasDocumentType documentType, CancellationToken cancellationToken = default)
-        {
+            var data = Encoding.UTF8.GetBytes(content);
+            var att = await _files.CreateAsync(name, contentType, data, cancellationToken);
+            att.Properties[CanvasTitle] = title;
+            att.Tools.AddRange(["Canvas_activate", "Canvas_delete", "Canvas_write", "Canvas_get_active"]);
+            await _files.UpdateAsync(att, cancellationToken);
             var doc = new CanvasDocument()
             {
-                Id = Guid.NewGuid().ToString(),
+                DocumentType = type,
                 Title = title,
-                DocumentType = documentType,
-                ConversationId = _config.Config.Id
+                Id = att.Id
             };
-            await _store.AddAsync(doc, cancellationToken);
             _pipeline.InvokeDocumentCreate(doc);
             return doc;
         }
 
+        public async Task<IEnumerable<CanvasDocument>> ListAsync(CancellationToken cancellationToken = default)
+        {
+            var files = await _files.ListAttachmentsAsync(cancellationToken);
+            var docs = new List<CanvasDocument>();
+            foreach (var file in files)
+            {
+                if (file.Tools.Contains("Canvas_activate"))
+                    docs.Add(new CanvasDocument()
+                    {
+                        Title = file[CanvasTitle],
+                        Id = file.Id,
+                        DocumentType = file.Id.EndsWith(".html") ? CanvasDocumentType.Html : file.Id.EndsWith(".md") ? CanvasDocumentType.Markdown : CanvasDocumentType.Text
+                    });
+            }
+            return docs;
+        }
+
+        public async Task DeleteAsync(string id, CancellationToken cancellationToken = default)
+        {
+            var doc = await GetDocumentAsync(id);
+            if (doc == null) return;
+            _pipeline.InvokeDocumentDelete(doc);
+            await _files.DeleteFileAttachmentAsync(id, cancellationToken);
+        }
+
         public async Task<bool> ActivateAsync(string id, CancellationToken cancellationToken = default)
         {
-            var ext = await _store.FindAsync(x => x.Id == id && x.ConversationId == _config.Config.Id, ct: cancellationToken);
-            if(ext == null)return false;
-            Current = ext;
-            _pipeline.InvokeDocumentActivate(ext);
+            var doc = await GetDocumentAsync(id, cancellationToken);
+            if(doc == null) return false;
+            Current = doc;
+            _pipeline.InvokeDocumentActivate(Current);
             return true;
         }
 
-        public async Task<CanvasDocument> WriteAsync(string content, int startLine = 0, int lineCount = 0, CancellationToken cancellationToken =  default)
+        public async Task<CanvasDocument> WriteAsync(string content, int startLine = 0, int lineCount = 0, CancellationToken cancellationToken = default)
         {
             if (Current == null)
                 throw new NullReferenceException("No canvas document active");
-
+            var att = await _files.GetAttachmentAsync(Current.Id, cancellationToken);
+            if(att == null)
+                throw new NullReferenceException("Something wrong in file system");
             var lines = Current.Content?
                 .Split("\n")
                 .ToList() ?? new List<string>();
@@ -85,20 +119,64 @@ namespace Cyrena.Canvas.Services
             lines.InsertRange(startLine, newLines);
 
             Current.Content = string.Join("\n", lines);
-            await _store.UpdateAsync(Current, cancellationToken);
+            File.WriteAllText(att.Path, Current.Content);
             _pipeline.InvokeDocumentUpdate(Current);
             return Current;
+        }
+
+        public async Task SaveAsync(CanvasDocument document, CancellationToken cancellationToken = default)
+        {
+            var att = await _files.GetAttachmentAsync(document.Id, cancellationToken);
+            if (att == null)
+                throw new NullReferenceException("Something wrong in file system");
+            await File.WriteAllTextAsync(att.Path, document.Content);
+        }
+
+        private async Task<CanvasDocument?> GetDocumentAsync(string id, CancellationToken cancellationToken = default)
+        {
+            var att = await _files.GetAttachmentAsync(id, cancellationToken);
+            if (att == null || !att.Tools.Contains("Canvas_activate")) return null;
+            var content = await _files.GetKernelContent(id, cancellationToken);
+            if (content is not TextContent text) return null;
+            var doc = new CanvasDocument()
+            {
+                Id = id,
+                Title = att[CanvasTitle],
+                DocumentType = att.Id.EndsWith(".html") ? CanvasDocumentType.Html : att.Id.EndsWith(".md") ? CanvasDocumentType.Markdown : CanvasDocumentType.Text,
+                Content = text.Text,
+                Path = att.Path,
+            };
+            return doc;
+        }
+
+        public async Task<CanvasDocument> CreateFromAttachmentAsync(string originalId, CanvasDocumentType type, string title, CancellationToken cancellationToken = default)
+        {
+            var att = await _files.GetAttachmentAsync(originalId, cancellationToken);
+            if (att == null)
+                throw new FileNotFoundException($"Unable to find attachment with id {originalId}");
+            var content = await _files.GetKernelContent(originalId, cancellationToken);
+            if (content is not TextContent text)
+                throw new InvalidOperationException($"Attachment {originalId} is not a text-content file");
+            var data = await _files.GetFileDataAsync(originalId, cancellationToken);
+
+            var natt = await _files.CreateAsync(att.InternalName, att.MimeType, data, cancellationToken);
+            natt.Properties[CanvasTitle] = att.Id;
+            natt.Tools.AddRange(["Canvas_activate", "Canvas_delete", "Canvas_write", "Canvas_get_active"]);
+            await _files.UpdateAsync(att, cancellationToken);
+            var doc = new CanvasDocument()
+            {
+                DocumentType = type,
+                Title = title,
+                Id = natt.Id
+            };
+            _pipeline.InvokeDocumentCreate(doc);
+            return doc;
         }
 
         public IDisposable OnDocumentCreate(Action<CanvasDocument> cb) => _pipeline.WatchDocumentCreate(cb);
         public IDisposable OnDocumentDelete(Action<CanvasDocument> cb) => _pipeline.WatchDocumentDelete(cb);
         public IDisposable OnDocumentActivate(Action<CanvasDocument> cb) => _pipeline.WatchDocumentActivate(cb);
         public IDisposable OnDocumentUpdate(Action<CanvasDocument> cb) => _pipeline.WatchDocumentUpdate(cb);
-
-        public async Task SaveAsync(CanvasDocument document, CancellationToken cancellationToken = default)
-        {
-            await _store.SaveAsync(document, cancellationToken);
-        }
     }
 
     internal class CanvasPipeline : EventPipeline

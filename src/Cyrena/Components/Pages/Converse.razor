@@ -4,5 +4,10 @@
 
 @if (_kernel != null)
 {
-    <Chat Kernel="_kernel" />
+    <div class="row m-0 p-0 h-100">
+        <div class="col overflow-auto p-0 h-100">
+            <Chat Kernel="_kernel" />
+        </div>
+        <Docking Kernel="_kernel" />
+    </div>
 }

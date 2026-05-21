@@ -12,12 +12,6 @@ namespace Cyrena.Canvas.Services
 {
     internal class CanvasAssistantPlugin : IAssistantPlugin
     {
-        private readonly IStore<CanvasDocument> _store;
-        public CanvasAssistantPlugin(IStore<CanvasDocument> store)
-        {
-            _store = store;
-        }
-
         public string Id => "cyrena.canvas";
         public string[] Modes => [IAssistantMode.AssistantModeDefault];
 
@@ -30,10 +24,12 @@ namespace Cyrena.Canvas.Services
         public Task LoadAsync(CyrenaKernelBuilder builder)
         {
             builder.AddToolbarComponent<Toolbar>(ToolbarAlignment.End);
-            builder.Services.AddSingleton(_store);
             builder.Services.AddSingleton<ICanvasService, CanvasService>();
             builder.Plugins.AddFromType<CanvasKernelFunctions>("Canvas");
             builder.GetFeatureOption<IPromptManager>().AddPrompt(10, Resources.Read(typeof(CanvasAssistantPlugin).Assembly, "Cyrena.Canvas.Resources.prompt.md"));
+            var info = builder.GetFeatureOption<ConnectionInfo>();
+            if (info.SupportImages)
+                builder.Plugins.AddFromType<CanvasImageKernelFunctions>("CanvasImage");
             return Task.CompletedTask;
         }
     }

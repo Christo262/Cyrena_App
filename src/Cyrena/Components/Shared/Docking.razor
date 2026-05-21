@@ -1,0 +1,28 @@
+@inherits KernelComponentBase
+
+@if(_requests.Count > 0 && _show)
+{
+    <style>
+        .tabs-body-content {
+            height:100%;
+        }
+    </style>
+    <div class="col-7 h-100 overflow-auto bg-body p-0">
+        <Tab class="h-100" IsCard ShowToolbar ShowRefreshToolbarButton="false" ShowFullscreenToolbarButton="false">
+            <ChildContent>
+                @foreach (var item in _requests)
+                {
+                    <TabItem CssClass="h-100 overflow-auto" class="h-100 overflow-auto" Text="@item.Title">
+                        @this.Render(item.Component, new()
+                        {
+                            {nameof(KernelComponentBase.Kernel), Kernel}
+                        })
+                    </TabItem>
+                }
+            </ChildContent>
+            <ToolbarTemplate>
+                <TabToolbarButton OnClickAsync="CloseAll" Icon="bi bi-x-lg" TooltipText="Close All"/>
+            </ToolbarTemplate>
+        </Tab>
+    </div>
+}

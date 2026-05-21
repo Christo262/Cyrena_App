@@ -32,6 +32,7 @@ namespace Cyrena.Services
             var info = builder.GetFeatureOption<ConnectionInfo>();
             if(info.SupportFiles)
                 builder.Services.AddSingleton<IFileHandler, PdfFileHandler>();
+            builder.Services.AddSingleton<IDockingService, DockingService>();
             return Task.CompletedTask;
         }
     }

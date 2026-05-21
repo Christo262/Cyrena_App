@@ -34,7 +34,10 @@
 
     public async Task UpdateValue(string? value)
     {
-        Value = value;
-        await _code.SetValue(value);
+        try
+        {
+            Value = value;
+            await _code.SetValue(value);
+        }catch{}
     }
 }

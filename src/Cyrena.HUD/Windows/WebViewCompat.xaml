@@ -4,9 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Cyrena.HUD.Windows"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d"
         Title="WebViewCompat" Height="600" Width="900">
     <Grid>
-        <WebBrowser x:Name="_web"></WebBrowser>
+        <wv2:WebView2 x:Name="_web"></wv2:WebView2>
     </Grid>
 </Window>

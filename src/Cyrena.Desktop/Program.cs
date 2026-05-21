@@ -21,9 +21,12 @@ class Program
         using var cts = new CancellationTokenSource();
         if (!Directory.Exists(CyrenaBuilder.UserContentDirectory))
             Directory.CreateDirectory(CyrenaBuilder.UserContentDirectory);
+        if (!Directory.Exists(CyrenaBuilder.ConversationsData))
+            Directory.CreateDirectory(CyrenaBuilder.ConversationsData);
         var fpd = new PhysicalFileProvider(Path.Combine(AppContext.BaseDirectory, "wwwroot"));
         var fpu = new PhysicalFileProvider(CyrenaBuilder.UserContentDirectory);
-        var appBuilder = PhotinoBlazorAppBuilder.CreateDefault(new CompositeFileProvider(fpd, fpu), args);
+        var fpc = new PhysicalFileProvider(CyrenaBuilder.ConversationsData);
+        var appBuilder = PhotinoBlazorAppBuilder.CreateDefault(new CompositeFileProvider(fpd, fpu, fpc), args);
         appBuilder.Services
             .AddLogging(l =>
             {
@@ -47,6 +50,7 @@ class Program
         builder.Services.AddSingleton<IFileDialog, FileDialog>();  
         builder.Services.AddSingleton<ISetupService, SetupService>();
         builder.AddSettingsComponent<Defaults>("Defaults");
+        builder.Services.AddSingleton<IBrowserService, BrowserService>();
         //
 
         builder.Build();
@@ -58,11 +62,14 @@ class Program
             .SetIconFile("favicon.ico")
             .SetTitle("Cyréna")
             .Load("index.html")
+            .SetFileSystemAccessEnabled(true)
             .Center();
 #if DEBUG
         _app.MainWindow.SetDevToolsEnabled(true);
+        _app.MainWindow.SetContextMenuEnabled(true);
 #else
         _app.MainWindow.SetDevToolsEnabled(false);
+        _app.MainWindow.SetContextMenuEnabled(false);
 #endif
         _app.MainWindow.Height = photino.Height;
         _app.MainWindow.Width = photino.Width;

@@ -1,0 +1,31 @@
+@using Cyrena.Attributes
+@inherits KernelComponentBase
+@inject IBrowserService _web
+
+<button type="button" @onclick="Test" class="btn btn-sm btn-info rounded-pill me-1">
+    <i class="bi bi-globe"></i>
+</button>
+
+
+@code {
+    [KernelInject] private IDockingService _dock { get; set; } = default!;
+    private IWindowHandle? _handle{ get; set; }
+    // private void Test()
+    // {
+    //     if (_handle != null) return;
+    //     _handle = _web.OpenUri(new("https://vayanova.co.za"), "Vaya Nova");
+    //     _handle.Closing += Closing;
+    // }
+
+    private void Test()
+    {
+        _dock.Dock<DockingTest>("Test");
+    }
+
+    private void Closing(object? sender, EventArgs e)
+    {
+        if (_handle == null) return;
+        _handle.Closing -= Closing;
+        _handle = null;
+    }
+}

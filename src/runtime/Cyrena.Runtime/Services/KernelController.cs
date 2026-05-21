@@ -88,7 +88,6 @@ namespace Cyrena.Runtime.Services
                 }
                 cyrenaKernelBuilder.Services.AddSingleton<IPromptManager>(promptManager);
                 cyrenaKernelBuilder.Services.AddSingleton<IAutoFunctionInvocationFilter, ConnectionFunctionInformerFilter>();
-                
 
                 var kernel = builder.Build();
                 if (!_instances.TryAdd(config.Id, kernel))
@@ -99,6 +98,8 @@ namespace Cyrena.Runtime.Services
                 var startups = kernel.Services.GetServices<IStartupTask>();
                 foreach (var item in startups.OrderBy(x => x.Order))
                     await item.RunAsync();
+                config.LastModified = DateTime.Now;
+                await _store.UpdateAsync(config);
                 _pipe.InvokeLoaded(config);
                 return kernel;
             }
@@ -140,10 +141,12 @@ namespace Cyrena.Runtime.Services
         public async Task<Kernel> Create(ChatConfiguration config)
         {
             if (string.IsNullOrEmpty(config.Id))
-                config.Id = Guid.NewGuid().ToString();
+                config.Id = Ulid.NewUlid().ToString();
+            config.Created = DateTime.Now;
             await _store.AddAsync(config);
-            var model = await LoadAsync(config);
             _pipe.InvokeCreate(config);
+            await Task.Delay(50); //Breather for pipe
+            var model = await LoadAsync(config);
             return model;
         }
 

@@ -33,6 +33,7 @@ You can interact with Canvas through these operations:
 * `Canvas_create`: Creates a new Canvas document and activates it.
 * `Canvas_write`: Inserts or replaces lines in the active Canvas document.
 * `Canvas_delete`: Deletes a Canvas document.
+* `Canvas_create_from_attachment`: Creates a new Canvas document from a User provided attachment and activates it. The attachment must be a text-content file, i.e. PDF, HTML, etc.
 
 ## Working With Documents
 
@@ -99,6 +100,6 @@ If an operation fails, explain the failure clearly and try to recover if possibl
 
 Canvas is for durable, editable work. Chat is for conversation, explanation, and quick answers.
 
-Use Canvas when the user wants an artifact. Use chat when the user wants guidance.
+Use Canvas when the user wants an artifact. Use chat when the user wants guidance. Prefer using `html` in case styling might be required.
 
 Always protect the user's existing Canvas content. Read before editing, edit precisely, and avoid unnecessary rewrites.
