@@ -22,22 +22,7 @@ namespace Cyrena.Runtime.Services
         };
         private static string[] _supportedExtensions = [ ".cs", ".ts", ".py", ".java", ".cpp", ".c", ".yaml", ".yml",
                                                         ".sh", ".bash", ".go", ".rs", ".rb", ".php", ".sql"];
-        public async Task<AdditionalMessageContent?> GetMessageContent(Stream data, string contentType, string name)
-        {
-            if (!HandlesType(contentType, name))
-                return null;
-            using var ms = new MemoryStream();
-            await data.CopyToAsync(ms);
-            ms.Position = 0;
-
-            using var reader = new StreamReader(ms);
-            var textContent = await reader.ReadToEndAsync();
-            var c = new TextContent($"[FILE_START: {name}]\n\n{textContent}\n\n[FILE_END]") { MimeType = contentType };
-            var content = new AdditionalMessageContent(name, c);
-            return content;
-        }
-
-        public async Task<AdditionalMessageContent?> GetMessageContent(byte[] data, string contentType, string name)
+        public async Task<KernelContent?> GetKernelContent(byte[] data, string contentType, string name, IReadOnlyDictionary<string, object?>? metadata = null)
         {
             if (!HandlesType(contentType, name))
                 return null;
@@ -45,34 +30,7 @@ namespace Cyrena.Runtime.Services
             ms.Position = 0;
             using var reader = new StreamReader(ms);
             var textContent = await reader.ReadToEndAsync();
-            var c = new TextContent($"[FILE_START: {name}]\n\n{textContent}\n\n[FILE_END]") { MimeType = contentType };
-            var content = new AdditionalMessageContent(name, c);
-            return content;
-        }
-
-        public async Task<KernelContent?> GetKernelContent(Stream data, string contentType, string name)
-        {
-            if (!HandlesType(contentType, name))
-                return null;
-            using var ms = new MemoryStream();
-            await data.CopyToAsync(ms);
-            ms.Position = 0;
-
-            using var reader = new StreamReader(ms);
-            var textContent = await reader.ReadToEndAsync();
-            var c = new TextContent(textContent) { MimeType = contentType };
-            return c;
-        }
-
-        public async Task<KernelContent?> GetKernelContent(byte[] data, string contentType, string name)
-        {
-            if (!HandlesType(contentType, name))
-                return null;
-            using var ms = new MemoryStream(data);
-            ms.Position = 0;
-            using var reader = new StreamReader(ms);
-            var textContent = await reader.ReadToEndAsync();
-            var c = new TextContent(textContent) { MimeType = contentType };
+            var c = new TextContent(textContent, metadata: metadata) { MimeType = contentType };
             return c;
         }
 

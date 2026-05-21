@@ -55,37 +55,7 @@ namespace Cyrena.Contracts
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        Task AddMessage(ChatMessageContent content);
-        /// <summary>
-        /// Adds a new message, auto checks if its kernel or ui only. Allows setting explicit User or Assistant not for display
-        /// </summary>
-        /// <param name="content"></param>
-        /// <param name="no_display"></param>
-        /// <returns></returns>
-        Task AddMessage(ChatMessageContent content, bool no_display);
-        /// <summary>
-        /// Adds a new message, auto checks if its kernel or ui only
-        /// </summary>
-        /// <param name="role"></param>
-        /// <param name="content"></param>
-        /// <returns></returns>
-        Task AddMessage(AuthorRole role, string? content);
-        /// <summary>
-        /// Adds a new message, auto checks if its kernel or ui only. Allows setting explicit User or Assistant not for display
-        /// </summary>
-        /// <param name="role"></param>
-        /// <param name="content"></param>
-        /// <param name="no_display"></param>
-        /// <returns></returns>
-        Task AddMessage(AuthorRole role, string? content, bool no_display);
-        /// <summary>
-        /// Adds a new message with additional content, auto checks if its kernel or ui only
-        /// </summary>
-        /// <param name="role"></param>
-        /// <param name="input"></param>
-        /// <param name="items"></param>
-        /// <returns></returns>
-        Task AddMessage(AuthorRole role, string? input, params AdditionalMessageContent[] items);
+        Task AddMessage(ChatMessageContent content);       
         /// <summary>
         /// Removes the persisted chat messages and clears in memory messages
         /// </summary>

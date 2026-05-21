@@ -1,8 +1,8 @@
 ﻿using Cyrena.Contracts;
-using Newtonsoft.Json;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 
 namespace Cyrena.Runtime.Services
 {
@@ -14,7 +14,8 @@ namespace Cyrena.Runtime.Services
         public SettingsService(string dir)
         {
             _dir = dir;
-            Directory.CreateDirectory(_dir);
+            if(!Directory.Exists(_dir)) 
+                Directory.CreateDirectory(_dir);
         }
 
         public T? Read<T>(string key) where T : class
@@ -29,7 +30,7 @@ namespace Cyrena.Runtime.Services
                 {
                     var encrypted = File.ReadAllBytes(path);
                     var json = Decrypt(encrypted);
-                    return JsonConvert.DeserializeObject<T>(json);
+                    return JsonSerializer.Deserialize<T>(json);
                 }
                 catch
                 {
@@ -43,7 +44,7 @@ namespace Cyrena.Runtime.Services
             lock (_lock)
             {
                 var path = GetPath(key);
-                var json = JsonConvert.SerializeObject(value);
+                var json = JsonSerializer.Serialize(value);
                 var encrypted = Encrypt(json);
                 File.WriteAllBytes(path, encrypted);
             }

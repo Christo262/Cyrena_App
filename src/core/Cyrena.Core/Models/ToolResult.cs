@@ -1,8 +1,6 @@
-﻿using Newtonsoft.Json;
-
-namespace Cyrena.Models
+﻿namespace Cyrena.Models
 {
-    public class ToolResult : IJsonSerializable
+    public class ToolResult
     {
         public ToolResult() { }
         public ToolResult(bool success, string? message)
@@ -13,14 +11,9 @@ namespace Cyrena.Models
 
         public bool Success { get; set; }
         public string? Message { get; set; }
-
-        public string ToJson()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
     }
 
-    public class ToolResult<T> : ToolResult
+    public class ToolResult<T> : ToolResult, ISuppressibleResult
         where T : class
     {
         public ToolResult() { }
@@ -30,5 +23,12 @@ namespace Cyrena.Models
             Result = result;
         }
         public T? Result { get; set; }
+
+        public string Suppress()
+        {
+            if(Result is ISuppressibleResult res)
+                return res.Suppress();
+            return $"[RESULT: {Success}, MESSAGE:{Message ?? "empty"}";
+        }
     }
 }

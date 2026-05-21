@@ -26,6 +26,8 @@ namespace Cyrena.Desktop.Components.Layout
         private IEnumerable<string?>? _groups { get; set; }
         private ViewStart _view_start = default!;
 
+        private bool _loading { get; set; }
+
         protected override void OnInitialized()
         {
             _view_start = _start.GetViewStart();
@@ -45,6 +47,21 @@ namespace Cyrena.Desktop.Components.Layout
                         _nav.NavigateTo("");
                     await Refresh();
                 });
+            });
+            _controller.OnChatLoadStart(cht =>
+            {
+                _loading = true;
+                this.InvokeAsync(StateHasChanged);
+            });
+            _controller.OnChatLoaded(cht =>
+            {
+                _loading = false;
+                this.InvokeAsync(StateHasChanged);
+            });
+            _controller.OnChatLoadError(ex =>
+            {
+                _loading = false;
+                this.InvokeAsync(StateHasChanged);
             });
             await Refresh();
 

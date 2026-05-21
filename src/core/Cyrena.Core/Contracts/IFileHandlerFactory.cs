@@ -11,10 +11,10 @@ namespace Cyrena.Contracts
         bool HasFileHandlers { get; }
         bool CanHandleType(string contentType, string fileName);
         string[] GetSupportedMimeTypes();
-        Task<AdditionalMessageContent?> GetMessageContent(Stream data, string contentType, string name);
-        Task<AdditionalMessageContent?> GetMessageContent(byte[] data, string contentType, string name);
-        Task<KernelContent?> GetKernelContent(Stream data, string contentType, string name);
-        Task<KernelContent?> GetKernelContent(byte[] data, string contentType, string name);
+        Task<KernelContent> GetKernelContent(string fileId, CancellationToken cancellationToken = default);
+        Task<KernelContent?> SaveAsync(Stream data, string contentType, string name, CancellationToken cancellationToken = default);
+        Task<KernelContent?> SaveAsync(byte[] data, string contentType, string name, CancellationToken cancellationToken = default);
+        Task CancelAsync(KernelContent item, CancellationToken cancellationToken = default);
         /// <summary>
         /// Gets the file extension associated with a mimetype. 
         /// </summary>

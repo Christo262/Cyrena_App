@@ -22,6 +22,9 @@
     <Project Path="src/Cyrena.HUD/Cyrena.HUD.csproj" Id="08dfc471-33df-45b6-bc2f-55006974a641" />
     <Project Path="src/Cyrena/Cyrena.csproj" Id="9edb268b-eb4b-46d9-ae58-72a87bbf57a8" />
   </Folder>
+  <Folder Name="/src/canvas/">
+    <Project Path="src/canvas/Cyrena.Canvas/Cyrena.Canvas.csproj" Id="93554c8b-6458-46d5-a612-054e6e72a86a" />
+  </Folder>
   <Folder Name="/src/components/">
     <Project Path="src/components/Cyrena.Components.Core/Cyrena.Components.Core.csproj" Id="01d4b14c-48f9-4158-a6a5-e2bfcc5187b2" />
     <Project Path="src/components/Cyrena.Components.Runtime/Cyrena.Components.Runtime.csproj" />
@@ -55,5 +58,6 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Cyrena.Platform.Tests/Cyrena.Platform.Tests.csproj" Id="096b9edd-2d7e-4a79-919c-1dcdf0c9e049" />
+    <Project Path="tests/Cyrena.Serialization.Tests/Cyrena.Serialization.Tests.csproj" Id="f33f4559-21f7-4ab8-92e1-43d77e9a1914" />
   </Folder>
 </Solution>

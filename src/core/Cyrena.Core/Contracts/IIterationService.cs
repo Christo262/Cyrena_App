@@ -12,12 +12,12 @@ namespace Cyrena.Contracts
         /// <summary>
         /// Use to keep current input user is typing in memory
         /// </summary>
-        string? Input { get; set; }
+        ChatMessageContent? Input { get; set; }
         bool Inferring { get; }
         /// <summary>
         /// Assigned when <see cref="InferenceStart"/> is called
         /// </summary>
-        string? IterationId { get; }
+        Ulid? IterationId { get; }
         /// <summary>
         /// <see cref="IConnection"/> invokes this
         /// </summary>
@@ -44,7 +44,7 @@ namespace Cyrena.Contracts
         /// <param name="role"></param>
         /// <param name="kernel"></param>
         /// <param name="items"></param>
-        void Iterate(AuthorRole role, Kernel kernel, params AdditionalMessageContent[]? items);
+        void Iterate();
         /// <summary>
         /// Cancels the current iteration and pauses the input queue
         /// </summary>

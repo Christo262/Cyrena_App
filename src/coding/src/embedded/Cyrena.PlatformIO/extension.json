@@ -1,17 +1,17 @@
 {
   "id": "cyrena.platformio",
   "name": "Platform IO",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "entryAssemblyFile": "Cyrena.PlatformIO.dll",
   "description": "Builds PlatformIO embedded firmware projects targeting Arduino and ESP-IDF frameworks, with strictly enforced structure. Writable surfaces are limited to src/ (implementation) and include/ (public headers) — platformio.ini, sdkconfig, and dependency metadata are read-only and will never be modified. The agent locks to a single active environment and queries it before making any architecture decisions, so board, framework, MCU, and memory constraints are always grounded in reality. Follows embedded-safe coding rules throughout: static allocation preferred, no dynamic memory, no recursion, no blocking delays, no desktop abstractions. Dependency changes are flagged to the user with explicit instructions rather than applied silently.",
   "dependencies": [
     {
       "id": "cyrena.developer",
-      "minVersion": "0.5.0"
+      "minVersion": "0.6.0"
     },
     {
       "id": "cyrena.api_references",
-      "minVersion": "0.5.0"
+      "minVersion": "0.6.0"
     }
   ]
 }

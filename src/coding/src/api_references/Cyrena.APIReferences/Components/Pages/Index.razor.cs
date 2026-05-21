@@ -6,7 +6,7 @@ using Cyrena.Persistence.Contracts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Cyrena.APIReferences.Components.Pages
 {
@@ -81,7 +81,7 @@ namespace Cyrena.APIReferences.Components.Pages
                 if (string.IsNullOrEmpty(path)) return;
                 if (!path.EndsWith(".aiapi"))
                     path += ".aiapi";
-                File.WriteAllText(path, item.ToJson());
+                File.WriteAllText(path, JsonSerializer.Serialize(item));
 
             }
             catch (Exception ex)
@@ -97,7 +97,7 @@ namespace Cyrena.APIReferences.Components.Pages
                 var path = await _files.OpenAsync("Choose file", ($".aiapi", [".aiapi"]));
                 if (string.IsNullOrEmpty(path)) return;
                 var json = File.ReadAllText(path);
-                ApiReference? aiapi = JsonConvert.DeserializeObject<ApiReference>(json);
+                ApiReference? aiapi = JsonSerializer.Deserialize<ApiReference>(json);
                 if (aiapi == null) throw new NullReferenceException("Unable to deserialize");
                 await _store.SaveAsync(aiapi);
                 _models = await _store.FindManyAsync(x => true);
@@ -107,6 +107,12 @@ namespace Cyrena.APIReferences.Components.Pages
             {
                 await _toasts.Error("Error", ex.Message);
             }
+        }
+
+        private async Task Back()
+        {
+            if (Parent != null && Item != null)
+                await Parent.RemoveTab(Item);
         }
 
         public void Dispose()

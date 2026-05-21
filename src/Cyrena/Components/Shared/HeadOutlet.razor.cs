@@ -1,6 +1,6 @@
 ﻿namespace Cyrena.Components.Shared
 {
-    internal class HeadOutletStateChangeTracker
+    public class HeadOutletStateChangeTracker
     {
         public event EventHandler<EventArgs>? OnChanged;
 

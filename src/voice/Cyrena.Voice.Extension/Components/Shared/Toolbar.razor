@@ -33,7 +33,7 @@
             <div class="d-flex h-100 w-100 bg-body bg-opacity-50 position-relative">
                 <div class="m-auto justify-content-center align-self-center">
                     <style>
-                        .btn-recording {
+                                    .btn-recording {
                                         --bs-btn-bg: #ff7851;
                                         --bs-btn-border-color: #ff7851;
                                         --bs-btn-disabled-bg: #ff7851;
@@ -46,8 +46,37 @@
                                         --bs-btn-padding-y: 1.5rem;
                                         --bs-btn-padding-x: 2rem;
                                         --bs-btn-font-size: 2rem;
-                                        box-shadow: 0rem 0rem 5rem rgba(245, 73, 39, 0.8) !important;
-                        }
+                                        box-shadow: 0 0 5rem rgba(245, 73, 39, 0.8) !important;
+                                        animation: recordingPulse 1.8s infinite ease-in-out;
+                                        transform-origin: center;
+                                    }
+
+                                    @@keyframes recordingPulse {
+                                        0% {
+                                            transform: scale(1);
+                                            box-shadow: 0 0 1rem rgba(245, 73, 39, 0.6), 0 0 2rem rgba(245, 73, 39, 0.4);
+                                        }
+
+                                        25% {
+                                            transform: scale(1.04);
+                                            box-shadow: 0 0 2rem rgba(245, 73, 39, 0.8), 0 0 4rem rgba(245, 73, 39, 0.6);
+                                        }
+
+                                        50% {
+                                            transform: scale(1.08);
+                                            box-shadow: 0 0 3rem rgba(245, 73, 39, 1), 0 0 6rem rgba(245, 73, 39, 0.8);
+                                        }
+
+                                        75% {
+                                            transform: scale(1.04);
+                                            box-shadow: 0 0 2rem rgba(245, 73, 39, 0.8), 0 0 4rem rgba(245, 73, 39, 0.6);
+                                        }
+
+                                        100% {
+                                            transform: scale(1);
+                                            box-shadow: 0 0 1rem rgba(245, 73, 39, 0.6), 0 0 2rem rgba(245, 73, 39, 0.4);
+                                        }
+                                    }
 
                                     .btn-record {
                                         --bs-btn-bg: #78c2ad;

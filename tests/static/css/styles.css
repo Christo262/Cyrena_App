@@ -680,3 +680,132 @@ section h2 {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* ========================================
+   About Page Styles
+   ======================================== */
+
+.hero-small {
+    padding-block: clamp(2.5rem, 6vw, 4rem);
+}
+
+.hero-small h1 {
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+}
+
+.content-section {
+    padding-block: clamp(3rem, 6vw, 5rem);
+}
+
+.content-section h2 {
+    font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.content-section p {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    max-width: 70ch;
+    margin-bottom: 1rem;
+}
+
+.content-section p:last-child {
+    margin-bottom: 0;
+}
+
+.alt-bg {
+    background-color: var(--color-surface);
+}
+
+.styled-list {
+    list-style: disc;
+    padding-left: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    max-width: 70ch;
+}
+
+.styled-list li {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+.styled-list li strong {
+    color: var(--color-text);
+    font-weight: 600;
+}
+
+.placeholder-note {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: 0.75rem 1rem;
+    background-color: var(--color-surface-alt);
+    border-left: 3px solid var(--color-accent);
+    border-radius: var(--radius-sm);
+    font-size: 0.9375rem;
+    font-style: italic;
+    color: var(--color-text-secondary);
+}
+
+/* Active nav link indicator */
+.nav-list a[aria-current="page"] {
+    color: var(--color-accent);
+    font-weight: 600;
+}
+
+.footer-nav a[aria-current="page"] {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* ========================================
+   Contact Card Styles
+   ======================================== */
+
+.contact-card {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.contact-name {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0;
+}
+
+.contact-link {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--color-accent);
+    transition: color var(--transition-fast);
+    word-break: break-all;
+}
+
+.contact-link:hover,
+.contact-link:focus-visible {
+    color: var(--color-accent-hover);
+    text-decoration: underline;
+}
+
+.contact-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.25rem;
+}

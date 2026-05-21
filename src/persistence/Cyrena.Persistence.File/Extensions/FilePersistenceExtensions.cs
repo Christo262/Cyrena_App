@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-using Cyrena.Models;
+﻿using Cyrena.Models;
 using Cyrena.Options;
+using System.Text.Json;
 
 namespace Cyrena.Extensions
 {
@@ -17,7 +17,7 @@ namespace Cyrena.Extensions
             foreach( var file in files)
             {
                 string json = File.ReadAllText(file);
-                var model = JsonConvert.DeserializeObject<T>(json);
+                var model = JsonSerializer.Deserialize<T>(json);
                 if(model != null)
                     models.Add(model);
             }
@@ -35,7 +35,7 @@ namespace Cyrena.Extensions
             foreach (var file in files)
             {
                 string json = File.ReadAllText(file);
-                var model = JsonConvert.DeserializeObject<T>(json);
+                var model = JsonSerializer.Deserialize<T>(json);
                 if (model != null)
                     models.Add(model);
             }

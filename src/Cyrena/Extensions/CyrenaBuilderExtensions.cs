@@ -16,7 +16,7 @@ namespace Cyrena.Extensions
             builder.AddSettingsComponent<CustomizationSettings>("Personalization");
             builder.Services.AddScoped<HeadOutletStateChangeTracker>();
             builder.Services.AddScoped<IViewStart, ViewStartService>();
-            builder.AddAssistantPlugin<ToolHistorySuppressionPlugin>();
+            builder.AddAssistantPlugin<ToolCallInclusionPlugin>();
             return builder;
         }
     }

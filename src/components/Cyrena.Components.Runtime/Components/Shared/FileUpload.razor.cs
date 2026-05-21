@@ -13,7 +13,7 @@ namespace Cyrena.Components.Shared
     public partial class FileUpload
     {
         [Parameter]
-        public EventCallback<AdditionalMessageContent[]> OnItemsAdded { get; set; }
+        public EventCallback<KernelContent[]> OnItemsAdded { get; set; }
         [Inject] private IJSRuntime _js { get; set; } = default!;
         [Inject] private ToastService _toasts { get; set; } = default!;
         [KernelInject] private IFileHandlerFactory _factory { get; set; } = default!;
@@ -34,14 +34,14 @@ namespace Cyrena.Components.Shared
         private async Task HandleFilesSelected(InputFileChangeEventArgs e)
         {
             var files = e.GetMultipleFiles(maximumFileCount: 10);
-            List<AdditionalMessageContent> models = new List<AdditionalMessageContent>();
+            List<KernelContent> models = new List<KernelContent>();
 
             foreach (var file in files)
             {
                 try
                 {
                     using var stream = file.OpenReadStream(maxAllowedSize: 50 * 1024 * 1024); // 50MB limit
-                    AdditionalMessageContent? content = await _factory.GetMessageContent(stream, file.ContentType, file.Name);
+                    var content = await _factory.SaveAsync(stream, file.ContentType, file.Name);
                     if (content == null)
                         await _toasts.Error($"{file.Name} Error", "File type is not supported in the current chat.");
                     else

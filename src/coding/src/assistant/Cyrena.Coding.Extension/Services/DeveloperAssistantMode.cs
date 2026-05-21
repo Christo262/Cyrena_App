@@ -52,10 +52,11 @@ namespace Cyrena.Coding.Services
             var plan_service = new DevelopPlanService(plan);
             builder.Services.AddSingleton<IDevelopPlanService>(plan_service);
             builder.Services.AddSingleton<IVersionControl, VersionControl>();
-            builder.Plugins.AddFromType<BaseFileKernelFunctions>("File");
+            builder.Plugins.AddFromType<BaseFileKernelFunctions>("Code");
             builder.Plugins.AddFromType<ProjectInformation>("Project");
             builder.AddToolbarComponent<VersionControlViewer>(ToolbarAlignment.Start);
             builder.KernelBuilder.AddStartupTask<DevelopPlanWatcher>();
+            builder.Services.AddSingleton<IConversationHistoryTransformer, CodingConversationHistoryTransformer>();
         }
 
         public Task DeleteAsync(ChatConfiguration config)

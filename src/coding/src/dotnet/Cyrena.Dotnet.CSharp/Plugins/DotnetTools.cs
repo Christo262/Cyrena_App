@@ -113,7 +113,7 @@ namespace Cyrena.Dotnet.CSharp.Plugins
 
         [KernelFunction("build")]
         [Description("Runs dotnet build in the project directory and returns output and errors.")]
-        public ToolResult<string[]> RunDotnetBuild()
+        public ToolResult<ConsoleOutput> RunDotnetBuild()
         {
             const string arguments = "build";
             _chat.LogInfo($"Running dotnet {arguments} ...");
@@ -127,18 +127,20 @@ namespace Cyrena.Dotnet.CSharp.Plugins
                 CreateNoWindow = true
             };
 
+            var output = new ConsoleOutput()
+            {
+                Command = $"dotnet {arguments}"
+            };
+
             using var process = Process.Start(info);
             if (process == null)
-                return new ToolResult<string[]>(false, "Unable to start dotnet. Verify installation.");
-
-            var logs = new List<string>();
-            var errors = new List<string>();
+                return new ToolResult<ConsoleOutput>(false, "Unable to start dotnet. Verify installation.");
 
             process.OutputDataReceived += (_, e) =>
             {
                 if (e.Data != null)
                 {
-                    logs.Add(e.Data);
+                    output.WriteLine("info", e.Data);
                     _chat.LogInfo($"\t{e.Data}");
                 }
             };
@@ -146,7 +148,7 @@ namespace Cyrena.Dotnet.CSharp.Plugins
             {
                 if (e.Data != null)
                 {
-                    errors.Add(e.Data);
+                    output.WriteLine("error", e.Data);
                     _chat.LogError($"\t{e.Data}");
                 }
             };
@@ -157,9 +159,9 @@ namespace Cyrena.Dotnet.CSharp.Plugins
             process.WaitForExit(); // flush buffers
 
             if (process.ExitCode != 0)
-                return new ToolResult<string[]>(errors.Concat(logs).ToArray(), false, $"dotnet {arguments} failed");
+                return new ToolResult<ConsoleOutput>(output, false, $"dotnet {arguments} failed");
 
-            return new ToolResult<string[]>(logs.ToArray(), true, $"dotnet {arguments} succeeded");
+            return new ToolResult<ConsoleOutput>(output, true, $"dotnet {arguments} succeeded");
         }
 
         public static string ReadTemplate(string name)

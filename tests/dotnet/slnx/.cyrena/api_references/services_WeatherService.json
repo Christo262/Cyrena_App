@@ -1,0 +1,16 @@
+{
+  "Title": "WeatherService Implementation",
+  "Keywords": [
+    "WeatherService",
+    "service",
+    "weather",
+    "forecast",
+    "IWeatherService",
+    "simulation",
+    "random"
+  ],
+  "Summary": "Singleton service that generates simulated weather forecast data. Implements IWeatherService.",
+  "Link": null,
+  "Content": "## WeatherService\n\n**Namespace:** \u0060MyBlazorApp.Services\u0060\n\n**Type:** \u0060public class : IWeatherService\u0060\n\n### Responsibilities\n\nGenerates randomized weather forecast data for demonstration purposes.\n\n### Dependencies\n\n- None (self-contained simulation service)\n\n### Implementation Details\n\n#### Summaries Array\n\n\u0060\u0060\u0060csharp\nprivate static readonly string[] Summaries = new[]\n{\n    \u0022Freezing\u0022, \u0022Bracing\u0022, \u0022Chilly\u0022, \u0022Cool\u0022, \u0022Mild\u0022,\n    \u0022Warm\u0022, \u0022Balmy\u0022, \u0022Hot\u0022, \u0022Sweltering\u0022, \u0022Scorching\u0022\n};\n\u0060\u0060\u0060\n\n#### GetForecastsAsync\n\n\u0060\u0060\u0060csharp\npublic async Task\u003CWeatherForecast[]\u003E GetForecastsAsync(int days = 5, int delayMilliseconds = 500)\n\u0060\u0060\u0060\n\n1. Awaits \u0060Task.Delay(delayMilliseconds)\u0060 to simulate network latency.\n2. Generates \u0060days\u0060 number of \u0060WeatherForecast\u0060 instances:\n   - \u0060Date\u0060: \u0060DateOnly.FromDateTime(DateTime.Now).AddDays(index)\u0060\n   - \u0060TemperatureC\u0060: \u0060Random.Shared.Next(-20, 55)\u0060\n   - \u0060Summary\u0060: Randomly selected from the \u0060Summaries\u0060 array\n3. Returns the array.\n\n### Registration\n\n\u0060\u0060\u0060csharp\nbuilder.Services.AddSingleton\u003CIWeatherService, WeatherService\u003E();\n\u0060\u0060\u0060\n\n### Thread Safety\n\n- Uses \u0060Random.Shared\u0060 which is thread-safe.\n- \u0060Summaries\u0060 array is read-only and immutable after initialization.\n- Safe for singleton lifetime.\n\n### Notes\n\n- This is a **simulation service** \u2014 it does not call any external weather API.\n- The delay is configurable and intended for UI loading-state demonstrations.\n- Temperature range: -20\u00B0C to 54\u00B0C.\n",
+  "Id": "services_WeatherService"
+}

@@ -11,11 +11,11 @@ using System.Runtime.InteropServices;
 
 namespace Cyrena.Angular.Services
 {
-    internal class Angular
+    internal class AngularKernelFunctions
     {
         private readonly IChatMessageService _context;
         private readonly IDevelopPlanService _plan;
-        public Angular(IChatMessageService context, IDevelopPlanService plan)
+        public AngularKernelFunctions(IChatMessageService context, IDevelopPlanService plan)
         {
             _context = context;
             _plan = plan;
@@ -433,7 +433,7 @@ namespace Cyrena.Angular.Services
 
         [KernelFunction("build")]
         [Description("Runs 'ng build' in the project root directory using the Angular CLI. Returns the build output and exit code so the AI can verify if the code compiles correctly.")]
-        public ToolResult<string[]> Build(
+        public ToolResult<ConsoleOutput> Build(
             [Description("Optional build configuration, e.g. 'production' or 'development'. Defaults to 'production'.")] string configuration = "production")
         {
             var rootDir = _plan.Plan.RootDirectory;
@@ -449,18 +449,19 @@ namespace Cyrena.Angular.Services
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
-
+            var output = new ConsoleOutput()
+            {
+                Command = $"ng build --configuration={configuration}"
+            };
             using var process = Process.Start(psi);
             if (process == null)
-                return new ToolResult<string[]>(false, "Failed to start ng build process. Ensure Angular CLI is installed and available in PATH.");
+                return new ToolResult<ConsoleOutput>(false, "Failed to start ng build process. Ensure Angular CLI is installed and available in PATH.");
 
-            var logs = new List<string>();
-            var errors = new List<string>();
             process.OutputDataReceived += (_, e) =>
             {
                 if (e.Data != null)
                 {
-                    logs.Add(e.Data);
+                    output.WriteLine("info", e.Data);
                     _context.LogInfo($"\t{e.Data}");
                 }
             };
@@ -468,7 +469,7 @@ namespace Cyrena.Angular.Services
             {
                 if (e.Data != null)
                 {
-                    errors.Add(e.Data);
+                    output.WriteLine("error", e.Data);
                     _context.LogError($"\t{e.Data}");
                 }
             };
@@ -479,9 +480,9 @@ namespace Cyrena.Angular.Services
             process.WaitForExit(); // flush buffers
 
             if (process.ExitCode != 0)
-                return new ToolResult<string[]>(errors.Concat(logs).ToArray(), false, $"ng build exit code {process.ExitCode}");
+                return new ToolResult<ConsoleOutput>(output, false, $"ng build exit code {process.ExitCode}");
 
-            return new ToolResult<string[]>(logs.ToArray(), true, $"ng build exit code {process.ExitCode}");
+            return new ToolResult<ConsoleOutput>(output, true, $"ng build exit code {process.ExitCode}");
         }
 
         // ------------------------------------------------------------------

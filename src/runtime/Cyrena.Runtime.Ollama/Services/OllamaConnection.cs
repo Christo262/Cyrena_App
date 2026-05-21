@@ -1,9 +1,7 @@
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.Ollama;
-using Newtonsoft.Json;
 using Cyrena.Contracts;
-using Cyrena.Models;
 using Cyrena.Runtime.Ollama.Models;
 using System.Text;
 using Cyrena.Extensions;
@@ -19,8 +17,9 @@ namespace Cyrena.Runtime.Ollama.Services
         private readonly OllamaConnectionInfo _options;
         private readonly IServiceProvider _services;
         private readonly object _lock;
+        private readonly IKernelResolver _kernel;
 
-        public OllamaConnection(IIterationService its, IChatMessageService chat, IChatCompletionService completion, OllamaConnectionInfo options, IServiceProvider services)
+        public OllamaConnection(IIterationService its, IChatMessageService chat, IChatCompletionService completion, OllamaConnectionInfo options, IServiceProvider services, IKernelResolver kernel)
         {
             _its = its;
             _chat = chat;
@@ -28,24 +27,17 @@ namespace Cyrena.Runtime.Ollama.Services
             _options = options;
             _lock = new object();
             _services = services;
+            _kernel = kernel;
         }
 
         private StringBuilder? _responseBuilder { get; set; }
 
-        public async Task HandleAsync(AuthorRole role, string input, Kernel kernel, CancellationToken ct = default)
+        public async Task HandleAsync(ChatMessageContent content, CancellationToken ct = default)
         {
             _its.InferenceStart();
-            await _chat.AddMessage(role, input);
+            await _chat.AddMessage(content);
             var settings = CreateExecutionSettings(FunctionChoiceBehavior.Auto());
-            await RunInferenceAsync(settings, kernel, ct, handleToolCalls: true);
-        }
-
-        public async Task HandleAsync(AuthorRole role, string input, Kernel kernel, CancellationToken ct = default, params AdditionalMessageContent[] items)
-        {
-            _its.InferenceStart();
-            await _chat.AddMessage(role, input, items);
-            var settings = CreateExecutionSettings(FunctionChoiceBehavior.Auto());
-            await RunInferenceAsync(settings, kernel, ct, handleToolCalls: true);
+            await RunInferenceAsync(settings, ct);
         }
 
         private OllamaPromptExecutionSettings CreateExecutionSettings(FunctionChoiceBehavior functionChoiceBehavior)
@@ -68,14 +60,14 @@ namespace Cyrena.Runtime.Ollama.Services
             return settings;
         }
 
-        private async Task RunInferenceAsync(OllamaPromptExecutionSettings settings, Kernel kernel, CancellationToken ct, bool handleToolCalls)
+        private async Task RunInferenceAsync(OllamaPromptExecutionSettings settings, CancellationToken ct)
         {
             try
             {
                 _responseBuilder = new StringBuilder();
                 var history = await _chat.GetKernelHistory();
 
-                await foreach (var chunk in _completion.GetStreamingChatMessageContentsAsync(history, settings, kernel, ct))
+                await foreach (var chunk in _completion.GetStreamingChatMessageContentsAsync(history, settings, _kernel.Resolve(), ct))
                 {
                     var delta = chunk.Content;
                     if (string.IsNullOrEmpty(delta)) continue;
@@ -99,72 +91,13 @@ namespace Cyrena.Runtime.Ollama.Services
                     return;
                 }
 
-                if (!handleToolCalls)
-                {
-                    await _chat.AddMessage(AuthorRole.Assistant, text);
-                    return;
-                }
-
-                var json = ExtractJson(text);
-                if (string.IsNullOrEmpty(json))
-                {
-                    await _chat.AddMessage(AuthorRole.Assistant, text);
-                    return;
-                }
-
-                // Handle a toolcall SemanticKernel may have missed
-                await HandleToolCallAsync(text, json, kernel, ct);
+                await _chat.AddMessage(AuthorRole.Assistant, text);
             }
             finally
             {
                 _its.InferenceEnd();
             }
-        }
-
-        private async Task HandleToolCallAsync(string text, string json, Kernel kernel, CancellationToken ct)
-        {
-            try
-            {
-                ToolCall? toolCall = null;
-                try
-                {
-                    toolCall = JsonConvert.DeserializeObject<ToolCall>(json);
-                }
-                catch { }
-
-                if (toolCall == null || toolCall.Name == null)
-                {
-                    await _chat.AddMessage(AuthorRole.Assistant, text);
-                    return;
-                }
-
-                KernelFunction? function = null;
-                foreach (var plugin in kernel.Plugins)
-                {
-                    if (plugin.TryGetFunction(toolCall.Name, out function))
-                        break;
-                }
-
-                if (function == null)
-                {
-                    await _chat.AddMessage(AuthorRole.Assistant, $"Error: Function '{toolCall.Name}' not found.");
-                    return;
-                }
-
-                var result = await kernel.InvokeAsync(function, new KernelArguments(toolCall.Arguments ?? toolCall.Parameters ?? new Dictionary<string, object?>()));
-                var toolText =
-                $"""
-                [TOOL_RESULT name="{toolCall.Name}"]
-                {result}
-                [/TOOL_RESULT]
-                """;
-                await HandleAsync(AuthorRole.Tool, toolText, kernel, ct);
-            }
-            catch (Exception ex)
-            {
-                await _chat.LogError(ex.Message);
-            }
-        }
+        }    
 
         public void FunctionCallStart()
         {
@@ -172,55 +105,6 @@ namespace Cyrena.Runtime.Ollama.Services
             {
                 _responseBuilder?.Clear();
             }
-        }
-
-        private string ExtractJson(string text)
-        {
-            text = text.Trim();
-
-            // Try to extract from markdown code blocks
-            var match = System.Text.RegularExpressions.Regex.Match(
-                text,
-                @"```(?:json)?\s*(\{.*?\})\s*```",
-                System.Text.RegularExpressions.RegexOptions.Singleline
-            );
-
-            if (match.Success)
-            {
-                return match.Groups[1].Value.Trim();
-            }
-
-            // If no code block, check if the entire text is JSON
-            if (text.StartsWith("{") && text.EndsWith("}"))
-            {
-                return text;
-            }
-
-            // Try to find JSON object anywhere in the text
-            match = System.Text.RegularExpressions.Regex.Match(
-                text,
-                @"\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}",
-                System.Text.RegularExpressions.RegexOptions.Singleline
-            );
-
-            if (match.Success)
-            {
-                return match.Value.Trim();
-            }
-
-            return string.Empty;
-        }
-
-        public sealed record ToolCall
-        {
-            [JsonProperty("name")]
-            public string? Name { get; init; }
-
-            [JsonProperty("arguments")]
-            public Dictionary<string, object?>? Arguments { get; init; }
-
-            [JsonProperty("parameters")]
-            public Dictionary<string, object?>? Parameters { get; init; }
         }
     }
 }

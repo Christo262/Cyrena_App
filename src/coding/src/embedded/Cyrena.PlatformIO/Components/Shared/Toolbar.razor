@@ -1,6 +1,6 @@
 ﻿@inherits KernelComponentBase
 
-<div style="width:200px">
+<div style="width:200px" class="me-1">
     <select @bind="_name" @bind:after="OnChange" disabled="@_its.Inferring" class="form-control form-control-sm">
         @foreach (var item in _environment.Environments)
         {

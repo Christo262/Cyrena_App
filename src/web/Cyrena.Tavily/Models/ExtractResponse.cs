@@ -2,7 +2,7 @@
 
 namespace Cyrena.Tavily.Models
 {
-    public class ExtractResponse : JsonStringObject
+    public class ExtractResponse
     {
         public ExtractResponse()
         {
@@ -18,7 +18,7 @@ namespace Cyrena.Tavily.Models
         public List<ExtractFailure> FailedResults { get; set; }
     }
 
-    public class ExtractResult : JsonStringObject
+    public class ExtractResult
     {
         [System.Text.Json.Serialization.JsonPropertyName("url")]
         public string? Url { get; set; }
@@ -28,7 +28,7 @@ namespace Cyrena.Tavily.Models
         public string? RawContent { get; set; }
     }
 
-    public class ExtractFailure : JsonStringObject
+    public class ExtractFailure
     {
         [System.Text.Json.Serialization.JsonPropertyName("url")]
         public string? Url { get; set; }

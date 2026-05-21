@@ -16,7 +16,7 @@ This SDK provides developer workflow abstractions for AI agents to manage code p
 ### DevelopItem (Abstract Base Class)
 
 ```csharp
-public abstract class DevelopItem : Entity, IJsonSerializable
+public abstract class DevelopItem : Entity
 ```
 
 **Namespace:** `Cyrena.Coding.Models`
@@ -132,7 +132,7 @@ Represents a folder containing files and nested folders.
 ### DevelopPlan
 
 ```csharp
-public class DevelopPlan : IJsonSerializable
+public class DevelopPlan 
 ```
 
 **Namespace:** `Cyrena.Coding.Models`

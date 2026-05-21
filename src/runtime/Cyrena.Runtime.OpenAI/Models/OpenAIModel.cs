@@ -1,6 +1,6 @@
 ﻿using Cyrena.Models;
-using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Cyrena.Runtime.OpenAI.Models
 {

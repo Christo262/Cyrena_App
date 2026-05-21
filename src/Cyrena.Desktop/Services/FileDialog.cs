@@ -1,4 +1,5 @@
 ﻿using Cyrena.Contracts;
+using Photino.Blazor;
 using Photino.NET;
 using System.Diagnostics;
 
@@ -6,14 +7,10 @@ namespace Cyrena.Desktop.Services
 {
     internal class FileDialog : IFileDialog
     {
-        private PhotinoWindow _window = default!;
-        public FileDialog()
+        private readonly PhotinoWindow _window;
+        public FileDialog(PhotinoBlazorApp app)
         {
-        }
-
-        internal void SetWindow(PhotinoWindow window)
-        {
-            _window = window;
+            _window = app.MainWindow;
         }
 
         public async Task<string?> OpenAsync(string title, (string filterName, string[] extensions)? ftr)

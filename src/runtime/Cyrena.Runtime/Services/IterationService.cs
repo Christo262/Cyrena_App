@@ -1,10 +1,12 @@
 ﻿using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Models;
+using Cyrena.Runtime.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using System.Data;
 
 namespace Cyrena.Runtime.Services
 {
@@ -16,16 +18,17 @@ namespace Cyrena.Runtime.Services
         /// <summary>
         /// Will be set on Iterate()
         /// </summary>
-        private Kernel _kernel { get; set; } = default!;
+        private readonly IKernelResolver _kernel;
         private Ulid? _iteration_id { get; set; }
-        public IterationService()
+        public IterationService(IKernelResolver kernel)
         {
             _pipeline = new IterationPipeline();
             _queue = new InputQueue();
             _worker_token = new CancellationTokenSource();
+            _kernel = kernel;
         }
 
-        public string? Input { get; set; }
+        public ChatMessageContent? Input { get; set; }
         public bool Inferring { get; private set; }
 
         public void InferenceEnd()
@@ -48,7 +51,7 @@ namespace Cyrena.Runtime.Services
             }
         }
 
-        public string? IterationId => _iteration_id?.ToString();
+        public Ulid? IterationId => _iteration_id;
 
         public IDisposable OnIterationStart(Action<bool> callback)
         {
@@ -69,24 +72,24 @@ namespace Cyrena.Runtime.Services
         }
 
         private CancellationTokenSource? _token { get; set; }
-
-        public void Iterate(AuthorRole role, Kernel kernel, params AdditionalMessageContent[]? items)
+        private bool _queue_started { get; set; }
+        public void Iterate()
         {
-            if(_kernel == null)
+            if(!_queue_started)
             {
-                _kernel = kernel;
                 this.StartAsync(_worker_token.Token).Wait();
+                _queue_started = true;
             }
-            if (string.IsNullOrEmpty(Input))
+            if (Input == null)
                 return;
             if(IsPausedByAi)
             {
-                _queue.EnqueueAt(0, role, Input.Trim(), items);
+                _queue.EnqueueAt(0, Input);
                 ContinueQueue();
             }
             else
-                _queue.Enqueue(role, Input.Trim(), items);
-            Input = null;
+                _queue.Enqueue(Input);
+            Input = new ChatMessageContent(Input.Role, "");
         }
 
         public void Cancel()
@@ -136,18 +139,13 @@ namespace Cyrena.Runtime.Services
                         await Task.Delay(100);
                         continue;
                     }
-                    var input = q.Content;
-                    var items = q.Items.Count == 0 ? null : q.Items.ToArray();
-                    var role = q.Role;
+                    var kernel = _kernel.Resolve();
                     try
                     {
                         _token?.Dispose();
                         _token = new CancellationTokenSource();
-                        IConnection connection = _kernel.Services.GetRequiredService<IConnection>();
-                        if (items == null)
-                            await connection.HandleAsync(role, input, _kernel, _token.Token);
-                        else
-                            await connection.HandleAsync(role, input, _kernel, _token.Token, items);
+                        IConnection connection = kernel.Services.GetRequiredService<IConnection>();
+                        await connection.HandleAsync(q.Message, _token.Token);
                     }
                     catch (TaskCanceledException)
                     {
@@ -155,7 +153,7 @@ namespace Cyrena.Runtime.Services
                     }
                     catch (Exception ex)
                     {
-                        await _kernel.GetRequiredService<IChatMessageService>().LogError(ex.Message);
+                        await kernel.GetRequiredService<IChatMessageService>().LogError(ex.Message);
                         InferenceEnd();
                     }
                 }

@@ -1,0 +1,20 @@
+{
+  "Title": "App Root Component",
+  "Keywords": [
+    "App",
+    "root",
+    "component",
+    "HTML",
+    "document",
+    "bootstrap",
+    "Blazor Server",
+    "InteractiveServer",
+    "HeadOutlet",
+    "Routes",
+    "ReconnectModal"
+  ],
+  "Summary": "Root HTML document component that bootstraps the Blazor Server application.",
+  "Link": null,
+  "Content": "## App.razor\n\n**Path:** \u0060Components/App.razor\u0060\n\n**Type:** Root component (no \u0060@page\u0060 directive)\n\n### Purpose\n\nRenders the base HTML document (\u0060\u003C!DOCTYPE html\u003E\u0060) that hosts the Blazor Server application. This is the entry point for the browser.\n\n### Structure\n\n\u0060\u0060\u0060html\n\u003C!DOCTYPE html\u003E\n\u003Chtml lang=\u0022en\u0022\u003E\n  \u003Chead\u003E\n    \u003Cmeta charset=\u0022utf-8\u0022 /\u003E\n    \u003Cmeta name=\u0022viewport\u0022 content=\u0022width=device-width, initial-scale=1.0\u0022 /\u003E\n    \u003Cbase href=\u0022/\u0022 /\u003E\n    \u003CResourcePreloader /\u003E\n    \u003Clink rel=\u0022stylesheet\u0022 href=\u0022@Assets[\u0022css/bootstrap.min.css\u0022]\u0022 /\u003E\n    \u003Clink rel=\u0022stylesheet\u0022 href=\u0022@Assets[\u0022css/app.css\u0022]\u0022 /\u003E\n    \u003Clink rel=\u0022stylesheet\u0022 href=\u0022@Assets[\u0022MyBlazorApp.styles.css\u0022]\u0022 /\u003E\n    \u003CImportMap /\u003E\n    \u003Clink rel=\u0022icon\u0022 type=\u0022image/png\u0022 href=\u0022favicon.png\u0022 /\u003E\n    \u003CHeadOutlet @rendermode=\u0022InteractiveServer\u0022 /\u003E\n  \u003C/head\u003E\n  \u003Cbody\u003E\n    \u003CRoutes @rendermode=\u0022InteractiveServer\u0022 /\u003E\n    \u003CReconnectModal /\u003E\n    \u003Cscript src=\u0022@Assets[\u0022_framework/blazor.web.js\u0022]\u0022\u003E\u003C/script\u003E\n  \u003C/body\u003E\n\u003C/html\u003E\n\u0060\u0060\u0060\n\n### Key Elements\n\n| Element | Purpose |\n|---------|---------|\n| \u0060\u003CResourcePreloader /\u003E\u0060 | Preloads critical resources for faster initial render. |\n| \u0060\u003CHeadOutlet /\u003E\u0060 | Enables dynamic \u0060\u003CPageTitle\u003E\u0060 and \u0060\u003CHeadContent\u003E\u0060 from child components. Render mode: \u0060InteractiveServer\u0060. |\n| \u0060\u003CRoutes /\u003E\u0060 | The Blazor router component. Render mode: \u0060InteractiveServer\u0060. |\n| \u0060\u003CReconnectModal /\u003E\u0060 | Displays reconnection UI when the Blazor Server circuit is interrupted. |\n| \u0060blazor.web.js\u0060 | The Blazor framework script that establishes the SignalR circuit. |\n\n### Render Mode\n\nBoth \u0060HeadOutlet\u0060 and \u0060Routes\u0060 use \u0060InteractiveServer\u0060 render mode, meaning the entire app is server-rendered with interactive capabilities via SignalR.\n\n### Notes\n\n- This component is **not routable** \u2014 it is the root document wrapper.\n- The \u0060@Assets\u0060 directive resolves static asset paths with cache-busting.\n- \u0060lang=\u0022en\u0022\u0060 is set on the HTML element for accessibility.\n",
+  "Id": "components_App"
+}

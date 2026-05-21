@@ -1,18 +1,24 @@
 ﻿using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Models;
 using Cyrena.Options;
+using System.Text.Json;
 
 namespace Cyrena.Services
 {
     internal class PersistenceFS : IPersistenceFS
     {
-        private readonly IOptions<FilePersistenceOptions> _options;
+        private readonly FilePersistenceOptions _options;
         private readonly Dictionary<string, IList<IEntity>> _collections;
         private readonly object _lock = new object();
         public PersistenceFS(IOptions<FilePersistenceOptions> options)
+        {
+            _options = options.Value;
+            _collections = new Dictionary<string, IList<IEntity>>();
+        }
+
+        public PersistenceFS(FilePersistenceOptions options)
         {
             _options = options;
             _collections = new Dictionary<string, IList<IEntity>>();
@@ -33,7 +39,7 @@ namespace Cyrena.Services
                     return m;
                 }
 
-                var collection = _options.Value.LoadList<T>(collectionName);
+                var collection = _options.LoadList<T>(collectionName);
                 var mem = new List<IEntity>(collection);
                 _collections.Add(collectionName, mem);
                 return collection;
@@ -48,7 +54,7 @@ namespace Cyrena.Services
                 _collections.TryGetValue(collectionName, out var collection);
                 if (collection == null)
                 {
-                    var ext = _options.Value.LoadList<T>(collectionName);
+                    var ext = _options.LoadList<T>(collectionName);
                     collection = new List<IEntity>(ext);
                     _collections.Add(collectionName, collection);
                 }
@@ -60,8 +66,9 @@ namespace Cyrena.Services
                     var index = collection.IndexOf(item);
                     if (index >= 0) collection[index] = entity;
                 }
-                var json = JsonConvert.SerializeObject(entity);
-                var path = Path.Combine(_options.Value.BaseDirectory, collectionName, $"{entity.Id}.{_options.Value.FileExtension}");
+                //var json = JsonSerializer.Serialize(entity);
+                var json = System.Text.Json.JsonSerializer.Serialize(entity, new JsonSerializerOptions() { WriteIndented = true });
+                var path = Path.Combine(_options.BaseDirectory, collectionName, $"{entity.Id}.{_options.FileExtension}");
                 File.WriteAllText(path, json);
             }
         }
@@ -74,14 +81,14 @@ namespace Cyrena.Services
                 _collections.TryGetValue(collectionName, out var collection);
                 if (collection == null)
                 {
-                    var ext = _options.Value.LoadList<T>(collectionName);
+                    var ext = _options.LoadList<T>(collectionName);
                     collection = new List<IEntity>(ext);
                     _collections.Add(collectionName, collection);
                 }
                 var item = collection.FirstOrDefault(x => x.Id == id);
                 if (item != null)
                     collection.Remove(item);
-                var path = Path.Combine(_options.Value.BaseDirectory, collectionName, $"{id}.{_options.Value.FileExtension}");
+                var path = Path.Combine(_options.BaseDirectory, collectionName, $"{id}.{_options.FileExtension}");
                 if (File.Exists(path))
                     File.Delete(path);
             }

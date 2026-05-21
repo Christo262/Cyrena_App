@@ -1,7 +1,6 @@
 using Cyrena.Models;
-using Newtonsoft.Json;
-using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Cyrena.Extensa.Models;
 

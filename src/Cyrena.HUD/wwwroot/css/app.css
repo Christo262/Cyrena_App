@@ -137,11 +137,11 @@ html, body {
 
 .monaco-input {
     width: 100%;
-    min-height:500px;
+    height:100%;
 }
 
-    .monaco-input .monaco-editor-container{
-        min-height:500px;
+    .monaco-input .monaco-editor-container {
+        height: 100%;
     }
 
     .cc-tabs .tabs-body {

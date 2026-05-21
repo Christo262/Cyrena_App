@@ -43,6 +43,7 @@ namespace Cyrena.Components.Pages
                         if (cfg.Id == config.Config.Id)
                         {
                             _nav.NavigateTo("");
+                            await Task.Delay(50);
                             if(Parent != null && Item != null)
                                 await Parent.RemoveTab(Item);
                         }
@@ -59,6 +60,9 @@ namespace Cyrena.Components.Pages
             {
                 await _toasts.Error("Error", ex.Message);
                 _nav.NavigateTo("");
+                await Task.Delay(50);
+                if (Parent != null && Item != null)
+                    await Parent.RemoveTab(Item);
             }
         }
 

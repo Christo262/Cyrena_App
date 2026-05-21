@@ -70,8 +70,8 @@ namespace Cyrena.Components.Shared
                 var kernel = await _kernels.Create(_model);
                 var chat = kernel.Services.GetRequiredService<IChatMessageService>();
                 var its = kernel.Services.GetRequiredService<IIterationService>();
-                its.Input = _input;
-                its.Iterate(chat.Options.User, kernel);
+                its.Input = new ChatMessageContent(chat.Options.User, _input);
+                its.Iterate();
                 var url = $"converse/{_model.Id}";
                 await RefreshModel();
                 _nav.NavigateTo(url);

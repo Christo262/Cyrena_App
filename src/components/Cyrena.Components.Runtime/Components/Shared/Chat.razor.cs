@@ -38,6 +38,7 @@ namespace Cyrena.Components.Shared
             _mdp = new Markdig.MarkdownPipelineBuilder()
                 .UseAdvancedExtensions()
                 .Build();
+            _its.Input = new ChatMessageContent(_msg.Options.User, "");
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -57,6 +58,7 @@ namespace Cyrena.Components.Shared
             string? mimeType,
             long size)
         {
+            if (_its.Input == null) return;
             if (!_files.HasFileHandlers)
             {
                 await _toasts.Error("File Support Error", "Files are not supported in this chat.");
@@ -81,14 +83,13 @@ namespace Cyrena.Components.Shared
                     : base64DataUrl;
             var bytes = Convert.FromBase64String(base64Data);
 
-            AdditionalMessageContent? content = await _files.GetMessageContent(bytes, mimeType, name);
+            var content = await _files.SaveAsync(bytes, mimeType, name);
             if (content == null)
             {
                 await _toasts.Error("Not Supported", $"File type is not supported: {mimeType}");
                 return;
             }
-
-            _items.Add(content);
+            _its.Input.Items.Add(content);
             StateHasChanged();
         }
 
@@ -103,13 +104,11 @@ namespace Cyrena.Components.Shared
                 : $"{fileName}{extension}";
         }
 
-        private List<AdditionalMessageContent> _items = new List<AdditionalMessageContent>();
         private async Task Send()
         {
-            if (string.IsNullOrWhiteSpace(_its.Input)) return;
-
-            _its.Iterate(AuthorRole.User, Kernel, _items.ToArray());
-            _items.Clear();
+            if (_its.Input == null || string.IsNullOrEmpty(_its.Input.Content)) return;
+            
+            _its.Iterate();
             await InvokeAsync(StateHasChanged);
             await Task.Delay(100);
             await _js.InvokeVoidAsync("autoGrow", _area, 5);
@@ -131,7 +130,6 @@ namespace Cyrena.Components.Shared
         {
             _stream = null;
             _its.Input = null;
-            _items.Clear();
             this.InvokeAsync(async () =>
             {
                 StateHasChanged();
@@ -141,14 +139,24 @@ namespace Cyrena.Components.Shared
             });
         }
 
-        private void OnItemsAdded(AdditionalMessageContent[] items)
+        private void OnItemsAdded(KernelContent[] items)
         {
-            _items.AddRange(items);
+            if (_its.Input == null) return;
+            foreach(var item in items)
+                _its.Input.Items.Add(item);
         }
 
-        private void RemoveAdditionalItem(AdditionalMessageContent item)
+        private async Task RemoveAdditionalItem(KernelContent item)
         {
-            _items.Remove(item);
+            if (_its.Input == null) return;
+            try
+            {
+                await _files.CancelAsync(item);
+            }catch (Exception ex)
+            {
+                await _toasts.Error("Error", ex.Message);
+            }
+            _its.Input.Items.Remove(item);
         }
 
         public void OnIterationEvent(bool e)
@@ -194,12 +202,6 @@ namespace Cyrena.Components.Shared
 
         private ElementReference _area = default!;
         private ElementReference _dropZone = default!;
-        private async Task AutoGrow(ChangeEventArgs e)
-        {
-            _its.Input = e.Value?.ToString() ?? "";
-            await _js.InvokeVoidAsync("autoGrow", _area, 5);
-            StateHasChanged();
-        }
 
         private IDisposable _its_start = default!;
         private IDisposable _its_end = default!;

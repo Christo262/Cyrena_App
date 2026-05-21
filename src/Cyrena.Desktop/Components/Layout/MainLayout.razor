@@ -90,3 +90,14 @@
         @Body
     </Main>
 </Layout>
+
+@if (_loading)
+{
+    <div class="fixed-top vh-100 vw-100 bg-body bg-opacity-50">
+        <div class="d-flex h-100 w-100">
+            <div class="spinner-grow m-auto justify-content-center align-self-center" style="width: 3rem; height: 3rem;" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+}

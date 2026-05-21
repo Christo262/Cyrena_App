@@ -29,6 +29,8 @@ namespace Cyrena.Contracts
         IDisposable OnChatCreate(Action<ChatConfiguration> cb);
         IDisposable OnChatUpdate(Action<ChatConfiguration> cb);
         IDisposable OnChatUnload(Action<ChatConfiguration> cb);
+        IDisposable OnChatLoadStart(Action<ChatConfiguration> cb);
         IDisposable OnChatLoaded(Action<ChatConfiguration> cb);
+        IDisposable OnChatLoadError(Action<Exception> cb);
     }
 }

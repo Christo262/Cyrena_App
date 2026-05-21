@@ -38,7 +38,7 @@ namespace Cyrena.Angular.Services
             plan.IndexAngularDefaultPlan();
 
             // Register the Angular plugin
-            options.Plugins.AddFromType<Angular>();
+            options.Plugins.AddFromType<AngularKernelFunctions>("ng");
 
             // Add the Angular system prompt
             var prompt = Resources.Read(typeof(AngularBuilder).Assembly, "Cyrena.Angular.Resources.prompt.md");

@@ -4,6 +4,7 @@ using Cyrena.Extensions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
+using System.Text.Json;
 
 namespace Cyrena.Components.Tools
 {
@@ -20,11 +21,10 @@ namespace Cyrena.Components.Tools
             if (!path.EndsWith(".txt"))
                 path += ".txt";
             var sb = new System.Text.StringBuilder();
-            foreach(var item in _chat.DisplayHistory)
+            foreach(var item in _chat.KernelHistory)
             {
-                sb.AppendLine($"[{item.Role.Label}]");
-                sb.AppendLine(item.Content);
-                sb.AppendLine();
+                var json = JsonSerializer.Serialize(item, new JsonSerializerOptions() { WriteIndented = true });
+                sb.AppendLine(json);
             }
 
             try

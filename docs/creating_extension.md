@@ -297,7 +297,7 @@ using Cyrena.Models;
 
 namespace Cyrena.Tavily.Models
 {
-    public class SearchRequest : JsonStringObject
+    public class SearchRequest 
     {
         [System.Text.Json.Serialization.JsonPropertyName("query")]
         public string? Query { get; set; }

@@ -7,11 +7,11 @@ namespace Cyrena.Extensions
     {
         public static bool IsDisplayContent(this ChatOptions options, ChatMessageContent content)
         {
-            return content.Role == options.User || content.Role == options.Assistant 
-                || content.Role == options.LogInfo 
+            return (content.Role == options.User || content.Role == options.Assistant
+                || content.Role == options.LogInfo
                 || content.Role == options.LogSuccess
                 || content.Role == options.LogWarn
-                || content.Role == options.LogError;
+                || content.Role == options.LogError) && content.Items.Any(x => x is TextContent);
         }
 
         public static bool IsKernelContent(this ChatOptions options, ChatMessageContent content)

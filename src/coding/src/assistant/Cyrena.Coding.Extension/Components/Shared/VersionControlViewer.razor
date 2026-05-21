@@ -4,7 +4,13 @@
     <button class="btn btn-secondary btn-sm rounded-pill" @onclick="Toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="bi bi-git"></i>
     </button>
-    <ul class="dropdown-menu">
+    <ul class="dropdown-menu overflow-auto" style="max-height:450px;min-width:200px">
+        @if(_models.Count() == 0)
+        {
+            <li class="text-center">
+                No File Modifications
+            </li>
+        }
         @foreach(var item in _models)
         {
             <li>

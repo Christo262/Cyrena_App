@@ -5,7 +5,6 @@ using Cyrena.Voice.Options;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
-using PuppeteerSharp;
 using System.Text.Json.Serialization;
 
 namespace Cyrena.Voice.Components.Shared

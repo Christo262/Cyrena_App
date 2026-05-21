@@ -2,7 +2,7 @@
 
 namespace Cyrena.Tavily.Models
 {
-    public class ExtractRequest : JsonStringObject
+    public class ExtractRequest
     {
         public ExtractRequest()
         {

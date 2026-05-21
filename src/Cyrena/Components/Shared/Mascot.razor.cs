@@ -3,7 +3,7 @@ using Cyrena.Options;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Cyrena.Components.Shared
 {
@@ -22,7 +22,7 @@ namespace Cyrena.Components.Shared
                 var dir = Path.Combine("./wwwroot", "_content", "Cyrena", "mascots");
                 if (!Directory.Exists(dir)) return;
                 var json = File.ReadAllText(Path.Combine(dir, "mascots.json"));
-                _mascots = JsonConvert.DeserializeObject<List<MascotInfo>>(json) ?? new List<MascotInfo>();
+                _mascots = JsonSerializer.Deserialize<List<MascotInfo>>(json) ?? new List<MascotInfo>();
                 if (string.IsNullOrEmpty(customs.Mascot))
                     _current = _mascots.FirstOrDefault();
                 else

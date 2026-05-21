@@ -31,4 +31,10 @@
         Value = await _code.GetValue();
         await ValueChanged.InvokeAsync(Value);
     }
+
+    public async Task UpdateValue(string? value)
+    {
+        Value = value;
+        await _code.SetValue(value);
+    }
 }

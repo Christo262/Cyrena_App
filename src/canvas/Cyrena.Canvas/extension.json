@@ -1,0 +1,13 @@
+{
+  "id": "cyrena.canvas",
+  "name": "Canvas",
+  "version": "0.5.0",
+  "entryAssemblyFile": "Cyrena.Canvas.dll",
+  "description": "Text editor canvas",
+  "dependencies": [
+    {
+      "id": "cyrena",
+      "minVersion": "0.5.0"
+    }
+  ]
+}

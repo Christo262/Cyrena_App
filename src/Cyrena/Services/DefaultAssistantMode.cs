@@ -4,8 +4,6 @@ using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Models;
 using Cyrena.Options;
-using Cyrena.Persistence.Contracts;
-using Cyrena.Runtime.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 
@@ -13,11 +11,9 @@ namespace Cyrena.Services
 {
     internal class DefaultAssistantMode : IAssistantMode
     {
-        private readonly IStore<ChatMessage> _store;
         private readonly IKernelController _controller;
-        public DefaultAssistantMode(IStore<ChatMessage> store, IKernelController controller)
+        public DefaultAssistantMode(IKernelController controller)
         {
-            _store = store;
             _controller = controller;
         }
 
@@ -30,13 +26,12 @@ namespace Cyrena.Services
             var prompt = Resources.Read(typeof(DefaultAssistantMode).Assembly, "Cyrena.Resources.prompt.md");
             prompts.AddPrompt(0, prompt);
             builder.Plugins.AddFromType<Chat>();
-            //builder.Services.AddSingleton<IConversationHistoryTransformer, DefaultAssistantConversationHistoryTransformer>();
             return Task.CompletedTask;
         }
 
-        public async Task DeleteAsync(ChatConfiguration config)
+        public Task DeleteAsync(ChatConfiguration config)
         {
-            await _store.DeleteManyAsync(x => x.ConversationId == config.Id);
+            return Task.CompletedTask;
         }
 
         public async Task EditAsync(ChatConfiguration config, IServiceProvider services)

@@ -1,0 +1,17 @@
+{
+  "Title": "Routes Component",
+  "Keywords": [
+    "Routes",
+    "router",
+    "routing",
+    "NavLink",
+    "RouteView",
+    "FocusOnNavigate",
+    "NotFound",
+    "MainLayout"
+  ],
+  "Summary": "Blazor Router configuration defining the routing behavior and not-found fallback.",
+  "Link": null,
+  "Content": "## Routes.razor\n\n**Path:** \u0060Components/Routes.razor\u0060\n\n**Type:** Root routing component (no \u0060@page\u0060 directive)\n\n### Purpose\n\nConfigures the Blazor \u0060Router\u0060 with the application\u0027s assembly, default layout, and not-found page behavior.\n\n### Markup\n\n\u0060\u0060\u0060razor\n\u003CRouter AppAssembly=\u0022typeof(Program).Assembly\u0022 NotFoundPage=\u0022typeof(Pages.NotFound)\u0022\u003E\n    \u003CFound Context=\u0022routeData\u0022\u003E\n        \u003CRouteView RouteData=\u0022routeData\u0022 DefaultLayout=\u0022typeof(Layout.MainLayout)\u0022 /\u003E\n        \u003CFocusOnNavigate RouteData=\u0022routeData\u0022 Selector=\u0022h1\u0022 /\u003E\n    \u003C/Found\u003E\n\u003C/Router\u003E\n\u0060\u0060\u0060\n\n### Configuration\n\n| Attribute | Value | Description |\n|-----------|-------|-------------|\n| \u0060AppAssembly\u0060 | \u0060typeof(Program).Assembly\u0060 | Scans the entry assembly for routable components (\u0060@page\u0060 directives). |\n| \u0060NotFoundPage\u0060 | \u0060typeof(Pages.NotFound)\u0060 | Renders \u0060NotFound.razor\u0060 when no route matches. |\n| \u0060DefaultLayout\u0060 | \u0060typeof(Layout.MainLayout)\u0060 | Wraps all matched routes in \u0060MainLayout.razor\u0060. |\n\n### FocusOnNavigate\n\nAutomatically sets focus to the first \u0060\u003Ch1\u003E\u0060 element after navigation. This improves accessibility for screen reader users by announcing the new page content.\n\n### Notes\n\n- This component is rendered inside \u0060App.razor\u0060 with \u0060InteractiveServer\u0060 render mode.\n- The \u0060NotFoundPage\u0060 is used for client-side 404s; server-side 404s are handled by \u0060UseStatusCodePagesWithReExecute(\u0022/not-found\u0022)\u0060 in \u0060Program.cs\u0060.\n",
+  "Id": "components_Routes"
+}

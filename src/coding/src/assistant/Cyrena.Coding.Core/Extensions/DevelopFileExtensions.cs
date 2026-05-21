@@ -190,132 +190,6 @@ namespace Cyrena.Coding.Extensions
             return true;
         }
 
-        public static bool TryWriteFileLine(this DevelopPlan plan, DevelopFile file, int index, string line, out DevelopFileLines? lines)
-        {
-            if (!plan.TryReadFileLines(file, out var og))
-            {
-                lines = null;
-                return false;
-            }
-
-            // Validate index
-            if (index < 0 || index >= og!.Lines.Count)
-            {
-                lines = null;
-                return false;
-            }
-
-            og.Lines[index] = line;
-            var content = og.ToString();
-            var path = Path.Combine(plan.RootDirectory, file.RelativePath);
-
-            File.WriteAllText(path, content);
-            lines = og;
-            return true;
-        }
-
-        /// <summary>
-        /// Tries to insert a line at <paramref name="index"/> in <paramref name="file"/>.
-        /// Returns true and the updated <see cref="DevelopFileLines"/> on success,
-        /// otherwise false (and <c>lines</c> is null).
-        /// </summary>
-        public static bool TryInsertLine(
-            this DevelopPlan plan,
-            DevelopFile file,
-            int index,
-            string line,
-            out DevelopFileLines? lines)
-        {
-            // 1️⃣ Read the current file lines
-            if (!plan.TryReadFileLines(file, out var original))
-            {
-                lines = null;
-                return false;
-            }
-
-            var og = original!; // TryReadFileLines succeeded, so not null
-
-            // 2️⃣ Validate the index (insertion allowed at the end)
-            if (index < 0 || index > og.Lines.Count)
-            {
-                lines = null;
-                return false;
-            }
-
-            // 3️⃣ Build a new dictionary with the line inserted
-            var newLines = new Dictionary<int, string>();
-
-            foreach (var kvp in og.Lines.OrderBy(k => k.Key))
-            {
-                // Shift down every line that is at or after the insertion point
-                int newKey = kvp.Key >= index ? kvp.Key + 1 : kvp.Key;
-                newLines[newKey] = kvp.Value;
-            }
-
-            // Insert the new line
-            newLines[index] = line;
-
-            // Replace the original collection
-            og.Lines = newLines;
-
-            // 4️⃣ Write the updated content back to the file
-            var path = Path.Combine(plan.RootDirectory, file.RelativePath);
-            try
-            {
-                File.WriteAllText(path, og.ToString()); // ToString() joins with \r\n
-            }
-            catch
-            {
-                lines = null;
-                return false;
-            }
-
-            // 5️⃣ Return the updated object
-            lines = og;
-            return true;
-        }
-
-        /// <summary>
-        /// Tries to insert multiple lines starting at <paramref name="afterIndex"/> in <paramref name="file"/>.
-        /// Lines are inserted in order, each after the previous. Returns true and the updated
-        /// <see cref="DevelopFileLines"/> on success, otherwise false (and <c>lines</c> is null).
-        /// </summary>
-        public static bool TryInsertLines(
-            this DevelopPlan plan,
-            DevelopFile file,
-            int afterIndex,
-            IEnumerable<string> newLines,
-            out DevelopFileLines? lines)
-        {
-            if (!plan.TryReadFileLines(file, out var current))
-            {
-                lines = null;
-                return false;
-            }
-
-            var lineList = newLines.ToList();
-
-            if (afterIndex < 0 || afterIndex > current!.Lines.Count)
-            {
-                lines = null;
-                return false;
-            }
-
-            // Insert from the end of the batch backward so each TryInsertLine call
-            // targets the same 'afterIndex', naturally pushing earlier inserts down.
-            for (int i = lineList.Count - 1; i >= 0; i--)
-            {
-                if (!plan.TryInsertLine(file, afterIndex, lineList[i], out var updated))
-                {
-                    lines = null;
-                    return false;
-                }
-            }
-
-            lines = plan.TryReadFileLines(file, out var final) ? final : null;
-            return lines != null;
-        }
-
 
         public static void IndexFiles(this DevelopPlan plan, DevelopFolder folder, string extension, string id_prefix, bool readOnly = false)
         {
@@ -419,73 +293,108 @@ namespace Cyrena.Coding.Extensions
             return false;
         }
 
-        public static bool TryReplaceLines(
+        public static bool TryWriteFileLines(
     this DevelopPlan plan,
     DevelopFile file,
-    int startIndex,          // zero‑based line that begins the range
-    int count,               // how many existing lines to remove
-    IEnumerable<string> replacement, // new lines that will take their place
+    string? content,
+    int startLine,
+    int lineCount,
+    bool replaceAll,
     out DevelopFileLines? lines)
         {
-            // 1️⃣  Load the current lines
-            if (!plan.TryReadFileLines(file, out var original))
+            if (replaceAll)
+                return plan.TryWriteFileContentAsLines(file, content, out lines);
+
+            if (!plan.TryReadFileLines(file, out var current))
             {
                 lines = null;
                 return false;
             }
 
-            var og = original!;
-            var total = og.Lines.Count;
-
-            if (startIndex < 0 || startIndex > total)
+            if (current == null)
             {
                 lines = null;
                 return false;
             }
 
-            if (count < 0)                                     // negative count makes no sense
+            var existingLines = current.Lines
+                .OrderBy(x => x.Index)
+                .Select(x => x.Text ?? string.Empty)
+                .ToList();
+
+            var totalLines = existingLines.Count;
+
+            if (startLine < 0 || startLine > totalLines)
             {
                 lines = null;
                 return false;
             }
 
-            var effectiveCount = Math.Min(count, total - startIndex);
-
-            var newLines = new Dictionary<int, string>();
-            int newKey = 0;
-
-            // a) lines before the range
-            foreach (var kvp in og.Lines.OrderBy(k => k.Key).Take(startIndex))
+            if (lineCount < 0)
             {
-                newLines[newKey++] = kvp.Value;
+                lines = null;
+                return false;
             }
 
-            // b) replacement lines
-            foreach (var repl in replacement)
+            if (startLine + lineCount > totalLines)
             {
-                newLines[newKey++] = repl;
+                lines = null;
+                return false;
             }
 
-            // c) lines after the removed range
-            foreach (var kvp in og.Lines.OrderBy(k => k.Key).Skip(startIndex + effectiveCount))
-            {
-                newLines[newKey++] = kvp.Value;
-            }
+            var incomingLines = SplitIncomingLines(content);
 
-            og.Lines = newLines;
+            existingLines.RemoveRange(startLine, lineCount);
+            existingLines.InsertRange(startLine, incomingLines);
+
+            var updatedContent = string.Join("\n", existingLines);
+
+            return plan.TryWriteFileContentAsLines(file, updatedContent, out lines);
+        }
+
+        private static bool TryWriteFileContentAsLines(
+            this DevelopPlan plan,
+            DevelopFile file,
+            string? content,
+            out DevelopFileLines? lines)
+        {
             var path = Path.Combine(plan.RootDirectory, file.RelativePath);
+
+            if (!File.Exists(path))
+            {
+                lines = null;
+                return false;
+            }
+
             try
             {
-                File.WriteAllText(path, og.ToString());   // ToString() joins with \r\n
+                var normalizedContent = NormalizeLineEndings(content ?? string.Empty);
+                File.WriteAllText(path, normalizedContent);
+                lines = new DevelopFileLines(file, normalizedContent);
+                return true;
             }
             catch
             {
                 lines = null;
                 return false;
             }
+        }
 
-            lines = og;
-            return true;
+        private static List<string> SplitIncomingLines(string? content)
+        {
+            if (string.IsNullOrEmpty(content))
+                return new List<string>();
+
+            return NormalizeLineEndings(content)
+                .Split('\n', StringSplitOptions.None)
+                .ToList();
+        }
+
+        private static string NormalizeLineEndings(string content)
+        {
+            return content
+                .Replace("\r\n", "\n")
+                .Replace("\r", "\n");
         }
     }
 }

@@ -1,11 +1,11 @@
 using Cyrena.Contracts;
-using Cyrena.Models;
 using Cyrena.Runtime.OpenAI.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using System.Text;
+using Cyrena.Extensions;
 
 namespace Cyrena.Runtime.OpenAI.Services
 {
@@ -17,7 +17,8 @@ namespace Cyrena.Runtime.OpenAI.Services
         private readonly OpenAIModel _model;
         private readonly IServiceProvider _services;
         private readonly object _lock;
-        public OpenAIConnection(IIterationService its, IChatMessageService chat, IChatCompletionService completion, OpenAIModel model, IServiceProvider services)
+        private readonly IKernelResolver _kernel;
+        public OpenAIConnection(IIterationService its, IChatMessageService chat, IChatCompletionService completion, OpenAIModel model, IServiceProvider services, IKernelResolver kernel)
         {
             _its = its;
             _chat = chat;
@@ -25,6 +26,7 @@ namespace Cyrena.Runtime.OpenAI.Services
             _model = model;
             _lock = new object();
             _services = services;
+            _kernel = kernel;
         }
 
         private StringBuilder? _responseBuilder { get; set; }
@@ -36,21 +38,14 @@ namespace Cyrena.Runtime.OpenAI.Services
             }
         }
 
-        public async Task HandleAsync(AuthorRole role, string input, Kernel kernel, CancellationToken ct = default)
+        public async Task HandleAsync(ChatMessageContent content, CancellationToken ct = default)
         {
             _its.InferenceStart();
-            await _chat.AddMessage(role, input);
-            await RunInferenceAsync(kernel, ct);
+            await _chat.AddMessage(content);
+            await RunInferenceAsync(ct);
         }
 
-        public async Task HandleAsync(AuthorRole role, string input, Kernel kernel, CancellationToken ct = default, params AdditionalMessageContent[] items)
-        {
-            _its.InferenceStart();
-            await _chat.AddMessage(role, input, items);
-            await RunInferenceAsync(kernel, ct);
-        }
-
-        private async Task RunInferenceAsync(Kernel kernel, CancellationToken ct)
+        private async Task RunInferenceAsync(CancellationToken ct)
         {
             try
             {
@@ -58,7 +53,7 @@ namespace Cyrena.Runtime.OpenAI.Services
                 _responseBuilder = new StringBuilder();
                 var history = await _chat.GetKernelHistory();
 
-                await foreach (var chunk in _completion.GetStreamingChatMessageContentsAsync(history, settings, kernel, ct))
+                await foreach (var chunk in _completion.GetStreamingChatMessageContentsAsync(history, settings, _kernel.Resolve(), ct))
                 {
                     var delta = chunk.Content;
                     if (string.IsNullOrEmpty(delta)) continue;

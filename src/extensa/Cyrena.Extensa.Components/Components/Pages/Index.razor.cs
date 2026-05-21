@@ -8,7 +8,7 @@ using Cyrena.Extensa.Models;
 using Cyrena.Extensa.Options;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Cyrena.Extensa.Components.Pages
 {
@@ -116,7 +116,7 @@ namespace Cyrena.Extensa.Components.Pages
             try
             {
                 var json = File.ReadAllText(path);
-                string[]? uns = JsonConvert.DeserializeObject<string[]>(json);
+                string[]? uns = JsonSerializer.Deserialize<string[]>(json);
                 if (uns == null)
                     throw new Exception("Unable to deserialize uninstall.json");
                 _uninstalls.AddRange(uns);
@@ -147,7 +147,7 @@ namespace Cyrena.Extensa.Components.Pages
             {
                 _uninstalls.Add(ext.Id);
                 var path = Path.Combine(_options.Value.InstallationsDirectory, "uninstall.json");
-                var json = JsonConvert.SerializeObject(_uninstalls.ToArray());
+                var json = JsonSerializer.Serialize(_uninstalls.ToArray());
                 File.WriteAllText(path, json);
                 await _toasts.Success("Uninstall", $"{ext.Name} ({ext.Id}) will be uninstalled when the application starts.");
                 RebuildViewModel(_models.Where(x => x.Package != null).Select(x => x.Package!));
@@ -161,7 +161,7 @@ namespace Cyrena.Extensa.Components.Pages
             {
                 _uninstalls.Remove(id);
                 var path = Path.Combine(_options.Value.InstallationsDirectory, "uninstall.json");
-                var json = JsonConvert.SerializeObject(_uninstalls.ToArray());
+                var json = JsonSerializer.Serialize(_uninstalls.ToArray());
                 File.WriteAllText(path, json);
                 RebuildViewModel(_models.Where(x => x.Package != null).Select(x => x.Package!));
                 this.StateHasChanged();

@@ -9,7 +9,7 @@ namespace Cyrena
         public const string Id = "cyrena";
         public const string Name = "Cyréna";
         public const string Description = "Cyréna core runtime. Provides the application version to the extension framework.";
-        public static Version Version = System.Version.Parse("0.5.1");
+        public static Version Version = System.Version.Parse("0.6.0");
 
         public override void BuildExtension(CyrenaBuilder builder)
         {

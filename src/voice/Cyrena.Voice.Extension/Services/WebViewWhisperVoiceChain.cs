@@ -19,7 +19,7 @@ namespace Cyrena.Voice.Services
         }
         public string Id => Key;
         public string Name => "Whisper & WebView";
-        public string? Description => "Uses WebView-native controls for audio capture and playback and uses Whisper locally to convert speech to text";
+        public string? Description => "Uses WebView & Whisper locally for STT/TTS";
         public bool IsInitialized => Recorder.IsInitialized && Transcriber.IsInitialized && Converter.IsInitialized && Player.IsInitialized;
 
         public IVoiceRecorder Recorder { get; }

@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-using Cyrena.Models;
+﻿using Cyrena.Models;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Cyrena.Runtime.Ollama.Models
 {

@@ -1,4 +1,5 @@
-﻿using Microsoft.SemanticKernel.ChatCompletion;
+﻿using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -38,23 +39,19 @@ namespace Cyrena.Models
             }
         }
 
-        public void Enqueue(AuthorRole role, string? content, params AdditionalMessageContent[]? items)
+        public void Enqueue(ChatMessageContent content)
         {
             lock (_lock)
             {
-                if (string.IsNullOrEmpty(content))
-                    return;
-                _queue.Add(new QueuedInput(role, content, items));
+                _queue.Add(new QueuedInput(content));
             }
         }
 
-        public void EnqueueAt(int index, AuthorRole role, string? content, params AdditionalMessageContent[]? items)
+        public void EnqueueAt(int index, ChatMessageContent content)
         {
             lock (_lock)
             {
-                if (string.IsNullOrEmpty(content))
-                    return;
-                _queue.Insert(index, new QueuedInput(role, content, items));
+                _queue.Insert(index, new QueuedInput(content));
             }
         }
 

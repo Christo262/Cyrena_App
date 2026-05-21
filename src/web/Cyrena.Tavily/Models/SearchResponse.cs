@@ -2,7 +2,7 @@
 
 namespace Cyrena.Tavily.Models
 {
-    public class SearchResponse : JsonStringObject
+    public class SearchResponse 
     {
         public SearchResponse()
         {
@@ -23,7 +23,7 @@ namespace Cyrena.Tavily.Models
         public List<Result> Results { get; set; }
     }
 
-    public class Image : JsonStringObject
+    public class Image 
     {
         [System.Text.Json.Serialization.JsonPropertyName("url")]
         public string? Url { get; set; }
@@ -31,7 +31,7 @@ namespace Cyrena.Tavily.Models
         public string? Description { get; set; }
     }
 
-    public class Result : JsonStringObject
+    public class Result 
     {
         [System.Text.Json.Serialization.JsonPropertyName("url")]
         public string? Url { get; set; }

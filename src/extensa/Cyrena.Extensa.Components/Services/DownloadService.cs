@@ -5,7 +5,7 @@ using Cyrena.Extensa.Options;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System.IO.Compression;
 
 namespace Cyrena.Extensa.Services
@@ -69,7 +69,7 @@ namespace Cyrena.Extensa.Services
                         }
 
                         var json = File.ReadAllText(manifest);
-                        var info = JsonConvert.DeserializeObject<ExtensionInfo>(json);
+                        var info = JsonSerializer.Deserialize<ExtensionInfo>(json);
                         if (info == null)
                         {
                             Directory.Delete(extension, true);

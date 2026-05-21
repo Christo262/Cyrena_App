@@ -42,6 +42,12 @@ namespace Cyrena.Runtime.Services
                 builder.Services.AddSingleton<IFileHandler, ImageFileHandler>();
             if (info.SupportFiles)
                 builder.Services.AddSingleton<IFileHandler, TextFileHandler>();
+
+            if(info.SupportFiles || info.SupportImages)
+                builder.Plugins.AddFromType<AttachmentKernelFunctions>("Attachment");
+            builder.Services.AddSingleton<IFileHandlerFactory, FileHandlerFactory>();
+            builder.Services.AddSingleton<IConversationHistoryTransformer, FileReferenceContentTransformer>();
+
             return Task.CompletedTask;
         }
     }

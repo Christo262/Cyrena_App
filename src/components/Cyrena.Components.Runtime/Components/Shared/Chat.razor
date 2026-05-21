@@ -42,16 +42,17 @@
                 }
                 else
                 {
+#pragma warning disable SKEXP0110
                     var isUser = _msg.DisplayHistory[i].Role == Microsoft.SemanticKernel.ChatCompletion.AuthorRole.User;
                     <div class="d-flex mb-3 @(isUser ? "justify-content-end" : "justify-content-start")">
                         <div class="chat-bubble @(isUser ? "chat-bubble-user" : "chat-bubble-assistant") px-3 py-2 @(_msg.DisplayHistory[i].Items.Count > 1 ? "chat-bubble-has-items" : "")">
                             @if (_msg.DisplayHistory[i].Items.Count > 1)
                             {
                                 <div class="d-flex overflow-auto">
-                                    @foreach(var item in _msg.DisplayHistory[i].Items.OfType<InfoMessageContentItem>())
+                                    @foreach(var item in _msg.DisplayHistory[i].Items.OfType<FileReferenceContent>())
                                     {
                                         <div class="p-1 me-1">
-                                            <p class="small text-muted m-0 text-truncate">@item.FileName</p>
+                                            <p class="small text-muted m-0 text-truncate">@(@item.Metadata?.ContainsKey("name") == true ? item.Metadata["name"] : "unknown")</p>
                                         </div>
                                     }
                                 </div>
@@ -66,6 +67,7 @@
                             }
                         </div>
                     </div>
+#pragma warning restore SKEXP0110
                 }
             }
 
@@ -88,7 +90,7 @@
                 {
                     <div class="p-1 bg-body shadow rounded border d-flex mb-2" style="width:250px">
                         <p class="small m-0 text-truncate justify-content-center align-self-center">
-                            @input.Content
+                            @input.Message.Content
                         </p>
                         <button type="button" @onclick="() => _its.CancelInput(input.Id)" class="btn btn-sm btn-danger rounded-pill ms-auto">
                             <i class="bi bi-trash"></i>
@@ -100,22 +102,27 @@
     </div>
 
     <div class="p-2 pb-0 border-top bg-body">
-        @if (_items.Any())
+        @if (_its.Input != null && _its.Input.Items.Count() > 1)
         {
+#pragma warning disable SKEXP0110
             <div class="d-flex flex-row mb-1">
-                @foreach(var item in _items)
+                @foreach (var item in _its.Input.Items.OfType<FileReferenceContent>())
                 {
                     <div class="p-1 d-flex rounded border me-1" style="max-width:200px">
-                        <p class="small text-muted m-0 text-truncate justify-content-center align-self-center me-1">@item.Name</p>
+                        <p class="small text-muted m-0 text-truncate justify-content-center align-self-center me-1">@(@item.Metadata?.ContainsKey("name") == true ? item.Metadata["name"] : "unknown")</p>
                         <button type="button" class="btn btn-sm btn-danger rounded-pill border-0" @onclick="() => RemoveAdditionalItem(item)"><i class="bi bi-x"></i></button>
                     </div>
                 }
             </div>
+#pragma warning restore SKEXP0110
         }
 
         <div class="p-2 rounded border border-primary">
             <div class="d-flex flex-row">
-                <textarea @ref="_area" @bind:event="oninput" placeholder="@(_its.QueueCount > 0 || _its.Inferring ? "Queue..." : "Reply...")" rows="1" class="form-control auto-grow border-0 me-1" @onkeydown="ComposerKeyDown" @bind="_its.Input"></textarea>
+                @if(_its.Input != null)
+                {
+                    <textarea @ref="_area" @bind:event="oninput" placeholder="@(_its.QueueCount > 0 || _its.Inferring ? "Queue..." : "Reply...")" rows="1" class="form-control auto-grow border-0 me-1" @onkeydown="ComposerKeyDown" @bind="_its.Input.Content"></textarea>
+                }
 
                 <div class="ms-2 justify-content-center align-self-center d-flex flex-row">
                     @if(_info.SupportFiles || _info.SupportImages)
@@ -127,7 +134,7 @@
                         <button type="button" class="btn btn-sm btn-danger rounded-pill ms-1" @onclick="Cancel"><i class="bi bi-stop"></i></button>
                     }
                     <Tooltip Title="@(_its.Inferring ? "Queue" : "Send")">
-                        <button type="button" class="btn btn-sm btn-primary rounded-pill ms-1" disabled="@(string.IsNullOrEmpty(_its.Input))" @onclick="Send"><i class="bi bi-arrow-up"></i></button>
+                        <button type="button" class="btn btn-sm btn-primary rounded-pill ms-1" disabled="@(_its.Input == null || string.IsNullOrEmpty(_its.Input.Content))" @onclick="Send"><i class="bi bi-arrow-up"></i></button>
                     </Tooltip>
 
                     <Tooltip Title="@(_its.IsPaused ? "Queue Paused" : "Queue Running")">

@@ -1,0 +1,15 @@
+{
+  "Title": "WeatherForecast Model",
+  "Keywords": [
+    "WeatherForecast",
+    "model",
+    "weather",
+    "temperature",
+    "DateOnly",
+    "data"
+  ],
+  "Summary": "Data model representing a single-day weather forecast with date, temperature, and summary.",
+  "Link": null,
+  "Content": "## WeatherForecast\n\n**Namespace:** \u0060MyBlazorApp.Models\u0060\n\n**Type:** \u0060public class\u0060\n\n### Properties\n\n| Property | Type | Description |\n|----------|------|-------------|\n| \u0060Date\u0060 | \u0060DateOnly\u0060 | The date of the forecast. |\n| \u0060TemperatureC\u0060 | \u0060int\u0060 | The temperature in Celsius. |\n| \u0060Summary\u0060 | \u0060string?\u0060 | A brief textual summary (e.g., \u0022Sunny\u0022, \u0022Rainy\u0022). |\n| \u0060TemperatureF\u0060 | \u0060int\u0060 | Computed property: Fahrenheit conversion of \u0060TemperatureC\u0060. Formula: \u006032 \u002B (int)(TemperatureC / 0.5556)\u0060. |\n\n### Usage\n\n\u0060\u0060\u0060csharp\nvar forecast = new WeatherForecast\n{\n    Date = DateOnly.FromDateTime(DateTime.Now),\n    TemperatureC = 22,\n    Summary = \u0022Mild\u0022\n};\n\nint fahrenheit = forecast.TemperatureF; // 71\n\u0060\u0060\u0060\n\n### Notes\n\n- \u0060TemperatureF\u0060 is a read-only computed property with no backing field.\n- \u0060Summary\u0060 is nullable (\u0060string?\u0060).\n- Used by \u0060IWeatherService\u0060 and \u0060WeatherService\u0060 as the primary data transfer object for weather data.\n",
+  "Id": "models_WeatherForecast"
+}

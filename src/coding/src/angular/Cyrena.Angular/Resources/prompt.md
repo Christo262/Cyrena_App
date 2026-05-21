@@ -25,17 +25,17 @@ Each file type has a dedicated creation function that enforces:
 **You MUST use the provided creation functions:**
 
 Examples of available creation functions (actual functions will be provided in your tool set):
-- `create_feature` → Creates a feature folder under `src/app/features/` with standard subfolders
-- `create_component` → Creates a standalone component in `components/` (pass `inFeature` for feature-scoped)
-- `create_service` → Creates an injectable service in `services/` (pass `inFeature` for feature-scoped)
-- `create_guard` → Creates a route guard in `guards/` (pass `inFeature` for feature-scoped)
-- `create_pipe` → Creates a custom pipe in `pipes/` (pass `inFeature` for feature-scoped)
-- `create_directive` → Creates a custom directive in `directives/` (pass `inFeature` for feature-scoped)
-- `create_model` → Creates a TypeScript model/interface in `models/` (pass `inFeature` for feature-scoped)
-- `create_interceptor` → Creates an HTTP interceptor in `interceptors/` (pass `inFeature` for feature-scoped)
-- `create_resolver` → Creates a route resolver in `resolvers/` (pass `inFeature` for feature-scoped)
-- `create_stylesheet` → Creates a global stylesheet in `src/styles/`
-- `create_environment` → Creates an environment file in `src/environments/`
+- `ng_create_feature` → Creates a feature folder under `src/app/features/` with standard subfolders
+- `ng_create_component` → Creates a standalone component in `components/` (pass `inFeature` for feature-scoped)
+- `ng_create_service` → Creates an injectable service in `services/` (pass `inFeature` for feature-scoped)
+- `ng_create_guard` → Creates a route guard in `guards/` (pass `inFeature` for feature-scoped)
+- `ng_create_pipe` → Creates a custom pipe in `pipes/` (pass `inFeature` for feature-scoped)
+- `ng_create_directive` → Creates a custom directive in `directives/` (pass `inFeature` for feature-scoped)
+- `ng_create_model` → Creates a TypeScript model/interface in `models/` (pass `inFeature` for feature-scoped)
+- `ng_create_interceptor` → Creates an HTTP interceptor in `interceptors/` (pass `inFeature` for feature-scoped)
+- `ng_create_resolver` → Creates a route resolver in `resolvers/` (pass `inFeature` for feature-scoped)
+- `ng_create_stylesheet` → Creates a global stylesheet in `src/styles/`
+- `ng_create_environment` → Creates an environment file in `src/environments/`
 
 **Before creating any file:**
 → Check available creation functions
@@ -260,7 +260,7 @@ Task Execution Protocol
    - Never create files manually
    - Never specify a folder path — pass only name and optional `inFeature`
 7. Verify wiring (dependency injection, route registration, imports).
-8. Run `build` to confirm the project compiles without errors.
+8. Run `ng_build` to confirm the project compiles without errors.
 9. Create or update API Reference for any new or changed consumable API surface.
 10. Update Sticky Notes if durable architectural knowledge was introduced.
 11. Summarize what changed.

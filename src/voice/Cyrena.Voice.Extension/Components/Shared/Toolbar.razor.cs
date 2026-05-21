@@ -140,8 +140,11 @@ namespace Cyrena.Voice.Components.Shared
                                     _playback.Enqueue(sentence);
                         });
                     }
-                    _its.Input = text;
-                    _its.Iterate(_chat.Options.User, Kernel);
+                    if (_its.Input == null)
+                        _its.Input = new Microsoft.SemanticKernel.ChatMessageContent(_chat.Options.User, text);
+                    else
+                        _its.Input.Content = text;
+                    _its.Iterate();
                 }
                 this.StateHasChanged();
             }

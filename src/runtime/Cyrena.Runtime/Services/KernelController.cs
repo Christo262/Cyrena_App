@@ -32,61 +32,81 @@ namespace Cyrena.Runtime.Services
                 return ext!;
             }
 
-            var modes = _services.GetServices<IAssistantMode>();
-            var mode = modes.FirstOrDefault(x => x.Id == config.AssistantModeId);
-            if (mode == null)
-                throw new NullReferenceException($"Unable to find assistant mode with id {config.AssistantModeId}");
-            var connectionProviders = _services.GetServices<IConnectionProvider>();
-            IConnectionProvider? connectionProvider = null;
-            foreach (var provider in connectionProviders)
+            try
             {
-                if (await provider.HasConnectionAsync(config.ConnectionId))
+                _pipe.InvokeLoadStart(config);
+                var modes = _services.GetServices<IAssistantMode>();
+                var mode = modes.FirstOrDefault(x => x.Id == config.AssistantModeId);
+                if (mode == null)
+                    throw new NullReferenceException($"Unable to find assistant mode with id {config.AssistantModeId}");
+                var connectionProviders = _services.GetServices<IConnectionProvider>();
+                IConnectionProvider? connectionProvider = null;
+                foreach (var provider in connectionProviders)
                 {
-                    connectionProvider = provider;
-                    break;
+                    if (await provider.HasConnectionAsync(config.ConnectionId))
+                    {
+                        connectionProvider = provider;
+                        break;
+                    }
                 }
-            }
-            if (connectionProvider == null)
-                throw new InvalidOperationException($"Unable to find connection provider for {config.ConnectionId}");
-            IKernelBuilder builder = Kernel.CreateBuilder();
-            builder.Services.AddLogging();
-            builder.Services.AddSingleton(config);
-            var info = await connectionProvider.AttachAsync(builder, config.ConnectionId);
-            builder.Services.AddSingleton(info);
-            
-            builder.Services.AddSingleton<IIterationService, IterationService>();
+                if (connectionProvider == null)
+                    throw new InvalidOperationException($"Unable to find connection provider for {config.ConnectionId}");
+                IKernelBuilder builder = Kernel.CreateBuilder();
+                builder.Services.AddLogging();
+                builder.Services.AddSingleton(config);
+                config.FileStoragePath = Path.Combine(CyrenaBuilder.AppDataDirectory, "conversations", config.Id, "files");
+                if (!Directory.Exists(config.FileStoragePath))
+                    Directory.CreateDirectory(config.FileStoragePath);
+                var info = await connectionProvider.AttachAsync(builder, config.ConnectionId);
+                builder.Services.AddSingleton(info);
+                builder.Services.AddSingleton<IKernelResolver>(new KernelResolver(config.Id, () => _instances[config.Id]));
 
-            var store = _services.GetRequiredService<IStore<ChatMessage>>();
-            builder.Services.AddSingleton(store);
-            builder.Services.AddSingleton<IChatMessageService, ChatMessageService>();
-            var cyrenaKernelBuilder = new CyrenaKernelBuilder(config, builder);
-            IPromptManager promptManager = new PromptManager();
-            cyrenaKernelBuilder.AddFeatureOption<IPromptManager>(promptManager);
-            cyrenaKernelBuilder.AddFeatureOption(info);
-            await mode.ConfigureAsync(cyrenaKernelBuilder);
+                builder.Services.AddSingleton<IIterationService, IterationService>();
 
-            IEnumerable<IAssistantPlugin> plugins = _services.GetServices<IAssistantPlugin>().Where(x => x.Modes.Length == 0 || x.Modes.Contains(mode.Id));
-            if (!config.PluginIds.Any())
-                config.PluginIds = plugins.Select(x => x.Id).ToList();
-            foreach (var plugin in plugins.OrderByDescending(x => x.Priority))
-            {
-                if(config.PluginIds.Any(x => x == plugin.Id) || plugin.Required)
-                    await plugin.LoadAsync(cyrenaKernelBuilder);
+                var cyrenaKernelBuilder = new CyrenaKernelBuilder(config, builder);
+                if (!Directory.Exists(Path.Combine(CyrenaBuilder.AppDataDirectory, "conversations")))
+                    Directory.CreateDirectory(Path.Combine(CyrenaBuilder.AppDataDirectory, "conversations"));
+
+                cyrenaKernelBuilder.AddIsolatedFilePersistence(Path.Combine(CyrenaBuilder.AppDataDirectory, "conversations", config.Id), fs =>
+                {
+                    fs.AddSingletonStore<ChatMessageContentEntity>("messages");
+                    fs.AddSingletonStore<FileAttachment>("file_metadata");
+                });
+                cyrenaKernelBuilder.Services.AddSingleton<IChatMessageService, ChatMessageService>();
+                IPromptManager promptManager = new PromptManager();
+                cyrenaKernelBuilder.AddFeatureOption<IPromptManager>(promptManager);
+                cyrenaKernelBuilder.AddFeatureOption(info);
+                await mode.ConfigureAsync(cyrenaKernelBuilder);
+
+                IEnumerable<IAssistantPlugin> plugins = _services.GetServices<IAssistantPlugin>().Where(x => x.Modes.Length == 0 || x.Modes.Contains(mode.Id));
+                if (!config.PluginIds.Any())
+                    config.PluginIds = plugins.Select(x => x.Id).ToList();
+                foreach (var plugin in plugins.OrderByDescending(x => x.Priority))
+                {
+                    if (config.PluginIds.Any(x => x == plugin.Id) || plugin.Required)
+                        await plugin.LoadAsync(cyrenaKernelBuilder);
+                }
+                cyrenaKernelBuilder.Services.AddSingleton<IPromptManager>(promptManager);
+                cyrenaKernelBuilder.Services.AddSingleton<IAutoFunctionInvocationFilter, ConnectionFunctionInformerFilter>();
+                
+
+                var kernel = builder.Build();
+                if (!_instances.TryAdd(config.Id, kernel))
+                {
+                    DisposeKernel(kernel);
+                    throw new Exception($"Unable to contain kernel instance");
+                }
+                var startups = kernel.Services.GetServices<IStartupTask>();
+                foreach (var item in startups.OrderBy(x => x.Order))
+                    await item.RunAsync();
+                _pipe.InvokeLoaded(config);
+                return kernel;
             }
-            cyrenaKernelBuilder.Services.AddSingleton<IPromptManager>(promptManager);
-            cyrenaKernelBuilder.Services.AddSingleton<IAutoFunctionInvocationFilter, ConnectionFunctionInformerFilter>();
-            cyrenaKernelBuilder.Services.AddSingleton<IFileHandlerFactory, FileHandlerFactory>();
-            var kernel = builder.Build();
-            if (!_instances.TryAdd(config.Id, kernel))
+            catch(Exception ex)
             {
-                DisposeKernel(kernel);
-                throw new Exception($"Unable to contain kernel instance");
+                _pipe.InvokeLoadError(ex);
+                throw; //Continue normal handling
             }
-            var startups = kernel.Services.GetServices<IStartupTask>();
-            foreach (var item in startups.OrderBy(x => x.Order))
-                await item.RunAsync();
-            _pipe.InvokeLoaded(config);
-            return kernel;
         }
 
         public async Task<Kernel> LoadAsync(string id)
@@ -111,6 +131,9 @@ namespace Cyrena.Runtime.Services
             var mode = _services.GetServices<IAssistantMode>().FirstOrDefault(x => x.Id == config.AssistantModeId);
             if (mode is not null)
                 await mode.DeleteAsync(config);
+            if(Directory.Exists(Path.Combine(CyrenaBuilder.AppDataDirectory, "conversations", config.Id)))
+                Directory.Delete(Path.Combine(CyrenaBuilder.AppDataDirectory, "conversations", config.Id), true);
+
             _pipe.InvokeDelete(config);
         }
 
@@ -157,7 +180,9 @@ namespace Cyrena.Runtime.Services
         public IDisposable OnChatCreate(Action<ChatConfiguration> cb) => _pipe.WatchConfigCreate(cb);
         public IDisposable OnChatUpdate(Action<ChatConfiguration> cb) => _pipe.WatchConfigUpdate(cb);
         public IDisposable OnChatUnload(Action<ChatConfiguration> cb) => _pipe.WatchConfigUnload(cb);
+        public IDisposable OnChatLoadStart(Action<ChatConfiguration> cb) => _pipe.WatchLoadStart(cb);
         public IDisposable OnChatLoaded(Action<ChatConfiguration> cb) => _pipe.WatchConfigLoaded(cb);
+        public IDisposable OnChatLoadError(Action<Exception> cb) => _pipe.WatchConfigLoadError(cb);
 
         public void Dispose()
         {
@@ -197,13 +222,17 @@ namespace Cyrena.Runtime.Services
             public IDisposable WatchConfigDelete(Action<ChatConfiguration> callback) => this.ConfigurePipe("k_delete", callback);
             public IDisposable WatchConfigUpdate(Action<ChatConfiguration> callback) => this.ConfigurePipe("k_update", callback);
             public IDisposable WatchConfigUnload(Action<ChatConfiguration> callback) => this.ConfigurePipe("k_unload", callback);
+            public IDisposable WatchLoadStart(Action<ChatConfiguration> callback) => this.ConfigurePipe("k_load_start", callback);
             public IDisposable WatchConfigLoaded(Action<ChatConfiguration> callback) => this.ConfigurePipe("k_loaded", callback);
+            public IDisposable WatchConfigLoadError(Action<Exception> callback) => this.ConfigurePipe("k_load_error", callback);
 
             public void InvokeCreate(ChatConfiguration config) => InvokePipeline("k_create", config);
             public void InvokeDelete(ChatConfiguration config) => InvokePipeline("k_delete", config);
             public void InvokeUpdate(ChatConfiguration config) => InvokePipeline("k_update", config);
             public void InvokeUnload(ChatConfiguration config) => InvokePipeline("k_unload", config);
+            public void InvokeLoadStart(ChatConfiguration config) => InvokePipeline("k_load_start", config);
             public void InvokeLoaded(ChatConfiguration config) => InvokePipeline("k_loaded", config);
+            public void InvokeLoadError(Exception ex) => InvokePipeline("k_load_error", ex);
         }
     }
 }

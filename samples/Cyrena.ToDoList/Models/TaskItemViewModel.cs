@@ -1,29 +1,15 @@
 ﻿using Cyrena.Models;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace Cyrena.ToDoList.Models
 {
-    public class TaskItemViewModel : Entity, IJsonSerializable
+    public class TaskItemViewModel : Entity
     {
         public DateTime Date { get; set; }
         public string? IsComplete { get; set; }
         [Required]
         public string? Title { get; set; }
         public string? Description { get; set; }
-
-        public string ToJson()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
-
-        public override string ToString()
-        {
-            return ToJson();
-        }
 
         public static TaskItemViewModel Convert(TaskItem item)
         {

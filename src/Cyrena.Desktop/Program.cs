@@ -23,7 +23,7 @@ class Program
             Directory.CreateDirectory(CyrenaBuilder.UserContentDirectory);
         var fpd = new PhysicalFileProvider(Path.Combine(AppContext.BaseDirectory, "wwwroot"));
         var fpu = new PhysicalFileProvider(CyrenaBuilder.UserContentDirectory);
-        var appBuilder = PhotinoBlazorAppBuilder.CreateDefault(new CompositeFileProvider(fpd, fpu), args); //Photino/X Quirks
+        var appBuilder = PhotinoBlazorAppBuilder.CreateDefault(new CompositeFileProvider(fpd, fpu), args);
         appBuilder.Services
             .AddLogging(l =>
             {
@@ -44,8 +44,7 @@ class Program
                         .AddExtension<CyrenaExtension>(CyrenaExtension.Id, CyrenaExtension.Name, CyrenaExtension.Version, CyrenaExtension.Description);
 
         //Platform Specific Implementation
-        var files = new FileDialog();
-        builder.Services.AddSingleton<IFileDialog>(files);  
+        builder.Services.AddSingleton<IFileDialog, FileDialog>();  
         builder.Services.AddSingleton<ISetupService, SetupService>();
         builder.AddSettingsComponent<Defaults>("Defaults");
         //
@@ -53,7 +52,6 @@ class Program
         builder.Build();
 
         _app = appBuilder.Build();
-        files.SetWindow(_app.MainWindow);
         var settings = builder.GetFeatureOption<ISettingsService>();    
         var photino = settings.Read<WindowOptions>(WindowOptions.Key) ?? new WindowOptions();
         _app.MainWindow
@@ -61,13 +59,11 @@ class Program
             .SetTitle("Cyréna")
             .Load("index.html")
             .Center();
-
 #if DEBUG
         _app.MainWindow.SetDevToolsEnabled(true);
 #else
         _app.MainWindow.SetDevToolsEnabled(false);
 #endif
-
         _app.MainWindow.Height = photino.Height;
         _app.MainWindow.Width = photino.Width;
 
@@ -78,9 +74,6 @@ class Program
         foreach (var item in builder.RunActions)
             item.Invoke(_app.Services, cts.Token);
         _app.Run();
-
-        _app.MainWindow.WindowSizeChanged -= OnWindowSizeChanged;
-        AppDomain.CurrentDomain.UnhandledException -= OnUnhandledError;
     }
 
     private static void OnUnhandledError(object sender, UnhandledExceptionEventArgs error)

@@ -1,0 +1,15 @@
+{
+  "Title": "Model Reviews Feature",
+  "Keywords": [
+    "model-reviews",
+    "feature",
+    "ModelReview",
+    "ModelReviewsServiceService",
+    "ModelReviewsPageComponent",
+    "route"
+  ],
+  "Summary": "Feature module for displaying LLM model reviews used with Cyr\u00E9na. Includes a standalone page component, service with static data, model interface, and route registration.",
+  "Link": null,
+  "Content": "## Model Reviews Feature\n\nLocation: \u0060src/app/features/model-reviews/\u0060\n\n### ModelReview Interface\n\u0060src/app/features/model-reviews/models/model-reviewmodel.model.ts\u0060\n\n\u0060\u0060\u0060ts\nexport interface ModelReview {\n  category: \u0027Offline\u0027 | \u0027Cloud\u0027;\n  model: string;\n  provider: string;\n  size?: string;\n  bestUseCases: string[];\n  thinkingMode: string;\n  strengths: string[];\n  weaknesses: string[];\n  rating: number;\n  detailedReview: string;\n  proTip?: string;\n}\n\u0060\u0060\u0060\n\n### ModelReviewsServiceService\n\u0060src/app/features/model-reviews/services/model-reviews-service.service.ts\u0060\n\n- \u0060providedIn: \u0027root\u0027\u0060\n- Holds a private static array of 9 \u0060ModelReview\u0060 entries covering offline and cloud LLMs.\n- Public methods:\n  - \u0060getReviews(): ModelReview[]\u0060 \u2014 all reviews\n  - \u0060getOfflineReviews(): ModelReview[]\u0060 \u2014 category === \u0027Offline\u0027\n  - \u0060getCloudReviews(): ModelReview[]\u0060 \u2014 category === \u0027Cloud\u0027\n\n### ModelReviewsPageComponent\n\u0060src/app/features/model-reviews/components/model-reviews-page/model-reviews-page.component.ts\u0060\n\n- Standalone component, \u0060ChangeDetectionStrategy.OnPush\u0060\n- Injects \u0060ModelReviewsServiceService\u0060 via \u0060inject()\u0060\n- Signals:\n  - \u0060offlineReviews\u0060 \u2014 from service\n  - \u0060cloudReviews\u0060 \u2014 from service\n  - \u0060selectedCategory\u0060 \u2014 string, default \u0060\u0027All\u0027\u0060\n  - \u0060filteredReviews\u0060 \u2014 computed based on selected category\n- Method: \u0060setCategory(category: string): void\u0060\n- TrackBy: \u0060trackByModel(index, review) =\u003E review.model\u0060\n\n### Route\nRegistered lazily in \u0060app.routes.ts\u0060:\n\u0060\u0060\u0060ts\n{ path: \u0027model-reviews\u0027, loadComponent: () =\u003E import(\u0027./features/model-reviews/components/model-reviews-page/model-reviews-page.component\u0027).then(m =\u003E m.ModelReviewsPageComponent) }\n\u0060\u0060\u0060\n\n### Navigation\nAdded to \u0060app.component.html\u0060 navbar as:\n\u0060\u0060\u0060html\n\u003Ca class=\u0022nav-link\u0022 routerLink=\u0022/model-reviews\u0022\u003EModel Reviews\u003C/a\u003E\n\u0060\u0060\u0060\n\n### Template Highlights\n- Category filter buttons (All / Offline / Cloud)\n- Cards per review with badge, star rating, best use cases, thinking mode, strengths/weaknesses lists, detailed review paragraph, optional pro-tip alert\n- General tips section at bottom\n",
+  "Id": "model-reviews-feature"
+}

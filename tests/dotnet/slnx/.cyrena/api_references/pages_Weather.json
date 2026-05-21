@@ -1,0 +1,18 @@
+{
+  "Title": "Weather Page",
+  "Keywords": [
+    "Weather",
+    "page",
+    "forecast",
+    "IWeatherService",
+    "WeatherService",
+    "table",
+    "loading",
+    "async",
+    "OnInitializedAsync"
+  ],
+  "Summary": "Weather forecast page that displays simulated weather data via IWeatherService.",
+  "Link": null,
+  "Content": "## Weather.razor\n\n**Path:** \u0060Components/Pages/Weather.razor\u0060\n\n**Type:** Routable page component\n\n### Route\n\n\u0060\u0060\u0060razor\n@page \u0022/weather\u0022\n\u0060\u0060\u0060\n\n### Dependencies\n\n| Service | Type | Purpose |\n|---------|------|---------|\n| \u0060WeatherService\u0060 | \u0060IWeatherService\u0060 | Retrieves simulated weather forecast data. |\n\n### Injection\n\n\u0060\u0060\u0060razor\n@inject MyBlazorApp.Contracts.IWeatherService WeatherService\n\u0060\u0060\u0060\n\n### Content\n\n\u0060\u0060\u0060razor\n\u003CPageTitle\u003EWeather\u003C/PageTitle\u003E\n\n\u003Ch1\u003EWeather\u003C/h1\u003E\n\n\u003Cp\u003EThis component demonstrates showing data.\u003C/p\u003E\n\n@if (forecasts == null)\n{\n    \u003Cp\u003E\u003Cem\u003ELoading...\u003C/em\u003E\u003C/p\u003E\n}\nelse\n{\n    \u003Ctable class=\u0022table\u0022\u003E\n        \u003Cthead\u003E\n            \u003Ctr\u003E\n                \u003Cth\u003EDate\u003C/th\u003E\n                \u003Cth aria-label=\u0022Temperature in Celsius\u0022\u003ETemp. (C)\u003C/th\u003E\n                \u003Cth aria-label=\u0022Temperature in Fahrenheit\u0022\u003ETemp. (F)\u003C/th\u003E\n                \u003Cth\u003ESummary\u003C/th\u003E\n            \u003C/tr\u003E\n        \u003C/thead\u003E\n        \u003Ctbody\u003E\n            @foreach (var forecast in forecasts)\n            {\n                \u003Ctr\u003E\n                    \u003Ctd\u003E@forecast.Date.ToShortDateString()\u003C/td\u003E\n                    \u003Ctd\u003E@forecast.TemperatureC\u003C/td\u003E\n                    \u003Ctd\u003E@forecast.TemperatureF\u003C/td\u003E\n                    \u003Ctd\u003E@forecast.Summary\u003C/td\u003E\n                \u003C/tr\u003E\n            }\n        \u003C/tbody\u003E\n    \u003C/table\u003E\n}\n\u0060\u0060\u0060\n\n### State\n\n| Member | Type | Description |\n|--------|------|-------------|\n| \u0060forecasts\u0060 | \u0060WeatherForecast[]?\u0060 | The loaded forecast data. \u0060null\u0060 while loading. |\n\n### Lifecycle\n\n#### OnInitializedAsync\n\n\u0060\u0060\u0060csharp\nprotected override async Task OnInitializedAsync()\n{\n    forecasts = await WeatherService.GetForecastsAsync();\n}\n\u0060\u0060\u0060\n\nCalls \u0060IWeatherService.GetForecastsAsync()\u0060 with default parameters (5 days, 500ms delay).\n\n### Accessibility\n\n- \u0060aria-label\u0060 attributes on temperature headers describe the unit for screen readers.\n- Loading state shows \u0060\u003Cem\u003ELoading...\u003C/em\u003E\u0060 for clear feedback.\n\n### Notes\n\n- Previously contained inline business logic and a private \u0060WeatherForecast\u0060 class. **Refactored** to use \u0060IWeatherService\u0060 and the shared \u0060WeatherForecast\u0060 model.\n- The 500ms delay is intentional to demonstrate loading UI.\n- Data is randomly generated on each page visit.\n",
+  "Id": "pages_Weather"
+}

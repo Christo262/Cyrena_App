@@ -1,0 +1,30 @@
+.card {
+  border-radius: 0.75rem;
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.4em 0.6em;
+}
+
+.text-warning i {
+  font-size: 1rem;
+  margin-left: 0.1rem;
+}
+
+.alert-info {
+  background-color: #e7f3ff;
+  border-color: #b6d4fe;
+  color: #084298;
+}
+
+.bi {
+  font-size: 0.9rem;
+}
