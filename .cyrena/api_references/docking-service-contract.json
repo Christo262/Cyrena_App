@@ -1,0 +1,18 @@
+{
+  "Title": "IDockingService - Docked Panel Service",
+  "Keywords": [
+    "IDockingService",
+    "docking",
+    "dock",
+    "panel",
+    "window",
+    "KernelComponentBase",
+    "DockRequest",
+    "Cyrena.Components.Core",
+    "contracts"
+  ],
+  "Summary": "Manages docked panel components in the UI. Allows kernel-aware components to be docked as panels with lifecycle management.",
+  "Link": null,
+  "Content": "## IDockingService\n\n**Namespace**: \u0060Cyrena.Contracts\u0060\n**Assembly**: \u0060Cyrena.Components.Core\u0060\n\n### Purpose\nManages docked panel components in the UI. Allows kernel-aware components to be docked as panels with lifecycle management.\n\n### Interface Definition\n\n\u0060\u0060\u0060csharp\npublic interface IDockingService\n{\n    public record DockRequest(Type Component, string Title, Action OnClose);\n    IDisposable OnDockRequest(Action\u003CDockRequest\u003E callback);\n    void Dock\u003CTKernelComponent\u003E(string title, Action onClose)\n        where TKernelComponent : KernelComponentBase;\n}\n\u0060\u0060\u0060\n\n### Types\n\n#### DockRequest\nRecord containing dock request information:\n\n\u0060\u0060\u0060csharp\npublic record DockRequest(Type Component, string Title, Action OnClose);\n\u0060\u0060\u0060\n\n| Parameter | Type | Description |\n|-----------|------|-------------|\n| \u0060Component\u0060 | \u0060Type\u0060 | The component type to dock (must inherit from \u0060KernelComponentBase\u0060) |\n| \u0060Title\u0060 | \u0060string\u0060 | Panel title |\n| \u0060OnClose\u0060 | \u0060Action\u0060 | Callback invoked when the panel is closed |\n\n### Methods\n\n#### OnDockRequest(Action\u003CDockRequest\u003E callback)\nSubscribes to dock request events. Returns \u0060IDisposable\u0060 for unsubscription.\n\n\u0060\u0060\u0060csharp\nIDisposable OnDockRequest(Action\u003CDockRequest\u003E callback);\n\u0060\u0060\u0060\n\n#### Dock\u003CTKernelComponent\u003E(string title, Action onClose)\nRequests docking of a \u0060KernelComponentBase\u0060-derived component.\n\n\u0060\u0060\u0060csharp\nvoid Dock\u003CTKernelComponent\u003E(string title, Action onClose)\n    where TKernelComponent : KernelComponentBase;\n\u0060\u0060\u0060\n\n**Constraints:**\n- \u0060TKernelComponent\u0060 must inherit from \u0060KernelComponentBase\u0060\n- The component receives the active \u0060Kernel\u0060 instance automatically\n\n### Usage Example\n\n\u0060\u0060\u0060csharp\npublic class MyDockedPanel : KernelComponentBase\n{\n    // Kernel is available as [Parameter]\n}\n\n// In a service or component:\npublic void OpenPanel(IDockingService docking)\n{\n    docking.Dock\u003CMyDockedPanel\u003E(\u0022My Panel\u0022, () =\u003E Console.WriteLine(\u0022Panel closed\u0022));\n}\n\u0060\u0060\u0060\n\n### Related\n- \u0060KernelComponentBase\u0060 - Required base class for docked components\n- \u0060IBrowserService\u0060 - Browser window management\n- \u0060IDisplayService\u0060 - UI display service",
+  "Id": "docking-service-contract"
+}

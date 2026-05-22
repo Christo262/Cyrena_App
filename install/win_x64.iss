@@ -3,7 +3,7 @@
 ; Non-commercial use only
 
 #define MyAppName "Cyréna"
-#define MyAppVersion "0.5.0"
+#define MyAppVersion "0.6.0"
 #define MyAppPublisher "cyrena.dev"
 #define MyAppURL "https://cyrena.dev"
 #define MyAppExeName "Cyrena.Desktop.exe"
@@ -33,7 +33,7 @@ DisableProgramGroupPage=yes
 LicenseFile=..\license.md
 ; Remove the following line to run in administrative install mode (install for all users).
 PrivilegesRequired=lowest
-OutputBaseFilename=cyrena-desktop-0.5.0-win-x64
+OutputBaseFilename=cyrena-desktop-0.6.0-win-x64
 SolidCompression=yes
 WizardStyle=modern dynamic
 SetupIconFile=..\favicon.ico

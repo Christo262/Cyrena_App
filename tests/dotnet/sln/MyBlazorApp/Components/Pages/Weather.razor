@@ -1,46 +1,83 @@
-﻿@page "/weather"
+@page "/weather"
 
 <PageTitle>Weather</PageTitle>
 
-<h1>Weather</h1>
+<div class="weather-container animate-fade-in">
+    <div class="weather-header">
+        <div class="weather-header-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8 16c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-1c-3.866 0-7-3.134-7-7s3.134-7 7-7 7 3.134 7 7-3.134 7-7 7zm-.5-5.5a.5.5 0 0 1 0-1h5a.5.5 0 0 1 0 1h-5zm0-3a.5.5 0 0 1 0-1h3a.5.5 0 0 1 0 1h-3zm0-3a.5.5 0 0 1 0-1h1a.5.5 0 0 1 0 1h-1z"/>
+            </svg>
+        </div>
+        <div class="weather-header-text">
+            <h1>Weather Forecast</h1>
+            <p>5-day forecast with temperature and conditions</p>
+        </div>
+    </div>
 
-<p>This component demonstrates showing data.</p>
-
-@if (forecasts == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
+    @if (forecasts == null)
+    {
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>Loading forecast data...</p>
+        </div>
+    }
+    else
+    {
+        <div class="weather-cards">
             @foreach (var forecast in forecasts)
             {
-                <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
-                </tr>
+                <div class="weather-card">
+                    <div class="weather-card-date">@forecast.Date.ToString("ddd, MMM dd")</div>
+                    <div class="weather-card-icon">
+                        @GetWeatherIcon(forecast.Summary)
+                    </div>
+                    <div class="weather-card-temp">
+                        <span class="temp-c">@forecast.TemperatureC</span>
+                        <span class="temp-unit">°C</span>
+                    </div>
+                    <div class="weather-card-f">@forecast.TemperatureF°F</div>
+                    <div class="weather-card-summary">
+                        <span class="badge @GetSeverityClass(forecast.Summary)">@forecast.Summary</span>
+                    </div>
+                </div>
             }
-        </tbody>
-    </table>
-}
+        </div>
+
+        <div class="weather-table-container">
+            <h3>Detailed Forecast</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Temp. (C)</th>
+                        <th>Temp. (F)</th>
+                        <th>Summary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var forecast in forecasts)
+                    {
+                        <tr>
+                            <td>@forecast.Date.ToShortDateString()</td>
+                            <td>@forecast.TemperatureC°C</td>
+                            <td>@forecast.TemperatureF°F</td>
+                            <td>
+                                <span class="badge @GetSeverityClass(forecast.Summary)">@forecast.Summary</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
 
 @code {
     private WeatherForecast[]? forecasts;
 
     protected override async Task OnInitializedAsync()
     {
-        // Simulate asynchronous loading to demonstrate a loading indicator
         await Task.Delay(500);
 
         var startDate = DateOnly.FromDateTime(DateTime.Now);
@@ -59,5 +96,38 @@ else
         public int TemperatureC { get; set; }
         public string? Summary { get; set; }
         public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    }
+
+    private string GetSeverityClass(string? summary)
+    {
+        return summary?.ToLower() switch
+        {
+            "freezing" or "bracing" or "chilly" => "badge-primary",
+            "cool" or "mild" => "badge-success",
+            "warm" or "balmy" => "badge-warning",
+            "hot" or "sweltering" or "scorching" => "badge-danger",
+            _ => "badge-primary"
+        };
+    }
+
+    private RenderFragment GetWeatherIcon(string? summary)
+    {
+        return summary?.ToLower() switch
+        {
+            "freezing" or "bracing" or "chilly" =>
+                @<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 16a.5.5 0 0 1-.5-.5V8.707l-2.146 2.147a.5.5 0 0 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 8.707V15.5a.5.5 0 0 1-.5.5z"/>
+                    <path d="M8 4a.5.5 0 0 1-.5.5V6h-1a.5.5 0 0 1 0-1h1V3.5a.5.5 0 0 1 .5-.5z"/>
+                </svg>,
+            "hot" or "sweltering" or "scorching" =>
+                @<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
+                    <path d="M9.5 8c.04 0 .08-.01.12-.02a.5.5 0 0 0 .36-.62 3.99 3.99 0 0 0-.48-1.06.5.5 0 0 0-.86.5c.14.26.22.54.26.82a.5.5 0 0 0 .5.38z"/>
+                </svg>,
+            _ =>
+                @<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 2a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 2zm3.546 1.166a.5.5 0 0 1 .707.192l1.414 2.449a.5.5 0 1 1-.866.5l-1.414-2.449a.5.5 0 0 1 .159-.692zM12.5 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM10.354 12.334a.5.5 0 0 1-.159.692l-1.414 2.449a.5.5 0 1 1-.866-.5l1.414-2.449a.5.5 0 0 1 .707-.192zM8 14a.5.5 0 0 1-.5.5v-2a.5.5 0 0 1 1 0v2a.5.5 0 0 1-.5.5zM5.454 12.834a.5.5 0 0 1-.707-.192l-1.414-2.449a.5.5 0 1 1 .866-.5l1.414 2.449a.5.5 0 0 1-.159.692zM3.5 8a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5zM5.546 3.166a.5.5 0 0 1 .159-.692l1.414-2.449a.5.5 0 1 1 .866.5l-1.414 2.449a.5.5 0 0 1-.707.192zM8 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/>
+                </svg>
+        };
     }
 }

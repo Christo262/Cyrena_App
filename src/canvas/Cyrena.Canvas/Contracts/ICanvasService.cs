@@ -22,5 +22,6 @@ namespace Cyrena.Canvas.Contracts
         IDisposable OnDocumentUpdate(Action<CanvasDocument> cb);
 
         Task SaveAsync(CanvasDocument document, CancellationToken cancellationToken = default);
+        Task<string?> GetAttachmentEmbedPath(string fileId, CancellationToken cancellationToken = default);
     }
 }

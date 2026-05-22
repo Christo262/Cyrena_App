@@ -10,7 +10,6 @@ namespace Cyrena.Canvas
         public override void BuildExtension(CyrenaBuilder builder)
         {
             builder.AddAssistantPlugin<CanvasAssistantPlugin>();
-            builder.AddFeatureAssembly<CanvasAssistantPlugin>("blazor");
         }
     }
 }

@@ -1,7 +1,67 @@
-﻿@page "/"
+@page "/"
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="home-container animate-fade-in">
+    <div class="hero-section">
+        <div class="hero-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M10.478 1.647a.5.5 0 1 0-.956-.294l-4.483 15a.5.5 0 0 0 .956.294l4.483-15zM4.854 4.146a.5.5 0 0 1 0 .708L1.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0zm6.292 0a.5.5 0 0 1 .708 0l3.5 3.5a.5.5 0 0 1 0 .708l-3.5 3.5a.5.5 0 0 1-.708-.708L14.293 8l-3.147-3.146a.5.5 0 0 1 0-.708z"/>
+            </svg>
+        </div>
+        <h1>Welcome to MyBlazorApp</h1>
+        <p class="hero-description">
+            A modern, responsive Blazor application built with .NET 8. Explore the features below 
+            or navigate through the sidebar to discover more.
+        </p>
+        <div class="hero-actions">
+            <a href="counter" class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                </svg>
+                Try Counter
+            </a>
+            <a href="weather" class="btn btn-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 16c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-1c-3.866 0-7-3.134-7-7s3.134-7 7-7 7 3.134 7 7-3.134 7-7 7zm-.5-5.5a.5.5 0 0 1 0-1h5a.5.5 0 0 1 0 1h-5zm0-3a.5.5 0 0 1 0-1h3a.5.5 0 0 1 0 1h-3zm0-3a.5.5 0 0 1 0-1h1a.5.5 0 0 1 0 1h-1z"/>
+                </svg>
+                Check Weather
+            </a>
+        </div>
+    </div>
 
-Welcome to your new app.
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon feature-icon-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                </svg>
+            </div>
+            <h3>Interactive Counter</h3>
+            <p>Experience real-time interactivity with our Blazor counter component. Watch the count update instantly with each click.</p>
+            <a href="counter" class="feature-link">Try it out →</a>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon feature-icon-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 16c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-1c-3.866 0-7-3.134-7-7s3.134-7 7-7 7 3.134 7 7-3.134 7-7 7zm-.5-5.5a.5.5 0 0 1 0-1h5a.5.5 0 0 1 0 1h-5zm0-3a.5.5 0 0 1 0-1h3a.5.5 0 0 1 0 1h-3zm0-3a.5.5 0 0 1 0-1h1a.5.5 0 0 1 0 1h-1z"/>
+                </svg>
+            </div>
+            <h3>Weather Forecast</h3>
+            <p>View dynamic weather data presented in a beautifully styled table with loading states and responsive design.</p>
+            <a href="weather" class="feature-link">View forecast →</a>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon feature-icon-accent">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M4.355.522a.5.5 0 0 1 .623.333l.291.956A4.979 4.979 0 0 1 8 3c1.669 0 3.218.51 4.5 1.385l.291-.956a.5.5 0 1 1 .958.291l-.41 1.352a5.001 5.001 0 0 1 2.25 3.42l1.552.287a.5.5 0 0 1 .179.925 5.02 5.02 0 0 1-.513 1.1l1.552.287a.5.5 0 0 1 .179.925 5.02 5.02 0 0 1-1.513 1.552l.287 1.552a.5.5 0 0 1-.925.179 5.02 5.02 0 0 1-1.1-.513l-.287 1.552a.5.5 0 0 1-.925-.179 5.02 5.02 0 0 1 .513-1.1l-.287-1.552a.5.5 0 0 1 .179-.925 5.02 5.02 0 0 1 1.552-1.513l-.287-1.552a.5.5 0 0 1 .179-.925 5.02 5.02 0 0 1 1.1.513l.287-1.552a.5.5 0 0 1 .925.179zM8 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/>
+                </svg>
+            </div>
+            <h3>Bug Reporting</h3>
+            <p>Found an issue? Submit a detailed bug report through our modern form with validation and severity levels.</p>
+            <a href="bug-report" class="feature-link">Report bug →</a>
+        </div>
+    </div>
+</div>

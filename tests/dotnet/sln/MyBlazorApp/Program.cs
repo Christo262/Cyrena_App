@@ -1,10 +1,20 @@
-using MyBlazorApp.Components;
+using BlazorApp.Components;
+using BlazorApp.Contracts;
+using BlazorApp.Options;
+using BlazorApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// Configure email options from appsettings.json
+builder.Services.Configure<EmailOptions>(
+    builder.Configuration.GetSection("Email"));
+
+// Register bug report email service
+builder.Services.AddScoped<IBugReportEmailService, BugReportEmailService>();
 
 var app = builder.Build();
 

@@ -48,6 +48,8 @@ namespace Cyrena.Runtime.Services
             builder.Services.AddSingleton<IFileHandlerFactory, FileHandlerFactory>();
             builder.Services.AddSingleton<IConversationHistoryTransformer, FileReferenceContentTransformer>();
 
+            builder.Services.AddSingleton<ICyrenaFileExporter, CyrenaFileExporter>();
+
             return Task.CompletedTask;
         }
     }

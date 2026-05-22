@@ -2,47 +2,142 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    min-height: 100vh;
+    background: #f8fafc;
 }
 
 main {
     flex: 1;
+    padding: 0;
 }
 
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    background: linear-gradient(180deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .top-row {
-    background-color: #f7f7f7;
-    border-bottom: 1px solid #d6d5d5;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid #e2e8f0;
     justify-content: flex-end;
     height: 3.5rem;
     display: flex;
     align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: 0 2rem;
 }
 
-    .top-row ::deep a, .top-row ::deep .btn-link {
-        white-space: nowrap;
-        margin-left: 1.5rem;
-        text-decoration: none;
-    }
+.top-row-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
 
-    .top-row ::deep a:hover, .top-row ::deep .btn-link:hover {
-        text-decoration: underline;
-    }
+.app-version {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #94a3b8;
+    background: #f8fafc;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    letter-spacing: 0.05em;
+}
 
-    .top-row ::deep a:first-child {
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+.top-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #64748b;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 150ms ease;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+}
 
+.top-link:hover {
+    color: #6366f1;
+    background: #e0e7ff;
+    text-decoration: none;
+}
+
+.top-link svg {
+    transition: transform 150ms ease;
+}
+
+.top-link:hover svg {
+    transform: translate(2px, -2px);
+}
+
+.content {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Error UI */
+#blazor-error-ui {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    color: #92400e;
+    bottom: 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    display: none;
+    left: 0;
+    padding: 1rem 2rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+    border-top: 3px solid #f59e0b;
+}
+
+.error-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+}
+
+.error-content svg {
+    flex-shrink: 0;
+}
+
+#blazor-error-ui .reload {
+    margin-left: auto;
+    margin-right: 1rem;
+    color: #f59e0b;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    transition: background 150ms ease;
+}
+
+#blazor-error-ui .dismiss:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive */
 @media (max-width: 640.98px) {
     .top-row {
         justify-content: space-between;
+        padding: 0 1rem;
     }
 
-    .top-row ::deep a, .top-row ::deep .btn-link {
-        margin-left: 0;
+    .content {
+        padding: 1rem;
     }
 }
 
@@ -52,45 +147,14 @@ main {
     }
 
     .sidebar {
-        width: 250px;
+        width: 280px;
         height: 100vh;
         position: sticky;
         top: 0;
     }
 
-    .top-row {
-        position: sticky;
-        top: 0;
-        z-index: 1;
-    }
-
-    .top-row.auth ::deep a:first-child {
-        flex: 1;
-        text-align: right;
-        width: 0;
-    }
-
     .top-row, article {
         padding-left: 2rem !important;
-        padding-right: 1.5rem !important;
+        padding-right: 2rem !important;
     }
 }
-
-#blazor-error-ui {
-    background: lightyellow;
-    bottom: 0;
-    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
-    display: none;
-    left: 0;
-    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
-    position: fixed;
-    width: 100%;
-    z-index: 1000;
-}
-
-    #blazor-error-ui .dismiss {
-        cursor: pointer;
-        position: absolute;
-        right: 0.75rem;
-        top: 0.5rem;
-    }

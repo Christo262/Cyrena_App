@@ -1,0 +1,17 @@
+{
+  "Title": "CyrenaBuilderExtensions.UseFilePersistence - Application-Level File Persistence Configuration",
+  "Keywords": [
+    "UseFilePersistence",
+    "CyrenaBuilder",
+    "file persistence",
+    "DI configuration",
+    "application-level",
+    "FeatureOptions",
+    "ICyrenaPersistenceBuilder",
+    "IPersistenceFS"
+  ],
+  "Summary": "Configures file-based persistence at the application level. Registers FilePersistenceBuilder as ICyrenaPersistenceBuilder, registers PersistenceFS as IPersistenceFS, and configures FilePersistenceOptions.",
+  "Link": null,
+  "Content": "## CyrenaBuilderExtensions.UseFilePersistence\n\n**Namespace**: \u0060Cyrena.Extensions\u0060\n**Assembly**: \u0060Cyrena.Persistence.File\u0060\n**Version**: 0.6.0\n\n### Purpose\nConfigures file-based persistence at the application level. Registers \u0060FilePersistenceBuilder\u0060 as \u0060ICyrenaPersistenceBuilder\u0060, registers \u0060PersistenceFS\u0060 as \u0060IPersistenceFS\u0060, and configures \u0060FilePersistenceOptions\u0060.\n\n### Method Definition\n\n\u0060\u0060\u0060csharp\npublic static class CyrenaBuilderExtensions\n{\n    public static CyrenaBuilder UseFilePersistence(this CyrenaBuilder builder, Action\u003CFilePersistenceOptions\u003E options);\n}\n\u0060\u0060\u0060\n\n### Parameters\n\n| Parameter | Type | Description |\n|-----------|------|-------------|\n| \u0060builder\u0060 | \u0060CyrenaBuilder\u0060 | The application builder |\n| \u0060options\u0060 | \u0060Action\u003CFilePersistenceOptions\u003E\u0060 | Configuration callback for file persistence options |\n\n### What It Does\n\n1. Creates \u0060FilePersistenceBuilder\u0060 and registers it as \u0060ICyrenaPersistenceBuilder\u0060 in \u0060CyrenaBuilder.FeatureOptions\u0060\n2. Registers \u0060IPersistenceFS\u0060 as singleton \u0060PersistenceFS\u0060\n3. Configures \u0060FilePersistenceOptions\u0060 via the action callback\n\n### Usage Example\n\n\u0060\u0060\u0060csharp\n// In Program.cs or app startup\nbuilder.UseFilePersistence(options =\u003E\n{\n    options.BaseDirectory = Path.Combine(appDataPath, \u0022CyrenaData\u0022);\n    options.FileExtension = \u0022json\u0022;\n});\n\n// Then register stores\nbuilder.AddScopedStore\u003CMyEntity\u003E(\u0022my-entities\u0022);\nbuilder.AddSingletonStore\u003CGlobalConfig\u003E(\u0022global-config\u0022);\n\u0060\u0060\u0060\n\n### Prerequisites\nMust be called before any \u0060AddScopedStore\u003CT\u003E()\u0060 or \u0060AddSingletonStore\u003CT\u003E()\u0060 calls that rely on file persistence.\n\n### Related\n- \u0060FilePersistenceOptions\u0060 \u2014 Configuration class\n- \u0060FilePersistenceBuilder\u0060 \u2014 The builder being registered\n- \u0060PersistenceFS\u0060 \u2014 The IPersistenceFS implementation being registered\n- \u0060CyrenaBuilder.AddScopedStore\u003CT\u003E()\u0060 \u2014 Store registration (requires this first)\n- \u0060KernelBuilderExtensions.AddFilePersistence()\u0060 \u2014 Kernel-scoped variant",
+  "Id": "use-file-persistence-extension"
+}

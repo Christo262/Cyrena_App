@@ -11,9 +11,9 @@ namespace Cyrena.Extensions
     {
         public static CyrenaBuilder AddOpenAI(this CyrenaBuilder builder)
         {
-            builder.Services.AddScoped<IConnectionProvider, ConnectionProvider>();
+            builder.Services.AddSingleton<IConnectionProvider, ConnectionProvider>();
             builder.AddSettingsComponent<OpenAISettings>("OpenAI");
-            builder.AddScopedStore<OpenAIModel>("openai_models");
+            builder.AddSingletonStore<OpenAIModel>("openai_models");
             return builder;
         }
     }

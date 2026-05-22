@@ -1,0 +1,18 @@
+{
+  "Title": "IBrowserService - Browser Window Service",
+  "Keywords": [
+    "IBrowserService",
+    "browser",
+    "window",
+    "OpenUri",
+    "OpenFile",
+    "OpenRawHtml",
+    "IWindowHandle",
+    "Cyrena.Components.Core",
+    "contracts"
+  ],
+  "Summary": "Opens new browser windows/tabs for URIs, files, or raw HTML content. Returns IWindowHandle for lifecycle management.",
+  "Link": null,
+  "Content": "## IBrowserService\n\n**Namespace**: \u0060Cyrena.Contracts\u0060\n**Assembly**: \u0060Cyrena.Components.Core\u0060\n\n### Purpose\nOpens new browser windows/tabs for URIs, files, or raw HTML content. Provides window lifecycle management via \u0060IWindowHandle\u0060.\n\n### Interface Definition\n\n\u0060\u0060\u0060csharp\npublic interface IBrowserService : IDisposable\n{\n    IWindowHandle OpenUri(Uri uri, string title = \u0022Cyr\u00E9na\u0022);\n    IWindowHandle OpenFile(string filePath, string title = \u0022Cyr\u00E9na\u0022);\n    IWindowHandle OpenRawHtml(string html, string title = \u0022Cyr\u00E9na\u0022);\n}\n\u0060\u0060\u0060\n\n### Methods\n\n#### OpenUri(Uri uri, string title = \u0022Cyr\u00E9na\u0022)\nOpens a URL in a new browser window/tab.\n\n\u0060\u0060\u0060csharp\nIWindowHandle OpenUri(Uri uri, string title = \u0022Cyr\u00E9na\u0022);\n\u0060\u0060\u0060\n\n#### OpenFile(string filePath, string title = \u0022Cyr\u00E9na\u0022)\nOpens a local file path in a new browser window.\n\n\u0060\u0060\u0060csharp\nIWindowHandle OpenFile(string filePath, string title = \u0022Cyr\u00E9na\u0022);\n\u0060\u0060\u0060\n\n#### OpenRawHtml(string html, string title = \u0022Cyr\u00E9na\u0022)\nOpens raw HTML content in a new browser window.\n\n\u0060\u0060\u0060csharp\nIWindowHandle OpenRawHtml(string html, string title = \u0022Cyr\u00E9na\u0022);\n\u0060\u0060\u0060\n\n### Return Value\nAll methods return \u0060IWindowHandle\u0060 for window lifecycle management (close, dispose, event handling).\n\n### Usage Example\n\n\u0060\u0060\u0060csharp\npublic class MyService\n{\n    private readonly IBrowserService _browser;\n    \n    public MyService(IBrowserService browser)\n    {\n        _browser = browser;\n    }\n    \n    public void OpenDocumentation()\n    {\n        var handle = _browser.OpenUri(new Uri(\u0022https://docs.example.com\u0022), \u0022Documentation\u0022);\n        handle.Closing \u002B= (s, e) =\u003E Console.WriteLine(\u0022Window closed\u0022);\n    }\n    \n    public void OpenReport(string html)\n    {\n        var handle = _browser.OpenRawHtml(html, \u0022Report\u0022);\n        // ...\n        handle.Close();\n    }\n}\n\u0060\u0060\u0060\n\n### Related\n- \u0060IWindowHandle\u0060 - Window lifecycle handle\n- \u0060IDisplayService\u0060 - UI display service (dialogs, toasts)\n- \u0060IDockingService\u0060 - Docked panel management",
+  "Id": "browser-service-contract"
+}

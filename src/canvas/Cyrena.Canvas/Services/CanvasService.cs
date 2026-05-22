@@ -2,6 +2,7 @@
 using Cyrena.Canvas.Models;
 using Cyrena.Contracts;
 using Cyrena.Models;
+using Cyrena.Options;
 using Microsoft.SemanticKernel;
 using System.Text;
 
@@ -177,6 +178,14 @@ namespace Cyrena.Canvas.Services
         public IDisposable OnDocumentDelete(Action<CanvasDocument> cb) => _pipeline.WatchDocumentDelete(cb);
         public IDisposable OnDocumentActivate(Action<CanvasDocument> cb) => _pipeline.WatchDocumentActivate(cb);
         public IDisposable OnDocumentUpdate(Action<CanvasDocument> cb) => _pipeline.WatchDocumentUpdate(cb);
+
+        public async Task<string?> GetAttachmentEmbedPath(string fileId, CancellationToken cancellationToken = default)
+        {
+            var att = await _files.GetAttachmentAsync(fileId, cancellationToken);
+            if (att == null || !File.Exists(att.Path))return null;
+            var path = att.Path.Replace(CyrenaBuilder.ConversationsData, "").Replace("\\", "/").TrimStart('/');
+            return path;
+        }
     }
 
     internal class CanvasPipeline : EventPipeline

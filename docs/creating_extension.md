@@ -58,10 +58,14 @@ Extensions that add UI components must use the Razor SDK:
   <ItemGroup>
     <!-- Required for Blazor components -->
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
-    <PackageReference Include="Cyrena.Extensa.Core" />
-    <PackageReference Include="Cyrena.Components.Core" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Reference the core extension system -->
+    <ProjectReference Include="..\..\extensa\Cyrena.Extensa.Core\Cyrena.Extensa.Core.csproj" />
+    <!-- Reference if adding UI components -->
+    <ProjectReference Include="..\..\components\Cyrena.Components.Core\Cyrena.Components.Core.csproj" />
+  </ItemGroup>
 </Project>
 ```
 
@@ -297,7 +301,7 @@ using Cyrena.Models;
 
 namespace Cyrena.Tavily.Models
 {
-    public class SearchRequest 
+    public class SearchRequest : JsonStringObject
     {
         [System.Text.Json.Serialization.JsonPropertyName("query")]
         public string? Query { get; set; }
@@ -420,8 +424,6 @@ The `Resources.Read` helper (from `Cyrena.Core`) reads embedded resources by ful
 | `Cyrena.Extensa.Core` | Extension base class, `Extension` |
 | `Cyrena.Core` | Builders, contracts, models, `IAssistantPlugin` |
 | `Cyrena.Components.Core` | UI contracts, `ISettingsComponent`, `KernelComponentBase` |
-| `Microsoft.AspNetCore.Components.Web` | Blazor component support |
-| `Microsoft.SemanticKernel` | Semantic Kernel plugins (if adding AI tools) |
 
 ---
 

@@ -77,30 +77,28 @@ namespace Cyrena.Coding.Services
 
         [KernelFunction("write")]
         [Description(
-     "Modifies the specified file using a single splice operation. " +
-     "All line endings are normalized to \\n. " +
-     "By default, this inserts content at startLine without removing existing lines. " +
-     "If replaceAll is true, the entire file is replaced with content and startLine/lineCount are ignored. " +
-     "If replaceAll is false and lineCount is 0, content is inserted at startLine. " +
-     "If replaceAll is false and lineCount is greater than 0, that many existing lines are removed starting at startLine, then content is inserted at the same position. " +
-     "To delete lines, pass empty content with replaceAll false and lineCount greater than 0. " +
-     "To append, use startLine equal to the current line count and lineCount 0. " +
-     "Use read_lines first when editing by line number.")]
+    "Modifies the specified file. All line endings are normalized to \\n. " +
+    "mode controls the operation: " +
+    "Insert — inserts content at startLine, existing lines are shifted down, lineCount is ignored. " +
+    "Replace — removes exactly lineCount lines starting at startLine, then inserts content at that position. lineCount must be > 0. " +
+    "Overwrite — replaces the entire file with content, startLine and lineCount are ignored. " +
+    "To append to end of file, use Insert with startLine equal to the current total line count. " +
+    "Use read_lines first when editing by line number.")]
         public ToolResult<DevelopFileLines> WriteFile(
-     [Description("The unique identifier of the target file within the current develop plan.")]
+    [Description("The unique identifier of the target file within the current develop plan.")]
     string fileId,
 
-     [Description("The text content to write, insert, or use as replacement content. Null is treated as empty content.")]
+    [Description("Insert: inserts content at startLine. Replace: removes lineCount lines at startLine then inserts content. Overwrite: replaces entire file.")]
+    CodeWriteMode mode,
+
+    [Description("The text content to insert or use as replacement. Null or empty to delete lines with Replace mode.")]
     string? content,
 
-     [Description("The zero-based line number where the insert or replacement should begin. Required for line-based edits.")]
-    int startLine,
+    [Description("The zero-based line number where the operation begins. Ignored when mode is Overwrite.")]
+    int startLine = 0,
 
-     [Description("The number of existing lines to remove before inserting content. Use 0 to insert without removing anything.")]
-    int lineCount = 0,
-
-     [Description("Set true only when replacing the entire file. When true, startLine and lineCount are ignored.")]
-    bool replaceAll = false)
+    [Description("The number of lines to remove before inserting. Only used when mode is Replace. Must be > 0.")]
+    int lineCount = 0)
         {
             try
             {
@@ -110,20 +108,26 @@ namespace Cyrena.Coding.Services
                 if (file!.ReadOnly)
                     return new ToolResult<DevelopFileLines>(false, $"File '{file.RelativePath}' is read-only.");
 
-                if (replaceAll)
-                    _context.LogInfo($"Writing entire file {file.RelativePath}");
-                else if (lineCount == 0)
-                    _context.LogInfo($"Inserting content at line {startLine} in {file.RelativePath}");
-                else
-                    _context.LogInfo($"Replacing {lineCount} line(s) starting at line {startLine} in {file.RelativePath}");
+                switch (mode)
+                {
+                    case CodeWriteMode.Overwrite:
+                        _context.LogInfo($"Overwriting entire file {file.RelativePath}");
+                        break;
+                    case CodeWriteMode.Insert:
+                        _context.LogInfo($"Inserting content at line {startLine} in {file.RelativePath}");
+                        break;
+                    case CodeWriteMode.Replace:
+                        _context.LogInfo($"Replacing {lineCount} line(s) starting at line {startLine} in {file.RelativePath}");
+                        break;
+                }
 
                 _plan.Plan.TryReadFileContent(file, out var existingContent);
                 _version.Backup(existingContent);
 
-                if (!_plan.Plan.TryWriteFileLines(file, content, startLine, lineCount, replaceAll, out var updated))
+                if (!_plan.Plan.TryWriteFileLines(file, content, startLine, lineCount, mode, out var updated))
                     return new ToolResult<DevelopFileLines>(
                         false,
-                        $"Unable to write to file '{file.RelativePath}'. Check startLine, lineCount, and replaceAll.");
+                        $"Unable to write to file '{file.RelativePath}'. Ensure startLine and lineCount are valid for the chosen mode.");
 
                 _plan.InvokeFileUpdated(updated!);
 

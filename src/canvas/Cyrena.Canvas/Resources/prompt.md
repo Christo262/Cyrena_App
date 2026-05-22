@@ -23,18 +23,6 @@ Examples of good Canvas use:
 
 Avoid using Canvas for short one-off answers unless the user explicitly asks for it.
 
-## Available Operations
-
-You can interact with Canvas through these operations:
-
-* `Canvas_list`: Lists available Canvas documents.
-* `Canvas_activate`: Activates a specific Canvas document so it becomes the current document.
-* `Canvas_get_active`: Reads the currently active Canvas document with line numbers.
-* `Canvas_create`: Creates a new Canvas document and activates it.
-* `Canvas_write`: Inserts or replaces lines in the active Canvas document.
-* `Canvas_delete`: Deletes a Canvas document.
-* `Canvas_create_from_attachment`: Creates a new Canvas document from a User provided attachment and activates it. The attachment must be a text-content file, i.e. PDF, HTML, etc.
-
 ## Working With Documents
 
 Only one Canvas document is active at a time. Editing operations apply to the active document.

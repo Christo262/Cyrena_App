@@ -3,8 +3,10 @@ using Cyrena.Canvas.Models;
 using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Models;
+using Cyrena.Options;
 using Microsoft.SemanticKernel;
 using System.ComponentModel;
+using static System.Net.WebRequestMethods;
 
 namespace Cyrena.Canvas.Services
 {
@@ -100,26 +102,17 @@ namespace Cyrena.Canvas.Services
             return new ToolResult(true, $"Document with id '{documentId}' was deleted.");
         }
 
-        //[KernelFunction("create_from_attachment")]
-        //[Description("Creates a new Canvas document from a User provided attachment and activates it. The attachment must be a text-content file, i.e. PDF, HTML, etc.")]
-        //public async Task<ToolResult<CanvasDocument>> CreateFromAttachmentAsync(
-        //    [Description("The name of the attachment")]string file_name,
-        //    [Description("The document type to create the new file as")]CanvasDocumentType type,
-        //    [Description("The title for the new document")]string title,
-        //    CancellationToken cancellationToken = default)
-        //{
-        //    try
-        //    {
-        //        await _chat.LogInfo($"Creating Canvas from {file_name}...");
-        //        var doc = await _canvas.CreateFromAttachmentAsync(file_name, type, title, cancellationToken);
-        //        await _canvas.ActivateAsync(doc.Id, cancellationToken);
-        //        return new ToolResult<CanvasDocument>(doc);
-        //    }catch (Exception ex)
-        //    {
-        //        await _chat.LogError(ex.Message);
-        //        return new ToolResult<CanvasDocument>(false, ex.Message);
-        //    }
-        //}
+        [KernelFunction("get_attachment_path")]
+        [Description("Gets a link to an attachment that can be used to embed the attachment in the Canvas document.")]
+        public async Task<ToolResult<string>> GetImagePath(
+            [Description("The file name from the file reference attached to a message.")] string file_name,
+            CancellationToken cancellationToken = default)
+        {
+            var att = await _canvas.GetAttachmentEmbedPath(file_name, cancellationToken);
+            if (att == null)
+                return new ToolResult<string>(false, "Attachment not found");
+            return new ToolResult<string>(att, true);
+        }
 
         [KernelFunction("write")]
         [Description(

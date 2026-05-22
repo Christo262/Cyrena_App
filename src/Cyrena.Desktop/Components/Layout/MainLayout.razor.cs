@@ -31,7 +31,7 @@ namespace Cyrena.Desktop.Components.Layout
         protected override void OnInitialized()
         {
             _view_start = _start.GetViewStart();
-            _nav.NavigateTo(_view_start.Href);
+            //_nav.NavigateTo(_view_start.Href);
             base.OnInitialized();
         }
 
@@ -71,7 +71,7 @@ namespace Cyrena.Desktop.Components.Layout
 
         private async Task Refresh()
         {
-            _chats = await _store.FindManyAsync(x => true, new OrderBy<ChatConfiguration>(x => x.LastModified, SortDirection.Descending));
+            _chats = await _store.FindManyAsync(x => true);
             _groups = _chats.Select(x => x[ChatConfiguration.Group]).Distinct();
             this.StateHasChanged();
         }

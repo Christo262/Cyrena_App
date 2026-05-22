@@ -1,0 +1,16 @@
+{
+  "Title": "ChatMessageContentEntity - Chat History Persistence Model",
+  "Keywords": [
+    "ChatMessageContentEntity",
+    "entity",
+    "chat history",
+    "persistence",
+    "KernelContentEntity",
+    "Cyrena.Core",
+    "models"
+  ],
+  "Summary": "Entity used to persist chat history to storage. Wraps ChatMessageContent with iteration tracking and metadata.",
+  "Link": null,
+  "Content": "## ChatMessageContentEntity\n\n**Namespace**: \u0060Cyrena.Models\u0060\n**Assembly**: \u0060Cyrena.Core\u0060\n\n### Purpose\nUsed to persist chat history to storage. Wraps \u0060Microsoft.SemanticKernel.ChatCompletion.ChatMessageContent\u0060 with additional metadata for persistence.\n\n### ChatMessageContentEntity\n\u0060\u0060\u0060csharp\npublic sealed class ChatMessageContentEntity : Entity\n{\n    public ChatMessageContentEntity();\n    public ChatMessageContentEntity(ChatMessageContent content, Ulid? iterationId = null);\n    \n    public Ulid? IterationId { get; set; }\n    public DateTime Date { get; set; }\n    public string? Role { get; set; }\n    public List\u003CKernelContentEntity\u003E Items { get; set; }\n    public string? ModelId { get; set; }\n    public IReadOnlyDictionary\u003Cstring, object?\u003E? Metadata { get; set; }\n    public string? MimeType { get; set; }\n    \n    public ChatMessageContent AsChatMessage();\n}\n\u0060\u0060\u0060\n\n### Properties\n| Property | Type | Description |\n|----------|------|-------------|\n| \u0060IterationId\u0060 | \u0060Ulid?\u0060 | ID of the iteration this message belongs to |\n| \u0060Date\u0060 | \u0060DateTime\u0060 | When the message was created |\n| \u0060Role\u0060 | \u0060string?\u0060 | Message role label (e.g., \u0022user\u0022, \u0022assistant\u0022, \u0022system\u0022) |\n| \u0060Items\u0060 | \u0060List\u003CKernelContentEntity\u003E\u0060 | Content items wrapped in KernelContentEntity |\n| \u0060ModelId\u0060 | \u0060string?\u0060 | Model ID used to generate the content |\n| \u0060Metadata\u0060 | \u0060IReadOnlyDictionary\u003Cstring, object?\u003E?\u0060 | Additional metadata |\n| \u0060MimeType\u0060 | \u0060string?\u0060 | MIME type of the content |\n\n### KernelContentEntity\n\u0060\u0060\u0060csharp\npublic sealed class KernelContentEntity : Entity\n{\n    public KernelContentEntity();\n    public KernelContentEntity(KernelContent item);\n    \n    public KernelContent? Item { get; set; }\n    public bool IsContentType\u003CTKernelContent\u003E() where TKernelContent : KernelContent;\n}\n\u0060\u0060\u0060\n\n### Methods\n\n#### AsChatMessage()\nConverts the entity back to a \u0060ChatMessageContent\u0060 for use with Semantic Kernel.\n\n\u0060\u0060\u0060csharp\npublic ChatMessageContent AsChatMessage()\n\u0060\u0060\u0060\n\n### Usage\n\u0060\u0060\u0060csharp\n// Create from chat message\nvar entity = new ChatMessageContentEntity(chatMessageContent, iterationId);\n\n// Convert back\nvar message = entity.AsChatMessage();\n\u0060\u0060\u0060\n\n### Related\n- \u0060IChatMessageService\u0060 - Uses ChatMessageContentEntity for persistence\n- \u0060IStore\u003CChatMessageContentEntity\u003E\u0060 - Persistence store\n- \u0060KernelContent\u0060 - Semantic Kernel content base class\n- \u0060ChatMessageContent\u0060 - Semantic Kernel chat message type",
+  "Id": "chat-message-content-entity"
+}

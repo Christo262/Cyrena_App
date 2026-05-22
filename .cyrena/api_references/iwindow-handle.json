@@ -1,0 +1,16 @@
+{
+  "Title": "IWindowHandle - Browser Window Lifecycle Handle",
+  "Keywords": [
+    "IWindowHandle",
+    "window handle",
+    "browser",
+    "closing",
+    "dispose",
+    "Cyrena.Components.Core",
+    "models"
+  ],
+  "Summary": "Represents a handle to an opened browser window for lifecycle management. Supports closing, disposal, and event notification.",
+  "Link": null,
+  "Content": "## IWindowHandle\n\n**Namespace**: \u0060Cyrena.Models\u0060\n**Assembly**: \u0060Cyrena.Components.Core\u0060\n\n### Purpose\nRepresents a handle to an opened browser window for lifecycle management. Returned by \u0060IBrowserService\u0060 methods.\n\n### Interface Definition\n\n\u0060\u0060\u0060csharp\npublic interface IWindowHandle : IDisposable\n{\n    event EventHandler\u003CEventArgs\u003E? Closing;\n    bool Disposed { get; }\n    void Close();\n}\n\u0060\u0060\u0060\n\n### Properties\n\n| Property | Type | Description |\n|----------|------|-------------|\n| \u0060Disposed\u0060 | \u0060bool\u0060 | Whether the window has been disposed |\n\n### Events\n\n#### Closing\nFired when the window is closing.\n\n\u0060\u0060\u0060csharp\nevent EventHandler\u003CEventArgs\u003E? Closing;\n\u0060\u0060\u0060\n\n### Methods\n\n#### Close()\nCloses the window.\n\n\u0060\u0060\u0060csharp\nvoid Close();\n\u0060\u0060\u0060\n\n#### Dispose()\nDisposes the window handle and releases resources.\n\n\u0060\u0060\u0060csharp\nvoid Dispose();\n\u0060\u0060\u0060\n\n### Usage Example\n\n\u0060\u0060\u0060csharp\nvar handle = browserService.OpenUri(new Uri(\u0022https://example.com\u0022), \u0022Example\u0022);\n\n// Subscribe to closing event\nhandle.Closing \u002B= (s, e) =\u003E Console.WriteLine(\u0022Window is closing\u0022);\n\n// Close programmatically\nhandle.Close();\n\n// Or dispose\nhandle.Dispose();\n\n// Check state\nif (handle.Disposed)\n{\n    Console.WriteLine(\u0022Window has been disposed\u0022);\n}\n\u0060\u0060\u0060\n\n### Related\n- \u0060IBrowserService\u0060 - Creates window handles\n- \u0060IDisplayService\u0060 - UI display service",
+  "Id": "iwindow-handle"
+}

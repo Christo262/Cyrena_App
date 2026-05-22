@@ -299,19 +299,13 @@ namespace Cyrena.Coding.Extensions
     string? content,
     int startLine,
     int lineCount,
-    bool replaceAll,
+    CodeWriteMode mode,
     out DevelopFileLines? lines)
         {
-            if (replaceAll)
+            if (mode == CodeWriteMode.Overwrite)
                 return plan.TryWriteFileContentAsLines(file, content, out lines);
 
-            if (!plan.TryReadFileLines(file, out var current))
-            {
-                lines = null;
-                return false;
-            }
-
-            if (current == null)
+            if (!plan.TryReadFileLines(file, out var current) || current == null)
             {
                 lines = null;
                 return false;
@@ -330,25 +324,24 @@ namespace Cyrena.Coding.Extensions
                 return false;
             }
 
-            if (lineCount < 0)
-            {
-                lines = null;
-                return false;
-            }
-
-            if (startLine + lineCount > totalLines)
-            {
-                lines = null;
-                return false;
-            }
-
             var incomingLines = SplitIncomingLines(content);
 
-            existingLines.RemoveRange(startLine, lineCount);
-            existingLines.InsertRange(startLine, incomingLines);
+            if (mode == CodeWriteMode.Insert)
+            {
+                existingLines.InsertRange(startLine, incomingLines);
+            }
+            else if (mode == CodeWriteMode.Replace)
+            {
+                if (lineCount <= 0 || startLine + lineCount > totalLines)
+                {
+                    lines = null;
+                    return false;
+                }
+                existingLines.RemoveRange(startLine, lineCount);
+                existingLines.InsertRange(startLine, incomingLines);
+            }
 
             var updatedContent = string.Join("\n", existingLines);
-
             return plan.TryWriteFileContentAsLines(file, updatedContent, out lines);
         }
 

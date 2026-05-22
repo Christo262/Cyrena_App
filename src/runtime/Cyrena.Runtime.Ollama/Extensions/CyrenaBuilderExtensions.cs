@@ -14,8 +14,8 @@ namespace Cyrena.Extensions
     {
         public static CyrenaBuilder AddOllama(this CyrenaBuilder builder)
         {
-            builder.AddScopedStore<OllamaConnectionInfo>("ollama_connections");
-            builder.Services.AddScoped<IConnectionProvider, OllamaConnectionProvider>();
+            builder.AddSingletonStore<OllamaConnectionInfo>("ollama_connections");
+            builder.Services.AddSingleton<IConnectionProvider, OllamaConnectionProvider>();
 
             builder.AddSettingsComponent<OllamaSettings>("Ollama");
 

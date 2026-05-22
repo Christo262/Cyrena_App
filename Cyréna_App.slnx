@@ -57,6 +57,7 @@
     <Project Path="src/web/Cyrena.Tavily/Cyrena.Tavily.csproj" Id="a52527de-2b8d-4184-949d-49f7669e0409" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Cyrena.Host.Test/Cyrena.Host.Test.csproj" Id="966229b1-8a27-44a5-affc-b7bb3b0eb78d" />
     <Project Path="tests/Cyrena.Platform.Tests/Cyrena.Platform.Tests.csproj" Id="096b9edd-2d7e-4a79-919c-1dcdf0c9e049" />
     <Project Path="tests/Cyrena.Serialization.Tests/Cyrena.Serialization.Tests.csproj" Id="f33f4559-21f7-4ab8-92e1-43d77e9a1914" />
   </Folder>

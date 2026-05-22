@@ -16,6 +16,7 @@ namespace Cyrena.Extensions
             {
                 options.DisableGetLocalizerFromResourceManager = true;
                 options.DisableGetLocalizerFromService = true;
+                options.IgnoreLocalizerMissing = true;
                 
             }).ConfigureIconThemeOptions(icons =>
             {

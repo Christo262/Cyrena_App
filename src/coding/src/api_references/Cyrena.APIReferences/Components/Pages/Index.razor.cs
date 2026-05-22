@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using System.Text.Json;
+using Cyrena.Persistence;
 
 namespace Cyrena.APIReferences.Components.Pages
 {
@@ -52,7 +53,7 @@ namespace Cyrena.APIReferences.Components.Pages
                     throw new NullReferenceException("Unable to find instance of Kernel");
                 _kernel = kernel;
                 _store = _kernel.Services.GetRequiredService<IStore<ApiReference>>();
-                _models = await _store.FindManyAsync(x => true);
+                _models = await _store.FindManyAsync(x => true, new OrderBy<ApiReference>(x => x.Title, SortDirection.Ascending));
                 this.StateHasChanged();
             }
             catch (Exception ex)

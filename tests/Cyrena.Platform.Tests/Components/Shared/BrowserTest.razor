@@ -19,7 +19,10 @@
 
     private void Test()
     {
-        _dock.Dock<DockingTest>("Test");
+        _dock.Dock<DockingTest>("Test", () =>
+        {
+            _handle = null;
+        });
     }
 
     private void Closing(object? sender, EventArgs e)

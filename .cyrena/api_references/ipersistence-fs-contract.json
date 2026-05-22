@@ -1,0 +1,18 @@
+{
+  "Title": "IPersistenceFS - File System Persistence Abstraction",
+  "Keywords": [
+    "IPersistenceFS",
+    "file system",
+    "Read",
+    "Write",
+    "Delete",
+    "IEntity",
+    "JSON",
+    "collection",
+    "persistence abstraction"
+  ],
+  "Summary": "File system abstraction for reading, writing, and deleting entity JSON files. Used by FileStore\u003CT\u003E for low-level file I/O operations.",
+  "Link": null,
+  "Content": "## IPersistenceFS\n\n**Namespace**: \u0060Cyrena.Contracts\u0060\n**Assembly**: \u0060Cyrena.Persistence.File\u0060\n**Version**: 0.6.0\n\n### Purpose\nFile system abstraction for reading, writing, and deleting entity JSON files. Provides the low-level file I/O contract used by \u0060FileStore\u003CT\u003E\u0060.\n\n### Interface Definition\n\n\u0060\u0060\u0060csharp\npublic interface IPersistenceFS\n{\n    IList\u003CT\u003E Read\u003CT\u003E(string collectionName) where T : class, IEntity;\n    void Write\u003CT\u003E(T entity, string collectionName) where T : class, IEntity;\n    void Delete\u003CT\u003E(string id, string collectionName) where T : class, IEntity;\n}\n\u0060\u0060\u0060\n\n### Methods\n\n#### Read\u003CT\u003E(string collectionName)\nLoads all entities from a collection directory, deserializing JSON files.\n\n\u0060\u0060\u0060csharp\nIList\u003CT\u003E Read\u003CT\u003E(string collectionName) where T : class, IEntity;\n\u0060\u0060\u0060\n\n**Parameters:**\n- \u0060collectionName\u0060: Name of the collection folder under \u0060BaseDirectory\u0060\n\n**Returns:** \u0060IList\u003CT\u003E\u0060 \u2014 List of deserialized entities\n\n**Behavior:**\n- Reads all \u0060*.{FileExtension}\u0060 files from \u0060{BaseDirectory}/{collectionName}/\u0060\n- Deserializes each file as JSON to type \u0060T\u0060\n- Returns empty list if directory doesn\u0027t exist\n\n#### Write\u003CT\u003E(T entity, string collectionName)\nWrites an entity to a JSON file (creates or updates).\n\n\u0060\u0060\u0060csharp\nvoid Write\u003CT\u003E(T entity, string collectionName) where T : class, IEntity;\n\u0060\u0060\u0060\n\n**Parameters:**\n- \u0060entity\u0060: Entity to persist\n- \u0060collectionName\u0060: Name of the collection folder\n\n**Behavior:**\n- Writes to \u0060{BaseDirectory}/{collectionName}/{entity.Id}.{FileExtension}\u0060\n- Creates directory if it doesn\u0027t exist\n- Overwrites existing file if entity already exists\n\n#### Delete\u003CT\u003E(string id, string collectionName)\nRemoves an entity\u0027s JSON file by ID.\n\n\u0060\u0060\u0060csharp\nvoid Delete\u003CT\u003E(string id, string collectionName) where T : class, IEntity;\n\u0060\u0060\u0060\n\n**Parameters:**\n- \u0060id\u0060: Entity ID (used as filename)\n- \u0060collectionName\u0060: Name of the collection folder\n\n**Behavior:**\n- Deletes \u0060{BaseDirectory}/{collectionName}/{id}.{FileExtension}\u0060 if it exists\n- No-op if file doesn\u0027t exist\n\n### Implementations\n- **PersistenceFS** \u2014 Concrete implementation with in-memory caching and thread-safe file I/O\n\n### Related\n- \u0060PersistenceFS\u0060 \u2014 Concrete implementation\n- \u0060FileStore\u003CT\u003E\u0060 \u2014 Uses \u0060IPersistenceFS\u0060 for entity persistence\n- \u0060FilePersistenceOptions\u0060 \u2014 Configuration for file paths and extensions",
+  "Id": "ipersistence-fs-contract"
+}

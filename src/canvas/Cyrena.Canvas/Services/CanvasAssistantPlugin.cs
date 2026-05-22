@@ -28,8 +28,6 @@ namespace Cyrena.Canvas.Services
             builder.Plugins.AddFromType<CanvasKernelFunctions>("Canvas");
             builder.GetFeatureOption<IPromptManager>().AddPrompt(10, Resources.Read(typeof(CanvasAssistantPlugin).Assembly, "Cyrena.Canvas.Resources.prompt.md"));
             var info = builder.GetFeatureOption<ConnectionInfo>();
-            if (info.SupportImages)
-                builder.Plugins.AddFromType<CanvasImageKernelFunctions>("CanvasImage");
             return Task.CompletedTask;
         }
     }
