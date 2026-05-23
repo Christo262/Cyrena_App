@@ -3,7 +3,6 @@ using Cyrena.Contracts;
 using Cyrena.Options;
 using Cyrena.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 
 namespace Cyrena.Extensions
 {
@@ -17,6 +16,7 @@ namespace Cyrena.Extensions
             builder.Services.AddScoped<HeadOutletStateChangeTracker>();
             builder.Services.AddScoped<IViewStart, ViewStartService>();
             builder.AddAssistantPlugin<ToolCallInclusionPlugin>();
+            builder.AddSettingsComponent<Settings>("Application");
             return builder;
         }
     }

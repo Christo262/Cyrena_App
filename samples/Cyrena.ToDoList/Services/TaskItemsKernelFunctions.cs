@@ -13,12 +13,10 @@ namespace Cyrena.ToDoList.Services
     {
         private readonly ITaskItemService _service;
         private readonly IChatMessageService _chat;
-        private readonly IDisplayService _display;
-        public TaskItemsKernelFunctions(ITaskItemService service, IChatMessageService chat, IDisplayService display)
+        public TaskItemsKernelFunctions(ITaskItemService service, IChatMessageService chat)
         {
             _service = service;
             _chat = chat;
-            _display = display;
         }
 
         [KernelFunction("list")]
@@ -126,31 +124,31 @@ namespace Cyrena.ToDoList.Services
             }
         }
 
-        [KernelFunction("show")]
-        [Description("Shows a dialog with the user's To Do list for a specific date.")]
-        public async Task<ToolResult> ShowAsync(
-            [Description("The date to show. Leave empty to show today's date. Provide in yyyy/MM/dd format, e.g. 2026/05/02.")] string? date = null)
-        {
-            try
-            {
-                DateTime dt;
-                if (!string.IsNullOrEmpty(date))
-                    dt = Convert.ToDateTime(date);
-                else
-                    dt = DateTime.Today;
-                _ = _display.ShowModal<TaskItemsModal>(new BootstrapBlazor.Components.ResultDialogOption()
-                {
-                    Title = "To-Do List",
-                    Size = BootstrapBlazor.Components.Size.Medium,
-                    ShowYesButton = false,
-                    ButtonNoText = "Close"
-                });
-                return new ToolResult(true, "Success, user can see their to-do list");
-            }
-            catch (Exception ex)
-            {
-                return new ToolResult(false, ex.Message);
-            }
-        }
+        //[KernelFunction("show")]
+        //[Description("Shows a dialog with the user's To Do list for a specific date.")]
+        //public async Task<ToolResult> ShowAsync(
+        //    [Description("The date to show. Leave empty to show today's date. Provide in yyyy/MM/dd format, e.g. 2026/05/02.")] string? date = null)
+        //{
+        //    try
+        //    {
+        //        DateTime dt;
+        //        if (!string.IsNullOrEmpty(date))
+        //            dt = Convert.ToDateTime(date);
+        //        else
+        //            dt = DateTime.Today;
+        //        _ = _display.ShowModal<TaskItemsModal>(new BootstrapBlazor.Components.ResultDialogOption()
+        //        {
+        //            Title = "To-Do List",
+        //            Size = BootstrapBlazor.Components.Size.Medium,
+        //            ShowYesButton = false,
+        //            ButtonNoText = "Close"
+        //        });
+        //        return new ToolResult(true, "Success, user can see their to-do list");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new ToolResult(false, ex.Message);
+        //    }
+        //}
     }
 }

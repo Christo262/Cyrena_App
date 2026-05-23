@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Cyrena.Shell": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:52145;http://localhost:52146"
+    }
+  }
+}

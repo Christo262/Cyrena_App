@@ -1,6 +1,7 @@
 ﻿using Cyrena.Contracts;
 using Cyrena.Options;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using System.Text.Json;
@@ -11,6 +12,7 @@ namespace Cyrena.Components.Shared
     public partial class Mascot
     {
         [Inject] private ISettingsService _settings { get; set; } = default!;
+        [Inject] private IWebHostEnvironment _env { get; set; } = default!;
         private List<MascotInfo> _mascots = [];
 
         private MascotInfo? _current = default!;
@@ -19,10 +21,10 @@ namespace Cyrena.Components.Shared
         {
             try
             {
+                var inf = _env.WebRootFileProvider.GetFileInfo("_content/Cyrena/mascots/mascots.json");
+                if (inf == null || string.IsNullOrEmpty(inf.PhysicalPath)) return;
                 var customs = _settings.Read<Customization>(Customization.Key) ?? new Customization();
-                var dir = Path.Combine("./wwwroot", "_content", "Cyrena", "mascots");
-                if (!Directory.Exists(dir)) return;
-                var json = File.ReadAllText(Path.Combine(dir, "mascots.json"));
+                var json = File.ReadAllText(inf.PhysicalPath);
                 _mascots = JsonSerializer.Deserialize<List<MascotInfo>>(json) ?? new List<MascotInfo>();
                 if (string.IsNullOrEmpty(customs.Mascot))
                     _current = _mascots.FirstOrDefault();

@@ -3,10 +3,10 @@
 ; Non-commercial use only
 
 #define MyAppName "Cyréna"
-#define MyAppVersion "0.5.0"
+#define MyAppVersion "0.6.0"
 #define MyAppPublisher "cyrena.dev"
 #define MyAppURL "https://cyrena.dev"
-#define MyAppExeName "Cyrena.Desktop.exe"
+#define MyAppExeName "Cyrena.Shell.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.

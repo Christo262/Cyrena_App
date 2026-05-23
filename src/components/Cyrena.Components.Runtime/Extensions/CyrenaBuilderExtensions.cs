@@ -24,7 +24,6 @@ namespace Cyrena.Extensions
             });
 
             builder.AddAssistantPlugin<ComponentAssistantsPlugin>();
-            builder.Services.AddSingleton<IDisplayService, DisplayService>();
 
             builder.AddBuildAction(b =>
             {

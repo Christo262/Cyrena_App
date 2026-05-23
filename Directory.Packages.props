@@ -30,6 +30,13 @@
     <PackageVersion Include="BootstrapBlazor.Html2Pdf" Version="10.0.6" />
     <PackageVersion Include="BootstrapBlazor.BootstrapIcon" Version="10.0.0" />
     <PackageVersion Include="BlazorMonaco" Version="3.4.0" />
+
+    <PackageVersion Include="Avalonia" Version="12.0.3" />
+    <PackageVersion Include="Avalonia.Controls.WebView" Version="12.0.1" />
+    <PackageVersion Include="Avalonia.Desktop" Version="12.0.3" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.0.3" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.0.3" />
+    <PackageVersion Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.1" />
   </ItemGroup>
   <!--Microsoft-->
   <ItemGroup>

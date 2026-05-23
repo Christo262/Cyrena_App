@@ -16,7 +16,7 @@ namespace Cyrena.Extensions
                 fs.BaseDirectory = Path.Combine(CyrenaBuilder.AppDataDirectory, "app-data");
                 fs.FileExtension = "json";
             });
-            var settings = new SettingsService(CyrenaBuilder.AppDataDirectory);
+            var settings = CyrenaRuntime.CreateSettings();
             builder.Services.AddSingleton<ISettingsService>(settings);
             builder.AddFeatureOption<ISettingsService>(settings);
             builder.AddSingletonStore<ChatConfiguration>("chats");

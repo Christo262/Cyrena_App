@@ -1,0 +1,41 @@
+@inject ISettingsService _settings
+@inject ISetupService _setup
+
+<h4>Application Settings</h4>
+
+<div class="row m-0">
+    <div class="col-md-7 m-auto">
+        <ConnectionSelector @bind-Value="_options.DefaultConnectionId" @bind-Value:after="SaveDefault"/>
+
+        <div class="mb-3">
+            <label class="form-label">Server Port</label>
+            <InputNumber @bind-Value="_options.ServerPort" class="form-control" @bind-Value:after="Save"/>
+        </div>
+
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" @bind="_options.LaunchWindowOnStartup" @bind:after="Save">
+            <label class="form-check-label">
+                Show Window on Start
+            </label>
+        </div>
+    </div>
+</div>
+
+@code {
+    private ApplicationOptions _options = default!;
+    protected override void OnInitialized()
+    {
+        _options = _settings.Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
+    }
+
+    private void Save()
+    {
+        _settings.Save(ApplicationOptions.Key, _options);
+    }
+
+    private void SaveDefault()
+    {
+        _settings.Save(ApplicationOptions.Key, _options);
+        _setup.InvokeDefaultConnectionSet();
+    }
+}

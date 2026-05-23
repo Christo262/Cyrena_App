@@ -6,7 +6,7 @@ using Microsoft.SemanticKernel;
 
 namespace Cyrena.Components.Pages
 {
-    public partial class Converse
+    public partial class Converse : IDisposable
     {
         [Parameter] public string? Id { get; set; }
         [CascadingParameter]
@@ -21,9 +21,9 @@ namespace Cyrena.Components.Pages
         private IDisposable? _watcher { get; set; }
         private IDisposable? _updater { get; set; }
 
-        protected override async Task OnParametersSetAsync()
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            await base.OnParametersSetAsync();
+            if (!firstRender) return;
             try
             {
                 if (string.IsNullOrEmpty(Id))
@@ -44,7 +44,7 @@ namespace Cyrena.Components.Pages
                         {
                             _nav.NavigateTo("");
                             await Task.Delay(50);
-                            if(Parent != null && Item != null)
+                            if (Parent != null && Item != null)
                                 await Parent.RemoveTab(Item);
                         }
                     });
