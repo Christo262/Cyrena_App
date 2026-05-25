@@ -1,95 +1,78 @@
-@implements IResultDialog
-@using Cyrena.Coding.Options
-@using Cyrena.Angular.Options
 @using Cyrena.Components.Shared
-@inject IJSRuntime JS
-@inject IFileDialog _files
 
-<div class="p-3">
-    <h5>Select Angular Project</h5>
-    <p class="text-muted">Select your <code>angular.json</code> file to establish the project root.</p>
-
-    <div class="mb-3">
-        <label class="form-label">angular.json Location</label>
-        <div class="input-group">
-            <input type="text" class="form-control" @bind="_angularJsonPath" placeholder="C:\MyProject\angular.json" readonly />
-            <Button OnClick="PickFile" Text="Browse..." />
-        </div>
-        @if (!string.IsNullOrEmpty(_error))
-        {
-            <div class="text-danger mt-2">@_error</div>
-        }
-    </div>
-
-    @if (!string.IsNullOrEmpty(_angularJsonPath))
-    {
-        <div class="alert alert-info">
-            <strong>Project Root:</strong> 
-            <input type="text" class="form-control form-control-sm" value="@_projectRoot" disabled/>
-        </div>
-    }
-
-    <div class="mb-3">
-        <label class="form-label">Title</label>
-        <InputText @bind-Value="Model.Title" class="form-control" />
-    </div>
-
-    <ConnectionSelector @bind-Value="Model.ConnectionId" />
-
-    <PluginSelector Chat="Model" />
-</div>
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="_form" Model="_model">
+            <MudTextField @bind-Value="_model.Title" Label="Title" Required="true" />
+            <MudTextField @bind-Value="_model.ProjectPath" Label="Project Path" Required="true"
+                Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.FolderOpen" OnAdornmentClick="PickFile" />
+            <ConnectionSelector @bind-Value="_model.ConnectionId" />
+            <PluginSelector Chat="Model" />
+            <HistoryConfiguration Model="Model"/>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="Color.Error">Cancel</MudButton>
+        <MudButton OnClick="Submit" Color="Color.Primary">Submit</MudButton>
+    </DialogActions>
+</MudDialog>
 
 @code {
-    [Parameter]
-    public ChatConfiguration Model { get; set; } = default!;
-
-    private string _angularJsonPath = string.Empty;
-    private string _projectRoot = string.Empty;
-    private string _error = string.Empty;
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public ChatConfiguration Model { get; set; } = default!;
+    [Inject] private IFileDialog _win { get; set; } = default!;
+    [Inject] private ISnackbar _snackbar { get; set; } = default!;
+    private AngularConfig _model { get; set; } = default!;
+    private MudForm _form = default!;
 
     protected override void OnInitialized()
     {
-        _angularJsonPath = Model[AngularOptions.AngularJson] ?? string.Empty;
-        if (!string.IsNullOrEmpty(_angularJsonPath))
-            _projectRoot = Path.GetDirectoryName(_angularJsonPath) ?? string.Empty;
+        _model = new AngularConfig()
+        {
+            ProjectPath = Model[AngularOptions.AngularJson],
+            Title = Model.Title,
+            ConnectionId = Model.ConnectionId
+        };
     }
+
+    private async Task Submit()
+    {
+        await _form.ValidateAsync();
+        if (!_form.IsValid) return;
+
+        Model.Title = _model.Title;
+        Model.ConnectionId = _model.ConnectionId!;
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
 
     private async Task PickFile()
     {
-        _error = string.Empty;
-        var result = await _files.OpenAsync("Choose angular.json file", ("json", [".json"]));
-
-        if (!string.IsNullOrEmpty(result))
+        try
         {
-            var fileName = Path.GetFileName(result);
-            if (!fileName.Equals("angular.json", StringComparison.OrdinalIgnoreCase))
+            var files = await _win.OpenAsync("Choose angular.json", ("json", [".json"]));
+            if (!string.IsNullOrEmpty(files))
             {
-                _error = "Please select an angular.json file.";
-                return;
+                var info = new FileInfo(files);
+                Model[AngularOptions.AngularJson] = files;
+                _model.ProjectPath = files;
+                Model.WorkingDirectory = info.DirectoryName;
             }
-
-            _angularJsonPath = result;
-            _projectRoot = Path.GetDirectoryName(result) ?? string.Empty;
-            Model[AngularOptions.AngularJson] = result;
-            Model.WorkingDirectory = _projectRoot;
         }
-    }
-
-    public Task<bool> OnClosing(DialogResult result)
-    {
-        if (result != DialogResult.Yes)
-            return Task.FromResult(true); //Means it can close, user cancelled intention
-        if (string.IsNullOrEmpty(Model[AngularOptions.AngularJson]))
+        catch (Exception ex)
         {
-            _error = "Please select an angular.json file.";
-            return Task.FromResult(false);
+            _snackbar.Add(ex.Message, Severity.Error);
         }
-        Model.WorkingDirectory = Path.GetDirectoryName(Model[AngularOptions.AngularJson]);
-        return Task.FromResult(true);
     }
 
-    public Task OnClose(DialogResult result)
+    internal class AngularConfig
     {
-        return Task.CompletedTask;
+        [Required]
+        public string? Title { get; set; }
+        [Required]
+        public string? ProjectPath { get; set; }
+        [Required]
+        public string? ConnectionId { get; set; }
     }
 }

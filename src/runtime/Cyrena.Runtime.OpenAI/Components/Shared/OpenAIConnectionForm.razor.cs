@@ -1,31 +1,28 @@
-﻿using BootstrapBlazor.Components;
-using Cyrena.Runtime.OpenAI.Models;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
+using MudBlazor;
+using Cyrena.Runtime.OpenAI.Models;
 
 namespace Cyrena.Runtime.OpenAI.Components.Shared
 {
-    public partial class OpenAIConnectionForm : IResultDialog
+    public partial class OpenAIConnectionForm
     {
         [Parameter]
         public OpenAIModel Model { get; set; } = default!;
+        [CascadingParameter]
+        private IMudDialogInstance MudDialog { get; set; } = default!;
 
-        private EditContext _context = default!;
-        protected override void OnInitialized()
+        private MudForm _form = default!;
+
+        private async Task Submit()
         {
-            _context = new EditContext(Model);
+            await _form.ValidateAsync();
+            if (_form.IsValid)
+                MudDialog.Close(DialogResult.Ok(Model));
         }
 
-        Task IResultDialog.OnClose(DialogResult result)
+        private void Cancel()
         {
-            return Task.CompletedTask;
-        }
-
-        async Task<bool> IResultDialog.OnClosing(DialogResult result)
-        {
-            if (result != DialogResult.Yes) return true;
-            var valid = _context.Validate();
-            return valid;
+            MudDialog.Close(DialogResult.Cancel());
         }
     }
 }

@@ -24,6 +24,8 @@ namespace Cyrena.Runtime.Services
             _store = store;
         }
 
+        public IReadOnlyList<Kernel> ActiveKernels => _instances.Select(x => x.Value).ToList().AsReadOnly();
+
         public async Task<Kernel> LoadAsync(ChatConfiguration config)
         {
             if (_instances.ContainsKey(config.Id))

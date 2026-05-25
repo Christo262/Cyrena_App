@@ -1,0 +1,11 @@
+
+
+<MudSelect @bind-Value="Model.HistoryInclusion" Label="History Inclusion"
+           Variant="Variant.Outlined" Dense="true"
+           HelperText="Controls how much of the conversation's history is visible to the model."
+           Required>
+    <MudSelectItem Value="@HistoryInclusionMode.All">All</MudSelectItem>
+    <MudSelectItem Value="@HistoryInclusionMode.LastTwo">Last 2 Iterations</MudSelectItem>
+    <MudSelectItem Value="@HistoryInclusionMode.LastTen">Last 10 Iterations</MudSelectItem>
+    <MudSelectItem Value="@HistoryInclusionMode.Instruct">Instruct (no history)</MudSelectItem>
+</MudSelect>

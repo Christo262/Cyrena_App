@@ -1,21 +1,12 @@
 @inherits KernelComponentBase
 
-<div class="dropdown me-1">
-    <button class="btn btn-secondary btn-sm rounded-pill" @onclick="Toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="bi bi-git"></i>
-    </button>
-    <ul class="dropdown-menu overflow-auto" style="max-height:450px;min-width:200px">
-        @if(_models.Count() == 0)
-        {
-            <li class="text-center">
-                No File Modifications
-            </li>
-        }
-        @foreach(var item in _models)
-        {
-            <li>
-                <a class="dropdown-item" href="develop-file-viewer/@item.Id/@_chat.Config.Id">@item.Name</a>
-            </li>
-        }
-    </ul>
-</div>
+<MudMenu Icon="@Icons.Material.Filled.Source" Size="Size.Small" Color="Color.Secondary" Class="me-1" MaxHeight="450" AnchorOrigin="Origin.BottomLeft">
+    @if(_models.Count() == 0)
+    {
+        <MudMenuItem Disabled="true">No File Modifications</MudMenuItem>
+    }
+    @foreach(var item in _models)
+    {
+        <MudMenuItem OnClick="@(() => _nav.NavigateTo($"develop-file-viewer/{item.Id}/{_chat.Config.Id}"))">@item.Name</MudMenuItem>
+    }
+</MudMenu>

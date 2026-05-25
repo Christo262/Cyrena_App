@@ -1,8 +1,8 @@
 @using Cyrena.Components.Shared
 @inherits KernelComponentBase
 
-<Tooltip Title="Canvas">
-    <button type="button" class="btn btn-sm btn-primary rounded-pill me-1" @onclick="Toggle">
-        <i class="bi bi-layout-text-sidebar-reverse"></i>
-    </button>
-</Tooltip>
+<MudTooltip Text="Canvas">
+    <MudIconButton Icon="@Icons.Material.Filled.Dashboard" 
+                   Size="Size.Small"
+                   OnClick="Toggle" />
+</MudTooltip>

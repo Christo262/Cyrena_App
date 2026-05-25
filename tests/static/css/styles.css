@@ -809,3 +809,64 @@ section h2 {
     gap: 1rem;
     margin-top: 0.25rem;
 }
+
+/* ========================================
+   Privacy Policy Page Styles
+   ======================================== */
+
+.privacy-section {
+    padding-block: clamp(3rem, 6vw, 5rem);
+}
+
+.privacy-section h2 {
+    font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.privacy-section p {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    max-width: 70ch;
+    margin-bottom: 1rem;
+}
+
+.privacy-section p:last-child {
+    margin-bottom: 0;
+}
+
+.privacy-section ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    max-width: 70ch;
+}
+
+.privacy-section ul li {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+.privacy-section ul li strong {
+    color: var(--color-text);
+    font-weight: 600;
+}
+
+.privacy-section a {
+    color: var(--color-accent);
+    text-decoration: underline;
+    transition: color var(--transition-fast);
+}
+
+.privacy-section a:hover,
+.privacy-section a:focus-visible {
+    color: var(--color-accent-hover);
+}

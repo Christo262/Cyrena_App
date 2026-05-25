@@ -1,4 +1,3 @@
-﻿using BootstrapBlazor.Components;
 using Cyrena.Contracts;
 using Cyrena.Persistence.Contracts;
 using Cyrena.Runtime.OpenAI.Models;
@@ -14,10 +13,6 @@ namespace Cyrena.Components.Pages
         [Inject] private NavigationManager _nav { get; set; } = default!;
         [Inject] private IStore<OpenAIModel> _store { get; set; } = default!;
         [Inject] private ISetupService _setup { get; set; } = default!;
-        [CascadingParameter]
-        public TabItem? Item { get; set; }
-        [CascadingParameter]
-        public Tab? Parent { get; set; }
         private OpenAISettingsViewModel _model = new();
 
         protected override void OnInitialized()
@@ -44,8 +39,6 @@ namespace Cyrena.Components.Pages
             await _setup.SetDefaultConnectionId(model.Id);
             _nav.NavigateTo("app-setup/complete");
             await Task.Delay(100);
-            if (Item != null && Parent != null)
-                await Parent.RemoveTab(Item);
         }
     }
 

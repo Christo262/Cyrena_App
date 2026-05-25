@@ -199,6 +199,9 @@ namespace Cyrena.Extensions
                     }
                 }
 
+                if (target.Version < Version.Parse("0.6.0"))
+                    throw new Exception("Minimum required version is 0.6.0 for all extensions");
+
                 if (target.Status == ExtensionStatus.Unloaded)
                 {
                     if (target.EntryAssembly == null)

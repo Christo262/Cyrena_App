@@ -1,59 +1,50 @@
-@implements IResultDialog
 @inject IFileDialog _files
 @using Cyrena.Components.Shared
 
-<EditForm EditContext="_context">
-    <DataAnnotationsValidator/>
-    <ValidationSummary/>
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="_form" Model="Model">
 
-    <div class="mb-3">
-        <label class="form-label">Project Name</label>
-        <InputText @bind-Value="Model.Title" class="form-control" placeholder="My Awesome Site" />
-    </div>
+            <MudTextField @bind-Value="Model.Title" Label="Title" Required="true" />
+            <MudTextField @bind-Value="Model.WorkingDirectory" Label="Working Directory" Required="true"
+                          Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.FolderOpen" OnAdornmentClick="ChooseFolder"
+                          HelperText="The folder where your website files will be created" />
+            @if (!string.IsNullOrEmpty(_error))
+            {
+                <span class="text-danger">@_error</span>
+            }
 
-    <div class="mb-3">
-        <label class="form-label">Working Directory</label>
-        <div class="input-group">
-            <InputText @bind-Value="Model.WorkingDirectory" class="form-control" />
-            <button class="btn btn-secondary" type="button" @onclick="ChooseFolder"><i class="bi bi-file"></i></button>
-        </div>
-        <p class="m-0 small">
-            <span class="text-danger">*</span> The folder where your website files will be created
-        </p>
-        @if (!string.IsNullOrEmpty(_error))
-        {
-            <span class="text-danger">@_error</span>
-        }
-    </div>
+            <ConnectionSelector @bind-Value="Model.ConnectionId" />
 
-    <ConnectionSelector @bind-Value="Model.ConnectionId" />
-
-    <PluginSelector Chat="Model" />
-</EditForm>
+            <PluginSelector Chat="Model" />
+            <HistoryConfiguration Model="Model" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="Color.Error">Cancel</MudButton>
+        <MudButton OnClick="Submit" Color="Color.Primary">Submit</MudButton>
+    </DialogActions>
+</MudDialog>
 
 @code {
     [Parameter]
     public ChatConfiguration Model { get; set; } = default!;
+    private MudForm _form = default!;
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 
-    private EditContext _context = default!;
     private string? _error{ get; set; }
 
-    protected override void OnInitialized()
+    private async Task Submit()
     {
-        _context = new EditContext(Model);
-    }
-
-    public async Task<bool> OnClosing(DialogResult result)
-    {
-        if (result != DialogResult.Yes) return true;
-        var valid = _context.Validate();
+        await _form.ValidateAsync();
+        if (!_form.IsValid) return;
         if (string.IsNullOrEmpty(Model.WorkingDirectory) || !Directory.Exists(Model.WorkingDirectory))
         {
             _error = "Please select a valid working directory";
             this.StateHasChanged();
-            return false;
+            return;
         }
-        return valid;
+        MudDialog.Close(DialogResult.Ok(Model));
     }
 
     public async Task ChooseFolder()
@@ -62,8 +53,5 @@
         Model.WorkingDirectory = folder;
     }
 
-    public Task OnClose(DialogResult result)
-    {
-        return Task.CompletedTask;
-    }
+    private void Cancel() => MudDialog.Cancel();
 }

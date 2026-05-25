@@ -1,6 +1,8 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Cyrena.Contracts;
+using Photino.NET;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -10,80 +12,63 @@ namespace Cyrena.Shell.Services
 {
     internal class FileDialog : IFileDialog
     {
-        private Window _window = default!;
+        private PhotinoWindow _window = default!;
 
         public FileDialog()
         {
         }
 
-        internal void SetWindow(Window window)
+        internal void SetWindow(PhotinoWindow window)
         {
             _window = window;
         }
 
-        public void ExploreFolder(string folderPath)
+        public async Task<string?> OpenAsync(string title, (string filterName, string[] extensions)? ftr)
         {
-            if (!Directory.Exists(folderPath)) return;
-
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = folderPath,
-                UseShellExecute = true
-            });
+            var ffs = await _window.ShowOpenFileAsync(title, null, false, ftr == null ? null : [ftr.Value]);
+            return ffs.FirstOrDefault();
         }
 
-        public async Task<string?> OpenAsync(string title, (string filterName, string[] extensions)? filter)
+        public async Task<string?> ShowSaveFileAsync(string title, (string filterName, string[] extensions)? ftr, string? defaultPath = null)
         {
-            var options = new FilePickerOpenOptions
-            {
-                Title = title,
-                AllowMultiple = false,
-                FileTypeFilter = filter is null ? null : new[]
-                {
-                    new FilePickerFileType(filter.Value.filterName)
-                    {
-                        Patterns = filter.Value.extensions.Select(e => $"*.{e}").ToArray()
-                    }
-                }
-            };
+            var output = await _window.ShowSaveFileAsync(title, defaultPath, ftr == null ? null : [ftr.Value]);
+            return output;
+        }
 
-            var result = await _window.StorageProvider.OpenFilePickerAsync(options);
-            return result?.FirstOrDefault()?.TryGetLocalPath();
+        public void ExploreFolder(string folderPath)
+        {
+            if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
+                throw new NullReferenceException("Invalid folder path");
+
+            // Photino runs on .NET, so we can just use Process.Start with the right command
+            if (OperatingSystem.IsWindows())
+            {
+                // explorer.exe automatically opens the folder
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "explorer",
+                    Arguments = $"\"{folderPath}\"",
+                    UseShellExecute = true
+                });
+            }
+            else if (OperatingSystem.IsMacOS())
+            {
+                // macOS uses the `open` command
+                Process.Start("open", $"\"{folderPath}\"");
+            }
+            else if (OperatingSystem.IsLinux())
+            {
+                // Most Linux desktops understand `xdg-open`
+                Process.Start("xdg-open", $"\"{folderPath}\"");
+            }
         }
 
         public async Task<string?> SelectFolder(string title = "Select Folder", string? current = null)
         {
-            var options = new FolderPickerOpenOptions
-            {
-                Title = title,
-                AllowMultiple = false,
-                SuggestedStartLocation = current is null ? null
-                    : await _window.StorageProvider.TryGetFolderFromPathAsync(current)
-            };
-
-            var result = await _window.StorageProvider.OpenFolderPickerAsync(options);
-            return result?.FirstOrDefault()?.TryGetLocalPath();
-        }
-
-        public async Task<string?> ShowSaveFileAsync(string title, (string filterName, string[] extensions)? filter, string? defaultPath = null)
-        {
-            var options = new FilePickerSaveOptions
-            {
-                Title = title,
-                SuggestedFileName = defaultPath is null ? null : Path.GetFileName(defaultPath),
-                SuggestedStartLocation = defaultPath is null ? null
-                    : await _window.StorageProvider.TryGetFolderFromPathAsync(Path.GetDirectoryName(defaultPath)!),
-                FileTypeChoices = filter is null ? null : new[]
-                {
-                    new FilePickerFileType(filter.Value.filterName)
-                    {
-                        Patterns = filter.Value.extensions.Select(e => $"*.{e}").ToArray()
-                    }
-                }
-            };
-
-            var result = await _window.StorageProvider.SaveFilePickerAsync(options);
-            return result?.TryGetLocalPath();
+            var output = await _window.ShowOpenFolderAsync(title, current, false);
+            if (output.Length == 0)
+                return null;
+            return output[0];
         }
     }
 }

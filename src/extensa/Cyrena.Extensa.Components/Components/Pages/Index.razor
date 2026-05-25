@@ -1,206 +1,194 @@
 @page "/app-extensions"
-@attribute [TabItemOption(Text = "Extensions", Icon = "bi bi-boxes")]
 
-<div class="h-100 overflow-auto">
-    <div class="container h-100 d-flex flex-column">
-        <div class="d-flex pt-1">
-            <h2>Extensions</h2>
-            <div class="ms-auto"></div>
-            <div class="justify-content-center align-self-center">
-                <Tooltip Title="Refresh">
-                    <button type="button" @onclick="RefreshPackages" class="btn btn-sm btn-primary"><i class="bi bi-arrow-clockwise"></i></button>
-                </Tooltip>
+<MudPaper Class="pa-2 h-100" Style="position:relative;overflow:hidden;background-color:transparent">
+        <div class="d-flex">
+            <h1>
+                Extensions
+            </h1>
+
+            <div class="ml-auto"></div>
+            <div class="justify-center align-self-center">
+                <MudTooltip Text="Refresh">
+                    <MudIconButton Icon="@Icons.Material.Filled.Refresh" OnClick="RefreshPackages" Color="Color.Primary" Size="Size.Medium"></MudIconButton>
+                </MudTooltip>
             </div>
         </div>
-        <hr />
-
-        <div class="row m-0 flex-fill overflow-auto">
-            <div class="col-4 mh-100 overflow-auto">
-                @foreach(var item in _models)
-                {
-                    <div class="p-2 border rounded bg-body mb-2 cursor-pointer" @onclick="() => SetInView(item)">
-                        <h5 class="m-0">
-                            @if (item.Package?.HasIcon == true)
-                            {
-                                <img src="@item.Package.IconUrl" alt="@item.Title" class="rounded me-2" height="20" />
-                            }
-                            @item.Title
-                        </h5>
-                        <p class="text-truncate small text-muted m-0">
-                            @item.Description
-                        </p>
-                        <p class="m-0">
-                            <span class="badge text-bg-primary me-1">@item.Version</span>
-                            @if(item.Extension != null)
-                            {
-                                if(item.Extension.Status == ExtensionStatus.Unloaded)
-                                {
-                                    <span class="badge text-bg-danger me-1">@item.Extension.Status</span>
-                                }
-                                else
-                                {
-                                    <span class="badge text-bg-info me-1">@item.Extension.Status</span>
-                                }
-                            }
-                            @if (item.HasUpdate)
-                            {
-                                <span class="badge text-bg-success me-1">Update Available</span>
-                            }
-                            @if (item.WillUninstall)
-                            {
-                                <span class="badge text-bg-danger me-1">Uninstall</span>
-                            }
-                            @if (item.IsQueued)
-                            {
-                                <span class="badge text-bg-warning me-1">Pending</span>
-                            }
-                            @if (item.Downloading)
-                            {
-                                <span class="badge text-bg-success me-1">Downloading</span>
-                            }
-                        </p>
-                    </div>
-                }
-            </div>
-
-            @if(_in_view != null)
-            {
+    <MudDrawerContainer Style="height:calc(100% - 48px)">
+        <MudDrawer @bind-Open="_draw" Anchor="Anchor.End" Width="50%" Fixed="false" Variant="DrawerVariant.Persistent" Class="mud-height-full">
+            @{
                 var model = _models.FirstOrDefault(x => x.Id == _in_view);
-                if(model != null)
-                {
-                    <div class="col-8 h-100">
-                        <div class="p-2 rounded border bg-body h-100 overflow-auto">
-                            <h5 class="m-0">
-                                @if (model.Package?.HasIcon == true)
-                                {
-                                    <img src="@model.Package.IconUrl" alt="@model.Title" class="rounded me-2" height="40" />
-                                }
-                                @model.Title
-                            </h5>
+            }
+            @if (model != null)
+            {
+            <MudPaper Class="pa-2 overflow-auto" Style="height:100%" Outlined="true">
+                <MudStack Spacing="2">
 
-                            <code>@model.Id</code>
-
-                            <p class="text-muted m-0">
-                                @model.Description
-                            </p>
-
-                            <p class="m-0">
-                                <span class="badge text-bg-primary me-1">@model.Version</span>
-                                @if (model.Extension != null)
-                                {
-                                    if (model.Extension.Status == ExtensionStatus.Unloaded)
-                                    {
-                                        <span class="badge text-bg-danger me-1">@model.Extension.Status</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge text-bg-info me-1">@model.Extension.Status</span>
-                                    }
-                                }
-                                @if (model.HasUpdate)
-                                {
-                                    <span class="badge text-bg-success me-1">Update Available</span>
-                                }
-                                @if (model.WillUninstall)
-                                {
-                                    <span class="badge text-bg-danger me-1">Uninstall</span>
-                                }
-                                @if (model.IsQueued)
-                                {
-                                    <span class="badge text-bg-warning me-1">Pending</span>
-                                }
-                                @if (model.Downloading)
-                                {
-                                    <span class="badge text-bg-success me-1">Downloading</span>
-                                }
-                            </p>
-                            <hr />
-
-                            @if (model.Extension?.Errors.Any() == true)
-                            {
-                                <div class="border border-danger p-2 mb-2">
-                                    <ul>
-                                        @foreach (var item in model.Extension.Errors)
-                                        {
-                                            <li class="text-danger">
-                                                @item.Message
-                                            </li>
-                                        }
-                                    </ul>
-                                </div>
-                            }
-
-                            @if (model.Extension != null && model.Extension.Status != ExtensionStatus.Runtime)
-                            {
-                                if (model.WillUninstall)
-                                {
-                                    <button type="button" class="btn btn-sm btn-info me-1" @onclick="() => CancelUninstall(model.Id)">Cancell Uninstall</button>
-                                }
-                                else
-                                {
-                                    <button type="button" class="btn btn-sm btn-danger me-1" @onclick="() => MarkUninstall(model.Extension)">Uninstall</button>
-                                }
-
-                                if (model.HasUpdate)
-                                {
-                                    <button type="button" class="btn btn-sm btn-success me-1" @onclick="() => QueueDownload(model.Package!)">Update</button>
-                                }
-                            }
-
-                        
-                            @if (model.Extension == null && model.Package != null && !model.Downloading && !model.IsQueued)
-                            {
-                                <button type="button" class="btn btn-sm btn-success me-1" @onclick="() => QueueDownload(model.Package!)">Download</button>
-                            }
-
-                            @if (!string.IsNullOrEmpty(model.Package?.WebPageLink))
-                            {
-                                <a href="@model.Package?.WebPageLink" target="_blank" class="btn btn-sm btn-info me-1">View Online</a>
-                            }
-
-                            @if (model.Downloading)
-                            {
-                                <div class="row m-0 mt-2">
-                                    <div class="col-md-6 m-auto">
-                                        <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="@((int)model.DownloadProgress)" aria-valuemin="0" aria-valuemax="100">
-                                            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: @((int)model.DownloadProgress)%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-
-                            @if(model.Package != null)
-                            {
-                                <div class="mt-2">
-                                    @foreach (var item in model.Package.SupportedOperatingSystems)
-                                    {
-                                        <span class="badge rounded-pill text-bg-primary me-1">@item</span>
-                                    }
-
-                                    @foreach (var item in model.Package.SupportedArchitectures)
-                                    {
-                                        <span class="badge rounded-pill text-bg-info me-1">@item</span>
-                                    }
-                                </div>
-                            }
-
-                            @if(model.Server != null)
-                            {
-                                <div class="mt-2">
-                                    <h6 class="m-0">Server</h6>
-                                    <p class="m-0">
-                                        @model.Server.Name
-                                    </p>
-                                    <p class="small m-0 text-muted">
-                                        @model.Server.BaseUrl
-                                    </p>
-                                </div>
-                            }
-
-                        </div>
+                    <div>
+                        @if (model.Package?.HasIcon == true)
+                        {
+                            <img src="@model.Package.IconUrl" alt="@model.Title" class="rounded mr-2" height="40" />
+                        }
+                        <MudText Typo="Typo.h6" Inline="true">@model.Title</MudText>
                     </div>
-                }
+
+                    <MudText Typo="Typo.caption"><code>@model.Id</code></MudText>
+
+                    <MudText Typo="Typo.body2" Color="Color.Default">@model.Description</MudText>
+
+                    <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                        <MudChip T="string" Size="Size.Small" Color="Color.Primary">@model.Version</MudChip>
+                        @if (model.Extension != null)
+                        {
+                            if (model.Extension.Status == ExtensionStatus.Unloaded)
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Error">@model.Extension.Status</MudChip>
+                            }
+                            else
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Info">@model.Extension.Status</MudChip>
+                            }
+                        }
+                        @if (model.HasUpdate)
+                        {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Success">Update Available</MudChip>
+                        }
+                        @if (model.WillUninstall)
+                        {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Error">Uninstall</MudChip>
+                        }
+                        @if (model.IsQueued)
+                        {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Warning">Pending</MudChip>
+                        }
+                        @if (model.Downloading)
+                        {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Success">Downloading</MudChip>
+                        }
+                    </MudStack>
+
+                    <MudDivider />
+
+                    @if (model.Extension?.Errors.Any() == true)
+                    {
+                        <MudPaper Outlined="true" Class="pa-2" Style="border-color: var(--mud-palette-error);">
+                            <MudList T="string" Dense="true">
+                                @foreach (var item in model.Extension.Errors)
+                                {
+                                    <MudListItem T="string">
+                                        <MudText Color="Color.Error">@item.Message</MudText>
+                                    </MudListItem>
+                                }
+                            </MudList>
+                        </MudPaper>
+                    }
+
+                    <MudStack Row="true" Spacing="1">
+                        @if (model.Extension != null && model.Extension.Status != ExtensionStatus.Runtime)
+                        {
+                            if (model.WillUninstall)
+                            {
+                                <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Info" OnClick="() => CancelUninstall(model.Id)">Cancel Uninstall</MudButton>
+                            }
+                            else
+                            {
+                                <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Error" OnClick="() => MarkUninstall(model.Extension)">Uninstall</MudButton>
+                            }
+
+                            if (model.HasUpdate)
+                            {
+                                <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Success" OnClick="() => QueueDownload(model.Package!)">Update</MudButton>
+                            }
+                        }
+
+                        @if (model.Extension == null && model.Package != null && !model.Downloading && !model.IsQueued)
+                        {
+                            <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Success" OnClick="() => QueueDownload(model.Package!)">Download</MudButton>
+                        }
+
+                        @if (!string.IsNullOrEmpty(model.Package?.WebPageLink))
+                        {
+                            <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Info" Href="@model.Package.WebPageLink" Target="_blank">View Online</MudButton>
+                        }
+                    </MudStack>
+
+                    @if (model.Downloading)
+                    {
+                        <MudProgressLinear Color="Color.Primary" Striped="true" Rounded="true" Value="@((int)model.DownloadProgress)" Max="100" />
+                    }
+
+                    @if (model.Package != null)
+                    {
+                        <MudStack Row="true" Spacing="1" Wrap="Wrap.Wrap">
+                            @foreach (var item in model.Package.SupportedOperatingSystems)
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Primary">@item</MudChip>
+                            }
+                            @foreach (var item in model.Package.SupportedArchitectures)
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Info">@item</MudChip>
+                            }
+                        </MudStack>
+                    }
+
+                    @if (model.Server != null)
+                    {
+                        <MudStack Spacing="0">
+                            <MudText Typo="Typo.subtitle2">Server</MudText>
+                            <MudText Typo="Typo.body2">@model.Server.Name</MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">@model.Server.BaseUrl</MudText>
+                        </MudStack>
+                    }
+
+                </MudStack>
+            </MudPaper>
+            }
+        </MudDrawer>
+        <div class="h-100 overflow-auto">
+            @foreach (var item in _models)
+            {
+                <MudPaper Class="pa-2 mb-2 clickable" @onclick="() => SetInView(item)">
+                    <h5 class="m-0">
+                        @if (item.Package?.HasIcon == true)
+                        {
+                            <img src="@item.Package.IconUrl" alt="@item.Title" class="rounded me-2" height="20" />
+                        }
+                        @item.Title
+                    </h5>
+                    <p class="text-truncate m-0">
+                        @item.Description
+                    </p>
+                    <p class="m-0">
+                        <MudChip T="string" Size="Size.Small" Color="Color.Primary">@item.Version</MudChip>
+                        @if (item.Extension != null)
+                        {
+                            if (item.Extension.Status == ExtensionStatus.Unloaded)
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Error">@item.Extension.Status</MudChip>
+                            }
+                            else
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Info">@item.Extension.Status</MudChip>
+                            }
+                        }
+                        @if (item.HasUpdate)
+                        {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Success">Update Available</MudChip>
+                        }
+                        @if (item.WillUninstall)
+                        {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Error">Uninstall</MudChip>
+                        }
+                        @if (item.IsQueued)
+                        {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Warning">Pending</MudChip>
+                        }
+                        @if (item.Downloading)
+                        {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Success">Downloading</MudChip>
+                        }
+                    </p>
+                </MudPaper>
             }
         </div>
-    </div>
-</div>
+    </MudDrawerContainer>
+</MudPaper>

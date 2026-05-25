@@ -1,19 +1,20 @@
-﻿using BootstrapBlazor.Components;
+using Microsoft.AspNetCore.Components;
+using MudBlazor;
 using Cyrena.Contracts;
 using Cyrena.Extensions;
+using Cyrena.Persistence;
 using Cyrena.Persistence.Contracts;
 using Cyrena.Runtime.OpenAI.Models;
 using Cyrena.Runtime.OpenAI.Options;
-using Microsoft.AspNetCore.Components;
 
 namespace Cyrena.Runtime.OpenAI.Components.Shared
 {
     public partial class OpenAISettings
     {
         [Inject] private ISettingsService _settings { get; set; } = default!;
-        [Inject] private IStore<OpenAIModel> _store { get; set;  } = default!;
-        [Inject] private ToastService _toasts { get;set;  } = default!;
-        [Inject] private DialogService _dialog { get; set; } = default!;
+        [Inject] private IStore<OpenAIModel> _store { get; set; } = default!;
+        [Inject] private ISnackbar _snackbar { get; set; } = default!;
+        [Inject] private IDialogService _dialog { get; set; } = default!;
 
         private OpenAIOptions? _model;
         private IEnumerable<OpenAIModel> _models = Enumerable.Empty<OpenAIModel>();
@@ -28,28 +29,24 @@ namespace Cyrena.Runtime.OpenAI.Components.Shared
             _models = await _store.FindManyAsync(x => true);
         }
 
-        private async Task Save()
+        private void Save()
         {
-            if(_model == null) return;
+            if (_model == null) return;
             _settings.Save(OpenAIOptions.Key, _model);
-            await _toasts.Success("OpenAI Settings", "OpenAI settings saved");
+            _snackbar.Add("OpenAI settings saved", Severity.Success);
         }
 
         private async Task Add()
         {
-            var model= new OpenAIModel();
-            var result = await _dialog.ShowModal<OpenAIConnectionForm>(new ResultDialogOption()
+            var model = new OpenAIModel();
+            var parameters = new DialogParameters<OpenAIConnectionForm>
             {
-                Size = Size.Medium,
-                Title = "Add Model",
-                ComponentParameters = new()
-                {
-                    {"Model", model }
-                },
-                ButtonYesText = "Submit",
-                ButtonNoText = "Cancel",
-            });
-            if(result == DialogResult.Yes)
+                { x => x.Model, model }
+            };
+            var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+            var dialog = await _dialog.ShowAsync<OpenAIConnectionForm>("Add Model", parameters, options);
+            var result = await dialog.Result;
+            if (result is { Canceled: false })
             {
                 await _store.AddAsync(model);
                 _models = await _store.FindManyAsync(x => true);
@@ -59,18 +56,14 @@ namespace Cyrena.Runtime.OpenAI.Components.Shared
 
         private async Task Edit(OpenAIModel model)
         {
-            var result = await _dialog.ShowModal<OpenAIConnectionForm>(new ResultDialogOption()
+            var parameters = new DialogParameters<OpenAIConnectionForm>
             {
-                Size = Size.Medium,
-                Title = "Edit Model",
-                ComponentParameters = new()
-                {
-                    {"Model", model }
-                },
-                ButtonYesText = "Submit",
-                ButtonNoText = "Cancel",
-            });
-            if (result == DialogResult.Yes)
+                { x => x.Model, model }
+            };
+            var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+            var dialog = await _dialog.ShowAsync<OpenAIConnectionForm>("Edit Model", parameters, options);
+            var result = await dialog.Result;
+            if (result is { Canceled: false })
             {
                 await _store.UpdateAsync(model);
                 _models = await _store.FindManyAsync(x => true);
@@ -80,11 +73,16 @@ namespace Cyrena.Runtime.OpenAI.Components.Shared
 
         private async Task Delete(OpenAIModel model)
         {
-            var result = await _dialog.ShowModal("Delete Model", $"Are you sure you want to delete {model.DisplayName ?? model.ModelId}?", new ResultDialogOption()
+            var parameters = new DialogParameters<MudMessageBox>
             {
-                Size = Size.Medium
-            });
-            if(result == DialogResult.Yes)
+                { x => x.Title, "Delete Model" },
+                { x => x.Message, $"Are you sure you want to delete {model.DisplayName ?? model.ModelId}?" },
+                { x => x.YesText, "Delete" },
+                { x => x.CancelText, "Cancel" }
+            };
+            var dialog = await _dialog.ShowAsync<MudMessageBox>("", parameters);
+            var result = await dialog.Result;
+            if (result is { Canceled: false })
             {
                 await _store.DeleteAsync(model);
                 _models = await _store.FindManyAsync(x => true);

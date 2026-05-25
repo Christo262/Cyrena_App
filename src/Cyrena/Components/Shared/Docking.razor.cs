@@ -23,6 +23,7 @@ namespace Cyrena.Components.Shared
         {
             foreach(var item in _requests)
                 item.OnClose();
+            _show = false;
             _requests.Clear();
             this.StateHasChanged();
             return Task.CompletedTask;

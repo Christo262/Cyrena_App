@@ -1,4 +1,3 @@
-﻿using BootstrapBlazor.Components;
 using Cyrena.Contracts;
 using Cyrena.Persistence.Contracts;
 using Cyrena.Runtime.Ollama.Models;
@@ -11,11 +10,6 @@ namespace Cyrena.Components.Pages
         [Inject] private IStore<OllamaConnectionInfo> _store { get; set; } = default!;
         [Inject] private ISetupService _setup { get; set; } = default!;
         [Inject] private NavigationManager _nav { get; set; } = default!;
-
-        [CascadingParameter]
-        public TabItem? Item { get; set; }
-        [CascadingParameter]
-        public Tab? Parent { get; set; }
 
         private OllamaConnectionInfo _model =default!;
 
@@ -33,8 +27,6 @@ namespace Cyrena.Components.Pages
             await _setup.SetDefaultConnectionId(_model.Id);
             _nav.NavigateTo("app-setup/complete");
             await Task.Delay(100);
-            if(Item != null && Parent != null)
-                await Parent.RemoveTab(Item);
         }
     }
 }

@@ -1,77 +1,76 @@
-﻿using BootstrapBlazor.Components;
+using Cyrena.PlatformIO.Options;
 using Cyrena.Contracts;
 using Cyrena.Coding.Options;
 using Cyrena.Models;
-using Cyrena.PlatformIO.Options;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
+using MudBlazor;
+using System;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace Cyrena.PlatformIO.Components.Shared
 {
-    public partial class Configure : IResultDialog
+    public partial class Configure
     {
+        [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
         [Parameter] public ChatConfiguration Model { get; set; } = default!;
         [Inject] private IFileDialog _win { get; set; } = default!;
-        [Inject] private ToastService _toasts { get; set; } = default!;
-
-        private PioConfig _model = default!;
-        private EditContext _context = default!;
+        [Inject] private ISnackbar _snackbar { get; set; } = default!;
+        private PlatformIOConfig _model { get; set; } = default!;
+        private MudForm _form = default!;
 
         protected override void OnInitialized()
         {
-            _model = new PioConfig()
+            _model = new PlatformIOConfig()
             {
+                IniPath = Model[PlatformIOOptions.IniPath],
+                Environment = Model[PlatformIOOptions.Environment],
                 Title = Model.Title,
-                ConnectionId = Model.ConnectionId,
-                IniFilePath = Model[PlatformIOOptions.IniFile]
+                ConnectionId = Model.ConnectionId
             };
-            _context = new EditContext(_model);
         }
 
-        Task IResultDialog.OnClose(DialogResult result)
+        private async Task Submit()
         {
-            return Task.CompletedTask;
+            await _form.ValidateAsync();
+            if (!_form.IsValid) return;
+
+            Model[PlatformIOOptions.Environment] = _model.Environment;
+            Model.Title = _model.Title;
+            Model.ConnectionId = _model.ConnectionId!;
+            MudDialog.Close(DialogResult.Ok(true));
         }
 
-        async Task<bool> IResultDialog.OnClosing(DialogResult result)
-        {
-            if (result != DialogResult.Yes) return true;
-            var valid = _context.Validate();
-            if (valid)
-            {
-                Model.Title = _model.Title;
-                Model.ConnectionId = _model.ConnectionId!;
-            }
-            return valid;
-        }
+        private void Cancel() => MudDialog.Cancel();
 
         private async Task PickProject()
         {
             try
             {
-                var files = await _win.OpenAsync("Choose ini file", ("ini", [".ini"]));
-                if (files != null)
+                var files = await _win.OpenAsync("Choose platformio.ini", ("ini", [".ini"]));
+                if (!string.IsNullOrEmpty(files))
                 {
                     var info = new FileInfo(files);
-                    Model.WorkingDirectory = info.DirectoryName ?? string.Empty;
-                    Model[PlatformIOOptions.IniFile] = files;
-                    _model.IniFilePath = files;
+                    Model["ini"] = files;
+                    _model.IniPath = files;
+                    Model.WorkingDirectory = info.DirectoryName;
                 }
             }
             catch (Exception ex)
             {
-                await _toasts.Error("Error", ex.Message);
+                _snackbar.Add(ex.Message, Severity.Error);
             }
         }
     }
 
-    internal class PioConfig
+    internal class PlatformIOConfig
     {
         [Required]
-        public string? IniFilePath { get; set; }
-        [Required]
         public string? Title { get; set; }
+        [Required]
+        public string? IniPath { get; set; }
+        [Required]
+        public string? Environment { get; set; }
         [Required]
         public string? ConnectionId { get; set; }
     }

@@ -1,47 +1,59 @@
 @if (_model == null)
 {
-    <div class="text-center py-2">
-        <p>
-            <span class="text-danger">*</span> New to Cyréna? Use the Setup Wizard below. For advanced configuration, go to <a href="settings">Settings</a>.
-        </p>
-    </div>
+    <MudItem xs="12">
+        <MudPaper Class="pa-2 mr-4 ml-4 text-center">
+            <MudText>
+                <span class="text-danger">*</span> New to Cyréna? Use the Setup Wizard below. For advanced configuration, go to <MudLink Href="settings">Settings</MudLink>.
+            </MudText>
+        </MudPaper>
+    </MudItem>
 }
 else
 {
-    <div class="d-flex flex-row p-2 rounded-pill border border-primary">
-        <textarea @bind="_input" class="form-control rounded-pill border-0 me-1"
-                  @ref="_area"
-                  rows="1"
-                  placeholder="How can I help you?"
-                  @oninput="AutoGrow" @onkeydown="ComposerKeyDown"></textarea>
+    <MudItem xs="7">
+        <MudPaper Class="d-flex flex-row pa-4">
+            <MudTextField T="string"
+                          Variant="Variant.Text"
+                          Lines="1"
+                          Class="mr-2"
+                          MaxLines="6"
+                          OnKeyDown="ComposerKeyDown"
+                          Immediate
+                          @bind-Value="_input"
+                          Sizing="InputSizing.Auto"
+                          Placeholder="How can I help you?" />
 
-        <div class="me-1 justify-content-center align-self-center">
-            <Tooltip Title="Configure">
-                <button type="button" class="btn btn-sm btn-outline-info rounded-pill" @onclick="Settings"><i class="bi bi-gear"></i></button>
-            </Tooltip>
-        </div>
-        <div class="justify-content-center align-self-center">
-            <Tooltip Title="Send">
-                <button type="button" class="btn btn-sm btn-primary rounded-pill" @onclick="Send"><i class="bi bi-arrow-up"></i></button>
-            </Tooltip>
-        </div>
+            <div class="mr-1">
+                <MudTooltip Text="Send">
+                    <MudIconButton Icon="@Icons.Material.Filled.Send" Size="Size.Medium" Color="Color.Primary" OnClick="Send" />
+                </MudTooltip>
+            </div>
+            
+            <div class="mr-1">
+                <MudTooltip Text="Configure">
+                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Size="Size.Medium" Color="Color.Inherit" OnClick="Settings" />
+                </MudTooltip>
+            </div>
 
-        <div class="justify-content-center align-self-center">
-            <Tooltip Title="Start Empty">
-                <button type="button" class="btn btn-sm btn-info rounded-pill ms-1" @onclick="StartEmpty"><i class="bi bi-arrow-right"></i></button>
-            </Tooltip>
-        </div>
-    </div>
+            <MudTooltip Text="Start Empty">
+                <MudIconButton Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Medium" Color="Color.Secondary" OnClick="StartEmpty" />
+            </MudTooltip>
+        </MudPaper>
+    </MudItem>
 
-
-    <Modal @ref="_config" IsKeyboard>
-        <ModalDialog Title="Configure Chat" ShowSaveButton="false" ShowCloseButton Size="Size.Medium">
-            <BodyTemplate>
-                <EditForm Model="_model">
-                    <ConnectionSelector @bind-Value="_model.ConnectionId" />
-                    <PluginSelector Chat="_model" />
-                </EditForm>
-            </BodyTemplate>
-        </ModalDialog>
-    </Modal>
+    <MudDialog @bind-Visible="_showConfig" Options="_dialogOptions">
+        <TitleContent>
+            <MudText Typo="Typo.h6">Configure Chat</MudText>
+        </TitleContent>
+        <DialogContent>
+            <EditForm Model="_model">
+                <ConnectionSelector @bind-Value="_model.ConnectionId" />
+                <PluginSelector Chat="_model" />
+                <HistoryConfiguration Model="_model"/>
+            </EditForm>
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="() => _showConfig = false" Variant="Variant.Text">Close</MudButton>
+        </DialogActions>
+    </MudDialog>
 }

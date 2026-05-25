@@ -1,25 +1,25 @@
 @inject ISettingsService _settings
 @inject ISetupService _setup
+@inject IPinService _pin
 
-<h4>Application Settings</h4>
+<MudText Typo="Typo.h4">Application Settings</MudText>
 
-<div class="row m-0">
-    <div class="col-md-7 m-auto">
-        <ConnectionSelector @bind-Value="_options.DefaultConnectionId" @bind-Value:after="SaveDefault"/>
+<MudGrid>
+    <MudItem xs="12" md="7" Class="mx-auto">
+        <ConnectionSelector Value="@_options.DefaultConnectionId" ValueChanged="SaveDefault"/>
 
-        <div class="mb-3">
-            <label class="form-label">Server Port</label>
-            <InputNumber @bind-Value="_options.ServerPort" class="form-control" @bind-Value:after="Save"/>
-        </div>
+        <MudNumericField @bind-Value="_options.ServerPort" Label="Server Port" Variant="Variant.Outlined" Class="mt-4" @bind-Value:after="Save" />
 
-        <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" @bind="_options.LaunchWindowOnStartup" @bind:after="Save">
-            <label class="form-check-label">
-                Show Window on Start
-            </label>
-        </div>
-    </div>
-</div>
+        <MudCheckBox @bind-Value="_options.LaunchWindowOnStartup" Label="Show Window on Start" Class="mt-4" @bind-Value:after="Save" />
+
+        <MudCheckBox T="bool" Value="_options.UsePin" ValueChanged="UsePinChanged" Label="Use Appliction PIN"/>
+
+        @if (_options.UsePin)
+        {
+            <MudButton OnClick="Configure" Color="Color.Primary">Configure PIN</MudButton>
+        }
+    </MudItem>
+</MudGrid>
 
 @code {
     private ApplicationOptions _options = default!;
@@ -33,9 +33,35 @@
         _settings.Save(ApplicationOptions.Key, _options);
     }
 
-    private void SaveDefault()
+    private void SaveDefault(string? e)
     {
+        _setup.SetDefaultConnectionId(e);
+    }
+
+    private async Task UsePinChanged(bool e)
+    {
+        if(_options.UsePin && !e) //Authorize first
+        {
+            var authed = await _pin.AuthorizeAsync();
+            if (authed)
+            {
+                _options.UsePin = e;
+                _options.Pin = null;
+                _settings.Save(ApplicationOptions.Key, _options);
+                return;
+            }
+            else
+            {
+                return;
+            }
+        }
+        _options.UsePin = e;
         _settings.Save(ApplicationOptions.Key, _options);
-        _setup.InvokeDefaultConnectionSet();
+    }
+
+    private async Task Configure()
+    {
+        await _pin.ConfigureAsync();
+        _options = _settings.Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
     }
 }

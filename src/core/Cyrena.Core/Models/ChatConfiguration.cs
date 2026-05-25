@@ -95,5 +95,7 @@ namespace Cyrena.Models
                 this["file_storage"] = value;
             }
         }
+
+        public HistoryInclusionMode HistoryInclusion { get; set; } = HistoryInclusionMode.All;
     }
 }

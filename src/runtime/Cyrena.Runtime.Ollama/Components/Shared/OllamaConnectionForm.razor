@@ -1,109 +1,79 @@
 @using Cyrena.Components.Shared
- 
-<EditForm EditContext="_context">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
 
-    <div class="mb-2">
-        <label class="form-label">Endpoint</label>
-        <InputText @bind-Value="Model.Endpoint" class="form-control" />
-    </div>
-    <div class="mb-2">
-        <label class="form-label">Model ID</label>
-        <InputText @bind-Value="Model.ModelId" class="form-control" />
-    </div>
-    <div class="mb-2">
-        <label class="form-label">Display Name</label>
-        <InputText @bind-Value="Model.Name" class="form-control" />
-    </div>
-    <div class="mb-2">
-        <label class="form-label">Tokens</label>
-        <select @bind="Model.NumPredict" class="form-control">
-@*             <option value="-1">Unlimited</option> BUG in SK/OllamaSharp*@ 
-            <option value="50">50</option>
-            <option value="128">128</option>
-            <option value="256">256</option>
-            <option value="512">512</option>
-            <option value="1024">1,024</option>
-            <option value="2048">2,048</option>
-            <option value="4096">4,096</option>
-            <option value="8192">8,192</option>
-            <option value="16384">16,384</option>
-            <option value="32768">32,768</option>
-        </select>
-    </div>
-    <p class="small text-muted">
-        Maximum number of tokens to predict when generating text. (Default: 128)
-    </p>
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="_form" Model="Model">
+            <MudTextField @bind-Value="Model.Endpoint" Label="Endpoint" Required="true" />
+            <MudTextField @bind-Value="Model.ModelId" Label="Model ID" Required="true" />
+            <MudTextField @bind-Value="Model.Name" Label="Display Name" Required="true" />
 
-    <div class="mb-2">
-        <label class="form-label">Context Length</label>
-        <select @bind="Model.NumContext" class="form-control">
-            <option value="@(1024*2)">@(1024*2)</option>
-            <option value="@(1024 * 4)">@(1024 * 4)</option>
-            <option value="@(1024 * 8)">@(1024 * 8)</option>
-            <option value="@(1024 * 16)">@(1024 * 16)</option>
-            <option value="@(1024 * 32)">@(1024 * 32)</option>
-            <option value="@(1024 * 64)">@(1024 * 64)</option>
-            <option value="@(1024 * 128)">@(1024 * 128)</option>
-            <option value="@(1024 * 256)">@(1024 * 256)</option>
-        </select>
-    </div>
-    <p class="small text-muted">
-        Sets the size of the context window used to generate the next token. (Default: 4096)
-    </p>
+            <MudSelect @bind-Value="Model.NumPredict" Label="Tokens" HelperText="Maximum number of tokens to predict when generating text. (Default: 128)">
+                <MudSelectItem Value="50">50</MudSelectItem>
+                <MudSelectItem Value="128">128</MudSelectItem>
+                <MudSelectItem Value="256">256</MudSelectItem>
+                <MudSelectItem Value="512">512</MudSelectItem>
+                <MudSelectItem Value="1024">1,024</MudSelectItem>
+                <MudSelectItem Value="2048">2,048</MudSelectItem>
+                <MudSelectItem Value="4096">4,096</MudSelectItem>
+                <MudSelectItem Value="8192">8,192</MudSelectItem>
+                <MudSelectItem Value="16384">16,384</MudSelectItem>
+                <MudSelectItem Value="32768">32,768</MudSelectItem>
+            </MudSelect>
 
-    <Slider @bind-Value="@Model.MTemperature" ShowLabel="true" Max="12" Min="0" Step="1"
-            DisplayText="@($"Temperature: {Model.Temperature}")"></Slider>
-    <p class="small text-muted">
-        The temperature of the model. Increasing the temperature will make the model answer more creatively. (Default: 0.2)
-    </p>
+            <MudSelect @bind-Value="Model.NumContext" Label="Context Length" HelperText="Sets the size of the context window used to generate the next token. (Default: 4096)">
+                <MudSelectItem Value="@(1024 * 2)">@(1024 * 2)</MudSelectItem>
+                <MudSelectItem Value="@(1024 * 4)">@(1024 * 4)</MudSelectItem>
+                <MudSelectItem Value="@(1024 * 8)">@(1024 * 8)</MudSelectItem>
+                <MudSelectItem Value="@(1024 * 16)">@(1024 * 16)</MudSelectItem>
+                <MudSelectItem Value="@(1024 * 32)">@(1024 * 32)</MudSelectItem>
+                <MudSelectItem Value="@(1024 * 64)">@(1024 * 64)</MudSelectItem>
+                <MudSelectItem Value="@(1024 * 128)">@(1024 * 128)</MudSelectItem>
+                <MudSelectItem Value="@(1024 * 256)">@(1024 * 256)</MudSelectItem>
+            </MudSelect>
 
-    <Slider @bind-Value="@Model.TopK" ShowLabel="true" Max="100" Min="10" Step="10"
-            DisplayText="@($"TopK: {Model.TopK}")"></Slider>
-    <p class="small text-muted">
-        Reduces the probability of generating nonsense. A higher value (e.g. 100) will give more diverse answers, while a lower value (e.g. 10) will be more conservative. (Default: 40)
-    </p>
+            <MudSlider @bind-Value="Model.MTemperature" Min="0" Max="12" Step="1" TickMarks="true">
+                Temperature: @Model.Temperature
+            </MudSlider>
+            <MudText Typo="Typo.caption" Class="mud-text-secondary">
+                The temperature of the model. Increasing the temperature will make the model answer more creatively. (Default: 0.2)
+            </MudText>
 
-    <Slider @bind-Value="@Model.MTopP" ShowLabel="true" Max="95" Min="5" Step="5"
-            DisplayText="@($"TopP: {Model.TopP}")"></Slider>
-    <p class="small text-muted">
-        Works together with top-k. A higher value (e.g., 0.95) will lead to more diverse text, while a lower value (e.g., 0.5) will generate more focused and conservative text. (Default: 0.9)
-    </p>
+            <MudSlider @bind-Value="Model.TopK" Min="10" Max="100" Step="10" TickMarks="true">
+                TopK: @Model.TopK
+            </MudSlider>
+            <MudText Typo="Typo.caption" Class="mud-text-secondary">
+                Reduces the probability of generating nonsense. A higher value (e.g. 100) will give more diverse answers, while a lower value (e.g. 10) will be more conservative. (Default: 40)
+            </MudText>
 
-    <Slider @bind-Value="@Model.MMinP" ShowLabel="true" Max="90" Min="0" Step="5"
-            DisplayText="@($"MinP: {Model.MinP}")"></Slider>
-    <p class="small text-muted">
-        Alternative to the topp, and aims to ensure a balance of quality and variety. The parameter _p represents the minimum probability for a token to be considered, relative to the probability of the most likely token. For example, with p=0.05 and the most likely token having a probability of 0.9, logits with a value less than 0.045 are filtered out. (Default: 0.0)
-    </p>
+            <MudSlider @bind-Value="Model.MTopP" Min="5" Max="95" Step="5" TickMarks="true">
+                TopP: @Model.TopP
+            </MudSlider>
+            <MudText Typo="Typo.caption" Class="mud-text-secondary">
+                Works together with top-k. A higher value (e.g., 0.95) will lead to more diverse text, while a lower value (e.g., 0.5) will generate more focused and conservative text. (Default: 0.9)
+            </MudText>
 
-    <div class="mb-3">
-        <label class="form-label">Thinking</label>
-        <select @bind="Model.Thinking" class="form-control">
-            <option value="">Unused</option>
-            <option value="@("low")">Low</option>
-            <option value="@("medium")">Medium</option>
-            <option value="@("high")">High</option>
-            <option value="@("true")">True</option>
-            <option value="@("false")">False</option>
-        </select>
-        <p class="small text-muted">
-            Only applicable to certain models. See <a href="https://docs.ollama.com/capabilities/thinking#thinking" target="_blank">Ollama</a> for details.
-        </p>
-    </div>
+            <MudSlider @bind-Value="Model.MMinP" Min="0" Max="90" Step="5" TickMarks="true">
+                MinP: @Model.MinP
+            </MudSlider>
+            <MudText Typo="Typo.caption" Class="mud-text-secondary">
+                Alternative to the topp, and aims to ensure a balance of quality and variety. The parameter _p represents the minimum probability for a token to be considered, relative to the probability of the most likely token. For example, with p=0.05 and the most likely token having a probability of 0.9, logits with a value less than 0.045 are filtered out. (Default: 0.0)
+            </MudText>
 
-    <div class="form-check mb-3">
-        <InputCheckbox @bind-Value="Model.SupportsImage" class="form-check-input"></InputCheckbox>
-        <label class="form-check-label">
-            Supports Images
-        </label>
-    </div>
+            <MudSelect @bind-Value="Model.Thinking" Label="Thinking" HelperText="Only applicable to certain models. See Ollama for details.">
+                <MudSelectItem Value="@((string?)null)">Unused</MudSelectItem>
+                <MudSelectItem Value="@("low")">Low</MudSelectItem>
+                <MudSelectItem Value="@("medium")">Medium</MudSelectItem>
+                <MudSelectItem Value="@("high")">High</MudSelectItem>
+                <MudSelectItem Value="@("true")">True</MudSelectItem>
+                <MudSelectItem Value="@("false")">False</MudSelectItem>
+            </MudSelect>
 
-    <div class="form-check mb-3">
-        <InputCheckbox @bind-Value="Model.SupportsFile" class="form-check-input"></InputCheckbox>
-        <label class="form-check-label">
-            Supports Files
-        </label>
-    </div>
-
-</EditForm>
+            <MudCheckBox @bind-Value="Model.SupportsImage" Label="Supports Images" />
+            <MudCheckBox @bind-Value="Model.SupportsFile" Label="Supports Files" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="Color.Error">Cancel</MudButton>
+        <MudButton OnClick="Submit">Submit</MudButton>
+    </DialogActions>
+</MudDialog>

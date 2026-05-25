@@ -1,33 +1,45 @@
-﻿using BootstrapBlazor.Components;
 using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Models;
+using Cyrena.Options;
 using Cyrena.Persistence.Contracts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using MudBlazor;
+using MudBlazor.Extensions;
 
 namespace Cyrena.Components.Layout
 {
     public partial class MainLayout
     {
         [Inject] private IStore<ChatConfiguration> _store { get; set; } = default!;
-        [Inject] private IServiceProvider _services { get; set; } = default!;
         [Inject] private IKernelController _controller { get; set; } = default!;
-        [Inject] private DialogService _dialog { get; set; } = default!;
         [Inject] private NavigationManager _nav { get;set;  } = default!;
         [Inject] private IViewStart _start { get; set; } = default!;
+        [Inject] private ISettingsService _settings { get; set; } = default!;
 
         private IEnumerable<ChatConfiguration>? _chats { get; set; }
         private IEnumerable<string?>? _groups { get; set; }
         private ViewStart _view_start = default!;
 
         private bool _loading { get; set; }
+        private bool _drawerOpen = true;
 
         protected override void OnInitialized()
         {
+            var options = _settings.Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
+            if(ApplicationTheme.DarkMode != options.DarkMode)
+                ApplicationTheme.DarkMode = options.DarkMode;
             _view_start = _start.GetViewStart();
-            //_nav.NavigateTo(_view_start.Href);
             base.OnInitialized();
+        }
+
+        private void ChangeTheme()
+        {
+            ApplicationTheme.DarkMode = !ApplicationTheme.DarkMode;
+            var options = _settings.Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
+            options.DarkMode = ApplicationTheme.DarkMode;
+            _settings.Save(ApplicationOptions.Key, options);
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -35,7 +47,7 @@ namespace Cyrena.Components.Layout
             if (!firstRender) return;
             _controller.OnChatCreate((_) => this.InvokeAsync(Refresh));
             _controller.OnChatDelete((config) =>
-            {         
+            {
                 this.InvokeAsync(async () =>
                 {
                     if (_nav.Uri.EndsWith(config.Id))
@@ -61,49 +73,16 @@ namespace Cyrena.Components.Layout
             await Refresh();
         }
 
+        private void DrawerToggle()
+        {
+            _drawerOpen = !_drawerOpen;
+        }
+
         private async Task Refresh()
         {
             _chats = await _store.FindManyAsync(x => true);
             _groups = _chats.Select(x => x[ChatConfiguration.Group]).Distinct();
             this.StateHasChanged();
         }
-
-        private Task Unload(ChatConfiguration config)
-        {
-            _controller.Unload(config);
-            return Task.CompletedTask;
-        }
-
-        private async Task Delete(ChatConfiguration config)
-        {
-            var rf = await _dialog.ShowModal("Delete Chat", $"Are you sure you want to delete {config.Title ?? "this chat"}?", new ResultDialogOption()
-            {
-                Size = Size.Medium
-            });
-            if(rf == DialogResult.Yes)
-                await _controller.Delete(config);
-        }
-
-        private async Task EditAsync(ChatConfiguration config)
-        {
-            var asst = _services.GetServices<IAssistantMode>().FirstOrDefault(x => x.Id == config.AssistantModeId);
-            if (asst == null)
-            {
-                await _dialog.ShowModal("Error", "Unable to find configuration service for this chat.", new ResultDialogOption()
-                {
-                    Size = Size.Medium,
-                    ShowCloseButton = true,
-                    ShowNoButton = false,
-                    ButtonYesText = "Okay"
-                });
-                return;
-            }
-            await asst.EditAsync(config, _services);
-        }
-
-        private bool IsActive(ChatConfiguration config) => _controller.KernelActive(config.Id);
-
-        private bool _side { get; set; }
-        private void ToggleSide() => _side = !_side;
     }
 }

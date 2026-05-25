@@ -1,33 +1,30 @@
 @page "/"
 @using Cyrena.Components.Shared
-@attribute [TabItemOption(Text = "New Chat", Icon = "bi bi-chat-dots")]
 
 @if (_render)
 {
     <style>
         .setup-shadow {
-            box-shadow: 0 0.1rem 4rem rgba(var(--bs-info-rgb), 0.8) !important;
+            box-shadow: 0 0.1rem 4rem rgba(var(--mud-palette-primary-rgb), 0.8) !important;
         }
     </style>
 
-    <div class="h-100 row m-0 position-relative overflow-auto">
+    <MudStack Class="h-100 relative overflow-auto" Justify="Justify.Center" AlignItems="AlignItems.Center">
 
-        <div class="position-absolute w-auto top-0 start-0 overflow-auto d-flex mt-4">
+        <div class="absolute d-flex pa-2" style="top:0;left:0;">
             <Shortcuts />
         </div>
 
-        <div class="col-md-8 m-auto">
+        <MudGrid Justify="Justify.Center">
             <Mascot></Mascot>
 
-            <div class="bg-body p-2 rounded">
-                <ChatStart />
-            </div>
-        </div>
+            <ChatStart />
+        </MudGrid>
 
-        <div class="position-absolute end-0 bottom-0 p-2 text-end">
-            <a href="app-setup" class="btn btn-info btn-lg text-uppercase fw-bolder setup-shadow"><i class="bi bi-magic"></i> Setup Wizard</a>
+        <div class="absolute pa-2" style="bottom:0;right:0;">
+            <MudButton Href="app-setup" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" StartIcon="@Icons.Material.Filled.AutoFixHigh" Class="setup-shadow text-uppercase fw-bolder">Setup Wizard</MudButton>
         </div>
-    </div>
+    </MudStack>
 }
 
 @code {

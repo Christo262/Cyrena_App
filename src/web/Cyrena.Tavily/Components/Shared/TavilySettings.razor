@@ -1,34 +1,28 @@
 @inject ISettingsService _settings
-@inject ToastService _toasts
+@inject ISnackbar _snackbar
 
-<h4>Tavily Web Search</h4>
-<div class="alert alert-success" role="alert">
+<MudText Typo="Typo.h4">Tavily Web Search</MudText>
+<MudAlert Severity="Severity.Success" Class="mb-4">
     <span class="text-danger">*</span> Gives Cyréna live web search. Get a free API key at <a href="https://tavily.com" target="_blank">tavily.com</a>.
-</div>
+</MudAlert>
 
 <EditForm Model="_model" OnValidSubmit="Submit">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <div class="row m-0">
-        <div class="col-md-8 m-auto">
-            <div class="mb-3">
-                <label class="form-label">API Key</label>
-                <InputText @bind-Value="_model.ApiKey" type="password" class="form-control" />
-            </div>
+    <MudGrid Class="m-0">
+        <MudItem xs="12" md="8" Class="mx-auto">
+            <MudTextField @bind-Value="_model.ApiKey" Label="API Key" InputType="InputType.Password" Variant="Variant.Outlined" Class="mb-4" />
 
-            <div class="form-check">
-                <InputCheckbox @bind-Value="_model.Enable" class="form-check-input" />
-                <label class="form-check-label">Enable</label>
-                <p class="small text-muted">
-                    <span class="text-danger">*</span> Enable/Disable web search globally, even if feature is activated in a chat.
-                </p>
-            </div>
-        </div>
-        <div class="col-md-12 text-center">
-            <input type="submit" value="Save" class="btn btn-primary btn-sm" />
-        </div>
-    </div>
+            <MudCheckBox @bind-Value="_model.Enable" Label="Enable" Class="mb-2" />
+            <MudText Typo="Typo.caption" Class="text-muted">
+                <span class="text-danger">*</span> Enable/Disable web search globally, even if feature is activated in a chat.
+            </MudText>
+        </MudItem>
+        <MudItem xs="12" Class="text-center">
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small">Save</MudButton>
+        </MudItem>
+    </MudGrid>
 </EditForm>
 
 @code {
@@ -45,6 +39,6 @@
     {
         if (_model == null) return;
         _settings.Save(TavilyOptions.Key, _model);
-        _toasts.Success("Tavily", "Settings Updated");
+        _snackbar.Add("Settings Updated", Severity.Success);
     }
 }

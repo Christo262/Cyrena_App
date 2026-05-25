@@ -1,0 +1,87 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        Width="620"
+    Height="360"
+        x:Class="Cyrena.Shell.ErrorWindow"
+        CanResize="False"
+    WindowStartupLocation="CenterScreen"
+        Title="Error">
+  <Border Padding="28">
+    <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="18">
+
+      <StackPanel Orientation="Horizontal" Spacing="12">
+        <Border
+            Width="44"
+            Height="44"
+            CornerRadius="22"
+            Background="#3B0D0D">
+          <TextBlock
+              Text="!"
+              Foreground="#FF5A5F"
+              FontSize="28"
+              FontWeight="Bold"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"/>
+        </Border>
+
+        <StackPanel VerticalAlignment="Center">
+          <TextBlock
+              Text="Cyréna could not start"
+              Foreground="#F5F5F7"
+              FontSize="24"
+              FontWeight="SemiBold"/>
+
+          <TextBlock
+              Text="The background Blazor Server app failed to launch."
+              Foreground="#A1A1AA"
+              FontSize="14"/>
+        </StackPanel>
+      </StackPanel>
+
+      <TextBlock
+          Grid.Row="1"
+          Text="Cyréna cannot open the desktop shell because the local server failed during startup."
+          Foreground="#D4D4D8"
+          FontSize="15"
+          TextWrapping="Wrap"/>
+
+      <Border
+          Grid.Row="2"
+          Background="#181B23"
+          BorderBrush="#2A2F3A"
+          BorderThickness="1"
+          CornerRadius="10"
+          Padding="14">
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <TextBlock
+              x:Name="ErrorText"
+              Foreground="#FFB4B4"
+              FontFamily="Consolas, Cascadia Mono, monospace"
+              FontSize="13"
+              TextWrapping="Wrap"/>
+        </ScrollViewer>
+      </Border>
+
+      <StackPanel
+          Grid.Row="3"
+          Orientation="Horizontal"
+          HorizontalAlignment="Right"
+          Spacing="10">
+
+        <Button
+            Content="Copy details"
+            Width="120"
+            Click="CopyDetails_Click"/>
+
+        <Button
+            Content="Close"
+            Width="90"
+            Click="Close_Click"/>
+      </StackPanel>
+    </Grid>
+  </Border>
+</Window>

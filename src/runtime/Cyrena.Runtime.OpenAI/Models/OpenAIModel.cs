@@ -8,6 +8,7 @@ namespace Cyrena.Runtime.OpenAI.Models
     {
         [Required]
         public string? ModelId { get; set; }
+        [Required]
         public string? DisplayName { get; set; }
         //0-2
         public double Temperature { get; set; } = 1;

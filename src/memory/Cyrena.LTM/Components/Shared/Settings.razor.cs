@@ -1,8 +1,8 @@
-﻿using BootstrapBlazor.Components;
 using Cyrena.Contracts;
 using Cyrena.LTM.Contracts;
 using Cyrena.LTM.Options;
 using Microsoft.AspNetCore.Components;
+using MudBlazor;
 
 namespace Cyrena.LTM.Components.Shared
 {
@@ -10,10 +10,10 @@ namespace Cyrena.LTM.Components.Shared
     {
         [Inject] private ISettingsService _settings { get; set; } = default!;
         [Inject] private IMemoryService _ltm { get; set; } = default!;
-        [Inject] private DialogService _dialog { get; set; } = default!;
-        [Inject] private ToastService _toasts { get; set; } = default!;
+        [Inject] private IDialogService _dialog { get; set; } = default!;
+        [Inject] private ISnackbar _snackbar { get; set; } = default!;
 
-        private MemoryContextOptions _model = default!;
+        private MemoryContextOptions _model = new();
 
         protected override void OnInitialized()
         {
@@ -36,16 +36,20 @@ namespace Cyrena.LTM.Components.Shared
 
         private async Task ClearMemory()
         {
-            var result = await _dialog.ShowModal("Clear Memory", $"Are you sure you want clear all long-term memories?", new ResultDialogOption()
+            var parameters = new DialogParameters<MudMessageBox>
             {
-                Size = Size.Medium,
-                ButtonYesText = "Yes",
-                ButtonNoText = "No"
-            });
-            if(result == DialogResult.Yes)
+                { x => x.Title, "Clear Memory" },
+                { x => x.Message, "Are you sure you want to clear all long-term memories?" },
+                { x => x.YesText, "Yes" },
+                { x => x.CancelText, "No" }
+            };
+            var dialog = await _dialog.ShowAsync<MudMessageBox>("", parameters);
+            var result = await dialog.Result;
+
+            if (result is { Canceled: false })
             {
                 await _ltm.ClearMemoryAsync();
-                await _toasts.Information("Memories Erased", "Long-Term memory succesfully cleared");
+                _snackbar.Add("Long-Term memory successfully cleared", Severity.Success);
             }
         }
     }

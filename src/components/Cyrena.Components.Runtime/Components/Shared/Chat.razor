@@ -1,71 +1,78 @@
-﻿@inherits KernelComponentBase
+@inherits KernelComponentBase
 @using Microsoft.Extensions.DependencyInjection
 @using Cyrena.Extensions
 @using Microsoft.SemanticKernel
 
-<div class="p-0 d-flex flex-column h-100 mh-100 rounded" @ref="_dropZone">
-    <div class="p-3 flex-grow-1 overflow-auto position-relative" style="min-height: 0;" @ref="_scrollHost">
+<div class="d-flex flex-column h-100" @ref="_dropZone">
+    <div class="pa-2 flex-grow-1 overflow-auto relative" style="min-height: 0;" @ref="_scrollHost">
         @if (_msg.DisplayHistory.Count == 0)
         {
-            <div class="text-muted">
-                <div class="fw-semibold mb-1">Start chatting</div>
-                <div>Type a message below. Use Shift+Enter for a new line.</div>
-            </div>
+            <MudText Color="Color.Surface">
+                <MudText Typo="Typo.subtitle1" Class="mb-1"><b>Start chatting</b></MudText>
+                <MudText Typo="Typo.body2">Type a message below. Use Shift+Enter for a new line.</MudText>
+            </MudText>
         }
         else
         {
             for (int i = 0; i < _msg.DisplayHistory.Count; i++)
             {
-                if (_msg.DisplayHistory[i].Role == _msg.Options.LogError)
+                var msg = _msg.DisplayHistory[i];
+                if (msg.Role == _msg.Options.LogError)
                 {
-                    <div class="d-flex mb-3 justify-content-start">
-                        <div class="text-danger small" style="white-space: pre-wrap;">@((MarkupString)(_msg.DisplayHistory[i].Content ?? ""))</div>
+                    <div class="d-flex mb-3 justify-start">
+                        <MudText Color="Color.Error" Style="white-space: pre-wrap;" Typo="Typo.caption">@((MarkupString)(msg.Content ?? ""))</MudText>
                     </div>
                 }
-                else if (_msg.DisplayHistory[i].Role == _msg.Options.LogWarn)
+                else if (msg.Role == _msg.Options.LogWarn)
                 {
-                    <div class="d-flex mb-3 justify-content-start">
-                        <div class="text-warning small" style="white-space: pre-wrap;">@((MarkupString)(_msg.DisplayHistory[i].Content ?? ""))</div>
+                    <div class="d-flex mb-3 justify-start">
+                        <MudText Color="Color.Warning" Style="white-space: pre-wrap;" Typo="Typo.caption">@((MarkupString)(_msg.DisplayHistory[i].Content ?? ""))</MudText>
                     </div>
                 }
-                else if (_msg.DisplayHistory[i].Role == _msg.Options.LogSuccess)
+                else if (msg.Role == _msg.Options.LogSuccess)
                 {
-                    <div class="d-flex mb-3 justify-content-start">
-                        <div class="text-success small" style="white-space: pre-wrap;">@((MarkupString)(_msg.DisplayHistory[i].Content ?? ""))</div>
+                    <div class="d-flex mb-3 justify-start">
+                        <MudText Color="Color.Success" Style="white-space: pre-wrap;" Typo="Typo.caption">@((MarkupString)(msg.Content ?? ""))</MudText>
                     </div>
                 }
-                else if (_msg.DisplayHistory[i].Role == _msg.Options.LogInfo)
+                else if (msg.Role == _msg.Options.LogInfo)
                 {
-                    <div class="d-flex mb-3 justify-content-start">
-                        <div class="text-muted small" style="white-space: pre-wrap;">@((MarkupString)(_msg.DisplayHistory[i].Content ?? ""))</div>
+                    <div class="d-flex mb-3 justify-start">
+                        <MudText Color="Color.Surface" Style="white-space: pre-wrap;" Typo="Typo.caption">@((MarkupString)(msg.Content ?? ""))</MudText>
                     </div>
                 }
                 else
                 {
+
+                    //@(isUser ? "chat-bubble-user" : "chat-bubble-assistant")
+                    //@(msg.Items.Count > 1 ? "chat-bubble-has-items" : "")
 #pragma warning disable SKEXP0110
-                    var isUser = _msg.DisplayHistory[i].Role == Microsoft.SemanticKernel.ChatCompletion.AuthorRole.User;
-                    <div class="d-flex mb-3 @(isUser ? "justify-content-end" : "justify-content-start")">
-                        <div class="chat-bubble @(isUser ? "chat-bubble-user" : "chat-bubble-assistant") px-3 py-2 @(_msg.DisplayHistory[i].Items.Count > 1 ? "chat-bubble-has-items" : "")">
-                            @if (_msg.DisplayHistory[i].Items.Count > 1)
+                    var isUser = msg.Role == Microsoft.SemanticKernel.ChatCompletion.AuthorRole.User;
+                    var cssmsg = isUser ? "chat-bubble chat-bubble-user px-3 py-2" : "chat-bubble chat-bubble-assistant px-3 py-2";
+                    <div class="d-flex mb-3 @(isUser ? "justify-end" : "justify-start")">
+                        <MudPaper Class="@cssmsg" Elevation="1">
+                            @if (msg.Items.Count > 1)
                             {
                                 <div class="d-flex overflow-auto">
-                                    @foreach(var item in _msg.DisplayHistory[i].Items.OfType<FileReferenceContent>())
+                                    @foreach(var item in msg.Items.OfType<FileReferenceContent>())
                                     {
-                                        <div class="p-1 me-1">
-                                            <p class="small text-muted m-0 text-truncate">@(@item.Metadata?.ContainsKey("name") == true ? item.Metadata["name"] : "unknown")</p>
-                                        </div>
+                                        <MudPaper Class="pa-1 me-1" Elevation="0">
+                                            <MudText Typo="Typo.caption" Class="mud-text-secondary m-0 text-truncate">@(@item.Metadata?.ContainsKey("name") == true ? item.Metadata["name"] : "unknown")</MudText>
+                                        </MudPaper>
                                     }
                                 </div>
                             }
                             @if (isUser)
                             {
-                                <div style="white-space: pre-wrap;">@_msg.DisplayHistory[i].Content</div>
+                                <div style="white-space:pre-wrap">
+                                    @msg.Content
+                                </div>
                             }
                             else
                             {
-                                <div>@((MarkupString)Markdig.Markdown.ToHtml(_msg.DisplayHistory[i].Content ?? "", _mdp))</div>
+                                @((MarkupString)Markdig.Markdown.ToHtml(msg.Content ?? "", _mdp))
                             }
-                        </div>
+                        </MudPaper>
                     </div>
 #pragma warning restore SKEXP0110
                 }
@@ -75,83 +82,90 @@
 
             @if (!string.IsNullOrEmpty(_stream))
             {
-                <div class="d-flex mb-3 justify-content-start">
-                    <div class="chat-bubble chat-bubble-assistant px-3 py-2">
-                        <div>@((MarkupString)Markdig.Markdown.ToHtml(_stream, _mdp))</div>
-                    </div>
+                <div class="d-flex mb-3 justify-start">
+                    <MudPaper Class="chat-bubble chat-bubble-assistant px-3 py-2" Elevation="1">
+                        @((MarkupString)Markdig.Markdown.ToHtml(_stream, _mdp))
+                    </MudPaper>
                 </div>
             }
         }
 
         @if(_its.QueueCount > 0)
         {
-            <div class="bg-dark shadow bg-opacity-25 position-fixed p-2" style="z-index:10000;bottom: 105px;right: 10px;">
+            <MudPaper Class="pa-2 fixed" Style="z-index:10000;bottom: 105px;right: 10px;" Elevation="4">
                 @foreach(var input in _its.Queued)
                 {
-                    <div class="p-1 bg-body shadow rounded border d-flex mb-2" style="width:250px">
-                        <p class="small m-0 text-truncate justify-content-center align-self-center">
+                    <MudPaper Class="pa-1 d-flex mb-2" Style="width:250px" Elevation="1">
+                        <MudText Typo="Typo.caption" Class="m-0 text-truncate d-flex align-self-center">
                             @input.Message.Content
-                        </p>
-                        <button type="button" @onclick="() => _its.CancelInput(input.Id)" class="btn btn-sm btn-danger rounded-pill ms-auto">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
+                        </MudText>
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" Class="ms-auto" OnClick="() => _its.CancelInput(input.Id)" />
+                    </MudPaper>
                 }
-            </div>
+            </MudPaper>
         }
     </div>
 
-    <div class="p-2 pb-0 border-top bg-body">
+    <MudPaper Class="pa-2 pb-0" Elevation="0">
         @if (_its.Input != null && _its.Input.Items.Count() > 1)
         {
 #pragma warning disable SKEXP0110
             <div class="d-flex flex-row mb-1">
                 @foreach (var item in _its.Input.Items.OfType<FileReferenceContent>())
                 {
-                    <div class="p-1 d-flex rounded border me-1" style="max-width:200px">
-                        <p class="small text-muted m-0 text-truncate justify-content-center align-self-center me-1">@(@item.Metadata?.ContainsKey("name") == true ? item.Metadata["name"] : "unknown")</p>
-                        <button type="button" class="btn btn-sm btn-danger rounded-pill border-0" @onclick="() => RemoveAdditionalItem(item)"><i class="bi bi-x"></i></button>
-                    </div>
+                    <MudPaper Class="pa-1 d-flex me-1" Style="max-width:200px" Elevation="1">
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary m-0 text-truncate d-flex align-self-center me-1">@(@item.Metadata?.ContainsKey("name") == true ? item.Metadata["name"] : "unknown")</MudText>
+                        <MudIconButton Icon="@Icons.Material.Filled.Close" Size="Size.Small" Color="Color.Error" OnClick="() => RemoveAdditionalItem(item)" />
+                    </MudPaper>
                 }
             </div>
 #pragma warning restore SKEXP0110
         }
 
-        <div class="p-2 rounded border border-primary">
+        <MudPaper Square Class="pa-2" Elevation="1">
             <div class="d-flex flex-row">
                 @if(_its.Input != null)
                 {
-                    <textarea @ref="_area" @bind:event="oninput" placeholder="@(_its.QueueCount > 0 || _its.Inferring ? "Queue..." : "Reply...")" rows="1" class="form-control auto-grow border-0 me-1" @onkeydown="ComposerKeyDown" @bind="_its.Input.Content"></textarea>
+                   <MudTextField T="string" @ref="_area"
+                                  Variant="Variant.Text"
+                                  Lines="1"
+                                  Class="mr-2"
+                                  Immediate
+                                  MaxLines="6"
+                                  OnKeyDown="ComposerKeyDown"
+                                  @bind-Value="_its.Input.Content"
+                                  Sizing="InputSizing.Auto"
+                                  Placeholder="@(_its.QueueCount > 0 || _its.Inferring ? "Queue..." : "Reply...")" />
                 }
 
-                <div class="ms-2 justify-content-center align-self-center d-flex flex-row">
+                <div class="ms-2 d-flex flex-row align-self-center">
                     @if(_info.SupportFiles || _info.SupportImages)
                     {
                         <FileUpload OnItemsAdded="OnItemsAdded" Kernel="Kernel"/>
                     }
                     @if (_its.Inferring)
                     {
-                        <button type="button" class="btn btn-sm btn-danger rounded-pill ms-1" @onclick="Cancel"><i class="bi bi-stop"></i></button>
+                        <MudFab StartIcon="@Icons.Material.Filled.Stop" Size="Size.Small" Color="Color.Error" Class="ms-1 rounded-pill" OnClick="Cancel" />
                     }
-                    <Tooltip Title="@(_its.Inferring ? "Queue" : "Send")">
-                        <button type="button" class="btn btn-sm btn-primary rounded-pill ms-1" disabled="@(_its.Input == null || string.IsNullOrEmpty(_its.Input.Content))" @onclick="Send"><i class="bi bi-arrow-up"></i></button>
-                    </Tooltip>
+                    <MudTooltip Text="@(_its.Inferring ? "Queue" : "Send")">
+                        <MudFab StartIcon="@Icons.Material.Filled.Send" Size="Size.Small" Color="Color.Primary" Class="ms-1 rounded-pill" Disabled="@(_its.Input == null || string.IsNullOrEmpty(_its.Input.Content))" OnClick="Send" />
+                    </MudTooltip>
 
-                    <Tooltip Title="@(_its.IsPaused ? "Queue Paused" : "Queue Running")">
+                    <MudTooltip Text="@(_its.IsPaused ? "Queue Paused" : "Queue Running")">
                         @if (_its.IsPaused)
                         {
-                            <button type="button" class="btn btn-sm btn-success rounded-pill ms-1" @onclick="()=> _its.ContinueQueue()"><i class="bi bi-play"></i></button>
+                            <MudFab StartIcon="@Icons.Material.Filled.PlayArrow" Size="Size.Small" Color="Color.Success" Class="ms-1 rounded-pill" OnClick="()=> _its.ContinueQueue()" />
                         }
                         else
                         {
-                            <button type="button" class="btn btn-sm btn-info rounded-pill ms-1" @onclick="() => _its.PauseQueue()"><i class="bi bi-pause"></i></button>
+                            <MudFab StartIcon="@Icons.Material.Filled.Pause" Size="Size.Small" Color="Color.Info" Class="ms-1 rounded-pill" OnClick="() => _its.PauseQueue()" />
                         }
-                    </Tooltip>
+                    </MudTooltip>
                 </div>
             </div>
-        </div>
+        </MudPaper>
 
         <ChatToolbar Kernel="Kernel" />
        
-    </div>
+    </MudPaper>
 </div>

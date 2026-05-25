@@ -1,13 +1,21 @@
-﻿@page "/converse/{Id}"
+@page "/converse/{Id}"
+@page "/converse"
 @using Cyrena.Components.Shared
-@attribute [TabItemOption(Text = "Converse")]
 
-@if (_kernel != null)
-{
-    <div class="row m-0 p-0 h-100">
-        <div class="col overflow-auto p-0 h-100">
-            <Chat Kernel="_kernel" />
-        </div>
-        <Docking Kernel="_kernel" />
-    </div>
-}
+<MudDynamicTabs @ref="_dynamicTabs" ActivePanelIndex="@_userIndex" ActivePanelIndexChanged="OnTabChange"
+                Class="mud-height-full"
+                TabPanelsClass="overflow-auto h-100"
+                CloseTab="@OnCloseTab"
+                ApplyEffectsToContainer
+                KeepPanelsAlive>
+    <Header>
+    </Header>
+    <ChildContent>
+        @foreach (var item in _active)
+        {
+            <MudTabPanel ID="@item" Text="@item.GetTitle()" ShowCloseIcon>
+                <KernelInstance Kernel="item" />
+            </MudTabPanel>
+        }
+    </ChildContent>
+</MudDynamicTabs>

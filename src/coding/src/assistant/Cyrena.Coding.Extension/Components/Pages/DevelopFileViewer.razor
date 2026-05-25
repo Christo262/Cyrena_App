@@ -1,5 +1,4 @@
 @page "/develop-file-viewer/{FileId}/{KernelId}"
-@attribute [TabItemOption(Text = "File Versions", Icon = "bi bi-git")]
 
 @using BlazorMonaco
 @using BlazorMonaco.Editor
@@ -9,36 +8,35 @@
 @if (_kernel != null)
 {
     <div class="mb-2 d-flex flex-row align-items-center px-2">
-        <Tooltip Title="Back">
-            <a class="btn btn-sm btn-outline-primary me-1" href="converse/@KernelId"><i class="bi bi-arrow-left"></i></a>
-        </Tooltip>
+        <MudTooltip Text="Back">
+            <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="@(() => _nav.NavigateTo($"converse/{KernelId}"))" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary" Class="me-1" />
+        </MudTooltip>
 
         @if (_originals != null && _originals.Count > 0)
         {
-            <select class="form-control form-control-sm" style="max-width:320px" @bind="_selectedVersionIndex" @bind:after="OnVersionSelected">
-                <option value="">--Select--</option>
+            <MudSelect T="int" @bind-Value="_selectedVersionIndex" @bind-Value:after="OnVersionSelected" Style="max-width:320px" Dense="true" Variant="Variant.Outlined">
                 @for (int i = _originals.Count - 1; i >= 0; i--)
                 {
                     var version = _originals[i];
                     var index = i;
                     var label = string.IsNullOrEmpty(version.Label) ? $"Version {index + 1}" : version.Label;
                     var display = $"{version.Timestamp:MMM d, HH:mm:ss}  —  {label}";
-                    <option value="@index">@display</option>
+                    <MudSelectItem Value="@index">@display</MudSelectItem>
                 }
-            </select>
+            </MudSelect>
         }
 
         <div class="ms-auto"></div>
 
         @if (_og_target != null)
         {
-            <Tooltip Title="Revert to selected version">
-                <button type="button" @onclick="Revert" class="btn btn-sm btn-info me-1"><i class="bi bi-arrow-counterclockwise"></i></button>
-            </Tooltip>
+            <MudTooltip Text="Revert to selected version">
+                <MudIconButton Icon="@Icons.Material.Filled.Restore" OnClick="Revert" Size="Size.Small" Color="Color.Info" Class="me-1" />
+            </MudTooltip>
 
-            <Tooltip Title="Keep current">
-                <button type="button" @onclick="Keep" class="btn btn-sm btn-success"><i class="bi bi-check2-circle"></i></button>
-            </Tooltip>
+            <MudTooltip Text="Keep current">
+                <MudIconButton Icon="@Icons.Material.Filled.CheckCircle" OnClick="Keep" Size="Size.Small" Color="Color.Success" />
+            </MudTooltip>
         }
     </div>
 

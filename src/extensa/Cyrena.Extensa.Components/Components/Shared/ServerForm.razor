@@ -1,20 +1,17 @@
 
-<EditForm EditContext="_context">
-    <DataAnnotationsValidator/>
-    <ValidationSummary/>
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="_form" Model="Model">
 
-    <div class="mb-2">
-        <label class="form-label">Display Name</label>
-        <InputText @bind-Value="Model.Name" class="form-control" />
-    </div>
+            <MudTextField @bind-Value="Model.Name" Label="Display Name" Variant="Variant.Outlined" Class="mb-2" Required/>
 
-    <div class="mb-2">
-        <label class="form-label">Base URL</label>
-        <InputText @bind-Value="Model.BaseUrl" class="form-control" />
-    </div>
+            <MudTextField @bind-Value="Model.BaseUrl" Label="Base URL" Variant="Variant.Outlined" Class="mb-2" Required/>
 
-    <div class="mb-2">
-        <label class="form-label">Application ID</label>
-        <InputText @bind-Value="Model.ApplicationId" class="form-control" />
-    </div>
-</EditForm>
+            <MudTextField @bind-Value="Model.ApplicationId" Label="Application ID" Variant="Variant.Outlined" Class="mb-2" Required/>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="Color.Error">Cancel</MudButton>
+        <MudButton OnClick="Submit">Submit</MudButton>
+    </DialogActions>
+</MudDialog>

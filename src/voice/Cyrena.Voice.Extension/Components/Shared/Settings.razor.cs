@@ -1,10 +1,10 @@
-﻿using BootstrapBlazor.Components;
 using Cyrena.Contracts;
 using Cyrena.Voice.Contracts;
 using Cyrena.Voice.Options;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
+using MudBlazor;
 using System.Text.Json.Serialization;
 
 namespace Cyrena.Voice.Components.Shared
@@ -15,27 +15,15 @@ namespace Cyrena.Voice.Components.Shared
         [Inject] private ISettingsService _settings { get; set; } = default!;
         [Inject] private IFileDialog _file { get; set; } = default!;
         [Inject] private IJSRuntime _js { get; set; } = default!;
-        [Inject] private ToastService _toasts { get; set; } = default!;
+        [Inject] private ISnackbar _snackbar { get; set; } = default!;
 
         private WebViewVoiceOptions _options = default!;
         private IEnumerable<IVoiceChain> _chains { get; set; } = [];
-        private List<SelectedItem> _items { get; set; } = [];
 
         protected override void OnInitialized()
         {
             _options = _settings.Read<WebViewVoiceOptions>(WebViewVoiceOptions.Key) ?? new WebViewVoiceOptions();
             _chains = _services.GetServices<IVoiceChain>();
-            _items = _chains.Select(x => new SelectedItem()
-            {
-                Value = x.Id,
-                Text = x.Name,
-                Active = _options.DefaultVoiceChain == x.Id
-            }).ToList();
-            _items.Insert(0, new SelectedItem()
-            {
-                Text = "Disabled",
-                Active = string.IsNullOrEmpty(_options.DefaultVoiceChain)
-            });
             _r = (int)(_options.Rate * 10);
             _p = (int)(_options.Pitch * 10);
             _v = (int)(_options.Volume * 10);
@@ -48,15 +36,16 @@ namespace Cyrena.Voice.Components.Shared
             try
             {
                 _voices = await _js.InvokeAsync<List<WebViewVoice>>("window.tts.getVoices");
-                if(_voices.Count == 0)
+                if (_voices.Count == 0)
                 {
                     await Task.Delay(50);
                     _voices = await _js.InvokeAsync<List<WebViewVoice>>("window.tts.getVoices");
                 }
                 this.StateHasChanged();
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
-                await _toasts.Error("Error", ex.Message);
+                _snackbar.Add(ex.Message, Severity.Error);
             }
         }
 

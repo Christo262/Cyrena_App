@@ -1,17 +1,21 @@
-﻿
+@using Cyrena.Components.Shared
 
-<div class="row m-0">
-    @foreach (var item in Controller.Environments)
-    {
-        <div class="col-md-4">
-            <div class="p-2 rounded border clickable @(Controller.Current == item ? "border-primary":"")" @onclick="() => SetEnvironment(item)">
-                <h4 class="m-0">@item.Name</h4>
-                <p class="small m-0">
-                    Framework: @item.Framework <br />
-                    Board: @item["board"]<br />
-                    Platform: @item["platform"]
-                </p>
-            </div>
-        </div>
-    }
-</div>
+<MudDialog>
+    <DialogContent>
+        <MudGrid>
+            @foreach (var env in _environments)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCard @onclick="() => SelectEnvironment(env)" Class="cursor-pointer">
+                        <MudCardContent>
+                            <MudText Typo="Typo.h6">@env</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="Color.Error">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>

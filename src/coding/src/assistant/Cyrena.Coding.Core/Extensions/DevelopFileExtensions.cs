@@ -297,17 +297,22 @@ namespace Cyrena.Coding.Extensions
     this DevelopPlan plan,
     DevelopFile file,
     string? content,
-    int startLine,
+    int startLine,       // 0-based internally; callers must convert from 1-based before calling
     int lineCount,
     CodeWriteMode mode,
-    out DevelopFileLines? lines)
+    out DevelopFileLines? lines,
+    out int? totalLines)
         {
             if (mode == CodeWriteMode.Overwrite)
+            {
+                totalLines = null;
                 return plan.TryWriteFileContentAsLines(file, content, out lines);
+            }
 
             if (!plan.TryReadFileLines(file, out var current) || current == null)
             {
                 lines = null;
+                totalLines = null;
                 return false;
             }
 
@@ -316,8 +321,9 @@ namespace Cyrena.Coding.Extensions
                 .Select(x => x.Text ?? string.Empty)
                 .ToList();
 
-            var totalLines = existingLines.Count;
+            totalLines = existingLines.Count;
 
+            // Insert allows startLine == totalLines (append after last line)
             if (startLine < 0 || startLine > totalLines)
             {
                 lines = null;

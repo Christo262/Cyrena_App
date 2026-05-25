@@ -1,22 +1,19 @@
 @page "/app-setup/complete"
-@attribute [TabItemOption(Text = "Setup Complete", Icon = "bi bi-magic")]
 
 <div class="h-100 overflow-auto">
-    <h1>
-        You're All Set!
-    </h1>
-    <hr />
+    <MudText Typo="Typo.h3" Align="Align.Center" Class="mb-2">You're All Set!</MudText>
 
-    <div class="row m-0">
-        <div class="col-md-8 m-auto">
-            <p class="lead">
+
+    <MudGrid Class="m-0">
+        <MudItem md="12" Class="mx-auto">
+            <MudText Typo="Typo.body1" Align="Align.Center" Class="mb-2">
                 Cyréna is connected and ready to go. Start chatting or browse extensions to expand what your assistant can do.
-            </p>
+            </MudText>
 
-            <p class="text-center">
-                <button type="button" @onclick="@(() => NavigateCloseTab("app-extensions"))" class="btn btn-primary mx-1"><i class="bi bi-boxes"></i> Browse Extensions</button>
-                <button type="button" @onclick="@(() => NavigateCloseTab(""))" class="btn btn-primary mx-1"><i class="menu-icon bi bi-chat-dots"></i> Start Chatting</button>
-            </p>
-        </div>
-    </div>
+            <div class="text-center">
+                <MudButton OnClick="@(() => NavigateCloseTab("app-extensions"))" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Apps" Class="mx-1">Browse Extensions</MudButton>
+                <MudButton OnClick="@(() => NavigateCloseTab(""))" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Chat" Class="mx-1">Start Chatting</MudButton>
+            </div>
+        </MudItem>
+    </MudGrid>
 </div>

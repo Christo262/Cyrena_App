@@ -8,6 +8,7 @@ namespace Cyrena.Contracts
     /// </summary>
     public interface IKernelController : IDisposable
     {
+        IReadOnlyList<Kernel> ActiveKernels { get; }
         /// <summary>
         /// Loads a conversation
         /// </summary>

@@ -1,0 +1,36 @@
+@inject ISnackbar _toasts
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="_form" OnEnterPressed="Submit">
+            <MudTextField T="string" 
+                @bind-Value="Model.ConfirmOldPin" 
+                Required Immediate
+                Variant="Variant.Outlined"
+                Label="Enter PIN" 
+                MaxLength="6" InputType="InputType.Password" Placeholder="XXXXXX"></MudTextField>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Submit" Color="Color.Primary">Submit</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter] public PinViewModel Model { get; set; } = default!;
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+    private MudForm _form = default!;
+    private async Task Submit()
+    {
+        await _form.ValidateAsync();
+        if (_form.IsValid)
+        {
+            if(Model.OldPin != Model.ConfirmOldPin)
+            {
+                _toasts.Add("Invalid PIN", Severity.Error);
+                return;
+            }
+            MudDialog.Close(DialogResult.Ok(Model));
+        }
+    }
+}

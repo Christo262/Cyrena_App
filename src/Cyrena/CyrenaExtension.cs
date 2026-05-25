@@ -1,6 +1,9 @@
-﻿using Cyrena.Extensa.Models;
+﻿using Cyrena.Contracts;
+using Cyrena.Extensa.Models;
 using Cyrena.Extensions;
 using Cyrena.Options;
+using Cyrena.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Cyrena
 {
@@ -19,6 +22,7 @@ namespace Cyrena
             builder.AddOpenAI();
 
             builder.AddDefaultAssistant();
+            builder.Services.AddScoped<IPinService, PinService>();
         }
     }
 }

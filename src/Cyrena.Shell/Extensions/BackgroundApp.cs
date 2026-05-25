@@ -15,10 +15,11 @@ namespace Cyrena.Shell.Extensions
 {
     public static class BackgroundApp
     {
-        public static (WebApplication, string) CreateApp(string[] args)
+        public static (WebApplication, string) CreateApp(string[] args, Cyrena.Shell.App ava)
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.WebHost.UseShutdownTimeout(TimeSpan.Zero);
+            builder.Services.AddSingleton(ava);
             builder.Services.AddLogging(l =>
             {
 #if DEBUG
@@ -36,12 +37,14 @@ namespace Cyrena.Shell.Extensions
 
             cyrena.Services.AddSingleton<ISetupService, SetupService>();
             cyrena.Services.AddSingleton<IFileDialog, FileDialog>();
+            cyrena.Build();
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents(options =>
                 {
                     options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromHours(8);
                     options.DisconnectedCircuitMaxRetained = 500;
                     options.JSInteropDefaultCallTimeout = TimeSpan.FromMinutes(5);
+                    options.DetailedErrors = true;
                 });
             builder.Services.AddSignalR(options =>
             {
@@ -50,11 +53,14 @@ namespace Cyrena.Shell.Extensions
                 options.HandshakeTimeout = TimeSpan.FromSeconds(30);
                 options.MaximumReceiveMessageSize = 100 * 1024 * 1024;
             });
+            var mvc =builder.Services.AddControllers();
+            if(cyrena.FeatureAssemblies.ContainsKey("controllers"))
+                foreach(var item in cyrena.FeatureAssemblies["controllers"])
+                    mvc.AddApplicationPart(item);
             var settings = cyrena.GetFeatureOption<ISettingsService>();
             var appSettings = settings.Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
             var url = $"http://localhost:{appSettings.ServerPort}";
             builder.WebHost.UseUrls(url);
-            cyrena.Build();
             var app = builder.Build();
             var fpu = new PhysicalFileProvider(CyrenaBuilder.UserContentDirectory);
             var fpc = new PhysicalFileProvider(CyrenaBuilder.ConversationsData);
@@ -74,6 +80,7 @@ namespace Cyrena.Shell.Extensions
             app.MapRazorComponents<Cyrena.Shell.Components.App>()
                 .AddInteractiveServerRenderMode()
                 .AddAdditionalAssemblies(cyrena.FeatureAssemblies["blazor"].ToArray());
+            app.MapControllers();
             return (app, url);
         }
     }

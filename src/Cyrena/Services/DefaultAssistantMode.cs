@@ -1,4 +1,3 @@
-﻿using BootstrapBlazor.Components;
 using Cyrena.Components.Shared;
 using Cyrena.Contracts;
 using Cyrena.Extensions;
@@ -6,6 +5,7 @@ using Cyrena.Models;
 using Cyrena.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
+using MudBlazor;
 
 namespace Cyrena.Services
 {
@@ -36,14 +36,15 @@ namespace Cyrena.Services
 
         public async Task EditAsync(ChatConfiguration config, IServiceProvider services)
         {
-            var dialog = services.GetRequiredService<DialogService>();
-            var rf = await dialog.ShowModal<EditDefaultAssistant>(new ResultDialogOption()
+            var dialog = services.GetRequiredService<IDialogService>();
+            var parameters = new DialogParameters
             {
-                Size = Size.Medium,
-                Title = "Configure",
-                ComponentParameters = new() { { nameof(EditDefaultAssistant.Model), config } }
-            });
-            if (rf == DialogResult.Yes)
+                { nameof(EditDefaultAssistant.Model), config }
+            };
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium };
+            var result = await dialog.ShowAsync<EditDefaultAssistant>("Configure", parameters, options);
+            var rf = await result.Result;
+            if (rf is { Canceled:false})
                 await _controller.UpdateAsync(config, true);
         }
     }

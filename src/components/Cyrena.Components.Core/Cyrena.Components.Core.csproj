@@ -33,8 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BootstrapBlazor" />
-    <PackageReference Include="BootstrapBlazor.BootstrapIcon" />
+    <PackageReference Include="MudBlazor" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
     <PackageReference Include="BlazorMonaco" />
   </ItemGroup>

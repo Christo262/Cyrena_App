@@ -1,4 +1,3 @@
-﻿using BootstrapBlazor.Components;
 using Cyrena.Coding.Contracts;
 using Cyrena.Coding.Models;
 using Cyrena.Coding.Options;
@@ -14,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Cyrena.Dotnet.Extensions;
 using Cyrena.Persistence.Options;
+using MudBlazor;
 
 namespace Cyrena.Dotnet.CSharp.Services
 {
@@ -41,7 +41,7 @@ namespace Cyrena.Dotnet.CSharp.Services
             var project_types = _services.GetServices<IDotnetProjectType>();
             var projects = new List<ProjectModel>();
 
-            foreach(var item in info)
+            foreach (var item in info)
             {
                 var project_type = project_types.FirstOrDefault(x => x.IsOfType(item));
                 var fi = new FileInfo(item.AbsolutePath);
@@ -53,14 +53,13 @@ namespace Cyrena.Dotnet.CSharp.Services
                     ProjectDirectory = fi.DirectoryName!,
                     ProjectTypeId = project_type?.Id,
                     ProjectTypeName = project_type?.ProjectTypeName,
-                    Id = $"{fi.DirectoryName?.Replace(sln_dir ??"","").Replace("\\", "_")}_{item.ProjectName}"
+                    Id = $"{fi.DirectoryName?.Replace(sln_dir ?? "", "")}{"\\"}_{item.ProjectName}"
                 };
                 projects.Add(project);
-                if(project_type != null)
+                if (project_type != null)
                 {
                     project.ProjectTypeId = project_type.Id;
                     project.ProjectTypeName = project_type.ProjectTypeName;
-                    //project_type.IndexPlan(project); //Index later on in DevelopPlanIndexer, no need to do it here
                 }
             }
             var sln_model = new SolutionViewModel(options.ChatConfiguration.WorkingDirectory!);
@@ -73,7 +72,7 @@ namespace Cyrena.Dotnet.CSharp.Services
             else
             {
                 var act_t = sln_model.Projects.FirstOrDefault(x => x.Id == options.ChatConfiguration[DotnetOptions.LastProject]);
-                if(act_t == null)
+                if (act_t == null)
                     active = sln_model.Projects.OrderBy(x => x.Plan != null).FirstOrDefault()!;
                 else
                     active = act_t;
@@ -103,19 +102,15 @@ namespace Cyrena.Dotnet.CSharp.Services
 
         public async Task EditAsync(ChatConfiguration config, IServiceProvider services)
         {
-            var dialog = services.GetRequiredService<DialogService>();
-            var rf = await dialog.ShowModal<DotnetConversationForm>(new ResultDialogOption()
+            var dialog = services.GetRequiredService<IDialogService>();
+            var parameters = new DialogParameters<DotnetConversationForm>
             {
-                Title = ".NET Solution",
-                Size = Size.Medium,
-                ComponentParameters = new()
-                {
-                    {nameof(DotnetConversationForm.Configuration), config }
-                },
-                ButtonYesText = "Save",
-                ButtonNoText = "Cancel",
-            });
-            if (rf == DialogResult.Yes)
+                { nameof(DotnetConversationForm.Configuration), config }
+            };
+            var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true };
+            var rf = await dialog.ShowAsync<DotnetConversationForm>(".NET Solution", parameters, options);
+            var result = await rf.Result;
+            if (result is { Canceled: false })
                 await _kernel.UpdateAsync(config, true);
         }
     }

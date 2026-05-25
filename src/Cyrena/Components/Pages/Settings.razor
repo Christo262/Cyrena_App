@@ -1,48 +1,43 @@
 @page "/settings"
-@attribute [TabItemOption(Text = "Settings", Icon = "bi bi-gear")]
 @inject ComponentOptions _options
 
 
-<div class="container">
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
 
-    <h3>Settings</h3>
-    <hr />
+    <MudText Typo="Typo.h3">Settings</MudText>
+    <MudDivider />
 
-    <Tab IsBorderCard Placement="Placement.LeftStart">
+    <MudTabs Class="h-100" Border="true" Position="Position.Top" TabPanelsClass="pa-2">
         @foreach (var s in _sections)
         {
-            <TabItem Text="@s">
-                <div class="row m-0">
-                    <div class="col-md-8 m-auto">
-                        @foreach (var item in _options.GetSettingsComponents().Where(x => x.Section == s).OrderBy(x => x.Order))
-                        {
-                            <div class="p-2 mb-2">
-                                @this.Render(item.Component)
-                            </div>
-                        }
+            <MudTabPanel Text="@s">
+                @foreach (var item in _options.GetSettingsComponents().Where(x => x.Section == s).OrderBy(x => x.Order))
+                {
+                    <div class="pa-2 mb-2">
+                        @this.Render(item.Component)
                     </div>
-                </div>
-            </TabItem>
+                }
+            </MudTabPanel>
         }
 
         @if (_has_m)
         {
-            <TabItem Text="Miscellaneous">
-                <div class="row m-0">
-                    <div class="col-md-8 m-auto">
+            <MudTabPanel Text="Miscellaneous">
+                <MudGrid Class="m-0">
+                    <MudItem xs="12" md="8" Class="mx-auto">
                         @foreach (var item in _options.GetSettingsComponents().Where(x => string.IsNullOrEmpty(x.Section)))
                         {
-                            <div class="p-2 mb-2">
+                            <div class="pa-2 mb-2">
                                 @this.Render(item.Component)
                             </div>
                         }
-                    </div>
-                </div>
-            </TabItem>
+                    </MudItem>
+                </MudGrid>
+            </MudTabPanel>
         }
-    </Tab>
+    </MudTabs>
 
-</div>
+</MudContainer>
 
 @code {
     private IEnumerable<string> _sections = default!;

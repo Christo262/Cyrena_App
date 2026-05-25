@@ -1,4 +1,3 @@
-﻿using BootstrapBlazor.Components;
 using Cyrena.Extensa.Components.Shared;
 using Cyrena.Extensa.Contracts;
 using Cyrena.Extensa.Extensions;
@@ -8,6 +7,7 @@ using Cyrena.Extensa.Models;
 using Cyrena.Extensa.Options;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
+using MudBlazor;
 using System.Text.Json;
 
 namespace Cyrena.Extensa.Components.Pages
@@ -17,8 +17,8 @@ namespace Cyrena.Extensa.Components.Pages
         [Inject] private IExtensionRegistry _registry { get; set; } = default!;
         [Inject] private IOptions<ExtensaOptions> _options { get; set; } = default!;
         [Inject] private IPluginServerService _servers { get; set; } = default!;
-        [Inject] private DialogService _dialog { get; set; } = default!;
-        [Inject] private ToastService _toasts { get; set; } = default!;
+        [Inject] private IDialogService _dialog { get; set; } = default!;
+        [Inject] private ISnackbar _snackbar { get; set; } = default!;
         [Inject] private IPackageManager _manager { get; set; } = default!;
 
         private IEnumerable<PackageViewModel> _models { get; set; } = Enumerable.Empty<PackageViewModel>();
@@ -36,11 +36,16 @@ namespace Cyrena.Extensa.Components.Pages
             var models = await _manager.ListPackagesAsync();
             if (models.Count() == 0)
             {
-                var rf = await _dialog.ShowModal("Index Packages", "Would you like to index packages now?", new ResultDialogOption()
+                var parameters = new DialogParameters
                 {
-                    Size = Size.Small,
-                });
-                if (rf == DialogResult.Yes)
+                    { "ContentText", "Would you like to index packages now?" },
+                    { "ButtonText", "Yes" },
+                    { "CancelText", "No" }
+                };
+                var options = new DialogOptions { CloseButton = true };
+                var dialog = await _dialog.ShowAsync<MudMessageBox>("Index Packages", parameters, options);
+                var result = await dialog.Result;
+                if (result != null && !result.Canceled)
                     await RefreshPackages();
                 else
                     RebuildViewModel(models);
@@ -66,8 +71,6 @@ namespace Cyrena.Extensa.Components.Pages
             }
             _models = vms.OrderBy(x => x.Id);
         }
-
-
 
         private bool _is_refreshing { get; set; }
         private async Task RefreshPackages()
@@ -139,17 +142,22 @@ namespace Cyrena.Extensa.Components.Pages
         {
             if (ext.Status == ExtensionStatus.Runtime)
                 return;
-            var rf = await _dialog.ShowModal("Uninstall Extension", $"Are you sure you want to uninstall {ext.Name} ({ext.Version})?", new ResultDialogOption()
+            var parameters = new DialogParameters
             {
-                Size = Size.Small
-            });
-            if (rf == DialogResult.Yes)
+                { "ContentText", $"Are you sure you want to uninstall {ext.Name} ({ext.Version})?" },
+                { "ButtonText", "Uninstall" },
+                { "CancelText", "Cancel" }
+            };
+            var options = new DialogOptions { CloseButton = true };
+            var dialog = await _dialog.ShowAsync<MudMessageBox>("Uninstall Extension", parameters, options);
+            var result = await dialog.Result;
+            if (result != null && !result.Canceled)
             {
                 _uninstalls.Add(ext.Id);
                 var path = Path.Combine(_options.Value.InstallationsDirectory, "uninstall.json");
                 var json = JsonSerializer.Serialize(_uninstalls.ToArray());
                 File.WriteAllText(path, json);
-                await _toasts.Success("Uninstall", $"{ext.Name} ({ext.Id}) will be uninstalled when the application starts.");
+                _snackbar.Add($"{ext.Name} ({ext.Id}) will be uninstalled when the application starts.", Severity.Success);
                 RebuildViewModel(_models.Where(x => x.Package != null).Select(x => x.Package!));
                 this.StateHasChanged();
             }
@@ -168,12 +176,14 @@ namespace Cyrena.Extensa.Components.Pages
             }
         }
 
+        private bool _draw { get; set; }
         private async Task SetInView(PackageViewModel item)
         {
             _in_view = null;
             this.StateHasChanged();
             await Task.Delay(50);
             _in_view = item.Id;
+            _draw = true;
             this.StateHasChanged();
         }
     }

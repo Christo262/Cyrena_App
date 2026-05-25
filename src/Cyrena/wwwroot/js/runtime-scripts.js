@@ -254,20 +254,15 @@
 
         // Ensure the <pre> is positioned relatively so the absolute button anchors to it
         if (!pre.classList.contains('position-relative')) {
-            pre.classList.add('position-relative');
+            pre.style.position = 'relative';
         }
 
         // ── Create the button ──
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'btn btn-sm btn-outline-dark btn-copy-code';
-        btn.style.cssText = 'position:absolute;top:0.5rem;right:0.5rem;opacity:0;transition:opacity 0.2s ease-in-out;z-index:10;font-size:0.75rem;padding:0.25rem 0.5rem;border-color:rgba(255,255,255,0.3);color:rgba(255,255,255,0.8);';
+        btn.className = 'btn-copy-code';
         btn.innerHTML = COPY_SVG + 'Copy';
         btn.setAttribute('aria-label', 'Copy code to clipboard');
-
-        // ── Hover visibility ──
-        pre.addEventListener('mouseenter', () => { btn.style.opacity = '1'; });
-        pre.addEventListener('mouseleave', () => { btn.style.opacity = '0'; });
 
         // ── Click handler ──
         btn.addEventListener('click', async function (e) {
@@ -276,10 +271,12 @@
             try {
                 await navigator.clipboard.writeText(text);
                 btn.innerHTML = CHECK_SVG + 'Copied!';
-                btn.classList.replace('btn-outline-light', 'btn-success');
+                btn.style.borderColor = 'rgba(86, 204, 157, 0.8)';
+                btn.style.color = '#56cc9d';
                 setTimeout(() => {
                     btn.innerHTML = COPY_SVG + 'Copy';
-                    btn.classList.replace('btn-success', 'btn-outline-light');
+                    btn.style.borderColor = 'rgba(255,255,255,0.3)';
+                    btn.style.color = 'rgba(255,255,255,0.8)';
                 }, 2000);
             } catch (err) {
                 console.error('Failed to copy code:', err);

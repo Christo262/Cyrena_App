@@ -1,4 +1,3 @@
-﻿using BootstrapBlazor.Components;
 using Cyrena.Contracts;
 using Cyrena.Coding.Components.Shared;
 using Cyrena.Coding.Contracts;
@@ -56,7 +55,6 @@ namespace Cyrena.Coding.Services
             builder.Plugins.AddFromType<ProjectInformation>("Project");
             builder.AddToolbarComponent<VersionControlViewer>(ToolbarAlignment.Start);
             builder.KernelBuilder.AddStartupTask<DevelopPlanWatcher>();
-            builder.Services.AddSingleton<IConversationHistoryTransformer, CodingConversationHistoryTransformer>();
         }
 
         public Task DeleteAsync(ChatConfiguration config)
@@ -75,12 +73,7 @@ namespace Cyrena.Coding.Services
                 return Task.CompletedTask;
             var sln_builder = _services.GetServices<ICodeBuilder>().FirstOrDefault(x => x.Id == config[DevelopOptions.BuilderId]);
             if (sln_builder == null)
-                return services.GetRequiredService<DialogService>().ShowModal("Error", "Unable to find handler for this project type.", new ResultDialogOption()
-                {
-                    ButtonYesText = "Okay",
-                    ShowNoButton = false,
-                    Size = Size.Medium
-                });
+                throw new InvalidOperationException("Unable to find handler for this project type.");
             return sln_builder.EditAsync(config, services);
         }
     }

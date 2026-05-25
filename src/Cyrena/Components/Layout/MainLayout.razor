@@ -2,102 +2,56 @@
 @inject CyrenaOptions _options
 @inherits LayoutComponentBase
 
-<Preload />
-<Cyrena.Components.Tools.DisplayServiceComponent/>
-<Layout ShowCollapseBar ShowFooter="false" SideWidth="0" IsPage IsFullSide="false" IsFixedHeader
-        ShowSplitBar SidebarMinWidth="200" SidebarMaxWidth="350" ShowTabInHeader UseTabSet 
-        TabDefaultUrl="@(_view_start.Href)" 
-        MenuBarIcon="bi bi-layout-sidebar-inset"
-        TabContextMenuCloseIcon="bi bi-x-lg" TabContextMenuCloseAllIcon="bi bi-x-lg" TabContextMenuCloseOtherIcon="bi bi-x-lg" TabStyle="TabStyle.Chrome"
-        AdditionalAssemblies="@(_options.GetFeatureAssemblies("blazor").Concat([typeof(MainLayout).Assembly]))">
-    <Header>
-        <Tooltip Title="Extensions">
-            <a href="app-extensions" class="btn btn-outline-light btn-sm rounded-pill mx-1"><i class="bi bi-boxes"></i></a>
-        </Tooltip>
-
-        <Tooltip Title="Settings">
-            <a href="settings" class="btn btn-outline-light btn-sm rounded-pill"><i class="bi bi-gear"></i></a>
-        </Tooltip>
-    </Header>
-    <Side>
-        <nav class="menu is-vertical cc-menu">
-            <ul class="submenu">
-                <li>
-                    <NavLink Match="NavLinkMatch.All" href="" class="nav-link">
-                        <div class="submenu-link">
-                            <i class="menu-icon bi bi-chat-dots"></i><!--!-->
-                            <span class="menu-text">New Chat</span>
-                        </div><i class="arrow"></i>
-                    </NavLink>
-                </li>
-                @if (_chats is not null)
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudSpacer />
+        <MudTooltip Text="Extensions">
+            <MudIconButton Href="app-extensions" Icon="@Icons.Material.Filled.Apps" Color="Color.Inherit" />
+        </MudTooltip>
+        <MudTooltip Text="Settings">
+            <MudIconButton Href="settings" Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" />
+        </MudTooltip>
+        <MudTooltip Text="Theme">
+            <MudIconButton OnClick="ChangeTheme" Icon="@(ApplicationTheme.DarkMode ? Icons.Material.Filled.DarkMode : Icons.Material.Filled.LightMode)" Color="Color.Inherit" />
+        </MudTooltip>
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="2" Variant="@DrawerVariant.Responsive" ClipMode="@DrawerClipMode.Always" Class="pa-1">
+        <MudNavMenu Rounded>
+            <MudNavLink Href="" Match="NavLinkMatch.All" Class="mb-1">
+                <div class="d-flex align-center">
+                    <MudIcon Icon="@Icons.Material.Filled.MarkUnreadChatAlt" Size="Size.Small" /> <MudText Typo="Typo.subtitle2" Class="ml-2">New Chat</MudText>
+                </div>
+            </MudNavLink>
+            @if (_chats is not null)
+            {
+                foreach (var item in _chats.Where(x => x[ChatConfiguration.Group] is null))
                 {
-                    foreach (var item in _chats.Where(x => x[ChatConfiguration.Group] is null))
-                    {
-                        <li>
-                            <ContextMenuZone>
-                                <ContextMenuTrigger>
-                                    <KernelWatcherNavLink ChatConfiguration="item"/>
-                                </ContextMenuTrigger>
-                                <ContextMenu>
-                                    @if (_controller.KernelActive(item.Id))
-                                    {
-                                        <ContextMenuItem Icon="bi bi-database-down" Text="Unload" OnClick="(s, e) => Unload(item)"></ContextMenuItem>
-                                    }
-                                    <ContextMenuItem Icon="bi bi-pen" Text="Edit" OnClick="(s, e) => EditAsync(item)"></ContextMenuItem>
-                                    <ContextMenuItem Icon="bi bi-trash" Text="Delete" OnClick="(s, e) => Delete(item)"></ContextMenuItem>
-                                </ContextMenu>
-                            </ContextMenuZone>
-                        </li>
-                    }
+                    <KernelWatcherNavLink ChatConfiguration="item"/>
+                }
 
-                    @if (_groups != null)
+                @if (_groups != null)
+                {
+                    @foreach (var item in _groups.Where(x => !string.IsNullOrEmpty(x)))
                     {
-                        @foreach (var item in _groups.Where(x => !string.IsNullOrEmpty(x)))
+                        <MudText Typo="Typo.caption" Class="mt-3 px-4">@item</MudText>
+                        @foreach (var m in _chats.Where(x => x[ChatConfiguration.Group] == item))
                         {
-                            <li>
-                                <div class="submenu-link mt-3 border-top">
-                                    <i class="menu-icon"></i>
-                                    <span class="menu-text">@item</span>
-                                </div><i class="arrow"></i>
-                            </li>
-                            @foreach (var m in _chats.Where(x => x[ChatConfiguration.Group] == item))
-                            {
-                                <li>
-                                    <ContextMenuZone>
-                                        <ContextMenuTrigger>
-                                            <KernelWatcherNavLink ChatConfiguration="m" />
-                                        </ContextMenuTrigger>
-                                        <ContextMenu>
-                                            @if (_controller.KernelActive(m.Id))
-                                            {
-                                                <ContextMenuItem Icon="bi bi-database-down" Text="Unload" OnClick="(s, e) => Unload(m)"></ContextMenuItem>
-                                            }
-                                            <ContextMenuItem Icon="bi bi-pen" Text="Edit" OnClick="(s, e) => EditAsync(m)"></ContextMenuItem>
-                                            <ContextMenuItem Icon="bi bi-trash" Text="Delete" OnClick="(s, e) => Delete(m)"></ContextMenuItem>
-                                        </ContextMenu>
-                                    </ContextMenuZone>
-                                </li>
-                            }
+                            <KernelWatcherNavLink ChatConfiguration="m" />
                         }
                     }
                 }
-            </ul>
-        </nav>
-    </Side>
-
-    <Main>
+            }
+        </MudNavMenu>
+    </MudDrawer>
+    <MudMainContent>
         @Body
-    </Main>
-</Layout>
+    </MudMainContent>
+</MudLayout>
 
 @if (_loading)
 {
-    <div class="fixed-top vh-100 vw-100 bg-body bg-opacity-50">
-        <div class="d-flex h-100 w-100">
-            <div class="spinner-grow m-auto justify-content-center align-self-center" style="width: 3rem; height: 3rem;" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>
-    </div>
+    <MudOverlay Visible="true" DarkBackground="true">
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+    </MudOverlay>
 }

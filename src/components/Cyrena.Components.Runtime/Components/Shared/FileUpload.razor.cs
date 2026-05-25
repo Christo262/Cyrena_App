@@ -1,4 +1,3 @@
-﻿using BootstrapBlazor.Components;
 using Cyrena.Attributes;
 using Cyrena.Contracts;
 using Cyrena.Models;
@@ -7,6 +6,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using Microsoft.SemanticKernel;
+using MudBlazor;
 
 namespace Cyrena.Components.Shared
 {
@@ -15,7 +15,7 @@ namespace Cyrena.Components.Shared
         [Parameter]
         public EventCallback<KernelContent[]> OnItemsAdded { get; set; }
         [Inject] private IJSRuntime _js { get; set; } = default!;
-        [Inject] private ToastService _toasts { get; set; } = default!;
+        [Inject] private ISnackbar _snackbar { get; set; } = default!;
         [KernelInject] private IFileHandlerFactory _factory { get; set; } = default!;
         private string? _accepts { get; set; }
         protected override void OnInitialized()
@@ -43,12 +43,12 @@ namespace Cyrena.Components.Shared
                     using var stream = file.OpenReadStream(maxAllowedSize: 50 * 1024 * 1024); // 50MB limit
                     var content = await _factory.SaveAsync(stream, file.ContentType, file.Name);
                     if (content == null)
-                        await _toasts.Error($"{file.Name} Error", "File type is not supported in the current chat.");
+                        _snackbar.Add($"{file.Name}: File type is not supported in the current chat.", Severity.Error);
                     else
                         models.Add(content);
                 }catch (Exception ex)
                 {
-                    await _toasts.Error($"{file.Name} Error", ex.Message);
+                    _snackbar.Add($"{file.Name}: {ex.Message}", Severity.Error);
                 }
             }
 

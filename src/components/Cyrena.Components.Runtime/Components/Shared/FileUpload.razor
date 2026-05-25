@@ -1,12 +1,10 @@
-﻿@inherits KernelComponentBase
+@inherits KernelComponentBase
 
 @if (!string.IsNullOrEmpty(_accepts))
 {
-    <Tooltip Title="Attach File">
-        <button type="button" @onclick="TriggerFileUpload" class="btn btn-secondary btn-sm rounded-pill">
-            <i class="bi bi-paperclip"></i>
-        </button>
-    </Tooltip>
+    <MudTooltip Text="Attach File">
+        <MudFab StartIcon="@Icons.Material.Filled.AttachFile" Size="Size.Small" Color="Color.Secondary" Class="rounded-pill" OnClick="TriggerFileUpload" />
+    </MudTooltip>
 
    
     <!-- Hidden File Input -->

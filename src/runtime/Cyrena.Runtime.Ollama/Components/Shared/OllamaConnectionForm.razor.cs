@@ -1,31 +1,30 @@
-﻿using BootstrapBlazor.Components;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
+using MudBlazor;
 using Cyrena.Runtime.Ollama.Models;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace Cyrena.Runtime.Ollama.Components.Shared
 {
-    public partial class OllamaConnectionForm : IResultDialog
+    public partial class OllamaConnectionForm
     {
         [Parameter] 
         public OllamaConnectionInfo Model { get; set; } = default!;
 
-        private EditContext _context = default!;
-        protected override void OnInitialized()
-        {
-            _context = new EditContext(Model);
+        [CascadingParameter]
+        private IMudDialogInstance MudDialog { get; set; } = default!;
+
+        private MudForm _form = default!;
+
+        private async Task Submit()
+        {       
+            await _form.ValidateAsync();
+            if (_form.IsValid)
+                MudDialog.Close(DialogResult.Ok(Model));
         }
 
-        Task IResultDialog.OnClose(DialogResult result)
+        private void Cancel()
         {
-            return Task.CompletedTask;
-        }
-
-        async Task<bool> IResultDialog.OnClosing(DialogResult result)
-        {
-            if (result != DialogResult.Yes) return true;
-            var valid = _context.Validate();
-            return valid;
+            MudDialog.Close(DialogResult.Cancel());
         }
     }
 }

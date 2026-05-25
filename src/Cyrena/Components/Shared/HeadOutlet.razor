@@ -3,19 +3,11 @@
 @inject HeadOutletStateChangeTracker _tracker
 @implements IDisposable
 <style>
-    body {
-        background-color: transparent !important;
-    }
-
     @((MarkupString)LayoutStyle())
 
     @((MarkupString)TabsStyle())
 
-    .layout-main > .tabs > .tabs-body {
-        background-color: transparent !important;
-    }
-
-    .layout-main > .tabs > .tabs-body > .tabs-body-content {
+    .mud-tabs-panels {
         background-color: transparent !important;
     }
 </style>
@@ -46,18 +38,29 @@
         if (string.IsNullOrEmpty(_bg.BackgroundColor))
         {
             return @"
-            .layout-main .tabs {
-                background-color:rgba(var(--bs-body-bg-rgb), var(--bs-bg-opacity)) !important;
+            .mud-main-content {
+                background-color:rgba(var(--mud-palette-background-rgb), var(--mud-palette-background-opacity)) !important;
             }
             ";
         }
-        return @"
-            .layout-main .tabs {
-                --bs-body-bg-rgb: {rgb};
-                --bs-bg-opacity: {opa};
-                background-color:rgba(var(--bs-body-bg-rgb), var(--bs-bg-opacity)) !important;
+        try
+        {
+            return @"
+            .mud-main-content {
+                --mud-palette-background-rgb: {rgb};
+                --mud-palette-background-opacity: {opa};
+                background-color:rgba(var(--mud-palette-background-rgb), var(--mud-palette-background-opacity)) !important;
             }
             ".Replace("{rgb}", _bg.BackgroundColor.ToCssRgbFromHex()).Replace("{opa}", _bg.BackgroundOpacity.ToCssFloat());
+        }
+        catch
+        {
+            return @"
+            .mud-main-content {
+                background-color:rgba(var(--mud-palette-background-rgb), var(--mud-palette-background-opacity)) !important;
+            }
+            ";
+        }
     }
 
     private string LayoutStyle()
@@ -65,7 +68,7 @@
         if (string.IsNullOrEmpty(_bg.BackgroundImage))
             return "";
         return @"
-            .layout {
+            body {
                 background-image: url('{img}');
                 background-size: cover;
                 background-repeat: no-repeat;

@@ -1,54 +1,46 @@
-
-<h4>Personalization</h4>
+<MudText Typo="Typo.h4">Personalization</MudText>
 
 <EditForm Model="_model">
     <DataAnnotationsValidator/>
     <ValidationSummary/>
-    <div class="row m-0">
-        <div class="col-md-6">
-            <div class="mb-3">
-                <label class="form-label">Background Color</label>
-                <ColorPicker Value="@_model.Background.BackgroundColor" ValueChanged="BackgroundColorChanged" />
-            </div>
+    <MudGrid>
+        <MudItem xs="12" md="6">
+            <MudColorPicker Label="Background Color" 
+                ColorPickerMode="ColorPickerMode.HEX" 
+                ShowAlpha="false"  
+                ShowModeSwitch="false"
+                Value="@(_model.Background.BackgroundColor ?? "#000000")" 
+                PickerVariant="PickerVariant.Dialog"
+                ValueChanged="@(v => BackgroundColorChanged(v.Value))" Variant="Variant.Outlined" Class="mb-4" />
 
-            <div class="mb-3">
-                <label class="form-label">Background Opacity</label>
-                <Slider TValue="int" Value="_bg_opa" Min="0" Max="100" Step="5" ValueChanged="BackgroundOpacityChanged"/>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="mb-3">
-                <label class="form-label">Wallpaper</label><br />
-                <button type="button" @onclick="TriggerFileUpload" class="btn btn-secondary btn-sm">
-                    <i class="bi bi-image"></i> Select
-                </button>
-                <button type="button" @onclick="NoWallpaper" class="btn btn-secondary btn-sm">
-                    <i class="bi bi-slash-circle"></i> No Wallpaper
-                </button>
-                <!-- Hidden File Input -->
-                <InputFile @ref="_fileInput"
-                           OnChange="HandleFilesSelected"
-                           accept="image/*"
-                           style="display: none;" />
-            </div>
+            <MudSlider T="int" Value="_bg_opa" Min="0" Max="100" Step="5" ValueChanged="BackgroundOpacityChanged" Color="Color.Primary">
+                Background Opacity: @_bg_opa%
+            </MudSlider>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudText Typo="Typo.body1">Wallpaper</MudText>
+            <MudButton OnClick="TriggerFileUpload" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Image" Class="mr-2">Select</MudButton>
+            <MudButton OnClick="NoWallpaper" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.HideImage">No Wallpaper</MudButton>
+            <!-- Hidden File Input -->
+            <InputFile @ref="_fileInput"
+                       OnChange="HandleFilesSelected"
+                       accept="image/*"
+                       style="display: none;" />
+<br />
+            <MudButton OnClick="ResetToDefault" Color="Color.Error" Variant="Variant.Filled" Class="mt-4">Reset to Defaults</MudButton>
+        </MudItem>
+    </MudGrid>
 
-            <div class="mb-3">
-                <button type="button" class="btn btn-sm btn-danger" @onclick="ResetToDefault">Reset to Defaults</button>
-            </div>
-        </div>
-    </div>
+    <MudDivider Class="my-4" />
 
-    <hr />
-
-    <div class="row m-0">
-        <div class="col-md-6">
-            <label class="form-label">Starting View</label>
-            <select @bind="_model.ViewStart" @bind:after="SaveCustomsSilent" class="form-control form-control-sm">
+    <MudGrid>
+        <MudItem xs="12" md="6">
+            <MudSelect T="string" Label="Starting View" @bind-Value="_model.ViewStart" @bind-Value:after="SaveCustomsSilent" Variant="Variant.Outlined">
                 @foreach(var item in _view_starts)
                 {
-                    <option value="@item.Href">@item.Title</option>
+                    <MudSelectItem Value="@item.Href">@item.Title</MudSelectItem>
                 }
-            </select>
-        </div>
-    </div>
+            </MudSelect>
+        </MudItem>
+    </MudGrid>
 </EditForm>

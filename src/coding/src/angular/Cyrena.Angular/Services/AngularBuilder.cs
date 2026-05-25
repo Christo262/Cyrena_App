@@ -1,4 +1,3 @@
-using BootstrapBlazor.Components;
 using Cyrena.Angular.Components.Shared;
 using Cyrena.Angular.Extensions;
 using Cyrena.Angular.Options;
@@ -11,6 +10,7 @@ using Cyrena.Extensions;
 using Cyrena.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
+using MudBlazor;
 
 namespace Cyrena.Angular.Services
 {
@@ -33,14 +33,8 @@ namespace Cyrena.Angular.Services
                 ?? throw new InvalidOperationException("Invalid angular.json path.");
 
             var plan = new DevelopPlan(rootDir);
-
-            // Comprehensive Angular project indexing
             plan.IndexAngularDefaultPlan();
-
-            // Register the Angular plugin
             options.Plugins.AddFromType<AngularKernelFunctions>("ng");
-
-            // Add the Angular system prompt
             var prompt = Resources.Read(typeof(AngularBuilder).Assembly, "Cyrena.Angular.Resources.prompt.md");
             options.GetFeatureOption<IPromptManager>().AddPrompt(0, prompt);
             options.KernelBuilder.AddStartupTask<ComponentFolderWatcher>();
@@ -55,19 +49,15 @@ namespace Cyrena.Angular.Services
 
         public async Task EditAsync(ChatConfiguration config, IServiceProvider services)
         {
-            var dialog = services.GetRequiredService<DialogService>();
-            var rf = await dialog.ShowModal<Configure>(new ResultDialogOption()
+            var dialogService = services.GetRequiredService<IDialogService>();
+            var parameters = new DialogParameters<Configure>
             {
-                Title = "Angular",
-                Size = Size.Medium,
-                ComponentParameters = new()
-                {
-                    {nameof(Configure.Model), config }
-                },
-                ButtonYesText = "Save",
-                ButtonNoText = "Cancel",
-            });
-            if (rf == DialogResult.Yes)
+                { x => x.Model, config }
+            };
+            var options = new DialogOptions { MaxWidth = MaxWidth.Small };
+            var dialog = await dialogService.ShowAsync<Configure>("Angular", parameters, options);
+            var result = await dialog.Result;
+            if (result is not null && !result.Canceled)
                 await _kernel.UpdateAsync(config, true);
         }
     }

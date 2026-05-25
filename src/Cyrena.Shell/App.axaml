@@ -12,11 +12,13 @@
 
   <TrayIcon.Icons>
     <TrayIcons>
-      <TrayIcon Icon="/Assets/favicon.ico"
+      <TrayIcon Icon="/Assets/cyrena.png"
                 ToolTipText="Cyréna">
         <TrayIcon.Menu>
           <NativeMenu>
             <NativeMenuItem Header="Open" Command="{Binding OpenShell}">
+            </NativeMenuItem>
+            <NativeMenuItem Header="Browser" Command="{Binding OpenBrowser}">
             </NativeMenuItem>
             <NativeMenuItem Header="Exit" Command="{Binding ExitApp}">
             </NativeMenuItem>

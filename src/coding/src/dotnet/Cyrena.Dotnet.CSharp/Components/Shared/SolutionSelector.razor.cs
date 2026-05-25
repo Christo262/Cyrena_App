@@ -1,14 +1,14 @@
-﻿using BootstrapBlazor.Components;
 using Cyrena.Attributes;
 using Cyrena.Contracts;
 using Cyrena.Dotnet.Contracts;
 using Microsoft.AspNetCore.Components;
+using MudBlazor;
 
 namespace Cyrena.Dotnet.CSharp.Components.Shared
 {
     public partial class SolutionSelector
     {
-        [Inject] private DialogService _dialog { get; set; } = default!;
+        [Inject] private IDialogService _dialog { get; set; } = default!;
         [KernelInject] private ISolutionController _sln { get; set; } = default!;
         [KernelInject] private IIterationService _its { get; set; } = default!;
         protected override void OnInitialized()
@@ -25,17 +25,12 @@ namespace Cyrena.Dotnet.CSharp.Components.Shared
         {
             if (_its.Inferring)
                 return;
-            var result = await _dialog.ShowModal<SolutionViewer>(new ResultDialogOption()
+            var parameters = new DialogParameters<SolutionViewer>
             {
-                Size = Size.Medium,
-                Title = "Projects",
-                ShowNoButton = false,
-                ButtonYesText = "Done",
-                ComponentParameters = new()
-                {
-                    {nameof(SolutionViewer.Kernel), Kernel }
-                }
-            });
+                { nameof(SolutionViewer.Kernel), Kernel }
+            };
+            var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true };
+            await _dialog.ShowAsync<SolutionViewer>("Projects", parameters, options);
         }
     }
 }

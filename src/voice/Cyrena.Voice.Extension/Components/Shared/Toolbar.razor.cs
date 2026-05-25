@@ -1,10 +1,10 @@
-﻿using BootstrapBlazor.Components;
 using Cyrena.Attributes;
 using Cyrena.Contracts;
 using Cyrena.Voice.Contracts;
 using Cyrena.Voice.Options;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using MudBlazor;
 using System.Collections.Concurrent;
 using System.Text;
 
@@ -16,7 +16,7 @@ namespace Cyrena.Voice.Components.Shared
         [Inject] private ISettingsService _settings { get; set; } = default!;
         [KernelInject] private IIterationService _its { get; set; } = default!;
         [KernelInject] private IChatMessageService _chat { get; set; } = default!;
-        [Inject] private ToastService _toasts { get; set; } = default!;
+        [Inject] private ISnackbar _snackbar { get; set; } = default!;
 
         private StreamingSpeechFormatter _speechFormatter { get; set; } = default!;
 
@@ -37,7 +37,7 @@ namespace Cyrena.Voice.Components.Shared
         {
             _voice_mode = false;
             await _cts.CancelAsync();
-            if(_chain != null)
+            if (_chain != null)
                 await _chain.DeinitializeAsync();
             _its_start?.Dispose();
             _its_end?.Dispose();
@@ -72,7 +72,7 @@ namespace Cyrena.Voice.Components.Shared
             }
             catch (Exception ex)
             {
-                await _toasts.Error("Voice Error", ex.Message);
+                _snackbar.Add($"Voice Error: {ex.Message}", Severity.Error);
             }
         }
 
@@ -85,7 +85,7 @@ namespace Cyrena.Voice.Components.Shared
                 {
                     if (!_chain!.IsInitialized)
                         await _chain.InitializeAsync();
-                    if (_cts != null &&!_cts.IsCancellationRequested)
+                    if (_cts != null && !_cts.IsCancellationRequested)
                     {
                         await _cts.CancelAsync();
                         _cts.Dispose();
@@ -103,13 +103,13 @@ namespace Cyrena.Voice.Components.Shared
                     _voice_mode = true;
                 }
                 if (_chain!.Recorder.IsRecording)
-                    await _toasts.Warning("Voice", "Already recording");
+                    _snackbar.Add("Already recording", Severity.Warning);
                 await _chain.Recorder.StartRecording(_cts.Token);
                 this.StateHasChanged();
             }
             catch (Exception ex)
             {
-                await _toasts.Error("Voice Error", ex.Message);
+                _snackbar.Add($"Voice Error: {ex.Message}", Severity.Error);
             }
         }
 
@@ -150,7 +150,7 @@ namespace Cyrena.Voice.Components.Shared
             }
             catch (Exception ex)
             {
-                await _toasts.Error("Voice Error", ex.Message);
+                _snackbar.Add($"Voice Error: {ex.Message}", Severity.Error);
             }
         }
 
@@ -158,7 +158,7 @@ namespace Cyrena.Voice.Components.Shared
         {
             while (!_cts.IsCancellationRequested)
             {
-                if(!_playback.TryDequeue(out var txt))
+                if (!_playback.TryDequeue(out var txt))
                 {
                     await Task.Yield();
                     continue;
@@ -167,11 +167,12 @@ namespace Cyrena.Voice.Components.Shared
                 {
                     var audio = await _chain!.Converter.ConvertAsync(txt!, _cts.Token);
                     await _chain.Player.PlayAsync(audio, _cts.Token);
-                }catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
-                    await this.InvokeAsync(async () =>
+                    await this.InvokeAsync(() =>
                     {
-                        await _toasts.Error("Voice Error", ex.Message);
+                        _snackbar.Add($"Voice Error: {ex.Message}", Severity.Error);
                     });
                 }
                 finally
@@ -188,7 +189,7 @@ namespace Cyrena.Voice.Components.Shared
 
         public void Dispose()
         {
-            if(_cts != null)
+            if (_cts != null)
             {
                 _cts.Cancel();
                 _cts.Dispose();

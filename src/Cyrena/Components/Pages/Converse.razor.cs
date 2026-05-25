@@ -1,75 +1,103 @@
-﻿using BootstrapBlazor.Components;
 using Cyrena.Contracts;
+using Cyrena.Extensions;
 using Cyrena.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.SemanticKernel;
+using MudBlazor;
 
 namespace Cyrena.Components.Pages
 {
     public partial class Converse : IDisposable
     {
         [Parameter] public string? Id { get; set; }
-        [CascadingParameter]
-        public TabItem? Item { get; set; }
-        [CascadingParameter]
-        public Tab? Parent { get; set; }
-        [Inject] private ToastService _toasts { get; set; } = default!;
+
+        [Inject] private ISnackbar _snackbar { get; set; } = default!;
         [Inject] private IKernelController _controller { get; set; } = default!;
         [Inject] private NavigationManager _nav { get; set; } = default!;
 
-        private Kernel? _kernel { get; set; }
-        private IDisposable? _watcher { get; set; }
-        private IDisposable? _updater { get; set; }
+        private List<Kernel> _active { get; set; } = new();
 
-        protected override async Task OnAfterRenderAsync(bool firstRender)
+        private List<IDisposable> _disposables = new();
+        private MudDynamicTabs _dynamicTabs = null!;
+        private int _userIndex;
+
+        protected override async Task OnParametersSetAsync()
+        {
+            await base.OnParametersSetAsync();
+            if(!string.IsNullOrEmpty(Id))
+                try
+                {
+                    var ext = await _controller.LoadAsync(Id);
+                    if (_active.Count == 0) _active = _controller.ActiveKernels.ToList();
+                    if(ext != null)
+                    {
+                        if (!_active.Contains(ext))
+                            _active.Add(ext);
+                        _userIndex = _active.IndexOf(ext);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _snackbar.Add(ex.Message, Severity.Error);
+                }
+        }
+
+        protected override void OnAfterRender(bool firstRender)
         {
             if (!firstRender) return;
-            try
+            _disposables.Add(_controller.OnChatLoaded(OnChatLoaded));
+            _disposables.Add(_controller.OnChatUnload(OnChatUnloaded));
+            this.StateHasChanged();
+        }
+
+        private void OnChatLoaded(ChatConfiguration chat)
+        {
+            this.InvokeAsync(() =>
             {
-                if (string.IsNullOrEmpty(Id))
-                    throw new Exception("No ID provided");
-                _kernel = null;
-                this.StateHasChanged();
-                await Task.Delay(1);
-                _kernel = await _controller.LoadAsync(Id);
-                if (_kernel == null)
-                    throw new Exception($"Kernel not loaded");
-                if (Item != null)
+                var kernel = _controller.GetKernel(chat.Id);
+                if (kernel != null)
                 {
-                    var config = _kernel.GetRequiredService<IChatConfigurationService>();
-                    Item.SetHeader(config.Config.Title ?? "New Chat", config.Config[ChatConfiguration.Icon]);
-                    _watcher = _controller.OnChatUnload(async (cfg) =>
-                    {
-                        if (cfg.Id == config.Config.Id)
-                        {
-                            _nav.NavigateTo("");
-                            await Task.Delay(50);
-                            if (Parent != null && Item != null)
-                                await Parent.RemoveTab(Item);
-                        }
-                    });
-                    _updater = _controller.OnChatUpdate((cfg) =>
-                    {
-                        if (cfg.Id == config.Config.Id && Item != null)
-                            Item.SetHeader(config.Config.Title ?? "New Chat", config.Config[ChatConfiguration.Icon]);
-                    });
+                    _active.Add(kernel);
+                    var idx = _active.IndexOf(kernel);
+                    _userIndex = idx;
                 }
-                this.StateHasChanged();
-            }
-            catch (Exception ex)
+                StateHasChanged();
+            });
+        }
+
+        private void OnChatUnloaded(ChatConfiguration chat)
+        {
+            this.InvokeAsync(() =>
             {
-                await _toasts.Error("Error", ex.Message);
-                _nav.NavigateTo("");
-                await Task.Delay(50);
-                if (Parent != null && Item != null)
-                    await Parent.RemoveTab(Item);
-            }
+                var item = _active.FirstOrDefault(x => x.GetId() == chat.Id);
+                if (item is not null)
+                    _active.Remove(item);
+                if (_active.Count == 0)
+                    _nav.NavigateTo("");
+                StateHasChanged();
+            });
+        }
+
+        private void OnTabChange(int index)
+        {
+            _userIndex = index;
+            var active = _dynamicTabs.ActivePanel;
+            if (active != null && active.ID is Kernel kernel)
+                _nav.NavigateTo($"converse/{kernel.GetId()}");
         }
 
         public void Dispose()
         {
-            _watcher?.Dispose();
-            _updater?.Dispose();
+            foreach(var dsp in _disposables) dsp.Dispose();
+            _disposables.Clear();
+        }
+
+        private async Task OnCloseTab(MudTabPanel panel)
+        {
+            if(panel.ID is Kernel instance)
+            {
+                _controller.Unload(instance.GetConfiguration());
+            }
         }
     }
 }

@@ -1,4 +1,3 @@
-﻿using BootstrapBlazor.Components;
 using Cyrena.Contracts;
 using Cyrena.Models;
 using Microsoft.AspNetCore.Components;
@@ -6,6 +5,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using Microsoft.SemanticKernel;
+using MudBlazor;
 
 namespace Cyrena.Components.Shared
 {
@@ -13,12 +13,13 @@ namespace Cyrena.Components.Shared
     {
         [Inject] private IKernelController _kernels { get; set; } = default!;
         [Inject] private NavigationManager _nav { get; set; } = default!;
-        [Inject] private ToastService _toasts { get; set; } = default!;
+        [Inject] private ISnackbar _snackbar { get; set; } = default!;
         [Inject] private IJSRuntime _js { get; set; } = default!;
         [Inject] private ISetupService _setup { get; set; } = default!;
 
         private ChatConfiguration? _model;
-        private Modal? _config;
+        private bool _showConfig;
+        private DialogOptions _dialogOptions = new() { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
         private string? _input { get; set; }
 
         protected override void OnInitialized()
@@ -50,15 +51,14 @@ namespace Cyrena.Components.Shared
                 AssistantModeId = IAssistantMode.AssistantModeDefault,
                 ConnectionId = connectionId,
             };
-            _model[ChatConfiguration.Icon] = "bi bi-chat-left-quote";
+            _model[ChatConfiguration.Icon] = @Icons.Material.Filled.Chat;
             _input = null;
             this.StateHasChanged();
         }
 
-        private async Task Settings()
+        private void Settings()
         {
-            if (_config != null)
-                await _config.Show();
+            _showConfig = true;
         }
 
         private async Task Send()
@@ -78,7 +78,7 @@ namespace Cyrena.Components.Shared
             }
             catch (Exception ex)
             {
-                await _toasts.Error("Error", ex.Message);
+                _snackbar.Add(ex.Message, Severity.Error);
             }
         }
 
@@ -94,7 +94,7 @@ namespace Cyrena.Components.Shared
             }
             catch (Exception ex)
             {
-                await _toasts.Error("Error", ex.Message);
+                _snackbar.Add(ex.Message, Severity.Error);
             }
         }
 

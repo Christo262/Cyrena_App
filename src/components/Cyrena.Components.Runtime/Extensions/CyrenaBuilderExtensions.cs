@@ -2,6 +2,7 @@
 using Cyrena.Options;
 using Cyrena.Services;
 using Microsoft.Extensions.DependencyInjection;
+using MudBlazor.Services;
 
 namespace Cyrena.Extensions
 {
@@ -12,16 +13,7 @@ namespace Cyrena.Extensions
             var ui = new ComponentOptions();
             builder.AddFeatureOption(ui);
 
-            builder.Services.AddBootstrapBlazor(options =>
-            {
-                options.DisableGetLocalizerFromResourceManager = true;
-                options.DisableGetLocalizerFromService = true;
-                options.IgnoreLocalizerMissing = true;
-                
-            }).ConfigureIconThemeOptions(icons =>
-            {
-                icons.ThemeKey = "bootstrap";
-            });
+            builder.Services.AddMudServices();
 
             builder.AddAssistantPlugin<ComponentAssistantsPlugin>();
 

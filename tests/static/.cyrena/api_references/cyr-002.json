@@ -1,0 +1,19 @@
+{
+  "Title": "Home Page \u2014 LLM Reviews \u0026 Quick Reference",
+  "Keywords": [
+    "index.html",
+    "home page",
+    "hero",
+    "quick reference",
+    "comparison table",
+    "review cards",
+    "tips",
+    "offline models",
+    "cloud models",
+    "LLM reviews"
+  ],
+  "Summary": "Authoritative reference for the index.html home page: hero, comparison table, offline/cloud review cards, and tips section.",
+  "Link": null,
+  "Content": "## Overview\n\nThe home page (\u0060index.html\u0060) is the primary landing page for the Cyr\u00E9na LLM review site. It contains a hero, a quick-reference comparison table, offline model reviews, cloud model reviews, and general tips.\n\n## HTML Structure\n\n- \u0060\u003Cheader class=\u0022site-header\u0022\u003E\u0060 \u2014 shared sticky header (see \u0060cyr-001\u0060).\n- \u0060\u003Csection class=\u0022hero\u0022\u003E\u0060 \u2014 centered headline \u0022LLM Reviews for Developers\u0022, subtitle, and two CTA buttons (View Quick Reference, Read Reviews).\n- \u0060\u003Csection id=\u0022quick-reference\u0022 class=\u0022quick-reference\u0022\u003E\u0060 \u2014 comparison table with 13 rows covering offline and cloud models.\n- \u0060\u003Csection id=\u0022offline\u0022 class=\u0022reviews\u0022\u003E\u0060 \u2014 6 review cards for offline Ollama models.\n- \u0060\u003Csection id=\u0022cloud\u0022 class=\u0022reviews-cloud\u0022\u003E\u0060 \u2014 7 review cards for cloud models.\n- \u0060\u003Csection id=\u0022tips\u0022 class=\u0022tips\u0022\u003E\u0060 \u2014 4 tip cards with numbered advice.\n- \u0060\u003Cfooter class=\u0022site-footer\u0022\u003E\u0060 \u2014 shared footer (see \u0060cyr-001\u0060).\n\n## Key Components\n\n### Hero\n- \u0060.hero-actions\u0060 contains \u0060.btn-primary\u0060 and \u0060.btn-secondary\u0060.\n- Background: gradient from white to surface.\n\n### Comparison Table\n- \u0060.table-wrapper\u0060 provides \u0060overflow-x: auto\u0060 and border/shadow.\n- \u0060.comparison-table\u0060 has 6 columns: Category, Model, Size, Best-use case(s), Key Strengths / Weaknesses, Notes.\n- Minimum width: \u0060900px\u0060 for horizontal scroll on small screens.\n- Alternating hover state on rows.\n\n### Review Cards\n- \u0060.review-grid\u0060 uses responsive grid: 1 col \u2192 2 col (\u0060640px\u0060) \u2192 3 col (\u00601024px\u0060).\n- \u0060.review-featured\u0060 adds a left accent border and is used for \u0060gpt-5\u0060 and \u0060kimi-k2.6\u0060.\n- \u0060.badge\u0060 highlights \u0022Outstanding\u0022 and \u0022Favourite\u0022 models.\n\n### Tips\n- \u0060.tips-grid\u0060 uses responsive grid: 1 col \u2192 2 col (\u0060640px\u0060) \u2192 4 col (\u00601024px\u0060).\n- \u0060.tip-number\u0060 is an absolutely positioned accent circle at the top-left of each card.\n\n## Accessibility\n- All sections use \u0060aria-labelledby\u0060 pointing to their heading.\n- Table uses proper \u0060scope=\u0022col\u0022\u0060 on headers.\n- Skip link targets \u0060#main-content\u0060.\n\n## Asset References\n- \u0060css/styles.css\u0060\n- \u0060js/main.js\u0060\n- Internal anchor links: \u0060#quick-reference\u0060, \u0060#offline\u0060, \u0060#cloud\u0060, \u0060#tips\u0060\n- Page link: \u0060about.html\u0060\n",
+  "Id": "cyr-002"
+}

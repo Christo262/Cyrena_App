@@ -1,0 +1,22 @@
+@inherits KernelComponentBase
+
+@if (_render)
+{
+    <MudPaper Class="h-100" Style="overflow:hidden;position:relative;background-color:transparent">
+        <MudDrawerContainer Class="mud-height-full">
+            <Docking Kernel="Kernel" />
+            <Chat Kernel="Kernel" />
+        </MudDrawerContainer>
+    </MudPaper>
+}
+
+@code {
+    private bool _render{ get; set; }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender) return;
+        _render = true;
+        this.StateHasChanged();
+    }
+}

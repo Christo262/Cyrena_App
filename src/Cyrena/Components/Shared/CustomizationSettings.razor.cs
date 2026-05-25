@@ -1,4 +1,3 @@
-﻿using BootstrapBlazor.Components;
 using Cyrena.Contracts;
 using Cyrena.Models;
 using Cyrena.Options;
@@ -7,6 +6,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.JSInterop;
+using MudBlazor;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,7 +17,7 @@ namespace Cyrena.Components.Shared
     {
         [Inject] private ISettingsService _settings { get; set; } = default!;
         [Inject] private IJSRuntime _js { get; set; } = default!;
-        [Inject] private ToastService _toasts { get; set; } = default!;
+        [Inject] private ISnackbar _snackbar { get; set; } = default!;
         [Inject] private HeadOutletStateChangeTracker _head { get; set; } = default!;
         [Inject] private IServiceProvider _services { get; set; } = default!;
 
@@ -74,7 +74,7 @@ namespace Cyrena.Components.Shared
                 SaveCustoms();
             }catch(Exception ex)
             {
-                await _toasts.Error($"{e.File.Name} Error", ex.Message);
+                _snackbar.Add($"{e.File.Name} Error: {ex.Message}", Severity.Error);
             }
         }
 

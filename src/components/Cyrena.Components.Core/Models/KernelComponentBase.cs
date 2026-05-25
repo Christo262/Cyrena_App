@@ -48,14 +48,10 @@ namespace Cyrena.Models
                 if (att.Key == null)
                 {
                     service = Kernel.Services.GetService(prop.PropertyType);
-                    if (service == null)
-                        throw new InvalidOperationException($"Unable to find service of type {prop.PropertyType} in Kernel");
                 }
                 else
                 {
                     service = Kernel.Services.GetKeyedService(prop.PropertyType, att.Key);
-                    if (service == null)
-                        throw new InvalidOperationException($"Unable to find keyed service of type {prop.PropertyType} with key '{att.Key}' in Kernel");
                 }
 
                 setter.Invoke(this, [service]);

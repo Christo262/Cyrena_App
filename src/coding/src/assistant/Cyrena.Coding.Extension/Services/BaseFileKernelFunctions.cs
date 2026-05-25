@@ -51,8 +51,8 @@ namespace Cyrena.Coding.Services
 
         [KernelFunction("read_lines")]
         [Description(
-            "Returns a structured list of the file's lines, each paired with its zero-based index. " +
-            "Use this before calling write when you need to know exact line numbers.")]
+            "Returns a structured list of the file's lines, each paired with its 1-based line number (first line is 1). " +
+            "Always call this before using write with Insert or Replace so you have exact line numbers.")]
         public ToolResult<DevelopFileLines> ReadFileLines(
             [Description("The unique identifier of the target file within the current develop plan.")]
             string fileId)
@@ -78,24 +78,25 @@ namespace Cyrena.Coding.Services
         [KernelFunction("write")]
         [Description(
     "Modifies the specified file. All line endings are normalized to \\n. " +
+    "IMPORTANT: startLine is 1-based — line 1 is the first line of the file. " +
     "mode controls the operation: " +
-    "Insert — inserts content at startLine, existing lines are shifted down, lineCount is ignored. " +
+    "Insert — inserts content before startLine, shifting existing lines down. lineCount is ignored. " +
     "Replace — removes exactly lineCount lines starting at startLine, then inserts content at that position. lineCount must be > 0. " +
-    "Overwrite — replaces the entire file with content, startLine and lineCount are ignored. " +
-    "To append to end of file, use Insert with startLine equal to the current total line count. " +
-    "Use read_lines first when editing by line number.")]
+    "Overwrite — replaces the entire file with content. startLine and lineCount are ignored. " +
+    "To append to end of file, use Insert with startLine = totalLines + 1. " +
+    "Always call read_lines first when editing by line number.")]
         public ToolResult<DevelopFileLines> WriteFile(
     [Description("The unique identifier of the target file within the current develop plan.")]
     string fileId,
 
-    [Description("Insert: inserts content at startLine. Replace: removes lineCount lines at startLine then inserts content. Overwrite: replaces entire file.")]
+    [Description("Insert: inserts content before startLine, shifting lines down. Replace: removes lineCount lines at startLine then inserts content. Overwrite: replaces entire file.")]
     CodeWriteMode mode,
 
     [Description("The text content to insert or use as replacement. Null or empty to delete lines with Replace mode.")]
     string? content,
 
-    [Description("The zero-based line number where the operation begins. Ignored when mode is Overwrite.")]
-    int startLine = 0,
+    [Description("1-based line number where the operation begins (line 1 is the first line). Ignored when mode is Overwrite.")]
+    int startLine = 1,
 
     [Description("The number of lines to remove before inserting. Only used when mode is Replace. Must be > 0.")]
     int lineCount = 0)
@@ -107,6 +108,9 @@ namespace Cyrena.Coding.Services
 
                 if (file!.ReadOnly)
                     return new ToolResult<DevelopFileLines>(false, $"File '{file.RelativePath}' is read-only.");
+
+                // Convert from 1-based (AI-facing) to 0-based (internal)
+                var zeroBasedStartLine = startLine - 1;
 
                 switch (mode)
                 {
@@ -124,10 +128,15 @@ namespace Cyrena.Coding.Services
                 _plan.Plan.TryReadFileContent(file, out var existingContent);
                 _version.Backup(existingContent);
 
-                if (!_plan.Plan.TryWriteFileLines(file, content, startLine, lineCount, mode, out var updated))
+                if (!_plan.Plan.TryWriteFileLines(file, content, zeroBasedStartLine, lineCount, mode, out var updated, out var totalLines))
+                {
+                    var rangeHint = totalLines.HasValue
+                        ? $" File has {totalLines} line(s) (valid startLine range: 1–{totalLines + 1} for Insert, 1–{totalLines} for Replace)."
+                        : string.Empty;
                     return new ToolResult<DevelopFileLines>(
                         false,
-                        $"Unable to write to file '{file.RelativePath}'. Ensure startLine and lineCount are valid for the chosen mode.");
+                        $"Unable to write to file '{file.RelativePath}'. Ensure startLine and lineCount are valid for the chosen mode.{rangeHint}");
+                }
 
                 _plan.InvokeFileUpdated(updated!);
 

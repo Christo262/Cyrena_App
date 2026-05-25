@@ -49,8 +49,6 @@ class Program
         //Platform Specific Implementation
         builder.Services.AddSingleton<IFileDialog, FileDialog>();  
         builder.Services.AddSingleton<ISetupService, SetupService>();
-        builder.AddSettingsComponent<Defaults>("Defaults");
-        builder.Services.AddSingleton<IBrowserService, BrowserService>();
         //
 
         builder.Build();

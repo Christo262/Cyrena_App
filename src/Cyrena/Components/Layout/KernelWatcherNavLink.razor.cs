@@ -1,6 +1,10 @@
 ﻿using Cyrena.Contracts;
 using Cyrena.Models;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.SemanticKernel;
+using MudBlazor;
+using static MudBlazor.CategoryTypes;
 
 namespace Cyrena.Components.Layout
 {
@@ -11,6 +15,8 @@ namespace Cyrena.Components.Layout
         public ChatConfiguration ChatConfiguration { get; set; } = default!;
 
         [Inject] private IKernelController _controller { get; set; } = default!;
+        [Inject] private IServiceProvider _services { get; set; } = default!;
+        [Inject] private IDialogService _dialog { get; set; } = default!;
         [Inject] private NavigationManager _nav { get; set; } = default!;
 
         private IDisposable? _unload { get; set; }
@@ -20,6 +26,7 @@ namespace Cyrena.Components.Layout
         private IDisposable? _its_end { get; set; }
         private bool _is_loaded { get; set; }
         private bool _is_its { get; set; }
+        private bool _open { get; set; }
 
         protected override void OnInitialized()
         {
@@ -33,9 +40,6 @@ namespace Cyrena.Components.Layout
                     _its_end?.Dispose();
                     _its_start = null;
                     _its_end = null;
-                    if (_nav.Uri.EndsWith(ChatConfiguration.Id))
-                        _nav.NavigateTo("");
-                    else
                         this.InvokeAsync(StateHasChanged);
                 }
             });
@@ -84,6 +88,34 @@ namespace Cyrena.Components.Layout
                 }
                 this.InvokeAsync(StateHasChanged);
             }
+        }
+
+        private async Task Delete()
+        {
+            _open = false;
+            bool? result = await _dialog.ShowMessageBoxAsync(
+                "Delete Chat",
+                $"Are you sure you want to delete {ChatConfiguration.Title ?? "this chat"}?",
+                yesText: "Delete", cancelText: "Cancel");
+            if (result == true)
+                await _controller.Delete(ChatConfiguration);
+        }
+
+        private async Task EditAsync()
+        {
+            var asst = _services.GetServices<IAssistantMode>().FirstOrDefault(x => x.Id == ChatConfiguration.AssistantModeId);
+            if (asst == null)
+            {
+                await _dialog.ShowMessageBoxAsync("Error", "Unable to find configuration service for this chat.");
+                return;
+            }
+            await asst.EditAsync(ChatConfiguration, _services);
+        }
+
+        private void Load()
+        {
+            _open = false;
+            _nav.NavigateTo($"converse/{ChatConfiguration.Id}");
         }
 
         public void Dispose()

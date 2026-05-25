@@ -1,11 +1,13 @@
-
-<div class="mb-3">
-    <label class="form-label">@Label</label>
-    <select @bind="Value" @bind:after="OnValueChanged" @onclick="Populate" class="form-control">
-        <option value="">--Select--</option>
-        @foreach (var item in _models)
-        {
-            <option value="@item.Id">@item.Name (@item.Source)</option>
-        }
-    </select>
-</div>
+<MudSelect T="string" Value="Value" ValueChanged="ValueChanged"
+           Label="@Label"
+           Variant="Variant.Outlined" Dense="true"
+           AdornmentIcon="@Icons.Material.Filled.Cable"
+           Required="Required"
+           Immediate
+           Adornment="Adornment.Start">
+    <MudSelectItem Value="@((string?)null)">-- Select --</MudSelectItem>
+    @foreach (var item in _models)
+    {
+        <MudSelectItem Value="@item.Id">@item.Name (@item.Source)</MudSelectItem>
+    }
+</MudSelect>

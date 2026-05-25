@@ -1,0 +1,29 @@
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="_form" Model="Model">
+            @if (!string.IsNullOrEmpty(Model.OldPin))
+            {
+                <MudTextField T="string" InputType="InputType.Password"
+                @bind-Value="Model.ConfirmOldPin" 
+                Label="Current PIN" Required 
+                Variant="Variant.Outlined"/>
+            }
+
+            <MudTextField T="string" 
+                HelperText="Enter a pin between 4 & 6 characters"
+                InputType="InputType.Password"
+                          @bind-Value="Model.NewPin" 
+                          MaxLength="6"
+                          Label="New PIN" Required Variant="Variant.Outlined" />
+            <MudTextField T="string" 
+                InputType="InputType.Password"
+                          @bind-Value="Model.ConfirmNewPin" 
+                          Label="Confirm PIN" 
+                          Required Variant="Variant.Outlined" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Submit" Color="Color.Primary">Submit</MudButton>
+    </DialogActions>
+</MudDialog>

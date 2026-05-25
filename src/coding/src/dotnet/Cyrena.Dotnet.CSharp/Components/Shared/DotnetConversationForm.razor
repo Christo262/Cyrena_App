@@ -1,23 +1,19 @@
 @using Cyrena.Components.Shared
 
-<EditForm EditContext="_context">
-    <DataAnnotationsValidator/>
-    <ValidationSummary/>
-
-    <div class="mb-2">
-        <label class="form-label">Title</label>
-        <InputText @bind-Value="_model.Title" class="form-control" />
-    </div>
-
-    <ConnectionSelector @bind-Value="_model.ConnectionId"/>
-
-    <div class="mb-2">
-        <label class="form-label">Solution File</label>
-        <div class="input-group">
-            <InputText @bind-Value="_model.SolutionFilePath" class="form-control" />
-            <button class="btn btn-secondary" type="button" @onclick="ChooseSln"><i class="bi bi-file"></i></button>
-        </div>
-    </div>
-
-    <PluginSelector Chat="Configuration"/>
-</EditForm>
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="_form" Model="_model">
+            <MudTextField @bind-Value="_model.Title" Label="Title" Required="true" />
+            <ConnectionSelector @bind-Value="_model.ConnectionId"/>
+            <MudTextField @bind-Value="_model.SolutionFilePath" Label="Solution File" Required="true" 
+                          Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.FileOpen" 
+                          OnAdornmentClick="ChooseSln" />
+            <PluginSelector Chat="Configuration"/>
+            <HistoryConfiguration Model="Configuration" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="Color.Error">Cancel</MudButton>
+        <MudButton OnClick="Submit" Color="Color.Primary">Submit</MudButton>
+    </DialogActions>
+</MudDialog>

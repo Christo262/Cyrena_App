@@ -1,4 +1,4 @@
-﻿using Cyrena.Coding.Models;
+using Cyrena.Coding.Models;
 using Cyrena.Dotnet.Contracts;
 using Cyrena.Dotnet.Extensions;
 using Cyrena.Dotnet.Models;
@@ -30,7 +30,7 @@ namespace Cyrena.Dotnet.CSharp.Services
             try
             {
                 ProjectFileInfo csproj = ProjectParser.ParseProject(info.AbsolutePath);
-                if(csproj.SdkType == "Microsoft.NET.Sdk.Razor" && csproj.NuGetPackages.Any(x => x.Name == "Microsoft.AspNetCore.Components.Web"))
+                if (csproj.SdkType == "Microsoft.NET.Sdk.Razor" && csproj.NuGetPackages.Any(x => x.Name == "Microsoft.AspNetCore.Components.Web"))
                     return true;
                 return false;
             }

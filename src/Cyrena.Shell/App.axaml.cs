@@ -3,12 +3,16 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Cyrena.Contracts;
+using Cyrena.Extensions;
 using Cyrena.Options;
 using Cyrena.Shell.Extensions;
 using Cyrena.Shell.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Photino.NET;
 using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
@@ -21,16 +25,19 @@ namespace Cyrena.Shell
     {
         private readonly CancellationTokenSource _backgroundToken;
         private WebApplication? _background;
-        private MainWindow? _mainWindow;
+        //private MainWindow? _mainWindow;
         private SplashWindow? _splashWindow;
+        private PhotinoWindow? _mainWindow;
 
         public ICommand OpenShell { get; }
+        public ICommand OpenBrowser { get; }
         public ICommand ExitApp { get; }
 
         public App()
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             OpenShell = new DelegateCommand(ShowWindow);
+            OpenBrowser = new DelegateCommand(OpenWebBrowser);
             ExitApp = new DelegateCommand(Exit);
             _backgroundToken = new CancellationTokenSource();
         }
@@ -61,20 +68,36 @@ namespace Cyrena.Shell
 
                 _splashWindow = new SplashWindow();
                 _splashWindow.Show();
-
+                Exception? error = null;
+                string url = string.Empty;
                 Task.Run(async () =>
                 {
                     try
                     {
-                        (_background, string url) = BackgroundApp.CreateApp([]);
+                        (_background, url) = BackgroundApp.CreateApp([], this);
+                        using var http = new HttpClient()
+                        {
+                            BaseAddress = new Uri(url)
+                        };
+                        try
+                        {
+                            using var check = await http.GetAsync("/api/is-alive");
+                            if (check.IsSuccessStatusCode)
+                            {
+                                if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                                    desktop.Shutdown();
+                                return;
+                            }
+
+                        }
+                        catch { }
                         await _background.StartAsync(_backgroundToken.Token);
 
-                        using var http = new HttpClient();
                         while (true)
                         {
                             try
                             {
-                                var res = await http.GetAsync(url);
+                                using var res = await http.GetAsync(url);
                                 if (res.IsSuccessStatusCode) break;
                             }
                             catch { }
@@ -83,23 +106,20 @@ namespace Cyrena.Shell
                     }
                     catch (Exception ex)
                     {
-                        
+                        error = ex;
                     }
                 }, _backgroundToken.Token).ContinueWith(t =>
                 {
                     Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                     {
                         _splashWindow.Close();
-                        if (t.IsFaulted)
+                        if (t.IsFaulted || _background == null || error != null)
                         {
-                            //TODO
+                            var fail = new ErrorWindow(error?.Message ?? "Failed to start background services");
+                            fail.Show();
                             return;
                         }
-                        _mainWindow = new MainWindow();
-                        _mainWindow.ShowInTaskbar = false;
-                        var fd = _background!.Services.GetRequiredService<IFileDialog>() as FileDialog;
-                        fd!.SetWindow(_mainWindow);
-                        var options = _background.Services.GetRequiredService<ISettingsService>().Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
+                        var options = CyrenaRuntime.CreateSettings().Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
                         if (options.LaunchWindowOnStartup == true)
                             ShowWindow();
                     });                   
@@ -109,20 +129,43 @@ namespace Cyrena.Shell
             base.OnFrameworkInitializationCompleted();
         }
 
-        private void ShowWindow()
+        private void _mainWindow_WindowSizeChanged(object? sender, System.Drawing.Size e)
         {
-            if (!Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
+            var options = CyrenaRuntime.CreateSettings().Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
+            options.Width = e.Width;
+            options.Height = e.Height;
+            CyrenaRuntime.CreateSettings().Save(ApplicationOptions.Key, options);
+        }
+
+        public void ShowWindow()
+        {
+            if (_mainWindow != null) return;
+            this.Dispatcher.Invoke(() =>
             {
-                Avalonia.Threading.Dispatcher.UIThread.Post(ShowWindow);
-                return;
-            }
+                var options = CyrenaRuntime.CreateSettings().Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
+                _mainWindow = new PhotinoWindow()
+                    .SetTitle("Cyréna")
+                    .SetIconFile("wwwroot/favicon.ico")
+                    .SetHeight(options.Height)
+                    .SetWidth(options.Width)
+                    .Center()
+                    .Load(new Uri($"http://localhost:{options.ServerPort}"));
+                var fd = _background!.Services.GetRequiredService<IFileDialog>() as FileDialog;
+                fd!.SetWindow(_mainWindow);
+                _mainWindow.WindowSizeChanged += _mainWindow_WindowSizeChanged;
+                _mainWindow.WindowClosing += _mainWindow_WindowClosing;
 
-            if (_mainWindow is null) return;
+                _mainWindow.WaitForClose();
+            });
+        }
 
-            _mainWindow.ShowInTaskbar = true;
-            _mainWindow.Show();
-            _mainWindow.WindowState = WindowState.Normal;
-            _mainWindow.Activate();
+        private bool _mainWindow_WindowClosing(object? sender, EventArgs e)
+        {
+            if (_mainWindow == null) return false;
+            _mainWindow.WindowClosing -= _mainWindow_WindowClosing;
+            _mainWindow.WindowSizeChanged -= _mainWindow_WindowSizeChanged;
+            _mainWindow = null;
+            return false;
         }
 
         private void Exit()
@@ -131,13 +174,32 @@ namespace Cyrena.Shell
             {
                 _background.StopAsync(CancellationToken.None)
                    .Wait(TimeSpan.FromMilliseconds(500));
-                _background.DisposeAsync().GetAwaiter().GetResult();
+                _background.DisposeAsync();
             }
             _backgroundToken.Cancel();
             _backgroundToken.Dispose();
 
+            if(_mainWindow != null)
+            {
+                _mainWindow.Close();
+                _mainWindow.WindowClosing -= _mainWindow_WindowClosing;
+                _mainWindow.WindowSizeChanged -= _mainWindow_WindowSizeChanged;
+                _mainWindow = null;
+            }
+
             if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 desktop.Shutdown();
+        }
+
+        private void OpenWebBrowser()
+        {
+            var options = CyrenaRuntime.CreateSettings().Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
+            var url = $"http://localhost:{options.ServerPort}";
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = url,
+                UseShellExecute = true
+            });
         }
     }
 

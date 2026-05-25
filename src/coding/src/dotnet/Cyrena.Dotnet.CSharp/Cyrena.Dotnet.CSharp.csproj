@@ -63,4 +63,10 @@
     <ProjectReference Include="..\Cyrena.Dotnet.Core\Cyrena.Dotnet.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="extension.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

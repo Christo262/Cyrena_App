@@ -1,71 +1,42 @@
-<h4>OpenAI Settings</h4>
+<MudText Typo="Typo.h4">OpenAI Settings</MudText>
 
 @if (_model != null)
 {
-    <EditForm Model="_model" OnValidSubmit="Save">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
+<MudGrid>
+    <MudItem md="6" Class="mx-auto">
+            <MudForm Model="_model">
+                <MudTextField @bind-Value="_model.ApiKey" Label="API Key" InputType="InputType.Password" Class="mb-2"/>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="Save">
+                    Save API Key
+                </MudButton>
+            </MudForm>
 
-        <div class="row m-0">
-            <div class="col-md-8 m-auto">
-                <div class="mb-3">
-                    <label class="form-label">API Key</label>
-                    <InputText @bind-Value="_model.ApiKey" class="form-control" type="password" />
-                </div>
-            </div>
-            <div class="col-md-12 text-center">
-                <button type="submit" class="btn btn-sm btn-primary">Save API Key</button>
-            </div>
-        </div> 
-    </EditForm>
-
-    <h5>Models</h5>
-    <table class="table table-sm table-striped">
-        <thead>
-            <tr>
-                <th>
-                    Model Id
-                </th>
-                <th>
-                    Display Name
-                </th>
-                <th>
-                    Temperature
-                </th>
-                <th>
-                    <Tooltip Title="Add Model">
-                        <button type="button" class="btn btn-sm btn-success rounded-pill" @onclick="Add"><i class="bi bi-plus"></i></button>
-                    </Tooltip>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach(var item in _models)
-            {
-                <tr>
-                    <td>
-                        @item.ModelId
-                    </td>
-                    <td>
-                        @item.DisplayName
-                    </td>
-                    <td>
-                        @item.Temperature
-                    </td>
-                    <td>
-                        <Tooltip Title="Edit">
-                            <button type="button" class="btn btn-sm btn-primary rounded-pill" @onclick="() => Edit(item)">
-                                <i class="bi bi-pen"></i>
-                            </button>
-                        </Tooltip>
-                        <Tooltip Title="Delete">
-                            <button type="button" class="btn btn-sm btn-danger rounded-pill" @onclick="() => Delete(item)">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </Tooltip>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+            <MudText Typo="Typo.h5" Class="mt-4">Models</MudText>
+            <MudTable Items="_models" Dense="true" Hover="true">
+                <HeaderContent>
+                    <MudTh>Model Id</MudTh>
+                    <MudTh>Display Name</MudTh>
+                    <MudTh>Temperature</MudTh>
+                    <MudTh>
+                        <MudTooltip Text="Add Model">
+                            <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Success" Size="Size.Small" OnClick="Add" />
+                        </MudTooltip>
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Model Id">@context.ModelId</MudTd>
+                    <MudTd DataLabel="Display Name">@context.DisplayName</MudTd>
+                    <MudTd DataLabel="Temperature">@context.Temperature</MudTd>
+                    <MudTd>
+                        <MudTooltip Text="Edit">
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Secondary" Size="Size.Small" OnClick="() => Edit(context)" />
+                        </MudTooltip>
+                        <MudTooltip Text="Delete">
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => Delete(context)" />
+                        </MudTooltip>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+    </MudItem>
+</MudGrid>
 }
