@@ -1,0 +1,18 @@
+{
+  "Title": "HistoryConfiguration.razor - Chat History Inclusion Dropdown",
+  "Keywords": [
+    "HistoryConfiguration",
+    "HistoryConfiguration.razor",
+    "HistoryInclusionMode",
+    "ChatConfiguration",
+    "history inclusion",
+    "dropdown",
+    "shared component",
+    "Cyrena.Components.Core",
+    "MudBlazor"
+  ],
+  "Summary": "Blazor shared component that displays a MudBlazor dropdown for configuring chat history inclusion mode. Controls how much conversation history is visible to the AI model.",
+  "Link": null,
+  "Content": "## HistoryConfiguration.razor\n\n**Namespace**: \u0060Cyrena.Components.Shared\u0060\n**Assembly**: \u0060Cyrena.Components.Core\u0060\n**Location**: \u0060Components/Shared/HistoryConfiguration.razor\u0060 \u002B \u0060HistoryConfiguration.razor.cs\u0060\n\n### Purpose\nBlazor shared component that displays a MudBlazor dropdown (\u0060MudSelect\u0060) for configuring the chat history inclusion mode. Allows users to control how much of the conversation history is visible to the AI model.\n\n### Component Markup\n\u0060\u0060\u0060razor\n\u003CMudSelect @bind-Value=\u0022Model.HistoryInclusion\u0022 Label=\u0022History Inclusion\u0022\n           Variant=\u0022Variant.Outlined\u0022 Dense=\u0022true\u0022\n           HelperText=\u0022Controls how much of the conversation\u0027s history is visible to the model.\u0022\n           Required\u003E\n    \u003CMudSelectItem Value=\u0022@HistoryInclusionMode.All\u0022\u003EAll\u003C/MudSelectItem\u003E\n    \u003CMudSelectItem Value=\u0022@HistoryInclusionMode.LastTwo\u0022\u003ELast 2 Iterations\u003C/MudSelectItem\u003E\n    \u003CMudSelectItem Value=\u0022@HistoryInclusionMode.LastTen\u0022\u003ELast 10 Iterations\u003C/MudSelectItem\u003E\n    \u003CMudSelectItem Value=\u0022@HistoryInclusionMode.Instruct\u0022\u003EInstruct (no history)\u003C/MudSelectItem\u003E\n\u003C/MudSelect\u003E\n\u0060\u0060\u0060\n\n### Parameters\n\n| Parameter | Type | Required | Description |\n|-----------|------|----------|-------------|\n| \u0060Model\u0060 | \u0060ChatConfiguration\u0060 | Yes | The chat configuration whose \u0060HistoryInclusion\u0060 property will be updated |\n\n### Code-Behind\n\n\u0060\u0060\u0060csharp\npublic partial class HistoryConfiguration\n{\n    [Parameter] public ChatConfiguration Model { get; set; } = default!;\n}\n\u0060\u0060\u0060\n\n### Behavior\n\n1. **Binding**: Uses \u0060@bind-Value=\u0022Model.HistoryInclusion\u0022\u0060 for two-way binding directly to the \u0060ChatConfiguration.HistoryInclusion\u0060 property.\n2. **Options**: Displays four history inclusion modes:\n   - \u0060All\u0060 \u2014 Full conversation history is included\n   - \u0060Last 2 Iterations\u0060 \u2014 Only the last 2 back-and-forth exchanges\n   - \u0060Last 10 Iterations\u0060 \u2014 Only the last 10 back-and-forth exchanges\n   - \u0060Instruct (no history)\u0060 \u2014 No history; each message is treated as a standalone instruction\n\n3. **Validation**: The select is marked \u0060Required\u0060.\n\n### Dependencies\n- \u0060ChatConfiguration\u0060 \u2014 Chat configuration model with \u0060HistoryInclusion\u0060 property\n- \u0060HistoryInclusionMode\u0060 \u2014 Enum defining the inclusion modes (defined in Cyrena.Core)\n\n### Related\n- \u0060ChatConfiguration\u0060 \u2014 Chat settings model\n- \u0060HistoryInclusionMode\u0060 \u2014 History inclusion enum\n- \u0060ConnectionSelector.razor\u0060 \u2014 Companion connection selection component\n- \u0060PluginSelector.razor\u0060 \u2014 Companion plugin selection component",
+  "Id": "history-configuration-razor"
+}

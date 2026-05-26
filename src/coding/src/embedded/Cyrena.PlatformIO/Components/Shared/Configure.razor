@@ -7,7 +7,6 @@
             <MudTextField @bind-Value="_model.IniPath" Label="platformio.ini" Required="true"
                 Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.FolderOpen" OnAdornmentClick="PickProject" />
             <ConnectionSelector @bind-Value="_model.ConnectionId" />
-            <EnvironmentSelector @bind-Value="_model.Environment" />
             <PluginSelector Chat="Model" />
             <HistoryConfiguration Model="Model" />
         </MudForm>

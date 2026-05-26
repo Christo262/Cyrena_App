@@ -3,10 +3,10 @@
 <MudDialog>
     <DialogContent>
         <MudGrid>
-            @foreach (var env in _environments)
+            @foreach (var env in Controller.Environments)
             {
                 <MudItem xs="12" sm="6" md="4">
-                    <MudCard @onclick="() => SelectEnvironment(env)" Class="cursor-pointer">
+                    <MudCard @onclick="() => SetEnvironment(env)" Class="cursor-pointer">
                         <MudCardContent>
                             <MudText Typo="Typo.h6">@env</MudText>
                         </MudCardContent>
@@ -16,6 +16,6 @@
         </MudGrid>
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Cancel" Color="Color.Error">Cancel</MudButton>
+        <MudButton OnClick="Cancel">Done</MudButton>
     </DialogActions>
 </MudDialog>

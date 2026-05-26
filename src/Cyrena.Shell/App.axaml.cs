@@ -148,8 +148,19 @@ namespace Cyrena.Shell
                     .SetIconFile("wwwroot/favicon.ico")
                     .SetHeight(options.Height)
                     .SetWidth(options.Width)
+                    .SetUseOsDefaultLocation(false)
+                    .SetUseOsDefaultSize(false)
                     .Center()
                     .Load(new Uri($"http://localhost:{options.ServerPort}"));
+
+#if DEBUG
+                _mainWindow.SetContextMenuEnabled(true);
+                _mainWindow.SetDevToolsEnabled(true);
+#else
+                _mainWindow.SetContextMenuEnabled(false);
+                _mainWindow.SetDevToolsEnabled(false);
+#endif
+
                 var fd = _background!.Services.GetRequiredService<IFileDialog>() as FileDialog;
                 fd!.SetWindow(_mainWindow);
                 _mainWindow.WindowSizeChanged += _mainWindow_WindowSizeChanged;

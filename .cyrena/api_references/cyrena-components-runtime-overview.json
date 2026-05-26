@@ -1,0 +1,20 @@
+{
+  "Title": "Cyrena.Components.Runtime - Runtime UI Components and Services",
+  "Keywords": [
+    "Cyrena.Components.Runtime",
+    "Blazor",
+    "runtime",
+    "UI components",
+    "chat",
+    "toolbar",
+    "file upload",
+    "docking",
+    "PDF handler",
+    "view start",
+    "ComponentAssistantsPlugin"
+  ],
+  "Summary": "Blazor component library providing runtime UI components and services for Cyr\u00E9na. Includes the main Chat component, ChatToolbar, FileUpload, and kernel-scoped services like DockingService, PdfFileHandler, ViewStartProvider, and ComponentAssistantsPlugin. Version 0.6.0.",
+  "Link": null,
+  "Content": "## Cyrena.Components.Runtime\n\n**Project Type**: Blazor Library  \n**Target Framework**: .NET 10.0  \n**Namespace**: \u0060Cyrena\u0060  \n**Version**: 0.6.0\n\n### Purpose\nProvides runtime UI components and services for the Cyr\u00E9na AI assistant framework. This library contains the main chat interface, toolbar components, file upload handling, and kernel-scoped services that manage docking, file processing, and view provisioning.\n\n### Folder Structure\n\n| Folder | Contents |\n|--------|----------|\n| \u0060Attributes\u0060 | Empty (attributes defined in Cyrena.Components.Core) |\n| \u0060Contracts\u0060 | Empty (contracts defined in Cyrena.Components.Core and Cyrena.Core) |\n| \u0060Extensions\u0060 | \u0060CyrenaBuilderExtensions.cs\u0060 - Application builder registration |\n| \u0060Models\u0060 | Empty (models defined in Cyrena.Components.Core and Cyrena.Core) |\n| \u0060Options\u0060 | Empty (options defined in Cyrena.Components.Core) |\n| \u0060Services\u0060 | Service implementations: ComponentAssistantsPlugin, DockingService, PdfFileHandler, ViewStartProvider |\n| \u0060Components/Shared\u0060 | Blazor components: Chat.razor, ChatToolbar.razor, FileUpload.razor |\n| \u0060wwwroot/css\u0060 | \u0060chat.css\u0060 - Chat bubble and composer styling |\n| \u0060wwwroot/js\u0060 | Empty (no JavaScript files currently) |\n\n### Shared Components (3)\n\n| Component | Description |\n|-----------|-------------|\n| \u0060Chat.razor\u0060 | Main chat UI with streaming, markdown rendering, file paste/drop support |\n| \u0060ChatToolbar.razor\u0060 | Dynamic toolbar that renders registered IToolbarComponent instances |\n| \u0060FileUpload.razor\u0060 | File attachment button with hidden InputFile for drag-and-drop |\n\n### Services (4)\n\n| Service | Contract | Description |\n|---------|----------|-------------|\n| \u0060ComponentAssistantsPlugin\u0060 | \u0060IAssistantPlugin\u0060 | Plugin that registers toolbar components and file handlers per-kernel |\n| \u0060DockingService\u0060 | \u0060IDockingService\u0060 | Manages docked panel requests via EventPipeline |\n| \u0060PdfFileHandler\u0060 | \u0060IFileHandler\u0060 | Extracts text from PDF files using PdfPig |\n| \u0060ViewStartProvider\u0060 | \u0060IViewStartProvider\u0060 | Provides default starting view entry |\n\n### Extension Methods\n\n| Extension | Description |\n|-----------|-------------|\n| \u0060CyrenaBuilder.AddComponents()\u0060 | Registers MudBlazor services, ComponentAssistantsPlugin, and ViewStartProvider |\n\n### Dependencies\n- \u0060Cyrena.Components.Core\u0060 - UI contracts, base classes, shared components\n- \u0060Cyrena.Core\u0060 - Core contracts, models, builders\n- \u0060MudBlazor\u0060 - UI component library\n- \u0060Markdig\u0060 - Markdown rendering\n- \u0060PdfPig\u0060 - PDF text extraction\n- \u0060Microsoft.SemanticKernel\u0060 - Kernel integration\n\n### Build Status\n\u2705 Build succeeded (0 warnings, 0 errors)\nPackage version: 0.6.0\n\n### Related\n- \u0060Cyrena.Components.Core\u0060 - Shared UI contracts and components\n- \u0060Cyrena.Core\u0060 - Core framework contracts and models\n- \u0060Cyrena.Runtime\u0060 - Core runtime services (IIterationService, IChatMessageService, etc.)",
+  "Id": "cyrena-components-runtime-overview"
+}

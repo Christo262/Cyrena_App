@@ -1,0 +1,16 @@
+{
+  "Title": "ICyrenaFileImporter - Cyrena File Import Contract",
+  "Keywords": [
+    "ICyrenaFileImporter",
+    "import",
+    ".cyrena",
+    "manifest",
+    "file import",
+    "contract",
+    "global service"
+  ],
+  "Summary": "Contract for importing .cyrena files based on manifest data. Must be registered as a global (non-kernel-scoped) service.",
+  "Link": null,
+  "Content": "## ICyrenaFileImporter\n\n**Namespace**: \u0060Cyrena.Contracts\u0060\n**Assembly**: \u0060Cyrena.Core\u0060\n\n### Purpose\nHandles the processing of a \u0060.cyrena\u0060 imported file based on manifest. **MUST BE GLOBAL SERVICE** \u2014 not kernel-scoped.\n\n### Interface\n\u0060\u0060\u0060csharp\npublic interface ICyrenaFileImporter\n{\n    string Id { get; }\n    Task ImportAsync(CyrenaFileManifest manifest, string absoluteDataPath, CancellationToken cancellationToken = default);\n}\n\u0060\u0060\u0060\n\n### Properties\n| Property | Type | Description |\n|----------|------|-------------|\n| \u0060Id\u0060 | \u0060string\u0060 | Unique identifier for this importer. Must match \u0060CyrenaFileManifest.ImporterId\u0060 |\n\n### Methods\n\n#### ImportAsync\nProcesses an imported \u0060.cyrena\u0060 file.\n\n| Parameter | Type | Description |\n|-----------|------|-------------|\n| \u0060manifest\u0060 | \u0060CyrenaFileManifest\u0060 | The manifest from the \u0060.cyrena\u0060 archive |\n| \u0060absoluteDataPath\u0060 | \u0060string\u0060 | Absolute path to the extracted data directory |\n| \u0060cancellationToken\u0060 | \u0060CancellationToken\u0060 | Cancellation token |\n\n### Usage\n\u0060\u0060\u0060csharp\n// Registration (global scope)\nservices.AddSingleton\u003CICyrenaFileImporter, CanvasFileImporter\u003E();\n\n// Usage\nvar importers = serviceProvider.GetServices\u003CICyrenaFileImporter\u003E();\nvar importer = importers.First(x =\u003E x.Id == manifest.ImporterId);\nawait importer.ImportAsync(manifest, \u0022/path/to/extracted/data\u0022);\n\u0060\u0060\u0060\n\n### Important Notes\n- Must be registered as a **global singleton** in the application DI container, NOT as a kernel-scoped service\n- The \u0060Id\u0060 property must match the \u0060ImporterId\u0060 in the \u0060CyrenaFileManifest\u0060\n- The importer is responsible for reading the extracted data and applying it to the application state\n\n### Related\n- \u0060ICyrenaFileExporter\u0060 - Exports files that this importer processes\n- \u0060CyrenaFileManifest\u0060 - The manifest containing importer ID and metadata",
+  "Id": "icyrena-file-importer"
+}

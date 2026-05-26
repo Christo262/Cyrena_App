@@ -96,7 +96,8 @@ body {
     box-shadow: var(--mud-elevation-2) !important;
     overflow: auto;
     line-height: 1.45;
-    font-size: 0.92rem;
+    font-size: 0.9rem;
+    font-family: 'Ubuntu', 'Ubuntu Mono', -apple-system, sans-serif;
 }
 
 .chat-bubble-has-items {
@@ -114,7 +115,7 @@ body {
 
 /* Assistant */
 .chat-bubble-assistant {
-    background: color-mix(in srgb, var(--mud-palette-surface) 96%, var(--mud-palette-primary));
+    background-color: var(--mud-palette-gray-light);
     color: var(--mud-palette-text-primary);
     border: 1px solid var(--mud-palette-divider);
     border-top-left-radius: 4px;
@@ -122,9 +123,10 @@ body {
 
 /* User */
 .chat-bubble-user {
-    background: color-mix(in srgb, var(--mud-palette-surface) 92%, var(--mud-palette-primary));
+    background-color: var(--mud-palette-primary-lighten);
     color: var(--mud-palette-text-primary);
-    border: 1px solid color-mix(in srgb, var(--mud-palette-divider) 75%, var(--mud-palette-primary));
+    border: 1px solid;
+    border-color: var(--mud-palette-primary-lighten);
     border-right: 3px solid var(--mud-palette-primary);
     border-top-right-radius: 4px;
 }

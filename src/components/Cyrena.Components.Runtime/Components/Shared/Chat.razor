@@ -106,7 +106,7 @@
         }
     </div>
 
-    <MudPaper Class="pa-2 pb-0" Elevation="0">
+    <MudPaper Class="pa-2 pb-0 ml-2" Elevation="0">
         @if (_its.Input != null && _its.Input.Items.Count() > 1)
         {
 #pragma warning disable SKEXP0110
@@ -122,48 +122,46 @@
 #pragma warning restore SKEXP0110
         }
 
-        <MudPaper Square Class="pa-2" Elevation="1">
-            <div class="d-flex flex-row">
-                @if(_its.Input != null)
+        <div class="d-flex flex-row">
+            @if (_its.Input != null)
+            {
+                <MudTextField T="string" @ref="_area"
+                              Variant="Variant.Outlined"
+                              Lines="1"
+                              Class="mr-2"
+                              Immediate
+                              MaxLines="6"
+                              OnKeyDown="ComposerKeyDown"
+                              @bind-Value="_its.Input.Content"
+                              Sizing="InputSizing.Auto"
+                              Placeholder="@(_its.QueueCount > 0 || _its.Inferring ? "Queue..." : "Reply...")" />
+            }
+
+            <div class="ms-2 d-flex flex-row align-self-center">
+                <MudTooltip Text="@(_its.Inferring ? "Queue" : "Send")">
+                    <MudFab StartIcon="@Icons.Material.Filled.Send" Size="Size.Small" Color="Color.Primary" Class="mr-1" Disabled="@(_its.Input == null || string.IsNullOrEmpty(_its.Input.Content))" OnClick="Send" />
+                </MudTooltip>
+                @if (_info.SupportFiles || _info.SupportImages)
                 {
-                   <MudTextField T="string" @ref="_area"
-                                  Variant="Variant.Text"
-                                  Lines="1"
-                                  Class="mr-2"
-                                  Immediate
-                                  MaxLines="6"
-                                  OnKeyDown="ComposerKeyDown"
-                                  @bind-Value="_its.Input.Content"
-                                  Sizing="InputSizing.Auto"
-                                  Placeholder="@(_its.QueueCount > 0 || _its.Inferring ? "Queue..." : "Reply...")" />
+                    <FileUpload OnItemsAdded="OnItemsAdded" Kernel="Kernel" />
+                }
+                @if (_its.Inferring)
+                {
+                    <MudFab StartIcon="@Icons.Material.Filled.Stop" Size="Size.Small" Color="Color.Error" Class="mr-1" OnClick="Cancel" />
                 }
 
-                <div class="ms-2 d-flex flex-row align-self-center">
-                    @if(_info.SupportFiles || _info.SupportImages)
+                <MudTooltip Text="@(_its.IsPaused ? "Queue Paused" : "Queue Running")">
+                    @if (_its.IsPaused)
                     {
-                        <FileUpload OnItemsAdded="OnItemsAdded" Kernel="Kernel"/>
+                        <MudFab StartIcon="@Icons.Material.Filled.PlayArrow" Size="Size.Small" Color="Color.Primary" Class="mr-1" OnClick="() => _its.ContinueQueue()" />
                     }
-                    @if (_its.Inferring)
+                    else
                     {
-                        <MudFab StartIcon="@Icons.Material.Filled.Stop" Size="Size.Small" Color="Color.Error" Class="ms-1 rounded-pill" OnClick="Cancel" />
+                        <MudFab StartIcon="@Icons.Material.Filled.Pause" Size="Size.Small" Class="mr-1" OnClick="() => _its.PauseQueue()" />
                     }
-                    <MudTooltip Text="@(_its.Inferring ? "Queue" : "Send")">
-                        <MudFab StartIcon="@Icons.Material.Filled.Send" Size="Size.Small" Color="Color.Primary" Class="ms-1 rounded-pill" Disabled="@(_its.Input == null || string.IsNullOrEmpty(_its.Input.Content))" OnClick="Send" />
-                    </MudTooltip>
-
-                    <MudTooltip Text="@(_its.IsPaused ? "Queue Paused" : "Queue Running")">
-                        @if (_its.IsPaused)
-                        {
-                            <MudFab StartIcon="@Icons.Material.Filled.PlayArrow" Size="Size.Small" Color="Color.Success" Class="ms-1 rounded-pill" OnClick="()=> _its.ContinueQueue()" />
-                        }
-                        else
-                        {
-                            <MudFab StartIcon="@Icons.Material.Filled.Pause" Size="Size.Small" Color="Color.Info" Class="ms-1 rounded-pill" OnClick="() => _its.PauseQueue()" />
-                        }
-                    </MudTooltip>
-                </div>
+                </MudTooltip>
             </div>
-        </MudPaper>
+        </div>
 
         <ChatToolbar Kernel="Kernel" />
        

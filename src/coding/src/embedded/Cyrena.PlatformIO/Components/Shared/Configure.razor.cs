@@ -23,7 +23,7 @@ namespace Cyrena.PlatformIO.Components.Shared
         {
             _model = new PlatformIOConfig()
             {
-                IniPath = Model[PlatformIOOptions.IniPath],
+                IniPath = Model[PlatformIOOptions.IniFile],
                 Environment = Model[PlatformIOOptions.Environment],
                 Title = Model.Title,
                 ConnectionId = Model.ConnectionId
@@ -35,7 +35,11 @@ namespace Cyrena.PlatformIO.Components.Shared
             await _form.ValidateAsync();
             if (!_form.IsValid) return;
 
+            var dir = Path.GetDirectoryName(_model.IniPath);
+            Model.WorkingDirectory = dir;
             Model[PlatformIOOptions.Environment] = _model.Environment;
+            Model[PlatformIOOptions.IniFile] = _model.IniPath;
+
             Model.Title = _model.Title;
             Model.ConnectionId = _model.ConnectionId!;
             MudDialog.Close(DialogResult.Ok(true));

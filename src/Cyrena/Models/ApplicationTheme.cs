@@ -40,14 +40,14 @@ namespace Cyrena.Models
 
             Black = "#111111",
 
-            Background = "#F7F5F3",
+            Background = "#EBEBEB",
             BackgroundGray = "#EFEDEA",
-            Surface = "#FFFFFF",
+            Surface = "#EBEBEB",
 
             AppbarText = "#2C001E",
-            AppbarBackground = "rgba(255,255,255,0.86)",
+            AppbarBackground = "#EBEBEB",
 
-            DrawerBackground = "#F7F5F3",
+            DrawerBackground = "#EBEBEB",
             DrawerText = "#2C001E",
             DrawerIcon = "#6E6259",
 
@@ -94,12 +94,12 @@ namespace Cyrena.Models
             // Proper neutral greys
             Background = "#1E1E1E",
             BackgroundGray = "#181818",
-            Surface = "#242424",
+            Surface = "#2C2C2C",
 
             AppbarText = "#F2F2F2",
-            AppbarBackground = "rgba(32,32,32,0.94)",
+            AppbarBackground = "#2C2C2C",
 
-            DrawerBackground = "#181818",
+            DrawerBackground = "#2C2C2C",
             DrawerText = "#E6E6E6",
             DrawerIcon = "#A8A8A8",
 

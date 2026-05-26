@@ -1,12 +1,14 @@
 @inherits KernelComponentBase
 
-<MudMenu Icon="@Icons.Material.Filled.Source" Size="Size.Small" Color="Color.Secondary" Class="me-1" MaxHeight="450" AnchorOrigin="Origin.BottomLeft">
-    @if(_models.Count() == 0)
-    {
-        <MudMenuItem Disabled="true">No File Modifications</MudMenuItem>
-    }
-    @foreach(var item in _models)
-    {
-        <MudMenuItem OnClick="@(() => _nav.NavigateTo($"develop-file-viewer/{item.Id}/{_chat.Config.Id}"))">@item.Name</MudMenuItem>
-    }
-</MudMenu>
+<MudTooltip Text="Version Control">
+    <MudMenu Icon="@Icons.Material.Filled.Source" Size="Size.Small" Class="me-1" MaxHeight="450" AnchorOrigin="Origin.BottomLeft">
+        @if (_models.Count() == 0)
+        {
+            <MudMenuItem Disabled="true">No File Modifications</MudMenuItem>
+        }
+        @foreach (var item in _models)
+        {
+            <MudMenuItem OnClick="@(() => _nav.NavigateTo($"develop-file-viewer/{item.Id}/{_chat.Config.Id}"))">@item.Name</MudMenuItem>
+        }
+    </MudMenu>
+</MudTooltip>

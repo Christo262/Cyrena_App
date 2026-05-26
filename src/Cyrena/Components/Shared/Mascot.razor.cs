@@ -84,6 +84,6 @@ namespace Cyrena.Components.Shared
         [JsonPropertyName("file")]
         public string? File { get; set; }
         [JsonPropertyName("height")]
-        public int Height { get; set; } = 400;
+        public int Height { get; set; } = 250;
     }
 }

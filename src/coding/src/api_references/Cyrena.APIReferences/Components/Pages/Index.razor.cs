@@ -100,7 +100,7 @@ namespace Cyrena.APIReferences.Components.Pages
 
         private void Back()
         {
-            _nav.NavigateTo("");
+            _nav.NavigateTo($"converse/{KernelId}");
         }
     }
 }
