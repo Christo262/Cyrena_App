@@ -7,7 +7,7 @@
                 <MudCheckBox @bind-Value="_model.Enabled" @bind-Value:after="SaveChanges"
                              Label="Memory Context Injection"
                              Color="Color.Primary"
-                             Dense="true" />
+                             Dense Size="Size.Small" />
                 <MudText Typo="Typo.caption" Class="mt-1">
                     <span class="mud-error-text">*</span> If Enabled, the application will use your input to preemptively search for relevant long-term memories and inject them into the conversation.
                 </MudText>
@@ -23,6 +23,7 @@
                                  Label="Maximum Memory Age (Days)"
                                  Min="1"
                                  Variant="Variant.Outlined"
+                                 Margin="Margin.Dense"
                                  Class="mt-4" />
             </MudPaper>
         </MudItem>
@@ -38,7 +39,7 @@
                 <MudCheckBox @bind-Value="_model.IncludeFacts" @bind-Value:after="SaveChanges"
                              Label="Include Facts per Memory"
                              Color="Color.Primary"
-                             Dense="true"
+                             Dense Size="Size.Small"
                              Class="mt-4" />
 
                 <MudSlider T="int" @bind-Value="_model.MaxFactsPerMemory" @bind-Value:after="SaveChanges"

@@ -3,7 +3,7 @@
     <MudStack Spacing="1">
         @foreach (var item in _models)
         {
-            <MudCheckBox T="bool" Value="item.Selected" ValueChanged="(bool val) => OnSelectionChanged(item, val)" Disabled="item.Required" Dense="true"
+            <MudCheckBox T="bool" Value="item.Selected" ValueChanged="(bool val) => OnSelectionChanged(item, val)" Disabled="item.Required" Dense Size="Size.Small"
                          Label="@item.Plugin.Title" Color="Color.Primary">
             </MudCheckBox>
         }

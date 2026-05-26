@@ -5,8 +5,8 @@
     <DialogContent>
         <MudForm @ref="_form" Model="Model">
 
-            <MudTextField @bind-Value="Model.Title" Label="Title" Required="true" />
-            <MudTextField @bind-Value="Model.WorkingDirectory" Label="Working Directory" Required="true"
+            <MudTextField @bind-Value="Model.Title" Label="Title" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+            <MudTextField @bind-Value="Model.WorkingDirectory" Label="Working Directory" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense"
                           Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.FolderOpen" OnAdornmentClick="ChooseFolder"
                           HelperText="The folder where your website files will be created" />
             @if (!string.IsNullOrEmpty(_error))

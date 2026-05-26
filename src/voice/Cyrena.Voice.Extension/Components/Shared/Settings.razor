@@ -3,7 +3,7 @@
 <MudForm Model="_options">
     <MudGrid>
         <MudItem xs="12" md="9" Class="mx-auto">
-            <MudSelect T="string" @bind-Value="_options.DefaultVoiceChain" @bind-Value:after="Save" Label="Voice Service" Variant="Variant.Outlined" Dense="true">
+            <MudSelect T="string" @bind-Value="_options.DefaultVoiceChain" @bind-Value:after="Save" Label="Voice Service" Variant="Variant.Outlined" Dense Margin="Margin.Dense">
                 <MudSelectItem Value="@((string?)null)">
                     <MudText>Disabled</MudText>
                     <MudText Typo="Typo.caption">Voice mode is disabled globally</MudText>
@@ -19,7 +19,7 @@
 
             @if (_options.DefaultVoiceChain == Cyrena.Voice.Services.WebViewWhisperVoiceChain.Key)
             {
-                <MudTextField @bind-Value="_options.WhisperModelPath" @bind-Value:after="Save" Label="Whisper Model Path" Variant="Variant.Outlined"
+                <MudTextField @bind-Value="_options.WhisperModelPath" @bind-Value:after="Save" Label="Whisper Model Path" Variant="Variant.Outlined" Margin="Margin.Dense"
                               Placeholder="/path/to/ggml.bin" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.AttachFile" OnAdornmentClick="SelectGgml" />
 
                 <MudText Typo="Typo.caption" Class="mt-2">
@@ -32,7 +32,7 @@
                     - small.en: better accuracy, slower<br />
                 </MudText>
 
-                <MudSelect T="string" @bind-Value="_options.WebViewVoice" @bind-Value:after="Save" Label="Voice" Variant="Variant.Outlined" Dense="true" Class="mt-4">
+                <MudSelect T="string" @bind-Value="_options.WebViewVoice" @bind-Value:after="Save" Label="Voice" Variant="Variant.Outlined" Dense Margin="Margin.Dense" Class="mt-4">
                     <MudSelectItem Value="@((string?)null)">Default</MudSelectItem>
                     @foreach (var item in _voices)
                     {

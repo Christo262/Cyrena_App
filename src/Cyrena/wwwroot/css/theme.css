@@ -194,6 +194,11 @@ pre:hover .btn-copy-code {
     margin-left:0 !important;
 }
 
+.mud-fab-size-small {
+    width: 35px;
+    height: 35px;
+}
+
 .text-center {
     text-align:center;
 }

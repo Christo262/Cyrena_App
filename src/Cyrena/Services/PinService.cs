@@ -1,5 +1,6 @@
-﻿using Cyrena.Components.Shared;
+using Cyrena.Components.Shared;
 using Cyrena.Contracts;
+using Cyrena.Extensions;
 using Cyrena.Models;
 using Cyrena.Options;
 using MudBlazor;
@@ -20,12 +21,13 @@ namespace Cyrena.Services
 
         public event EventHandler<bool>? AuthorizationChanged;
         private bool _authorized { get; set; }
+
         public bool IsAuthorized()
         {
             var options = _settings.Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
             if (!options.UsePin)
                 return true;
-            if(string.IsNullOrEmpty(options.Pin))
+            if (string.IsNullOrEmpty(options.PinHash))
             {
                 _toasts.Add("Configure pin in Settings > Application", Severity.Warning);
                 return true;
@@ -33,27 +35,32 @@ namespace Cyrena.Services
             return _authorized;
         }
 
-        public bool Authorize(string? pin)
+        public bool HasPin()
         {
             var options = _settings.Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
-            if (string.IsNullOrEmpty(options.Pin))
+            return options.UsePin && !string.IsNullOrEmpty(options.PinHash);
+        }
+
+        public bool VerifyPin(string? pin)
+        {
+            var options = _settings.Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
+            if (string.IsNullOrEmpty(options.PinHash))
             {
                 _toasts.Add("Configure pin in Settings > Application", Severity.Warning);
                 return true;
             }
-            return pin == options.Pin;
+            if (string.IsNullOrEmpty(pin))
+                return false;
+            return PinHasher.VerifyPin(pin, options.PinHash);
         }
 
         public async Task<bool> AuthorizeAsync()
         {
-            var options = _settings.Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
-            if (string.IsNullOrEmpty(options.Pin))
-                return Authorize(null);
-            var vm = new PinViewModel()
-            {
-                OldPin = options.Pin
-            };
-            var reference = await _dialog.ShowAsync<EnterPin>(null,new DialogParameters() { { "Model", vm} }, new DialogOptions()
+            if (!HasPin())
+                return true;
+
+            var vm = new PinViewModel();
+            var reference = await _dialog.ShowAsync<EnterPin>(null, new DialogParameters<EnterPin>() { { x => x.Model, vm } }, new DialogOptions()
             {
                 MaxWidth = MaxWidth.Small,
                 NoHeader = true,
@@ -62,8 +69,8 @@ namespace Cyrena.Services
                 CloseButton = false
             });
             var result = await reference.Result;
-            if(result is { Canceled:false} && result.Data is PinViewModel pin)
-                _authorized = Authorize(pin.ConfirmOldPin);
+            if (result is { Canceled: false } && result.Data is PinViewModel pin)
+                _authorized = VerifyPin(pin.ConfirmOldPin);
             else
                 _authorized = false;
             AuthorizationChanged?.Invoke(this, _authorized);
@@ -73,19 +80,24 @@ namespace Cyrena.Services
         public async Task ConfigureAsync()
         {
             var options = _settings.Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
-            var model = new PinViewModel() { OldPin = options.Pin };
-            var reference = await _dialog.ShowAsync<ConfigurePin>("Configure Pin", new DialogParameters()
+            var model = new PinViewModel();
+            var reference = await _dialog.ShowAsync<ConfigurePin>("Configure Pin", new DialogParameters<ConfigurePin>()
             {
-                {nameof(ConfigurePin.Model), model }
+                { x => x.Model, model },
+                { x => x.HasExistingPin, !string.IsNullOrEmpty(options.PinHash) }
             }, new DialogOptions()
             {
                 MaxWidth = MaxWidth.Small,
                 FullWidth = true
             });
             var result = await reference.Result;
-            if(result is { Canceled:false} && result.Data is PinViewModel pin)
+            if (result is { Canceled: false } && result.Data is PinViewModel pin)
             {
-                options.Pin = pin.NewPin;
+                if (!string.IsNullOrEmpty(pin.NewPin))
+                {
+                    options.PinHash = PinHasher.HashPin(pin.NewPin);
+                    options.UsePin = true;
+                }
                 _settings.Save(ApplicationOptions.Key, options);
             }
         }

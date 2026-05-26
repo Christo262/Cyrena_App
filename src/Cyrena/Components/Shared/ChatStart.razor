@@ -13,30 +13,31 @@ else
     <MudItem xs="7">
         <MudPaper Class="d-flex flex-row pa-4">
             <MudTextField T="string"
-                          Variant="Variant.Text"
+                          Variant="Variant.Outlined"
                           Lines="1"
                           Class="mr-2"
                           MaxLines="6"
                           OnKeyDown="ComposerKeyDown"
                           Immediate
+                          Margin="Margin.Dense"
                           @bind-Value="_input"
                           Sizing="InputSizing.Auto"
                           Placeholder="How can I help you?" />
 
             <div class="mr-1">
                 <MudTooltip Text="Send">
-                    <MudIconButton Icon="@Icons.Material.Filled.Send" Size="Size.Medium" Color="Color.Primary" OnClick="Send" />
+                    <MudFab StartIcon="@Icons.Material.Filled.Send" Size="Size.Small" Color="Color.Primary" OnClick="Send" />
                 </MudTooltip>
             </div>
             
             <div class="mr-1">
                 <MudTooltip Text="Configure">
-                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Size="Size.Medium" Color="Color.Inherit" OnClick="Settings" />
+                    <MudFab StartIcon="@Icons.Material.Filled.Settings" Size="Size.Small" Color="Color.Inherit" OnClick="Settings" />
                 </MudTooltip>
             </div>
 
             <MudTooltip Text="Start Empty">
-                <MudIconButton Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Medium" Color="Color.Inherit" OnClick="StartEmpty" />
+                <MudFab StartIcon="@Icons.Material.Filled.ArrowForward" Size="Size.Small" Color="Color.Inherit" OnClick="StartEmpty" />
             </MudTooltip>
         </MudPaper>
     </MudItem>

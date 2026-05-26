@@ -7,7 +7,7 @@
             <div>
                 <MudText Typo="Typo.body1" Class="m-0 text-truncate">@item.ProjectName</MudText>
                 <MudSelect T="string" @bind-Value="item.ProjectTypeId" @bind-Value:after="() => Override(item)" 
-                           Dense="true" Margin="Margin.Dense">
+                           Dense="true" Margin="Margin.Dense" Variant="Variant.Outlined">
                     <MudSelectItem Value="@("")">Hidden</MudSelectItem>
                     @foreach(var proj in _projects)
                     {

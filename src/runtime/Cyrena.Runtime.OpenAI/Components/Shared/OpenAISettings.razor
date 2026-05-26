@@ -5,7 +5,7 @@
 <MudGrid>
     <MudItem md="6" Class="mx-auto">
             <MudForm Model="_model">
-                <MudTextField @bind-Value="_model.ApiKey" Label="API Key" InputType="InputType.Password" Class="mb-2"/>
+                <MudTextField @bind-Value="_model.ApiKey" Label="API Key" InputType="InputType.Password" Class="mb-2" Variant="Variant.Outlined" Margin="Margin.Dense" />
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="Save">
                     Save API Key
                 </MudButton>

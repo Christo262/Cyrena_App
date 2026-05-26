@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Cyrena.Options
 {
@@ -14,10 +14,8 @@ namespace Cyrena.Options
         public string? DefaultConnectionId { get; set; }
 
         public bool DarkMode { get; set; } = true;
-
         public bool UsePin { get; set; }
-        [MinLength(4)]
-        [MaxLength(6)]
-        public string? Pin { get; set; }
+        public string? PinHash { get; set; }
+
     }
 }

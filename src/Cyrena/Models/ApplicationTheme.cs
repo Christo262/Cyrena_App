@@ -133,6 +133,18 @@ namespace Cyrena.Models
             OverlayLight = "rgba(32,32,32,0.72)"
         };
 
+        public static readonly Typography Typography = new()
+        {
+            Default = new DefaultTypography()
+            {
+                FontFamily = ["Ubuntu", "Ubuntu Mono", "-apple-system", "sans-serif"],
+                FontSize = ".850rem",
+                FontWeight = "300",
+                LineHeight = "1.40"
+            },
+            Body1 = new Subtitle2Typography()
+        };
+
         public static readonly MudTheme Theme = new()
         {
             PaletteLight = Light,
@@ -141,6 +153,7 @@ namespace Cyrena.Models
             {
                 AppbarHeight = "45px"
             },
+            Typography = Typography
         };
     }
 }

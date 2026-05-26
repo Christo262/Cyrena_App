@@ -21,16 +21,16 @@
             </MudItem>
 
             <MudItem xs="12" md="4">
-                <MudTextField @bind-Value="_model.Title" Label="Title" Variant="Variant.Outlined" Class="mb-3" />
+                <MudTextField @bind-Value="_model.Title" Label="Title" Variant="Variant.Outlined" Margin="Margin.Dense" Class="mb-3" />
 
-                <MudTextField @bind-Value="_model.Summary" Label="Summary" Variant="Variant.Outlined" Lines="5" Class="mb-3" />
+                <MudTextField @bind-Value="_model.Summary" Label="Summary" Variant="Variant.Outlined" Margin="Margin.Dense" Lines="5" Class="mb-3" />
 
-                <MudTextField @bind-Value="_keywords" Label="Keywords" Variant="Variant.Outlined" Lines="5" Class="mb-3" />
+                <MudTextField @bind-Value="_keywords" Label="Keywords" Variant="Variant.Outlined" Margin="Margin.Dense" Lines="5" Class="mb-3" />
                 <MudText Typo="Typo.caption" Class="text-muted">
                     <span class="text-danger">*</span> Enter keywords comma separated
                 </MudText>
 
-                <MudTextField @bind-Value="_model.Link" Label="Link" Variant="Variant.Outlined" Class="mb-3" />
+                <MudTextField @bind-Value="_model.Link" Label="Link" Variant="Variant.Outlined" Margin="Margin.Dense" Class="mb-3" />
             </MudItem>
             <MudItem xs="12" md="8">
                 <CodeInput @bind-Value="_model.Content" Language="markdown"/>

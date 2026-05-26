@@ -1,0 +1,16 @@
+{
+  "Title": "PinHasher - PIN Hashing Utility",
+  "Keywords": [
+    "PinHasher",
+    "hash",
+    "PBKDF2",
+    "salt",
+    "security",
+    "PIN",
+    "cryptography"
+  ],
+  "Summary": "Static utility class for hashing and verifying PINs using PBKDF2 with random salts.",
+  "Link": null,
+  "Content": "## PinHasher\n\n**Namespace**: \u0060Cyrena.Extensions\u0060\n**Assembly**: \u0060Cyrena\u0060\n\n### Purpose\nStatic utility for secure PIN hashing and verification using PBKDF2 (RFC 2898).\n\n### Constants\n- \u0060SaltSize\u0060 = 16 bytes (128 bits)\n- \u0060HashSize\u0060 = 32 bytes (256 bits)\n- \u0060Iterations\u0060 = 100,000\n\n### Methods\n\n#### HashPin(string pin) \u2192 string\nHashes a PIN using PBKDF2 with a cryptographically random salt.\nReturns a base64-encoded string containing: \u0060[salt (16 bytes)][hash (32 bytes)]\u0060.\n\n#### VerifyPin(string pin, string storedHash) \u2192 bool\nVerifies a PIN against a stored hash using constant-time comparison.\nReturns \u0060false\u0060 if \u0060storedHash\u0060 is null/empty or malformed.\n\n### Security Properties\n- **Random salt per hash** - Prevents rainbow table attacks\n- **PBKDF2 with 100k iterations** - Slows brute-force attempts\n- **SHA-256** - Hash algorithm\n- **Constant-time comparison** - \u0060CryptographicOperations.FixedTimeEquals\u0060 prevents timing attacks\n- **No plaintext storage** - Original PIN is never recoverable\n\n### Usage\n\u0060\u0060\u0060csharp\n// When setting a new PIN\nstring hash = PinHasher.HashPin(userPin);\noptions.PinHash = hash;\n\n// When verifying\nbool valid = PinHasher.VerifyPin(enteredPin, storedHash);\n\u0060\u0060\u0060\n\n### Related\n- \u0060IPinService\u0060 - Service that uses PinHasher\n- \u0060ApplicationOptions.PinHash\u0060 - Where the hash is stored",
+  "Id": "PinHasher"
+}

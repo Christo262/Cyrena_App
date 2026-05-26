@@ -3,11 +3,11 @@
 <MudDialog>
     <DialogContent>
         <MudForm @ref="_form" Model="Model">
-            <MudTextField @bind-Value="Model.Endpoint" Label="Endpoint" Required="true" />
-            <MudTextField @bind-Value="Model.ModelId" Label="Model ID" Required="true" />
-            <MudTextField @bind-Value="Model.Name" Label="Display Name" Required="true" />
+            <MudTextField @bind-Value="Model.Endpoint" Label="Endpoint" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense"/>
+            <MudTextField @bind-Value="Model.ModelId" Label="Model ID" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+            <MudTextField @bind-Value="Model.Name" Label="Display Name" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
 
-            <MudSelect @bind-Value="Model.NumPredict" Label="Tokens" HelperText="Maximum number of tokens to predict when generating text. (Default: 128)">
+            <MudSelect @bind-Value="Model.NumPredict" Dense Margin="Margin.Dense" Label="Tokens" HelperText="Maximum number of tokens to predict when generating text. (Default: 128)">
                 <MudSelectItem Value="50">50</MudSelectItem>
                 <MudSelectItem Value="128">128</MudSelectItem>
                 <MudSelectItem Value="256">256</MudSelectItem>
@@ -20,7 +20,7 @@
                 <MudSelectItem Value="32768">32,768</MudSelectItem>
             </MudSelect>
 
-            <MudSelect @bind-Value="Model.NumContext" Label="Context Length" HelperText="Sets the size of the context window used to generate the next token. (Default: 4096)">
+            <MudSelect @bind-Value="Model.NumContext" Dense Margin="Margin.Dense" Label="Context Length" HelperText="Sets the size of the context window used to generate the next token. (Default: 4096)">
                 <MudSelectItem Value="@(1024 * 2)">@(1024 * 2)</MudSelectItem>
                 <MudSelectItem Value="@(1024 * 4)">@(1024 * 4)</MudSelectItem>
                 <MudSelectItem Value="@(1024 * 8)">@(1024 * 8)</MudSelectItem>
@@ -59,7 +59,7 @@
                 Alternative to the topp, and aims to ensure a balance of quality and variety. The parameter _p represents the minimum probability for a token to be considered, relative to the probability of the most likely token. For example, with p=0.05 and the most likely token having a probability of 0.9, logits with a value less than 0.045 are filtered out. (Default: 0.0)
             </MudText>
 
-            <MudSelect @bind-Value="Model.Thinking" Label="Thinking" HelperText="Only applicable to certain models. See Ollama for details.">
+            <MudSelect @bind-Value="Model.Thinking" Label="Thinking" Dense Margin="Margin.Dense" HelperText="Only applicable to certain models. See Ollama for details.">
                 <MudSelectItem Value="@((string?)null)">Unused</MudSelectItem>
                 <MudSelectItem Value="@("low")">Low</MudSelectItem>
                 <MudSelectItem Value="@("medium")">Medium</MudSelectItem>
@@ -68,8 +68,8 @@
                 <MudSelectItem Value="@("false")">False</MudSelectItem>
             </MudSelect>
 
-            <MudCheckBox @bind-Value="Model.SupportsImage" Label="Supports Images" />
-            <MudCheckBox @bind-Value="Model.SupportsFile" Label="Supports Files" />
+            <MudCheckBox @bind-Value="Model.SupportsImage" Label="Supports Images" Dense Size="Size.Small" />
+            <MudCheckBox @bind-Value="Model.SupportsFile" Label="Supports Files" Dense Size="Size.Small" />
         </MudForm>
     </DialogContent>
     <DialogActions>

@@ -1,8 +1,8 @@
 <MudDialog>
     <DialogContent>
         <MudForm @ref="_form" Model="Model">
-            <MudTextField @bind-Value="Model.ModelId" Label="Model ID" Required="true" />
-            <MudTextField @bind-Value="Model.DisplayName" Label="Display Name" Required />
+            <MudTextField @bind-Value="Model.ModelId" Label="Model ID" Required="true" Margin="Margin.Dense" Variant="Variant.Outlined"/>
+            <MudTextField @bind-Value="Model.DisplayName" Label="Display Name" Required Margin="Margin.Dense" Variant="Variant.Outlined" />
 
             <MudSlider @bind-Value="Model.MTemperature" Min="0" Max="20" Step="1" TickMarks="true">
                 Temperature: @Model.Temperature
@@ -18,8 +18,8 @@
                 A higher value (e.g., 0.95) will lead to more diverse text, while a lower value (e.g., 0.5) will generate more focused and conservative text. (Default: 1.0)
             </MudText>
 
-            <MudCheckBox @bind-Value="Model.SupportImages" Label="Support Images" />
-            <MudCheckBox @bind-Value="Model.SupportFiles" Label="Support Files" />
+            <MudCheckBox @bind-Value="Model.SupportImages" Label="Support Images" Dense Size="Size.Small" />
+            <MudCheckBox @bind-Value="Model.SupportFiles" Label="Support Files" Dense Size="Size.Small" />
         </MudForm>
     </DialogContent>
     <DialogActions>

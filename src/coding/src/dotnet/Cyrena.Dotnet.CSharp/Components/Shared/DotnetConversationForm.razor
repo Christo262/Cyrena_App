@@ -3,11 +3,11 @@
 <MudDialog>
     <DialogContent>
         <MudForm @ref="_form" Model="_model">
-            <MudTextField @bind-Value="_model.Title" Label="Title" Required="true" />
+            <MudTextField @bind-Value="_model.Title" Label="Title" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
             <ConnectionSelector @bind-Value="_model.ConnectionId"/>
             <MudTextField @bind-Value="_model.SolutionFilePath" Label="Solution File" Required="true" 
                           Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.FileOpen" 
-                          OnAdornmentClick="ChooseSln" />
+                          OnAdornmentClick="ChooseSln" Variant="Variant.Outlined" Margin="Margin.Dense" />
             <PluginSelector Chat="Configuration"/>
             <HistoryConfiguration Model="Configuration" />
         </MudForm>

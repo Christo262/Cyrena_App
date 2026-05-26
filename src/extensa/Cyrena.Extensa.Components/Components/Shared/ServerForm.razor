@@ -3,11 +3,11 @@
     <DialogContent>
         <MudForm @ref="_form" Model="Model">
 
-            <MudTextField @bind-Value="Model.Name" Label="Display Name" Variant="Variant.Outlined" Class="mb-2" Required/>
+            <MudTextField @bind-Value="Model.Name" Label="Display Name" Variant="Variant.Outlined" Margin="Margin.Dense" Class="mb-2" Required/>
 
-            <MudTextField @bind-Value="Model.BaseUrl" Label="Base URL" Variant="Variant.Outlined" Class="mb-2" Required/>
+            <MudTextField @bind-Value="Model.BaseUrl" Label="Base URL" Variant="Variant.Outlined" Margin="Margin.Dense" Class="mb-2" Required />
 
-            <MudTextField @bind-Value="Model.ApplicationId" Label="Application ID" Variant="Variant.Outlined" Class="mb-2" Required/>
+            <MudTextField @bind-Value="Model.ApplicationId" Label="Application ID" Variant="Variant.Outlined" Margin="Margin.Dense" Class="mb-2" Required />
         </MudForm>
     </DialogContent>
     <DialogActions>

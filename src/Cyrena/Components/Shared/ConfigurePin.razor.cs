@@ -1,4 +1,4 @@
-﻿using Cyrena.Contracts;
+using Cyrena.Contracts;
 using Cyrena.Models;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -8,6 +8,7 @@ namespace Cyrena.Components.Shared
     public partial class ConfigurePin
     {
         [Parameter] public PinViewModel Model { get; set; } = default!;
+        [Parameter] public bool HasExistingPin { get; set; }
         [Inject] private IPinService _pin { get; set; } = default!;
         [Inject] private ISnackbar _toasts { get; set; } = default!;
 
@@ -19,12 +20,12 @@ namespace Cyrena.Components.Shared
             await _form.ValidateAsync();
             if (_form.IsValid)
             {
-                if(Model.OldPin != Model.ConfirmOldPin)
+                if (HasExistingPin && !_pin.VerifyPin(Model.ConfirmOldPin))
                 {
                     _toasts.Add("Incorrect PIN", Severity.Error);
                     return;
                 }
-                if(Model.NewPin != Model.ConfirmNewPin)
+                if (Model.NewPin != Model.ConfirmNewPin)
                 {
                     _toasts.Add("Confirmation Incorrect", Severity.Error);
                     return;

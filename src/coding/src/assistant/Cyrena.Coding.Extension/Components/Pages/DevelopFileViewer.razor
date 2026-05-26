@@ -9,7 +9,7 @@
 {
     <div class="mb-2 d-flex flex-row align-items-center px-2">
         <MudTooltip Text="Back">
-            <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="@(() => _nav.NavigateTo($"converse/{KernelId}"))" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary" Class="me-1" />
+            <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="@(() => _nav.NavigateTo($"converse/{KernelId}"))" Size="Size.Small" Color="Color.Primary" Class="me-1" />
         </MudTooltip>
 
         @if (_originals != null && _originals.Count > 0)

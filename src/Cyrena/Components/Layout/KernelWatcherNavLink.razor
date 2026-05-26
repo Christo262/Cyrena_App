@@ -1,31 +1,4 @@
 
-
-@* <MudNavLink Match="NavLinkMatch.All" Href="@($"converse/{ChatConfiguration.Id}")">
-    <div class="d-flex align-center chat-menu-item">
-        <MudIcon Icon="@ChatConfiguration[ChatConfiguration.Icon]" Size="Size.Small"/>
-        <MudText Class="ml-2 text-truncate">@(ChatConfiguration.Title ?? "New Chat")</MudText>
-
-        <span class="chat-menu-item-status ml-auto">
-            @if (_is_its)
-            {
-                <MudProgressCircular Size="Size.Small" Indeterminate="true" />
-            }
-            else if (_is_loaded)
-            {
-                <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Size="Size.Small" />
-            }
-        </span>
-        <span class="chat-menu-item-ctx ml-auto">
-            <MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small"
-                     AriaLabel="Open user menu">
-                <MudMenuItem Label="Profile" />
-                <MudMenuItem Label="My account" />
-                <MudMenuItem Label="Logout" />
-            </MudMenu>
-        </span>
-    </div>
-</MudNavLink> *@
-
 <MudNavGroup Title="@ChatConfiguration.Title" @bind-Expanded="_open" Class="mb-1">
     <TitleContent>
         <div class="d-flex align-center">
@@ -40,7 +13,7 @@
             {
                 <MudIcon Icon="@ChatConfiguration[ChatConfiguration.Icon]" Size="Size.Small" />
             }
-            <MudText Typo="Typo.subtitle2" Class="ml-2">@ChatConfiguration.Title</MudText>
+            <MudText Typo="Typo.subtitle2" Class="ml-2 text-truncate">@ChatConfiguration.Title</MudText>
         </div>
     </TitleContent>
 <ChildContent>

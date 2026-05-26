@@ -3,8 +3,8 @@
 <MudDialog>
     <DialogContent>
         <MudForm @ref="_form" Model="_model">
-            <MudTextField @bind-Value="_model.Title" Label="Title" Required="true" />
-            <MudTextField @bind-Value="_model.IniPath" Label="platformio.ini" Required="true"
+            <MudTextField @bind-Value="_model.Title" Label="Title" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+            <MudTextField @bind-Value="_model.IniPath" Label="platformio.ini" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense"
                 Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.FolderOpen" OnAdornmentClick="PickProject" />
             <ConnectionSelector @bind-Value="_model.ConnectionId" />
             <PluginSelector Chat="Model" />

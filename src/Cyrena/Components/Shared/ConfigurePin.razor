@@ -2,7 +2,7 @@
 <MudDialog>
     <DialogContent>
         <MudForm @ref="_form" Model="Model">
-            @if (!string.IsNullOrEmpty(Model.OldPin))
+            @if (HasExistingPin)
             {
                 <MudTextField T="string" InputType="InputType.Password"
                 @bind-Value="Model.ConfirmOldPin" 

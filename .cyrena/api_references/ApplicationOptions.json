@@ -1,0 +1,16 @@
+{
+  "Title": "ApplicationOptions - Application Settings",
+  "Keywords": [
+    "ApplicationOptions",
+    "settings",
+    "configuration",
+    "PinHash",
+    "UsePin",
+    "DarkMode",
+    "ServerPort"
+  ],
+  "Summary": "Application-level settings including window size, server port, dark mode, and PIN hash (not plaintext).",
+  "Link": null,
+  "Content": "## ApplicationOptions\n\n**Namespace**: \u0060Cyrena.Options\u0060\n**Assembly**: \u0060Cyrena\u0060\n\n### Purpose\nApplication-level configuration persisted via \u0060ISettingsService\u0060.\n\n### Constants\n\n#### Key\n\u0060public const string Key = \u0022cyrena.application\u0022\u0060\nThe settings key used with \u0060ISettingsService\u0060.\n\n### Properties\n\n#### Width\n\u0060int\u0060 \u2014 Default: \u0060800\u0060\nWindow width in pixels.\n\n#### Height\n\u0060int\u0060 \u2014 Default: \u0060450\u0060\nWindow height in pixels.\n\n#### LaunchWindowOnStartup\n\u0060bool\u0060 \u2014 Default: \u0060true\u0060\nWhether to show the window on application startup.\n\n#### ServerPort\n\u0060int\u0060 \u2014 Default: \u00608000\u0060\nPort for the internal server.\n\n#### DefaultConnectionId\n\u0060string?\u0060 \u2014 Default: \u0060null\u0060\nID of the default LLM connection.\n\n#### DarkMode\n\u0060bool\u0060 \u2014 Default: \u0060true\u0060\nWhether dark mode is enabled.\n\n#### UsePin\n\u0060bool\u0060 \u2014 Default: \u0060false\u0060\nWhether PIN protection is enabled.\n\n#### PinHash\n\u0060string?\u0060 \u2014 Default: \u0060null\u0060\n**PBKDF2 hash** of the user\u0027s PIN (salt \u002B hash, base64-encoded).\n**Never stores plaintext.** Set via \u0060PinHasher.HashPin()\u0060.\n\n### Security Note\nThe \u0060Pin\u0060 property was removed and replaced with \u0060PinHash\u0060.\nThe PIN is now stored as a one-way hash using PBKDF2 with random salt.\nThis means:\n- The original PIN cannot be recovered from settings\n- Verification is done via \u0060PinHasher.VerifyPin()\u0060\n- Even if the encrypted settings file is compromised, the PIN remains protected\n\n### Related\n- \u0060ISettingsService\u0060 - Persistence service\n- \u0060PinHasher\u0060 - Hashing utility\n- \u0060IPinService\u0060 - Authorization service",
+  "Id": "ApplicationOptions"
+}
