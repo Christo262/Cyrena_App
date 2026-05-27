@@ -130,11 +130,6 @@ namespace Cyrena.Shell
 
         public void ShowWindow()
         {
-            if(!Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
-            {
-                Avalonia.Threading.Dispatcher.UIThread.Post(ShowWindow);
-                return;
-            }
             if(_background != null)
             {
                 var options = CyrenaRuntime.CreateSettings().Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();

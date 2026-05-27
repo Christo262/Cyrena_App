@@ -4,7 +4,6 @@ namespace Cyrena.Contracts
 {
     public interface IWindowLauncher : IDisposable
     {
-        void ShowMain(ApplicationOptions options);
-        void Show(string url, int width, int height);
+        void Show(string url, int width, int height, string title = "Cyréna");
     }
 }

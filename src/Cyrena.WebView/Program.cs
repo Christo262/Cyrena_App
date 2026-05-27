@@ -1,4 +1,5 @@
 ﻿using Photino.NET;
+using System.Text.Json;
 
 internal sealed record AppArgs(
     string Title,
@@ -65,6 +66,29 @@ internal static class Program
             .Center()
             .Load(new Uri(appArgs.Url));
 
+        window.WindowSizeChanged += Window_WindowSizeChanged;
+
         window.WaitForClose();
+    }
+
+    private static int _renderCount { get; set; }
+    private static void Window_WindowSizeChanged(object? sender, System.Drawing.Size e)
+    {
+        try
+        {
+            if (_renderCount < 5) //Shim: some distros hit this a number of times just on opening without user actually resizing
+            {
+                _renderCount++;
+                return;
+            }
+            var obj = new
+            {
+                width = e.Width,
+                height = e.Height
+            };
+            var json = JsonSerializer.Serialize(obj);
+            File.WriteAllText("./photino.json", json);
+        }
+        catch { }
     }
 }

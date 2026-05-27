@@ -9,21 +9,6 @@ namespace Cyrena.Shell.Services
     {
         private MainWindow? _main { get; set; }
 
-        public void ShowMain(ApplicationOptions options)
-        {
-            if(_main == null)
-            {
-                _main = new MainWindow();
-                _main.Closing += _main_Closing;
-            }
-            _main.Width = options.Width;
-            _main.Height = options.Height;
-            _main.ShowInTaskbar = true;
-            _main.SizeChanged += _main_SizeChanged;
-            _main.WindowStartupLocation = Avalonia.Controls.WindowStartupLocation.CenterScreen;
-            _main.Show();
-        }
-
         private void _main_SizeChanged(object? sender, Avalonia.Controls.SizeChangedEventArgs e)
         {
             var settings = CyrenaRuntime.CreateSettings();
@@ -47,11 +32,23 @@ namespace Cyrena.Shell.Services
             _main.Closing -= _main_Closing;
         }
 
-        public void Show(string url, int width, int height)
+        public void Show(string url, int width, int height, string title = "Cyréna")
         {
             if(!Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
             {
                 Avalonia.Threading.Dispatcher.UIThread.Post(() => Show(url, width, height));
+                return;
+            }
+            if(_main == null)
+            {
+                _main = new MainWindow();
+                _main.Closing += _main_Closing;
+                _main.Width = width;
+                _main.Height = height;
+                _main.ShowInTaskbar = true;
+                _main.SizeChanged += _main_SizeChanged;
+                _main.WindowStartupLocation = Avalonia.Controls.WindowStartupLocation.CenterScreen;
+                _main.Show();
                 return;
             }
 

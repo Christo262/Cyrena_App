@@ -11,34 +11,38 @@
 else
 {
     <MudItem xs="7">
-        <MudPaper Class="d-flex flex-row pa-4">
-            <MudTextField T="string"
-                          Variant="Variant.Outlined"
-                          Lines="1"
-                          Class="mr-2"
-                          MaxLines="6"
-                          OnKeyDown="ComposerKeyDown"
-                          Immediate
-                          Margin="Margin.Dense"
-                          @bind-Value="_input"
-                          Sizing="InputSizing.Auto"
-                          Placeholder="How can I help you?" />
+        <MudPaper Class="pa-3">
+            <div class="d-flex flex-row align-center">
+                <MudTextField T="string"
+                              Variant="Variant.Outlined"
+                              Lines="1"
+                              Class="mr-2"
+                              MaxLines="6"
+                              OnKeyDown="ComposerKeyDown"
+                              Immediate
+                              Margin="Margin.Dense"
+                              @bind-Value="_input"
+                              Sizing="InputSizing.Auto"
+                              Placeholder="How can I help you?" />
 
-            <div class="mr-1">
-                <MudTooltip Text="Send">
-                    <MudFab StartIcon="@Icons.Material.Filled.Send" Size="Size.Small" Color="Color.Primary" OnClick="Send" />
-                </MudTooltip>
+                <div class="mr-1">
+                    <MudTooltip Text="Send">
+                        <MudFab StartIcon="@Icons.Material.Filled.Send" Size="Size.Small" Color="Color.Primary" OnClick="Send" />
+                    </MudTooltip>
+                </div>
             </div>
             
-            <div class="mr-1">
-                <MudTooltip Text="Configure">
-                    <MudFab StartIcon="@Icons.Material.Filled.Settings" Size="Size.Small" Color="Color.Inherit" OnClick="Settings" />
+            <div class="d-flex flex-row">
+                <div class="mr-1 ml-auto">
+                    <MudTooltip Text="Configure">
+                        <MudIconButton Icon="@Icons.Material.Filled.Settings" Size="Size.Small" Color="Color.Inherit" OnClick="Settings" />
+                    </MudTooltip>
+                </div>
+
+                <MudTooltip Text="Start Empty">
+                    <MudIconButton Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Small" Color="Color.Inherit" OnClick="StartEmpty" />
                 </MudTooltip>
             </div>
-
-            <MudTooltip Text="Start Empty">
-                <MudFab StartIcon="@Icons.Material.Filled.ArrowForward" Size="Size.Small" Color="Color.Inherit" OnClick="StartEmpty" />
-            </MudTooltip>
         </MudPaper>
     </MudItem>
 

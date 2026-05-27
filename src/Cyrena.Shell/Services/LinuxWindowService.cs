@@ -1,10 +1,13 @@
 ﻿using Cyrena.Contracts;
+using Cyrena.Extensions;
 using Cyrena.Options;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Cyrena.Shell.Services
 {
@@ -44,7 +47,7 @@ namespace Cyrena.Shell.Services
             }
         }
 
-        public void Show(string url, int width, int height)
+        public void Show(string url, int width, int height, string title = "Cyréna")
         {
             var webViewDirectory = Path.Combine(
                 AppContext.BaseDirectory,
@@ -65,7 +68,7 @@ namespace Cyrena.Shell.Services
             };
 
             info.ArgumentList.Add("--title");
-            info.ArgumentList.Add("Cyréna");
+            info.ArgumentList.Add(title);
 
             info.ArgumentList.Add("--url");
             info.ArgumentList.Add(url);
@@ -75,62 +78,6 @@ namespace Cyrena.Shell.Services
 
             info.ArgumentList.Add("--height");
             info.ArgumentList.Add(height.ToString());
-
-            var process = new Process
-            {
-                StartInfo = info,
-                EnableRaisingEvents = true
-            };
-
-            process.Exited += Process_Exited;
-
-            try
-            {
-                process.Start();
-
-                lock (_lock)
-                {
-                    _windows.Add(process);
-                }
-            }
-            catch
-            {
-                process.Dispose();
-                throw;
-            }
-        }
-
-        public void ShowMain(ApplicationOptions options)
-        {
-            var webViewDirectory = Path.Combine(
-                AppContext.BaseDirectory,
-                "webview");
-
-            var path = Path.Combine(
-                webViewDirectory,
-                "Cyrena.WebView");
-
-            if (!File.Exists(path))
-                throw new Exception("Unable to find Cyréna WebView executable.");
-
-            var info = new ProcessStartInfo
-            {
-                FileName = path,
-                WorkingDirectory = webViewDirectory,
-                UseShellExecute = false
-            };
-
-            info.ArgumentList.Add("--title");
-            info.ArgumentList.Add("Cyréna");
-
-            info.ArgumentList.Add("--url");
-            info.ArgumentList.Add($"http://localhost:{options.ServerPort}");
-
-            info.ArgumentList.Add("--width");
-            info.ArgumentList.Add(options.Width.ToString());
-
-            info.ArgumentList.Add("--height");
-            info.ArgumentList.Add(options.Height.ToString());
 
             var process = new Process
             {
@@ -168,6 +115,41 @@ namespace Cyrena.Shell.Services
 
             process.Exited -= Process_Exited;
             process.Dispose();
+            UpdatePhotinoSize();
         }
+
+        private void UpdatePhotinoSize()
+        {
+            var webViewDirectory = Path.Combine(
+                AppContext.BaseDirectory,
+                "webview");
+            var file = Path.Combine(webViewDirectory, "photino.json");
+            if (!File.Exists(file))
+                return;
+            try
+            {
+                var json = File.ReadAllText(file);
+                var win = JsonSerializer.Deserialize<PhotinoWindowSize>(json);
+                if (win == null || win.Width <= 0 || win.Height <= 0)
+                    return;
+                var settings = CyrenaRuntime.CreateSettings();
+                var options = settings.Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
+                options.Width = win.Width;
+                options.Height = win.Height;
+                settings.Save(ApplicationOptions.Key, options);
+            }
+            catch
+            {
+                return;
+            }
+        }
+    }
+
+    internal class PhotinoWindowSize
+    {
+        [JsonPropertyName("width")]
+        public int Width { get; set; }
+        [JsonPropertyName("height")]
+        public int Height { get; set; }
     }
 }
