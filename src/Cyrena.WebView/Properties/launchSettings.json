@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Cyrena.WebView": {
+      "commandName": "Project",
+      "commandLineArgs": "--title \"Test\" --url \"https://vayanova.co.za\" --width 1400 --height 900"
+    }
+  }
+}

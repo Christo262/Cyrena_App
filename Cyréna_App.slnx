@@ -19,6 +19,7 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Cyrena.Shell/Cyrena.Shell.csproj" Id="58a14d80-8a42-42de-8391-570e403dbee8" />
+    <Project Path="src/Cyrena.WebView/Cyrena.WebView.csproj" Id="40771fc2-b83a-4bd5-aee8-598fbd97388b" />
     <Project Path="src/Cyrena/Cyrena.csproj" Id="9edb268b-eb4b-46d9-ae58-72a87bbf57a8" />
   </Folder>
   <Folder Name="/src/canvas/">

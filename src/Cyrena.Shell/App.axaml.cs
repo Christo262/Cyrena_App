@@ -5,13 +5,12 @@ using Avalonia.Markup.Xaml;
 using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Options;
+using Cyrena.Shell.Contracts;
 using Cyrena.Shell.Extensions;
 using Cyrena.Shell.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Photino.NET;
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
@@ -25,9 +24,8 @@ namespace Cyrena.Shell
     {
         private readonly CancellationTokenSource _backgroundToken;
         private WebApplication? _background;
-        //private MainWindow? _mainWindow;
         private SplashWindow? _splashWindow;
-        private PhotinoWindow? _mainWindow;
+        private readonly IWindowService _windows;
 
         public ICommand OpenShell { get; }
         public ICommand OpenBrowser { get; }
@@ -40,6 +38,10 @@ namespace Cyrena.Shell
             OpenBrowser = new DelegateCommand(OpenWebBrowser);
             ExitApp = new DelegateCommand(Exit);
             _backgroundToken = new CancellationTokenSource();
+            if(Environment.OSVersion.Platform == PlatformID.Unix)
+                _windows = new LinuxWindowService();
+            else
+                _windows = new WindowsWindowService();
         }
 
         public override void Initialize()
@@ -112,13 +114,16 @@ namespace Cyrena.Shell
                 {
                     Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                     {
-                        _splashWindow.Close();
+                        _splashWindow.Hide(); //Need it for file dialog access
                         if (t.IsFaulted || _background == null || error != null)
                         {
                             var fail = new ErrorWindow(error?.Message ?? "Failed to start background services");
                             fail.Show();
                             return;
                         }
+                        var fd = _background.Services.GetRequiredService<IFileDialog>();
+                        if (fd is FileDialog nfd)
+                            nfd.SetWindow(_splashWindow);
                         var options = CyrenaRuntime.CreateSettings().Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
                         if (options.LaunchWindowOnStartup == true)
                             ShowWindow();
@@ -129,58 +134,21 @@ namespace Cyrena.Shell
             base.OnFrameworkInitializationCompleted();
         }
 
-        private void _mainWindow_WindowSizeChanged(object? sender, System.Drawing.Size e)
-        {
-            var options = CyrenaRuntime.CreateSettings().Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
-            options.Width = e.Width;
-            options.Height = e.Height;
-            CyrenaRuntime.CreateSettings().Save(ApplicationOptions.Key, options);
-        }
-
         public void ShowWindow()
         {
-            if (_mainWindow != null) return;
-            this.Dispatcher.Invoke(() =>
+            if(!Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
             {
-                var options = CyrenaRuntime.CreateSettings().Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
-                _mainWindow = new PhotinoWindow()
-                    .SetTitle("Cyréna")
-                    .SetIconFile("wwwroot/favicon.ico")
-                    .SetHeight(options.Height)
-                    .SetWidth(options.Width)
-                    .SetUseOsDefaultLocation(false)
-                    .SetUseOsDefaultSize(false)
-                    .Center()
-                    .Load(new Uri($"http://localhost:{options.ServerPort}"));
-
-#if DEBUG
-                _mainWindow.SetContextMenuEnabled(true);
-                _mainWindow.SetDevToolsEnabled(true);
-#else
-                _mainWindow.SetContextMenuEnabled(false);
-                _mainWindow.SetDevToolsEnabled(false);
-#endif
-
-                var fd = _background!.Services.GetRequiredService<IFileDialog>() as FileDialog;
-                fd!.SetWindow(_mainWindow);
-                _mainWindow.WindowSizeChanged += _mainWindow_WindowSizeChanged;
-                _mainWindow.WindowClosing += _mainWindow_WindowClosing;
-
-                _mainWindow.WaitForClose();
-            });
-        }
-
-        private bool _mainWindow_WindowClosing(object? sender, EventArgs e)
-        {
-            if (_mainWindow == null) return false;
-            _mainWindow.WindowClosing -= _mainWindow_WindowClosing;
-            _mainWindow.WindowSizeChanged -= _mainWindow_WindowSizeChanged;
-            _mainWindow = null;
-            return false;
+                Avalonia.Threading.Dispatcher.UIThread.Post(ShowWindow);
+                return;
+            }
+            var options = CyrenaRuntime.CreateSettings().Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
+            _windows.Show(options);
         }
 
         private void Exit()
         {
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                desktop.Shutdown();
             if (_background != null)
             {
                 _background.StopAsync(CancellationToken.None)
@@ -189,17 +157,6 @@ namespace Cyrena.Shell
             }
             _backgroundToken.Cancel();
             _backgroundToken.Dispose();
-
-            if(_mainWindow != null)
-            {
-                _mainWindow.Close();
-                _mainWindow.WindowClosing -= _mainWindow_WindowClosing;
-                _mainWindow.WindowSizeChanged -= _mainWindow_WindowSizeChanged;
-                _mainWindow = null;
-            }
-
-            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-                desktop.Shutdown();
         }
 
         private void OpenWebBrowser()

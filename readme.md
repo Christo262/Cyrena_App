@@ -378,10 +378,11 @@ Cyréna stands on the shoulders of excellent open-source projects:
 * [.NET](https://github.com/dotnet)
 * [Ollama](https://ollama.com)
 * [Arduino](https://www.arduino.cc/)
-* [BootstrapBlazor](https://github.com/dotnetcore/BootstrapBlazor)
+* [MudBlazor](https://github.com/MudBlazor/MudBlazor/)
 * [BlazorMonaco](https://github.com/serdarciplak/BlazorMonaco)
 * [Photino.NET](https://github.com/tryphotino/photino.NET)
 * [Bootstrap](https://getbootstrap.com/)
+* [Avalonia](https://github.com/AvaloniaUI/Avalonia)
 
 ---
 
