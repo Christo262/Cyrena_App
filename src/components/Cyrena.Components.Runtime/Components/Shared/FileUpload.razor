@@ -3,14 +3,21 @@
 @if (!string.IsNullOrEmpty(_accepts))
 {
     <MudTooltip Text="Attach File">
-        <MudFab StartIcon="@Icons.Material.Filled.AttachFile" Size="Size.Small" Class="mr-1" OnClick="TriggerFileUpload" />
+
+        <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="UploadFiles">
+            <CustomContent>
+                <MudFab StartIcon="@Icons.Material.Filled.AttachFile" Size="Size.Small" Class="mr-1"
+                    OnClick="context.OpenFilePickerAsync" />
+            </CustomContent>
+            <SelectedTemplate></SelectedTemplate>
+        </MudFileUpload>
     </MudTooltip>
 
-   
+    @*
     <!-- Hidden File Input -->
     <InputFile @ref="_fileInput"
                OnChange="HandleFilesSelected"
                multiple
                accept="@_accepts"
-               style="display: none;" />
+               style="display: none;" /> *@
 }

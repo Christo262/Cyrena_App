@@ -22,8 +22,10 @@ namespace Cyrena.Voice.Services
 
         public Task LoadAsync(CyrenaKernelBuilder builder)
         {
-            builder.AddToolbarComponent<Toolbar>(ToolbarAlignment.End);
             var options = _settings.Read<WebViewVoiceOptions>(WebViewVoiceOptions.Key) ?? new WebViewVoiceOptions();
+            if (string.IsNullOrEmpty(options.DefaultVoiceChain))
+                return Task.CompletedTask;
+                
             if(options.DefaultVoiceChain == WebViewWhisperVoiceChain.Key)
             {
                 if (string.IsNullOrEmpty(options.WhisperModelPath))
@@ -31,6 +33,7 @@ namespace Cyrena.Voice.Services
                 if (!File.Exists(options.WhisperModelPath))
                     throw new FileNotFoundException($"Unable to find Whisper model at {options.WhisperModelPath}");
             }
+            builder.AddToolbarComponent<Toolbar>(ToolbarAlignment.End);
             return Task.CompletedTask;
         }
     }

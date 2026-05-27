@@ -58,7 +58,7 @@ namespace Cyrena.Shell.Services
                 "Cyrena.WebView");
 
             if (!File.Exists(path))
-                throw new Exception("Unable to find Cyréna WebView executable.");
+                return;
 
             var info = new ProcessStartInfo
             {
