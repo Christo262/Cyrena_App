@@ -19,6 +19,11 @@ namespace Cyrena.Runtime.Ollama.Models
         public float TopP { get; set; } = 0.9f;
         public float MinP { get; set; } = 0.0f;
 
+        /// <summary>
+        /// For direct cloud access only
+        /// </summary>
+        public string? APIKey { get; set; }
+
         public string? Thinking { get; set; }
 
         [JsonIgnore]

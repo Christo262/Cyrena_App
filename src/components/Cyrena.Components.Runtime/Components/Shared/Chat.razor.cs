@@ -38,7 +38,8 @@ namespace Cyrena.Components.Shared
             _mdp = new Markdig.MarkdownPipelineBuilder()
                 .UseAdvancedExtensions()
                 .Build();
-            _its.Input = new ChatMessageContent(_msg.Options.User, "");
+            if(_its.Input == null)
+                _its.Input = new ChatMessageContent(_msg.Options.User, "");
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -109,8 +110,8 @@ namespace Cyrena.Components.Shared
             if (_its.Input == null || string.IsNullOrEmpty(_its.Input.Content)) return;
             
             _its.Iterate();
-            await InvokeAsync(StateHasChanged);
             await Task.Delay(100);
+            await InvokeAsync(StateHasChanged);
         }
 
         private async Task ComposerKeyDown(KeyboardEventArgs e)

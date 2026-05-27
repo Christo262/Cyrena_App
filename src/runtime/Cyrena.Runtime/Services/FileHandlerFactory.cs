@@ -20,7 +20,7 @@ namespace Cyrena.Runtime.Services
             _config = config;
             _store = store;
         }
-
+#pragma warning disable SKEXP0110
         public bool HasFileHandlers
         {
             get
@@ -146,6 +146,15 @@ namespace Cyrena.Runtime.Services
                     using var ms = new MemoryStream();
                     await data.CopyToAsync(ms);
                     await File.WriteAllBytesAsync(att.Path, ms.ToArray(), cancellationToken);
+                    if (item is ImageFileHandler image)
+                    {
+                        var metadata = new Dictionary<string, object?>()
+                        {
+                            {"name", att.Id },
+                            {"save-as", att.ToFileReference()}
+                        };
+                        return await image.GetKernelContent(ms.ToArray(), contentType, name, metadata);
+                    }
                     return att.ToFileReference();
                 }
             }
@@ -161,6 +170,15 @@ namespace Cyrena.Runtime.Services
                 {
                     var att = await SaveFileAttachment(contentType, name, cancellationToken);
                     await File.WriteAllBytesAsync(att.Path, data, cancellationToken);
+                    if (item is ImageFileHandler image)
+                    {
+                        var metadata = new Dictionary<string, object?>()
+                        {
+                            {"name", att.Id },
+                            {"save-as", att.ToFileReference()}
+                        };
+                        return await image.GetKernelContent(data, contentType, name, metadata);
+                    }
                     return att.ToFileReference();
                 }
             }
@@ -177,12 +195,23 @@ namespace Cyrena.Runtime.Services
             return att;
         }
 
-#pragma warning disable SKEXP0110
+
         public async Task CancelAsync(KernelContent item, CancellationToken cancellationToken = default)
         {
             if (item is FileReferenceContent file)
             {
                 var ext = await _store.FindAsync(x => x.Id == file.FileId, cancellationToken);
+                if (ext == null) return;
+                if (File.Exists(ext.Path))
+                    File.Delete(ext.Path);
+                await _store.DeleteAsync(ext);
+            }
+
+            if(item is ImageContent image)
+            {
+                var id = image.Metadata?.ContainsKey("name") == true ? image.Metadata["name"]?.ToString() : null;
+                if (string.IsNullOrEmpty(id)) return;
+                var ext = await _store.FindAsync(x => x.Id == id, cancellationToken);
                 if (ext == null) return;
                 if (File.Exists(ext.Path))
                     File.Delete(ext.Path);

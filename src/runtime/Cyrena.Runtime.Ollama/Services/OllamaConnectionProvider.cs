@@ -26,8 +26,10 @@ namespace Cyrena.Runtime.Ollama.Services
             var http = new HttpClient()
             {
                 BaseAddress = new Uri(connection.Endpoint!),
-                Timeout = TimeSpan.FromSeconds(60 * 3)
+                Timeout = TimeSpan.FromSeconds(60 * 3),
             };
+            if (!string.IsNullOrEmpty(connection.APIKey))
+                http.DefaultRequestHeaders.Add("Authorization", $"Bearer {connection.APIKey}");
             builder.AddOllamaChatCompletion(connection.ModelId!, http);
             builder.Services.AddSingleton<OllamaConnectionInfo>(connection);
             builder.Services.AddSingleton<IConnection, OllamaConnection>();

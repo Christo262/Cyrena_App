@@ -6,6 +6,7 @@
             <MudTextField @bind-Value="Model.Endpoint" Label="Endpoint" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense"/>
             <MudTextField @bind-Value="Model.ModelId" Label="Model ID" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
             <MudTextField @bind-Value="Model.Name" Label="Display Name" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+            <MudTextField @bind-Value="Model.APIKey" InputType="InputType.Password" Label="API Key" HelperText="When using https://ollama.com as the endpoint" Variant="Variant.Outlined" Margin="Margin.Dense" />
 
             <MudSelect @bind-Value="Model.NumPredict" Dense Margin="Margin.Dense" Label="Tokens" HelperText="Maximum number of tokens to predict when generating text. (Default: 128)">
                 <MudSelectItem Value="50">50</MudSelectItem>

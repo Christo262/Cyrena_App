@@ -60,6 +60,12 @@
                                             <MudText Typo="Typo.caption" Class="mud-text-secondary m-0 text-truncate">@(@item.Metadata?.ContainsKey("name") == true ? item.Metadata["name"] : "unknown")</MudText>
                                         </MudPaper>
                                     }
+                                    @foreach (var item in msg.Items.OfType<ImageContent>())
+                                    {
+                                        <MudPaper Class="pa-1 me-1" Elevation="0">
+                                            <MudText Typo="Typo.caption" Class="mud-text-secondary m-0 text-truncate">@(@item.Metadata?.ContainsKey("name") == true ? item.Metadata["name"] : "unknown")</MudText>
+                                        </MudPaper>
+                                    }
                                 </div>
                             }
                             @if (isUser)
@@ -112,6 +118,13 @@
 #pragma warning disable SKEXP0110
             <div class="d-flex flex-row mb-1">
                 @foreach (var item in _its.Input.Items.OfType<FileReferenceContent>())
+                {
+                    <MudPaper Class="pa-1 d-flex me-1" Style="max-width:200px" Elevation="1">
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary m-0 text-truncate d-flex align-self-center me-1">@(@item.Metadata?.ContainsKey("name") == true ? item.Metadata["name"] : "unknown")</MudText>
+                        <MudIconButton Icon="@Icons.Material.Filled.Close" Size="Size.Small" Color="Color.Error" OnClick="() => RemoveAdditionalItem(item)" />
+                    </MudPaper>
+                }
+                @foreach (var item in _its.Input.Items.OfType<ImageContent>())
                 {
                     <MudPaper Class="pa-1 d-flex me-1" Style="max-width:200px" Elevation="1">
                         <MudText Typo="Typo.caption" Class="mud-text-secondary m-0 text-truncate d-flex align-self-center me-1">@(@item.Metadata?.ContainsKey("name") == true ? item.Metadata["name"] : "unknown")</MudText>
