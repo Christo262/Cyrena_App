@@ -5,7 +5,6 @@ using Avalonia.Markup.Xaml;
 using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Options;
-using Cyrena.Shell.Contracts;
 using Cyrena.Shell.Extensions;
 using Cyrena.Shell.Services;
 using Microsoft.AspNetCore.Builder;
@@ -25,7 +24,6 @@ namespace Cyrena.Shell
         private readonly CancellationTokenSource _backgroundToken;
         private WebApplication? _background;
         private SplashWindow? _splashWindow;
-        private readonly IWindowService _windows;
 
         public ICommand OpenShell { get; }
         public ICommand OpenBrowser { get; }
@@ -38,10 +36,6 @@ namespace Cyrena.Shell
             OpenBrowser = new DelegateCommand(OpenWebBrowser);
             ExitApp = new DelegateCommand(Exit);
             _backgroundToken = new CancellationTokenSource();
-            if(Environment.OSVersion.Platform == PlatformID.Unix)
-                _windows = new LinuxWindowService();
-            else
-                _windows = new WindowsWindowService();
         }
 
         public override void Initialize()
@@ -141,8 +135,12 @@ namespace Cyrena.Shell
                 Avalonia.Threading.Dispatcher.UIThread.Post(ShowWindow);
                 return;
             }
-            var options = CyrenaRuntime.CreateSettings().Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
-            _windows.Show(options);
+            if(_background != null)
+            {
+                var options = CyrenaRuntime.CreateSettings().Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
+                var windows = _background.Services.GetRequiredService<IWindowLauncher>();
+                windows.ShowMain(options);
+            }
         }
 
         private void Exit()

@@ -37,6 +37,10 @@ namespace Cyrena.Shell.Extensions
 
             cyrena.Services.AddSingleton<ISetupService, SetupService>();
             cyrena.Services.AddSingleton<IFileDialog, FileDialog>();
+            if(Environment.OSVersion.Platform == PlatformID.Unix)
+                cyrena.Services.AddSingleton<IWindowLauncher, LinuxWindowService>();
+            else
+                cyrena.Services.AddSingleton<IWindowLauncher, DefaultWindowService>();
             cyrena.Build();
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents(options =>

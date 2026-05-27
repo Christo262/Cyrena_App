@@ -1,5 +1,6 @@
 ﻿using Cyrena.Contracts;
 using Cyrena.Models;
+using Cyrena.Options;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
@@ -18,6 +19,7 @@ namespace Cyrena.Components.Layout
         [Inject] private IServiceProvider _services { get; set; } = default!;
         [Inject] private IDialogService _dialog { get; set; } = default!;
         [Inject] private NavigationManager _nav { get; set; } = default!;
+        [Inject] private IWindowLauncher _windows { get; set; } = default!;
 
         private IDisposable? _unload { get; set; }
         private IDisposable? _loaded { get; set; }
@@ -116,6 +118,13 @@ namespace Cyrena.Components.Layout
         {
             _open = false;
             _nav.NavigateTo($"converse/{ChatConfiguration.Id}");
+        }
+
+        private void NewWindow()
+        {
+            var options = _services.GetRequiredService<ISettingsService>().Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
+            _open = false;
+            _windows.Show($"{_nav.BaseUri.TrimEnd('/')}/converse-blank/{ChatConfiguration.Id}", options.Width, options.Height);
         }
 
         public void Dispose()

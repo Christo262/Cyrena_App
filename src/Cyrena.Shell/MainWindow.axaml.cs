@@ -12,4 +12,12 @@ public partial class MainWindow : Window
         var options = CyrenaRuntime.CreateSettings().Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
         Web.Source = new($"http://localhost:{options.ServerPort}");
     }
+
+    public MainWindow(string url, int width, int height)
+    {
+        InitializeComponent();
+        this.Width = width;
+        this.Height = height;
+        Web.Source = new(url);
+    }
 }

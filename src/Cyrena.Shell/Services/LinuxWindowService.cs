@@ -1,5 +1,5 @@
-﻿using Cyrena.Options;
-using Cyrena.Shell.Contracts;
+﻿using Cyrena.Contracts;
+using Cyrena.Options;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Cyrena.Shell.Services
 {
-    public class LinuxWindowService : IWindowService
+    public class LinuxWindowService : IWindowLauncher
     {
         private readonly object _lock = new();
         private readonly List<Process> _windows = new();
@@ -44,7 +44,63 @@ namespace Cyrena.Shell.Services
             }
         }
 
-        public void Show(ApplicationOptions options)
+        public void Show(string url, int width, int height)
+        {
+            var webViewDirectory = Path.Combine(
+                AppContext.BaseDirectory,
+                "webview");
+
+            var path = Path.Combine(
+                webViewDirectory,
+                "Cyrena.WebView");
+
+            if (!File.Exists(path))
+                throw new Exception("Unable to find Cyréna WebView executable.");
+
+            var info = new ProcessStartInfo
+            {
+                FileName = path,
+                WorkingDirectory = webViewDirectory,
+                UseShellExecute = false
+            };
+
+            info.ArgumentList.Add("--title");
+            info.ArgumentList.Add("Cyréna");
+
+            info.ArgumentList.Add("--url");
+            info.ArgumentList.Add(url);
+
+            info.ArgumentList.Add("--width");
+            info.ArgumentList.Add(width.ToString());
+
+            info.ArgumentList.Add("--height");
+            info.ArgumentList.Add(height.ToString());
+
+            var process = new Process
+            {
+                StartInfo = info,
+                EnableRaisingEvents = true
+            };
+
+            process.Exited += Process_Exited;
+
+            try
+            {
+                process.Start();
+
+                lock (_lock)
+                {
+                    _windows.Add(process);
+                }
+            }
+            catch
+            {
+                process.Dispose();
+                throw;
+            }
+        }
+
+        public void ShowMain(ApplicationOptions options)
         {
             var webViewDirectory = Path.Combine(
                 AppContext.BaseDirectory,
