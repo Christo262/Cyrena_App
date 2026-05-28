@@ -1,4 +1,11 @@
-<MudText Typo="Typo.h4">OpenAI Settings</MudText>
+<MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center">
+    <MudText Typo="Typo.h4">OpenAI Settings</MudText>
+    <MudSpacer/>
+
+    <MudTooltip Text="Add Model">
+        <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Success" Size="Size.Small" OnClick="Add" />
+    </MudTooltip>
+</MudStack>
 
 @if (_model != null)
 {
@@ -18,9 +25,6 @@
                     <MudTh>Display Name</MudTh>
                     <MudTh>Temperature</MudTh>
                     <MudTh>
-                        <MudTooltip Text="Add Model">
-                            <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Success" Size="Size.Small" OnClick="Add" />
-                        </MudTooltip>
                     </MudTh>
                 </HeaderContent>
                 <RowTemplate>

@@ -12,7 +12,7 @@ namespace Cyrena.Runtime.Ollama.Components.Shared
         [Inject] private IStore<OllamaConnectionInfo> _store { get; set; } = default!;
         [Inject] private IDialogService _dialog { get; set; } = default!;
 
-        private IEnumerable<OllamaConnectionInfo>? _models { get; set; }
+        private IEnumerable<OllamaConnectionInfo> _models { get; set; } = Enumerable.Empty<OllamaConnectionInfo>();
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {

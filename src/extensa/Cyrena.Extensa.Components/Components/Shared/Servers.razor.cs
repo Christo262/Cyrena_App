@@ -2,6 +2,7 @@ using Cyrena.Contracts;
 using Cyrena.Extensa.Contracts;
 using Cyrena.Extensa.Models;
 using Cyrena.Extensa.Options;
+using Cyrena.Options;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
 using MudBlazor;
@@ -15,6 +16,7 @@ namespace Cyrena.Extensa.Components.Shared
         [Inject] private IFileDialog _files { get; set;  } = default!;
         [Inject] private IOptions<ExtensaOptions> _options { get; set; } = default!;
         [Inject] private ISnackbar _snackbar { get; set; } = default!;
+        [Inject] private ComponentOptions _ui { get; set; } = default!;
 
         private IEnumerable<PluginServer> _models = Enumerable.Empty<PluginServer>();
 

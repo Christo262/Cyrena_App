@@ -1,6 +1,7 @@
 using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Models;
+using Cyrena.Options;
 using Microsoft.AspNetCore.Components;
 using Microsoft.SemanticKernel;
 using MudBlazor;
@@ -14,6 +15,7 @@ namespace Cyrena.Components.Pages
         [Inject] private ISnackbar _snackbar { get; set; } = default!;
         [Inject] private IKernelController _controller { get; set; } = default!;
         [Inject] private NavigationManager _nav { get; set; } = default!;
+        [Inject] private ComponentOptions _ui { get; set; } = default!;
 
         private List<Kernel> _active { get; set; } = new();
 
@@ -83,7 +85,7 @@ namespace Cyrena.Components.Pages
             _userIndex = index;
             var active = _dynamicTabs.ActivePanel;
             if (active != null && active.ID is Kernel kernel)
-                _nav.NavigateTo($"converse/{kernel.GetId()}");
+                _nav.NavigateTo(_ui.MenuOptions.ConverseUrl.Replace("{Id}", kernel.GetId()));
         }
 
         public void Dispose()

@@ -44,6 +44,8 @@
 
                     <MudTextField @bind-Value="_model.Name" Label="Display Name" Placeholder="e.g. My Local Model" Variant="Variant.Outlined" Class="mb-2" />
 
+                    <MudTextField @bind-Value="_model.APIKey" Label="API Key" InputType="InputType.Password" HelperText="Provide if endpoint is https://ollama.com." Variant="Variant.Outlined" Class="mb-2" />
+
                     <div class="text-center">
                         <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Submit</MudButton>
                     </div>

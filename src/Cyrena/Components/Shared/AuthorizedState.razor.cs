@@ -9,6 +9,14 @@ namespace Cyrena.Components.Shared
         [Parameter] public RenderFragment? ChildContent { get; set; }
         [Inject] private IPinService _pin { get; set; } = default!;
 
+        protected override async Task OnParametersSetAsync()
+        {
+            await base.OnParametersSetAsync();
+            if (!_rendered) return;
+            if (!_pin.IsAuthorized())
+                await _pin.AuthorizeAsync();
+        }
+
         protected override void OnInitialized()
         {
             ApplicationTheme.WatchTheme(() =>
@@ -29,11 +37,13 @@ namespace Cyrena.Components.Shared
             });
         }
 
+        private bool _rendered { get; set; }
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (!firstRender) return;
-            if(!_pin.IsAuthorized())
+            if (!_pin.IsAuthorized())
                 await _pin.AuthorizeAsync();
+            _rendered = true;
         }
 
         public void Dispose()

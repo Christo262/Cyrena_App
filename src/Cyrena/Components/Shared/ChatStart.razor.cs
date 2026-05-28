@@ -1,5 +1,6 @@
 using Cyrena.Contracts;
 using Cyrena.Models;
+using Cyrena.Options;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,7 @@ namespace Cyrena.Components.Shared
         [Inject] private ISnackbar _snackbar { get; set; } = default!;
         [Inject] private IJSRuntime _js { get; set; } = default!;
         [Inject] private ISetupService _setup { get; set; } = default!;
+        [Inject] private ComponentOptions _ui { get; set; } = default!;
 
         private ChatConfiguration? _model;
         private bool _showConfig;
@@ -72,7 +74,7 @@ namespace Cyrena.Components.Shared
                 var its = kernel.Services.GetRequiredService<IIterationService>();
                 its.Input = new ChatMessageContent(chat.Options.User, _input);
                 its.Iterate();
-                var url = $"converse/{_model.Id}";
+                var url = _ui.MenuOptions.ConverseUrl.Replace("{Id}", _model.Id);
                 await RefreshModel();
                 _nav.NavigateTo(url);
             }
@@ -88,7 +90,7 @@ namespace Cyrena.Components.Shared
             try
             {
                 var kernel = await _kernels.Create(_model);
-                var url = $"converse/{_model.Id}";
+                var url = _ui.MenuOptions.ConverseUrl.Replace("{Id}", _model.Id);
                 await RefreshModel();
                 _nav.NavigateTo(url);
             }

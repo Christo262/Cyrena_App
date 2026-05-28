@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Cyréna</title>
+    <base href="/" />
+        <link rel="stylesheet" href="_content/MudBlazor/MudBlazor.min.css" />
+    <link href="css/bootstrap-icons.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="_content/Cyrena/css/theme.css" />
+    <link rel="icon" href="data:,">
+
+    <head-outlet>
+        <style>
+            body {
+                background-image:url(_content/Cyrena/Wallpapers/default.png);
+                background-size:cover;
+                background-position:center;
+                background-color:transparent
+            }
+        </style>
+    </head-outlet>
+</head>
+
+<body>
+
+    <div class="status-bar-safe-area"></div>
+
+    <div id="app" style="height:100dvh;overflow:hidden">
+        <div class="d-flex flex-row h-100 justify-center align-items-center">
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <div id="blazor-error-ui" data-nosnippet>
+        An unhandled error has occurred.
+        <a href="." class="reload">Reload</a>
+        <span class="dismiss">🗙</span>
+    </div>
+
+    <script src="_content/BlazorMonaco/jsInterop.js"></script>
+    <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.js"></script>
+    <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.js"></script>
+    <script src="_framework/blazor.webview.js" autostart="false"></script>
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <script src="_content/Cyrena/js/cyrena.js"></script>
+    <script src="_content/Cyrena/js/runtime-scripts.js"></script>
+    <script src="_content/Cyrena/js/webview-audio-interop.js"></script>
+
+</body>
+
+</html>

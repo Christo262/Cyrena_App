@@ -20,6 +20,7 @@ namespace Cyrena.Components.Layout
         [Inject] private IDialogService _dialog { get; set; } = default!;
         [Inject] private NavigationManager _nav { get; set; } = default!;
         [Inject] private IWindowLauncher _windows { get; set; } = default!;
+        [Inject] private ComponentOptions _ui { get; set; } = default!;
 
         private IDisposable? _unload { get; set; }
         private IDisposable? _loaded { get; set; }
@@ -117,11 +118,12 @@ namespace Cyrena.Components.Layout
         private void Load()
         {
             _open = false;
-            _nav.NavigateTo($"converse/{ChatConfiguration.Id}");
+            _nav.NavigateTo(_ui.MenuOptions.ConverseUrl.Replace("{Id}", ChatConfiguration.Id));
         }
 
         private void NewWindow()
         {
+            if (!_ui.MenuOptions.AllowNewTab) return;
             var options = _services.GetRequiredService<ISettingsService>().Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
             _open = false;
             _windows.Show($"{_nav.BaseUri.TrimEnd('/')}/converse-blank/{ChatConfiguration.Id}", options.Width, options.Height);

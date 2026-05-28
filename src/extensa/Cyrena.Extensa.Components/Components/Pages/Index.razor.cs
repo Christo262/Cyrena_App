@@ -186,6 +186,13 @@ namespace Cyrena.Extensa.Components.Pages
             _draw = true;
             this.StateHasChanged();
         }
+
+        private void CloseInView()
+        {
+            _in_view = null;
+            _draw = false;
+            this.StateHasChanged();
+        }
     }
 
     internal record PackageViewModel(Package? Package, LoadedExtension? Extension, PluginServer? Server, List<string> Uninstalls)

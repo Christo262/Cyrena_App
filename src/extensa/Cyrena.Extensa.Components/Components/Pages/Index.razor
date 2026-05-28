@@ -14,7 +14,7 @@
             </div>
         </div>
     <MudDrawerContainer Style="height:calc(100% - 48px)">
-        <MudDrawer @bind-Open="_draw" Anchor="Anchor.End" Width="50%" Fixed="false" Variant="DrawerVariant.Persistent" Class="mud-height-full">
+        <MudDrawer @bind-Open="_draw" Anchor="Anchor.End" Width="70%" Fixed="true" Variant="DrawerVariant.Persistent" Class="mud-height-full">
             @{
                 var model = _models.FirstOrDefault(x => x.Id == _in_view);
             }
@@ -23,13 +23,15 @@
             <MudPaper Class="pa-2 overflow-auto" Style="height:100%" Outlined="true">
                 <MudStack Spacing="2">
 
-                    <div>
-                        @if (model.Package?.HasIcon == true)
-                        {
-                            <img src="@model.Package.IconUrl" alt="@model.Title" class="rounded mr-2" height="40" />
-                        }
-                        <MudText Typo="Typo.h6" Inline="true">@model.Title</MudText>
-                    </div>
+                    <MudStack Row>
+                            @if (model.Package?.HasIcon == true)
+                            {
+                                <img src="@model.Package.IconUrl" alt="@model.Title" class="rounded mr-2" height="40" />
+                            }
+                            <MudText Typo="Typo.h6" Inline="true">@model.Title</MudText>
+                            <MudSpacer/>
+                            <MudIconButton Icon="@Icons.Material.Filled.Close" Size="Size.Small" OnClick="CloseInView"/>
+                    </MudStack>
 
                     <MudText Typo="Typo.caption"><code>@model.Id</code></MudText>
 

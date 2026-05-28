@@ -18,7 +18,10 @@
     </TitleContent>
 <ChildContent>
         <MudNavLink OnClick="Load">Open</MudNavLink>
-        <MudNavLink OnClick="NewWindow">New Window</MudNavLink>
+        @if (_ui.MenuOptions.AllowNewTab)
+        {
+            <MudNavLink OnClick="NewWindow">New Window</MudNavLink>
+        }
         <MudNavLink OnClick="EditAsync">Edit</MudNavLink>
         <MudNavLink OnClick="Delete">Delete</MudNavLink>
 </ChildContent>

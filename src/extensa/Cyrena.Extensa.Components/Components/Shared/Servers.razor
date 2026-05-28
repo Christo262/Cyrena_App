@@ -2,8 +2,11 @@
     <MudText Typo="Typo.h4">Extension Servers</MudText>
     <div class="ms-auto"></div>
 
-    <MudButton OnClick="OpenExtensions" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Class="me-1">Extensions Folder</MudButton>
-    <MudButton OnClick="OpenInstallations" Variant="Variant.Filled" Color="Color.Info" Size="Size.Small">Installations Folder</MudButton>
+    @if (_ui.FileSystemOptions.ExploreFolder)
+    {
+        <MudButton OnClick="OpenExtensions" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Class="me-1">Extensions Folder</MudButton>
+        <MudButton OnClick="OpenInstallations" Variant="Variant.Filled" Color="Color.Info" Size="Size.Small">Installations Folder</MudButton>
+    }
 </div>
 <MudAlert Severity="Severity.Success">
     <span class="text-danger">*</span> Extension servers provide additional extensions and updates to Cyréna. Add custom servers to host your own. Visit <a href="https://cyrena.dev" target="_blank">cyrena.dev</a> to learn more.

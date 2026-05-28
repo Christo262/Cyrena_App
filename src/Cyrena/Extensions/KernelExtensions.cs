@@ -9,12 +9,19 @@ namespace Cyrena.Extensions
     {
         public static string GetTitle(this Kernel kernel)
         {
-           return  kernel.Services.GetRequiredService<IChatConfigurationService>().Config.Title ?? "New Chat";
+            try
+            {
+                return kernel.Services.GetService<IChatConfigurationService>()?.Config.Title ?? "New Chat";
+            }
+            catch { return string.Empty; }
         }
 
         public static string GetId(this Kernel kernel)
         {
-            return kernel.Services.GetRequiredService<IChatConfigurationService>().Config.Id;
+            try
+            {
+                return kernel.Services.GetService<IChatConfigurationService>()?.Config.Id ?? string.Empty;
+            }catch { return string.Empty; }
         }
 
         public static ChatConfiguration GetConfiguration(this Kernel kernel)

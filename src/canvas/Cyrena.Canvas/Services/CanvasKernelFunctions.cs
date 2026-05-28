@@ -124,7 +124,7 @@ namespace Cyrena.Canvas.Services
             "To append to the end of the document, use startLine equal to the total number of existing lines and lineCount 0. " +
             "Use get_active first when you need to inspect line numbers before editing.")]
         public async Task<ToolResult<CanvasDocumentLines>> WriteAsync(
-            [Description("The text content to insert or use as replacement content. You may style html documents using bootstrap css framework.")]
+            [Description("The text content to insert or use as replacement content.")]
         string content,
 
             [Description("The zero-based line number where the insert or replacement should begin. Use 0 for the top of the document.")]

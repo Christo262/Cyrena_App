@@ -1,6 +1,7 @@
 @inject ISettingsService _settings
 @inject ISetupService _setup
 @inject IPinService _pin
+@inject ComponentOptions _ui
 
 <MudText Typo="Typo.h4">Application Settings</MudText>
 
@@ -8,9 +9,12 @@
     <MudItem xs="12" md="7" Class="mx-auto">
         <ConnectionSelector Value="@_options.DefaultConnectionId" ValueChanged="SaveDefault"/>
 
-        <MudNumericField @bind-Value="_options.ServerPort" Label="Server Port" Variant="Variant.Outlined" Margin="Margin.Dense" Class="mt-4" @bind-Value:after="Save" />
+        @if (ComponentOptions.IsServer)
+        {
+            <MudNumericField @bind-Value="_options.ServerPort" Label="Server Port" Variant="Variant.Outlined" Margin="Margin.Dense" Class="mt-4" @bind-Value:after="Save" />
 
-        <MudCheckBox @bind-Value="_options.LaunchWindowOnStartup" Label="Show Window on Start" Class="mt-4" @bind-Value:after="Save" Dense Size="Size.Small" />
+            <MudCheckBox @bind-Value="_options.LaunchWindowOnStartup" Label="Show Window on Start" Class="mt-4" @bind-Value:after="Save" Dense Size="Size.Small" />
+        }
 
         <MudCheckBox T="bool" Value="_options.UsePin" ValueChanged="UsePinChanged" Label="Use Appliction PIN" Dense Size="Size.Small" />
 

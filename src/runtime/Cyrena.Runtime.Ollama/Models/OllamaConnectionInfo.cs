@@ -1,4 +1,5 @@
 ﻿using Cyrena.Models;
+using Cyrena.Options;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -7,7 +8,7 @@ namespace Cyrena.Runtime.Ollama.Models
     public class OllamaConnectionInfo : Entity
     {
         [Required]
-        public string Endpoint { get; set; } = "http://localhost:11434";
+        public string Endpoint { get; set; } = ComponentOptions.OllamaDefaultEndpoint;
         [Required]
         public string ModelId { get; set; } = default!;
         [Required]

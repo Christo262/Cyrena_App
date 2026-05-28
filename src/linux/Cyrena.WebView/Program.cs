@@ -61,6 +61,8 @@ internal static class Program
             .SetUseOsDefaultSize(false)
             .SetWidth(appArgs.Width)
             .SetHeight(appArgs.Height)
+            .SetContextMenuEnabled(false)
+            .SetDevToolsEnabled(false)
             .SetFileSystemAccessEnabled(true)
             .Center()
             .Load(new Uri(appArgs.Url));

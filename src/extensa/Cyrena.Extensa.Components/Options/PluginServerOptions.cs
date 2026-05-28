@@ -53,6 +53,7 @@ public class PluginServerOptions
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) return "mac";
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) return "linux";
         if (RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD)) return "linux";
+        if (OperatingSystem.IsAndroid()) return "android";
         return "win"; // fallback
     }
 

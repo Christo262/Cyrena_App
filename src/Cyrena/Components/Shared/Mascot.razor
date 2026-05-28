@@ -1,15 +1,15 @@
-<MudItem xs="1" Class="d-flex justify-center align-center">
+<MudItem xs="1" lg="1" Class="d-flex justify-center align-center">
     @if (_current != null)
     {
         <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft" Size="Size.Medium" OnClick="Previous" />
     }
 </MudItem>
-<MudItem xs="4">
+<MudItem xs="8" lg="5">
     <div style="text-align:center">
         <img src="@MascotPath()" height="@(_current?.Height ?? 200)" />
     </div>
 </MudItem>
-<MudItem xs="1" Class="d-flex justify-center align-center">
+<MudItem xs="1" lg="1" Class="d-flex justify-center align-center">
     @if (_current != null)
     {
         <MudIconButton Icon="@Icons.Material.Filled.ChevronRight" Size="Size.Medium" OnClick="Next" />

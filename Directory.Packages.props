@@ -10,7 +10,7 @@
     <PackageVersion Include="Cyrena.Extensa.Core" Version="0.6.0" />
     <PackageVersion Include="Cyrena.Persistence.Core" Version="0.6.0" />
     <PackageVersion Include="Cyrena.Persistence.File" Version="0.6.0" />
-    <PackageVersion Include="Photino.NET" Version="4.0.16" />
+    <PackageVersion Include="Microsoft.Maui.Essentials" Version="10.0.70" />
   </ItemGroup>
   <!--Third-party-->
   <ItemGroup>
@@ -31,8 +31,7 @@
     <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.0.3" />
     <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.0.3" />
     <PackageVersion Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.1" />
-    <PackageVersion Include="PhotinoX" Version="4.2.0" />
-    <PackageVersion Include="PhotinoX.Native" Version="4.2.0" />
+    <PackageVersion Include="Photino.NET" Version="4.0.16" />
   </ItemGroup>
   <!--Microsoft-->
   <ItemGroup>
@@ -44,9 +43,11 @@
     <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.7" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.7" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.7" />
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="10.0.7" />
+    <PackageVersion Include="Microsoft.Maui.Controls" Version="10.0.70" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="10.0.70" />
   </ItemGroup>
   <!--System-->
   <ItemGroup>

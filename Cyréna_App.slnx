@@ -18,8 +18,8 @@
     <File Path="docs/screenshots.md" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/Cyrena.Android/Cyrena.Android.csproj" Id="d9e9464d-88fa-4f25-a386-89e4a2f40e08" />
     <Project Path="src/Cyrena.Shell/Cyrena.Shell.csproj" Id="58a14d80-8a42-42de-8391-570e403dbee8" />
-    <Project Path="src/Cyrena.WebView/Cyrena.WebView.csproj" Id="40771fc2-b83a-4bd5-aee8-598fbd97388b" />
     <Project Path="src/Cyrena/Cyrena.csproj" Id="9edb268b-eb4b-46d9-ae58-72a87bbf57a8" />
   </Folder>
   <Folder Name="/src/canvas/">
@@ -36,6 +36,9 @@
     <Project Path="src/extensa/Cyrena.Extensa.Components/Cyrena.Extensa.Components.csproj" Id="395c23d0-c966-4340-af0d-5d9307a0da4a" />
     <Project Path="src/extensa/Cyrena.Extensa.Core/Cyrena.Extensa.Core.csproj" Id="cd2ba511-0d80-4544-b5d4-46d4c735cdfb" />
     <Project Path="src/extensa/Cyrena.Extensa.Runtime/Cyrena.Extensa.Runtime.csproj" Id="251829e2-237b-49a7-be18-eb994e7df6f8" />
+  </Folder>
+  <Folder Name="/src/linux/">
+    <Project Path="src/linux/Cyrena.WebView/Cyrena.WebView.csproj" />
   </Folder>
   <Folder Name="/src/memory/">
     <Project Path="src/memory/Cyrena.LTM/Cyrena.LTM.csproj" Id="8c3944be-eace-459c-84e1-f12cf69a2f14" />
