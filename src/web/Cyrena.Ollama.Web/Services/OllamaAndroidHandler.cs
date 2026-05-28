@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Cyrena.Runtime.Ollama.Services
+﻿namespace Cyrena.Ollama.Web.Services
 {
-    public sealed class OllamaAndroidHandler : DelegatingHandler
+    internal sealed class OllamaAndroidHandler : DelegatingHandler
     {
         public OllamaAndroidHandler(HttpMessageHandler innerHandler)
             : base(innerHandler)

@@ -1,0 +1,13 @@
+{
+  "id": "cyrena.ollama.web",
+  "name": "Ollama Web Search",
+  "version": "0.6.0",
+  "entryAssemblyFile": "Cyrena.Ollama.Web.dll",
+  "description": "Gives Cyréna assistants access to live web search via the Ollama Web API. Requires a Ollama API key — sign up at ollama.com to get one, then configure it directly in Cyréna's settings UI. Once connected, assistants can search the web as part of their workflow.",
+  "dependencies": [
+    {
+      "id": "cyrena",
+      "minVersion": "0.6.0"
+    }
+  ]
+}

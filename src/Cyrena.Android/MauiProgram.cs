@@ -4,12 +4,14 @@ using Cyrena.Extensions;
 using Cyrena.Options;
 using Cyrena.Runtime.Ollama.Services;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Cyrena.Android
 {
     public static class MauiProgram
     {
+        private static CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
@@ -54,9 +56,11 @@ namespace Cyrena.Android
             ui.FileSystemOptions.ExploreFolder = false;
             ComponentOptions.OllamaDefaultEndpoint = "https://ollama.com";
             ComponentOptions.IsServer = false;
-            OllamaAndroidHandler.Use = true;
             cyrena.Build();
-            return builder.Build();
+            var app = builder.Build();
+            foreach (var item in cyrena.RunActions)
+                item.Invoke(app.Services, _cancellationTokenSource.Token);
+            return app;
         }
     }
 }

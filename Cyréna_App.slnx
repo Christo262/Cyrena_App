@@ -18,7 +18,9 @@
     <File Path="docs/screenshots.md" />
   </Folder>
   <Folder Name="/src/">
-    <Project Path="src/Cyrena.Android/Cyrena.Android.csproj" Id="d9e9464d-88fa-4f25-a386-89e4a2f40e08" />
+    <Project Path="src/Cyrena.Android/Cyrena.Android.csproj" Id="d9e9464d-88fa-4f25-a386-89e4a2f40e08">
+      <Deploy Solution="Debug|*" />
+    </Project>
     <Project Path="src/Cyrena.Shell/Cyrena.Shell.csproj" Id="58a14d80-8a42-42de-8391-570e403dbee8" />
     <Project Path="src/Cyrena/Cyrena.csproj" Id="9edb268b-eb4b-46d9-ae58-72a87bbf57a8" />
   </Folder>
@@ -57,6 +59,7 @@
     <Project Path="src/voice/Cyrena.Voice.Extension/Cyrena.Voice.Extension.csproj" Id="9e9ed299-da33-436e-b7c8-a157c27665dc" />
   </Folder>
   <Folder Name="/src/web/">
+    <Project Path="src/web/Cyrena.Ollama.Web/Cyrena.Ollama.Web.csproj" Id="08c14853-0aec-438a-8632-6793ddd0e84d" />
     <Project Path="src/web/Cyrena.Tavily/Cyrena.Tavily.csproj" Id="a52527de-2b8d-4184-949d-49f7669e0409" />
   </Folder>
   <Folder Name="/tests/">
