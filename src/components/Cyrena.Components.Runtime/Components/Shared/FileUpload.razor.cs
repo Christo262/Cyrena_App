@@ -27,52 +27,17 @@ namespace Cyrena.Components.Shared
         private async Task UploadFiles(IReadOnlyList<IBrowserFile> files)
         {
             var models = new List<KernelContent>();
-            foreach(var file in files)
+            foreach (var file in files)
             {
-                    using var stream = file.OpenReadStream(maxAllowedSize: 50 * 1024 * 1024); // 50MB limit
+                using var stream = file.OpenReadStream(maxAllowedSize: 50 * 1024 * 1024); // 50MB limit
                 var content = await _factory.SaveAsync(stream, file.ContentType, file.Name);
                 if (content == null)
                     _snackbar.Add($"{file.Name}: File type is not supported in the current chat.", Severity.Error);
                 else
                     models.Add(content);
             }
-            if(models.Any())
-            await OnItemsAdded.InvokeAsync(models.ToArray());
+            if (models.Any())
+                await OnItemsAdded.InvokeAsync(models.ToArray());
         }
-
-        // private async Task TriggerFileUpload()
-        // {
-        //     await _js.InvokeVoidAsync("triggerClick", _fileInput.Element);
-        // }
-
-        // private InputFile _fileInput = null!;
-
-        // private async Task HandleFilesSelected(InputFileChangeEventArgs e)
-        // {
-        //     var files = e.GetMultipleFiles(maximumFileCount: 10);
-        //     List<KernelContent> models = new List<KernelContent>();
-
-        //     foreach (var file in files)
-        //     {
-        //         try
-        //         {
-        //             using var stream = file.OpenReadStream(maxAllowedSize: 50 * 1024 * 1024); // 50MB limit
-        //             var content = await _factory.SaveAsync(stream, file.ContentType, file.Name);
-        //             if (content == null)
-        //                 _snackbar.Add($"{file.Name}: File type is not supported in the current chat.", Severity.Error);
-        //             else
-        //                 models.Add(content);
-        //         }
-        //         catch (Exception ex)
-        //         {
-        //             _snackbar.Add($"{file.Name}: {ex.Message}", Severity.Error);
-        //         }
-        //     }
-
-        //     if (models.Count > 0)
-        //         await OnItemsAdded.InvokeAsync(models.ToArray());
-
-        //     StateHasChanged();
-        // }
     }
 }

@@ -22,7 +22,6 @@ namespace Cyrena.Components.Shared
         [Inject] private IServiceProvider _services { get; set; } = default!;
 
         private Customization _model = default!;
-        private InputFile _fileInput = null!;
         private IEnumerable<ViewStart> _view_starts = [];
 
         private int _bg_opa { get; set; }
@@ -38,11 +37,6 @@ namespace Cyrena.Components.Shared
             _view_starts = vms;
         }
 
-        private async Task TriggerFileUpload()
-        {
-            await _js.InvokeVoidAsync("triggerClick", _fileInput.Element);
-        }
-
         private void BackgroundColorChanged(string color)
         {
             _model.Background.BackgroundColor = color;
@@ -56,25 +50,25 @@ namespace Cyrena.Components.Shared
             SaveCustoms();
         }
 
-        private async Task HandleFilesSelected(InputFileChangeEventArgs e)
+        private async Task HandleFilesSelected(IBrowserFile file)
         {
             try
             {
-                using var fs = e.File.OpenReadStream(10 * 1024 * 1024);
+                using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024); // 10MB limit
                 using var ms = new MemoryStream();
-                await fs.CopyToAsync(ms);
+                await stream.CopyToAsync(ms);
                 ms.Position = 0;
                 var dir = Path.Combine(CyrenaBuilder.AppDataDirectory, "public", "wallpapers");
                 if(Directory.Exists(dir))
                     Directory.Delete(dir, true);
                 if(!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
-                File.WriteAllBytes(Path.Combine(dir, e.File.Name), ms.ToArray());
-                _model.Background.BackgroundImage = $"wallpapers/{e.File.Name}";
+                File.WriteAllBytes(Path.Combine(dir, file.Name), ms.ToArray());
+                _model.Background.BackgroundImage = $"wallpapers/{file.Name}";
                 SaveCustoms();
             }catch(Exception ex)
             {
-                _snackbar.Add($"{e.File.Name} Error: {ex.Message}", Severity.Error);
+                _snackbar.Add($"{file.Name} Error: {ex.Message}", Severity.Error);
             }
         }
 

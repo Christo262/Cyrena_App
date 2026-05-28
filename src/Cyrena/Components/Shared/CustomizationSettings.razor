@@ -19,15 +19,22 @@
         </MudItem>
         <MudItem xs="12" md="6">
             <MudText Typo="Typo.body1">Wallpaper</MudText>
-            <MudButton OnClick="TriggerFileUpload" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Image" Class="mr-2">Select</MudButton>
+
+            <MudStack Row Justify="Justify.SpaceAround" AlignItems="AlignItems.Center">
+            <MudFileUpload T="IBrowserFile" Context="fs" FilesChanged="HandleFilesSelected">
+        <CustomContent>
+            <MudButton Variant="Variant.Outlined"
+                       OnClick="@fs.OpenFilePickerAsync"
+                       StartIcon="@Icons.Material.Filled.Image">
+                Select Wallpaper
+            </MudButton>
+        </CustomContent>
+        <SelectedTemplate />
+    </MudFileUpload>
+
             <MudButton OnClick="NoWallpaper" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.HideImage">No Wallpaper</MudButton>
-            <!-- Hidden File Input -->
-            <InputFile @ref="_fileInput"
-                       OnChange="HandleFilesSelected"
-                       accept="image/*"
-                       style="display: none;" />
-<br />
-            <MudButton OnClick="ResetToDefault" Color="Color.Error" Variant="Variant.Filled" Class="mt-4">Reset to Defaults</MudButton>
+                        <MudButton OnClick="ResetToDefault" Color="Color.Error" Variant="Variant.Filled">Reset to Defaults</MudButton>
+            </MudStack>
         </MudItem>
     </MudGrid>
 
