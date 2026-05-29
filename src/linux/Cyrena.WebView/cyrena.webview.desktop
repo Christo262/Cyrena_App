@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Cyréna
+Exec=./Cyrena.WebView
+Icon=./favicon.png
+Type=Application
+Terminal=false
