@@ -1,7 +1,9 @@
-﻿using Cyrena.Components.Tools;
+﻿using Cyrena.Components.Shared;
+using Cyrena.Components.Tools;
 using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Models;
+using Cyrena.Options;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Cyrena.Services
@@ -10,7 +12,7 @@ namespace Cyrena.Services
     {
         public string[] Modes => [];
 
-        public int Priority => 10;
+        public int Priority => 1000;
 
         public string Id => "cyrena.components";
 
@@ -26,6 +28,11 @@ namespace Cyrena.Services
             if(info.SupportFiles)
                 builder.Services.AddSingleton<IFileHandler, PdfFileHandler>();
             builder.Services.AddSingleton<IDockingService, DockingService>();
+            builder.Services.AddScoped<IFileAttacher, FileUpload>();
+            var overrides = new InterfaceOverrides();
+            builder.AddFeatureOption<InterfaceOverrides>(overrides);
+            builder.Services.AddSingleton(overrides);
+            overrides.UseFileAttacher<FileUpload>();
             return Task.CompletedTask;
         }
     }

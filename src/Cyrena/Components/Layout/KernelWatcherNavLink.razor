@@ -22,7 +22,14 @@
         {
             <MudNavLink OnClick="NewWindow">New Window</MudNavLink>
         }
-        <MudNavLink OnClick="EditAsync">Edit</MudNavLink>
-        <MudNavLink OnClick="Delete">Delete</MudNavLink>
-</ChildContent>
+        @if (_is_loaded)
+        {
+            <MudNavLink OnClick="Unload">Unload</MudNavLink>
+        }
+        else
+        {
+            <MudNavLink OnClick="EditAsync">Edit</MudNavLink>
+            <MudNavLink OnClick="Delete">Delete</MudNavLink>
+        }
+    </ChildContent>
 </MudNavGroup>

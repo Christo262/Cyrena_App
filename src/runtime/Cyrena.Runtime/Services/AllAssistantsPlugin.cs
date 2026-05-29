@@ -19,7 +19,7 @@ namespace Cyrena.Runtime.Services
 
         public string[] Modes => [];
 
-        public int Priority => 10;
+        public int Priority => 1000;
 
         public string Id => "cyrena.runtime";
 

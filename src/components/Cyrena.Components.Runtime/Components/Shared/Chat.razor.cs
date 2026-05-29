@@ -9,6 +9,7 @@ using Microsoft.SemanticKernel;
 using Cyrena.Models;
 using Cyrena.Attributes;
 using MudBlazor;
+using Cyrena.Options;
 
 namespace Cyrena.Components.Shared
 {
@@ -25,6 +26,7 @@ namespace Cyrena.Components.Shared
         [KernelInject] private IChatMessageService _msg { get; set; } = default!;
         [KernelInject] private ConnectionInfo _info { get; set; } = default!;
         [KernelInject] private IFileHandlerFactory _files { get; set; } = default!;
+        [KernelInject] private InterfaceOverrides _ovvr { get; set; } = default!;
 
         private DotNetObjectReference<Chat>? _dotNetRef;
 

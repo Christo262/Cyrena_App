@@ -20,6 +20,7 @@ namespace Cyrena.Components.Shared
         [Inject] private ISnackbar _snackbar { get; set; } = default!;
         [Inject] private HeadOutletStateChangeTracker _head { get; set; } = default!;
         [Inject] private IServiceProvider _services { get; set; } = default!;
+        [Inject] private IFileDialog _dialog { get; set; } = default!;
 
         private Customization _model = default!;
         private IEnumerable<ViewStart> _view_starts = [];
@@ -98,6 +99,24 @@ namespace Cyrena.Components.Shared
         private void SaveCustomsSilent()
         {
             _settings.Save(Customization.Key, _model);
+        }
+
+        private async Task PickWallpaper()
+        {
+            var result = await _dialog.OpenAsync("Select Wallpaper", ("Image", [".png", ".jpg", ".jpeg"]));
+            if(result != null)
+            {
+                var fileName = Path.GetFileName(result);
+                var data = File.ReadAllBytes(result);
+                var dir = Path.Combine(CyrenaBuilder.AppDataDirectory, "public", "wallpapers");
+                if (Directory.Exists(dir))
+                    Directory.Delete(dir, true);
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+                File.WriteAllBytes(Path.Combine(dir, fileName), data);
+                _model.Background.BackgroundImage = $"wallpapers/{fileName}";
+                SaveCustoms();
+            }
         }
     }
 }

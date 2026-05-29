@@ -1,17 +1,17 @@
 <MudText Typo="Typo.h4">Personalization</MudText>
 
 <EditForm Model="_model">
-    <DataAnnotationsValidator/>
-    <ValidationSummary/>
+    <DataAnnotationsValidator />
+    <ValidationSummary />
     <MudGrid>
         <MudItem xs="12" md="6">
-            <MudColorPicker Label="Background Color" 
-                ColorPickerMode="ColorPickerMode.HEX" 
-                ShowAlpha="false"  
-                ShowModeSwitch="false"
-                Value="@(_model.Background.BackgroundColor ?? "#000000")" 
-                PickerVariant="PickerVariant.Dialog"
-                ValueChanged="@(v => BackgroundColorChanged(v.Value))" Variant="Variant.Outlined" Margin="Margin.Dense" Class="mb-4" />
+            <MudColorPicker Label="Background Color"
+                            ColorPickerMode="ColorPickerMode.HEX"
+                            ShowAlpha="false"
+                            ShowModeSwitch="false"
+                            Value="@(_model.Background.BackgroundColor ?? "#000000")"
+                            PickerVariant="PickerVariant.Dialog"
+                            ValueChanged="@(v => BackgroundColorChanged(v.Value))" Variant="Variant.Outlined" Margin="Margin.Dense" Class="mb-4" />
 
             <MudSlider T="int" Value="_bg_opa" Min="0" Max="100" Step="5" ValueChanged="BackgroundOpacityChanged" Color="Color.Primary">
                 Background Opacity: @_bg_opa%
@@ -21,19 +21,25 @@
             <MudText Typo="Typo.body1">Wallpaper</MudText>
 
             <MudStack Row Justify="Justify.SpaceAround" AlignItems="AlignItems.Center">
-            <MudFileUpload T="IBrowserFile" Context="fs" FilesChanged="HandleFilesSelected">
-        <CustomContent>
-            <MudButton Variant="Variant.Outlined"
-                       OnClick="@fs.OpenFilePickerAsync"
-                       StartIcon="@Icons.Material.Filled.Image">
-                Select Wallpaper
-            </MudButton>
-        </CustomContent>
-        <SelectedTemplate />
-    </MudFileUpload>
+                @* <MudFileUpload T="IBrowserFile" Context="fs" FilesChanged="HandleFilesSelected">
+                    <CustomContent>
+                        <MudButton Variant="Variant.Outlined"
+                                   OnClick="@fs.OpenFilePickerAsync"
+                                   StartIcon="@Icons.Material.Filled.Image">
+                            Select Wallpaper
+                        </MudButton>
+                    </CustomContent>
+                    <SelectedTemplate />
+                </MudFileUpload> *@
 
-            <MudButton OnClick="NoWallpaper" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.HideImage">No Wallpaper</MudButton>
-                        <MudButton OnClick="ResetToDefault" Color="Color.Error" Variant="Variant.Filled">Reset to Defaults</MudButton>
+                <MudButton Variant="Variant.Outlined"
+                           OnClick="PickWallpaper"
+                           StartIcon="@Icons.Material.Filled.Image">
+                    Select Wallpaper
+                </MudButton>
+
+                <MudButton OnClick="NoWallpaper" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.HideImage">No Wallpaper</MudButton>
+                <MudButton OnClick="ResetToDefault" Color="Color.Error" Variant="Variant.Filled">Reset to Defaults</MudButton>
             </MudStack>
         </MudItem>
     </MudGrid>
@@ -43,7 +49,7 @@
     <MudGrid>
         <MudItem xs="12" md="6">
             <MudSelect T="string" Label="Starting View" @bind-Value="_model.ViewStart" @bind-Value:after="SaveCustomsSilent" Dense Margin="Margin.Dense" Variant="Variant.Outlined">
-                @foreach(var item in _view_starts)
+                @foreach (var item in _view_starts)
                 {
                     <MudSelectItem Value="@item.Href">@item.Title</MudSelectItem>
                 }

@@ -43,9 +43,6 @@
                 }
                 else
                 {
-
-                    //@(isUser ? "chat-bubble-user" : "chat-bubble-assistant")
-                    //@(msg.Items.Count > 1 ? "chat-bubble-has-items" : "")
 #pragma warning disable SKEXP0110
                     var isUser = msg.Role == Microsoft.SemanticKernel.ChatCompletion.AuthorRole.User;
                     var cssmsg = isUser ? "chat-bubble chat-bubble-user px-3 py-2" : "chat-bubble chat-bubble-assistant px-3 py-2";
@@ -136,9 +133,14 @@
         }
 
         <div class="d-flex flex-row align-center pr-2">
-            @if (_info.SupportFiles || _info.SupportImages)
+            @if ((_info.SupportFiles || _info.SupportImages) && _ovvr.FileAttacher != null)
             {
-                <FileUpload OnItemsAdded="OnItemsAdded" Kernel="Kernel" />
+@*                 <FileUpload OnItemsAdded="OnItemsAdded" Kernel="Kernel" /> *@
+                @this.Render(_ovvr.FileAttacher, new()
+                    {
+                        {"Kernel", Kernel},
+                        {nameof(IFileAttacher.OnItemsAdded), EventCallback.Factory.Create<KernelContent[]>(this, OnItemsAdded)}
+                    })
             }
             @if (_its.Input != null)
             {

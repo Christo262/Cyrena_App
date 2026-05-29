@@ -36,23 +36,15 @@ namespace Cyrena.Extensa.Components.Pages
             var models = await _manager.ListPackagesAsync();
             if (models.Count() == 0)
             {
-                var parameters = new DialogParameters
-                {
-                    { "ContentText", "Would you like to index packages now?" },
-                    { "ButtonText", "Yes" },
-                    { "CancelText", "No" }
-                };
-                var options = new DialogOptions { CloseButton = true };
-                var dialog = await _dialog.ShowAsync<MudMessageBox>("Index Packages", parameters, options);
-                var result = await dialog.Result;
-                if (result != null && !result.Canceled)
+                var result = await _dialog.ShowMessageBoxAsync("Index Packages", "Would like to index available extensions?", "Yes", "No");
+                if (result == true)
                     await RefreshPackages();
-                else
-                    RebuildViewModel(models);
             }
             else
+            {
                 RebuildViewModel(models);
-            this.StateHasChanged();
+                this.StateHasChanged();
+            }
         }
 
         private void RebuildViewModel(IEnumerable<Package> models)

@@ -1,0 +1,22 @@
+@inherits FileAttacher
+
+
+
+<MudMenu Dense ActivationEvent="MouseEvent.LeftClick">
+    <ActivatorContent>
+        <MudTooltip Text="Attach File">
+            <MudFab StartIcon="@Icons.Material.Filled.AttachFile" Size="Size.Small" Class="mr-1" OnClick="context.ToggleAsync"/>
+        </MudTooltip>
+    </ActivatorContent>
+    <ChildContent>
+        @if (_info.SupportImages)
+        {
+            <MudMenuItem Label="Camera" OnClick="Capture" Icon="@Icons.Material.Filled.Camera" />
+            <MudMenuItem Label="Attach Photos" OnClick="AttachPhoto" Icon="@Icons.Material.Filled.Image"/>
+        }
+        @if (_info.SupportFiles)
+        {
+            <MudMenuItem Label="Attach File" OnClick="AttachFiles" Icon="@Icons.Material.Filled.FileOpen" />
+        }
+    </ChildContent>
+</MudMenu>

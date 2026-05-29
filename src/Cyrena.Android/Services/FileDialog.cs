@@ -15,6 +15,14 @@ namespace Cyrena.Android.Services
             string title,
             (string filterName, string[] extensions)? filter)
         {
+            if(filter.HasValue && (filter.Value.extensions.Contains(".png") || filter.Value.extensions.Contains(".jpg") || filter.Value.extensions.Contains(".jpeg")))
+            {
+                var results = await MainThread.InvokeOnMainThreadAsync(() => MediaPicker.Default.PickPhotosAsync(new MediaPickerOptions()
+                {
+                    SelectionLimit = 1
+                }));
+                return results.FirstOrDefault()?.FullPath;
+            }
             var options = new PickOptions
             {
                 PickerTitle = title,

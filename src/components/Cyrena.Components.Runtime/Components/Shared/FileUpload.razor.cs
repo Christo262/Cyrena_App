@@ -12,9 +12,6 @@ namespace Cyrena.Components.Shared
 {
     public partial class FileUpload
     {
-        [Parameter]
-        public EventCallback<KernelContent[]> OnItemsAdded { get; set; }
-        [Inject] private IJSRuntime _js { get; set; } = default!;
         [Inject] private ISnackbar _snackbar { get; set; } = default!;
         [KernelInject] private IFileHandlerFactory _factory { get; set; } = default!;
         private string? _accepts { get; set; }

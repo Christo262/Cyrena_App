@@ -38,12 +38,12 @@ namespace Cyrena.Dotnet.CSharp.Services
             model[ChatConfiguration.Icon] = Icon;
             model[ChatConfiguration.Group] = ".NET Development";
             model.HistoryInclusion = HistoryInclusionMode.Instruct;
-            var parameters = new DialogParameters<DotnetConversationForm>
+            var parameters = new DialogParameters<DotnetCsConfig>
             {
-                { nameof(DotnetConversationForm.Configuration), model }
+                { nameof(DotnetCsConfig.Model), model }
             };
             var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true };
-            var dialog = await _dialog.ShowAsync<DotnetConversationForm>(".NET Solution", parameters, options);
+            var dialog = await _dialog.ShowAsync<DotnetCsConfig>("Blazor Library", parameters, options);
             var result = await dialog.Result;
             if (result is { Canceled: false })
             {

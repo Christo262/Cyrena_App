@@ -18,7 +18,32 @@ namespace Cyrena.Android.Components.Pages
         private Kernel? _kernel { get; set; }
         private bool _loading = true;
         private IDisposable? _watcher { get; set; }
-
+        private bool _rendered { get; set; }
+        protected override async Task OnParametersSetAsync()
+        {
+            if (!_rendered) return;
+            _loading = true;
+            try
+            {
+                if (string.IsNullOrEmpty(Id))
+                    throw new NullReferenceException("No id provided");
+                _kernel = await _controller.LoadAsync(Id);
+                _watcher = _controller.OnChatUnload(cfg =>
+                {
+                    if (cfg.Id == Id)
+                    {
+                        _kernel = null;
+                        _nav.NavigateTo("");
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                _snackbar.Add(ex.Message, Severity.Error);
+            }
+            _loading = false;
+            this.StateHasChanged();
+        }
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (!firstRender) return;
@@ -41,6 +66,7 @@ namespace Cyrena.Android.Components.Pages
                 _snackbar.Add(ex.Message, Severity.Error);
             }
             _loading = false;
+            _rendered = true;
             this.StateHasChanged();
         }
 

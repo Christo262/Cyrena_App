@@ -7,11 +7,11 @@
              SafeAreaEdges="Container"
              x:Class="Cyrena.Android.MainPage">
 
-    <BlazorWebView x:Name="blazorWebView" HostPage="wwwroot/index.html">
-        <BlazorWebView.RootComponents>
+    <local:CustomWebView x:Name="blazorWebView" HostPage="wwwroot/index.html">
+        <local:CustomWebView.RootComponents>
             <RootComponent Selector="#app" ComponentType="{x:Type components:Routes}" />
             <RootComponent Selector="head-outlet" ComponentType="{x:Type cyrena:HeadOutlet}" />
-        </BlazorWebView.RootComponents>
-    </BlazorWebView>
+        </local:CustomWebView.RootComponents>
+    </local:CustomWebView>
 
 </ContentPage>

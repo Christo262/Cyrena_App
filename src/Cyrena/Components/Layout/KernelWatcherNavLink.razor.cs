@@ -121,6 +121,12 @@ namespace Cyrena.Components.Layout
             _nav.NavigateTo(_ui.MenuOptions.ConverseUrl.Replace("{Id}", ChatConfiguration.Id));
         }
 
+        private void Unload()
+        {
+            if(_controller.KernelActive(ChatConfiguration.Id))
+            _controller.Unload(ChatConfiguration);
+        }
+
         private void NewWindow()
         {
             if (!_ui.MenuOptions.AllowNewTab) return;
