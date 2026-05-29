@@ -1,39 +1,49 @@
-/* Global styles */
+/* ============================================
+   CYRENA DOCS — UBUNTU YARU DARK THEME
+   ============================================ */
+
+/* Root dark background — Ubuntu dark charcoal */
+html, body {
+  background-color: #1d1d1d;
+  color: #f7f7f7;
+}
+
+body {
+  font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Smooth scrolling */
 html {
   scroll-behavior: smooth;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #f8f9fa;
-}
-
-/* Smooth scrolling for anchor links */
 [id] {
   scroll-margin-top: 80px;
 }
 
-/* Custom scrollbar */
+/* ============================================
+   SCROLLBAR — Ubuntu dark
+   ============================================ */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #2b2b2b;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #c1c1c1;
+  background-color: #5e5e5e;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #a1a1a1;
+  background-color: #e95420;
 }
 
-/* Custom scrollbar for sidebar */
+/* Sidebar scrollbar */
 .doc-sidebar::-webkit-scrollbar {
   width: 6px;
 }
@@ -43,33 +53,87 @@ body {
 }
 
 .doc-sidebar::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(233, 84, 32, 0.3);
   border-radius: 3px;
 }
 
-/* Code block styling */
-pre code {
-  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+.doc-sidebar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(233, 84, 32, 0.6);
 }
 
-/* Selection color */
-::selection {
-  background: rgba(13, 110, 253, 0.2);
-  color: inherit;
+/* ============================================
+   NAVBAR — Ubuntu dark top bar
+   ============================================ */
+.navbar {
+  background: #2b2b2b !important;
+  border-bottom: 1px solid #3d3d3d;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
 
-/* Focus styles */
-*:focus-visible {
-  outline: 2px solid #0d6efd;
-  outline-offset: 2px;
+.navbar-brand {
+  color: #e95420 !important;
+  font-weight: 700;
+  letter-spacing: 0.5px;
 }
 
-/* Card hover transitions */
+.navbar .nav-link {
+  color: #d0d0d0 !important;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link.active {
+  color: #e95420 !important;
+}
+
+.navbar .nav-link.active {
+  font-weight: 600;
+}
+
+/* GitHub button in navbar */
+.navbar .btn-outline-light {
+  border-color: #e95420;
+  color: #e95420;
+}
+
+.navbar .btn-outline-light:hover {
+  background-color: #e95420;
+  border-color: #e95420;
+  color: #fff;
+}
+
+/* ============================================
+   CARDS — Ubuntu dark elevated
+   ============================================ */
 .card {
+  background-color: #2b2b2b;
+  border: 1px solid #3d3d3d;
+  color: #f7f7f7;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Button hover lift */
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  border-color: #e95420;
+}
+
+.card .card-title {
+  color: #e95420;
+}
+
+.card .card-subtitle {
+  color: #a0a0a0;
+}
+
+.card .card-text {
+  color: #c0c0c0;
+}
+
+/* ============================================
+   BUTTONS — Ubuntu Yaru accent
+   ============================================ */
 .btn {
   transition: all 0.2s ease;
 }
@@ -82,36 +146,247 @@ pre code {
   transform: translateY(0);
 }
 
-/* Link transitions */
+.btn-primary {
+  background-color: #e95420;
+  border-color: #e95420;
+}
+
+.btn-primary:hover {
+  background-color: #c7471a;
+  border-color: #c7471a;
+}
+
+.btn-outline-primary {
+  border-color: #e95420;
+  color: #e95420;
+}
+
+.btn-outline-primary:hover {
+  background-color: #e95420;
+  color: #fff;
+}
+
+/* ============================================
+   SIDEBAR — Ubuntu dark
+   ============================================ */
+.doc-sidebar {
+  background-color: #2b2b2b;
+  border-right: 1px solid #3d3d3d;
+}
+
+.doc-sidebar .nav-link {
+  color: #d0d0d0;
+}
+
+.doc-sidebar .nav-link:hover {
+  color: #e95420;
+  background-color: rgba(233, 84, 32, 0.1);
+}
+
+.doc-sidebar .nav-link.active {
+  color: #e95420;
+  background-color: rgba(233, 84, 32, 0.15);
+  border-left: 3px solid #e95420;
+}
+
+/* ============================================
+   CODE BLOCKS — Ubuntu dark
+   ============================================ */
+pre {
+  background-color: #111111;
+  border: 1px solid #3d3d3d;
+  border-radius: 6px;
+}
+
+pre code {
+  font-family: 'Ubuntu Mono', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  color: #f7f7f7;
+}
+
+code {
+  background-color: rgba(233, 84, 32, 0.15);
+  color: #e95420;
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+h1, h2, h3, h4, h5, h6 {
+  color: #f7f7f7;
+}
+
+h2 {
+  border-bottom: 1px solid #3d3d3d;
+  padding-bottom: 0.5rem;
+}
+
+.text-muted {
+  color: #a0a0a0 !important;
+}
+
 a {
+  color: #e95420;
   transition: color 0.2s ease;
 }
 
-/* Navbar link active state */
-.nav-link.active {
-  font-weight: 600;
+a:hover {
+  color: #c7471a;
 }
 
-/* Form focus states */
+/* ============================================
+   FORMS
+   ============================================ */
+.form-control {
+  background-color: #2b2b2b;
+  border-color: #3d3d3d;
+  color: #f7f7f7;
+}
+
 .form-control:focus {
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+  background-color: #2b2b2b;
+  border-color: #e95420;
+  box-shadow: 0 0 0 0.25rem rgba(233, 84, 32, 0.15);
+  color: #f7f7f7;
 }
 
-/* Badge styling */
+/* ============================================
+   BADGES
+   ============================================ */
 .badge {
   font-weight: 500;
 }
 
-/* Gradient text utility */
+.badge.bg-primary {
+  background-color: #e95420 !important;
+}
+
+/* ============================================
+   ALERTS — Ubuntu dark
+   ============================================ */
+.alert {
+  background-color: #2b2b2b;
+  border-color: #3d3d3d;
+  color: #f7f7f7;
+}
+
+.alert-primary {
+  background-color: rgba(233, 84, 32, 0.1);
+  border-color: rgba(233, 84, 32, 0.3);
+  color: #e95420;
+}
+
+/* ============================================
+   TABLES — Ubuntu dark
+   ============================================ */
+.table {
+  color: #f7f7f7;
+}
+
+.table thead th {
+  border-bottom-color: #e95420;
+  color: #e95420;
+}
+
+.table td,
+.table th {
+  border-color: #3d3d3d;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+footer {
+  background-color: #2b2b2b;
+  border-top: 1px solid #3d3d3d;
+  color: #a0a0a0;
+}
+
+footer a {
+  color: #e95420;
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
 .text-gradient {
-  background: linear-gradient(135deg, #0d6efd 0%, #64c8ff 100%);
+  background: linear-gradient(135deg, #e95420 0%, #c7471a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Section divider */
 .section-divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(13, 110, 253, 0.2) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, #e95420 50%, transparent 100%);
+}
+
+/* Selection color */
+::selection {
+  background: rgba(233, 84, 32, 0.3);
+  color: #fff;
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid #e95420;
+  outline-offset: 2px;
+}
+
+/* Breadcrumb */
+.breadcrumb-item + .breadcrumb-item::before {
+  color: #e95420;
+}
+
+.breadcrumb-item.active {
+  color: #a0a0a0;
+}
+
+/* List group */
+.list-group-item {
+  background-color: #2b2b2b;
+  border-color: #3d3d3d;
+  color: #f7f7f7;
+}
+
+.list-group-item.active {
+  background-color: rgba(233, 84, 32, 0.2);
+  border-color: rgba(233, 84, 32, 0.3);
+  color: #e95420;
+}
+
+/* Accordion */
+.accordion-item {
+  background-color: #2b2b2b;
+  border-color: #3d3d3d;
+}
+
+.accordion-button {
+  background-color: #2b2b2b;
+  color: #f7f7f7;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: rgba(233, 84, 32, 0.1);
+  color: #e95420;
+}
+
+.accordion-button::after {
+  filter: invert(1);
+}
+
+/* Dropdown */
+.dropdown-menu {
+  background-color: #2b2b2b;
+  border-color: #3d3d3d;
+}
+
+.dropdown-item {
+  color: #f7f7f7;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(233, 84, 32, 0.1);
+  color: #e95420;
 }

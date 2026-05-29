@@ -76,30 +76,13 @@ namespace Cyrena.Coding.Services
         }
 
         [KernelFunction("write")]
-        [Description(
-    "Modifies the specified file. All line endings are normalized to \\n. " +
-    "IMPORTANT: startLine is 1-based — line 1 is the first line of the file. " +
-    "mode controls the operation: " +
-    "Insert — inserts content before startLine, shifting existing lines down. lineCount is ignored. " +
-    "Replace — removes exactly lineCount lines starting at startLine, then inserts content at that position. lineCount must be > 0. " +
-    "Overwrite — replaces the entire file with content. startLine and lineCount are ignored. " +
-    "To append to end of file, use Insert with startLine = totalLines + 1. " +
-    "Always call read_lines first when editing by line number.")]
+        [Description("Overwrites the entire file with the provided content. Use when rewriting the whole file from scratch.")]
         public ToolResult<DevelopFileLines> WriteFile(
-    [Description("The unique identifier of the target file within the current develop plan.")]
-    string fileId,
+            [Description("The unique identifier of the target file within the current develop plan.")]
+            string fileId,
 
-    [Description("Insert: inserts content before startLine, shifting lines down. Replace: removes lineCount lines at startLine then inserts content. Overwrite: replaces entire file.")]
-    CodeWriteMode mode,
-
-    [Description("The text content to insert or use as replacement. Null or empty to delete lines with Replace mode.")]
-    string? content,
-
-    [Description("1-based line number where the operation begins (line 1 is the first line). Ignored when mode is Overwrite.")]
-    int startLine = 1,
-
-    [Description("The number of lines to remove before inserting. Only used when mode is Replace. Must be > 0.")]
-    int lineCount = 0)
+            [Description("The new full content of the file.")]
+            string? content)
         {
             try
             {
@@ -109,33 +92,125 @@ namespace Cyrena.Coding.Services
                 if (file!.ReadOnly)
                     return new ToolResult<DevelopFileLines>(false, $"File '{file.RelativePath}' is read-only.");
 
-                // Convert from 1-based (AI-facing) to 0-based (internal)
-                var zeroBasedStartLine = startLine - 1;
-
-                switch (mode)
-                {
-                    case CodeWriteMode.Overwrite:
-                        _context.LogInfo($"Overwriting entire file {file.RelativePath}");
-                        break;
-                    case CodeWriteMode.Insert:
-                        _context.LogInfo($"Inserting content at line {startLine} in {file.RelativePath}");
-                        break;
-                    case CodeWriteMode.Replace:
-                        _context.LogInfo($"Replacing {lineCount} line(s) starting at line {startLine} in {file.RelativePath}");
-                        break;
-                }
+                _context.LogInfo($"Overwriting entire file {file.RelativePath}");
 
                 _plan.Plan.TryReadFileContent(file, out var existingContent);
                 _version.Backup(existingContent);
 
-                if (!_plan.Plan.TryWriteFileLines(file, content, zeroBasedStartLine, lineCount, mode, out var updated, out var totalLines))
+                if (!_plan.Plan.TryWriteFileOverwrite(file, content, out var updated))
+                    return new ToolResult<DevelopFileLines>(false, $"Unable to write to file '{file.RelativePath}'.");
+
+                _plan.InvokeFileUpdated(updated!);
+
+                return new ToolResult<DevelopFileLines>(updated!);
+            }
+            catch (Exception ex)
+            {
+                return new ToolResult<DevelopFileLines>(false, $"Error: {ex.Message}");
+            }
+        }
+
+        [KernelFunction("replace")]
+        [Description(
+            "Replaces a range of lines in the file with new content. Line numbers are 1-based. " +
+            "Removes all lines from startLine to endLine (inclusive), then inserts content at that position. " +
+            "Pass null or empty content to delete the lines without inserting anything. " +
+            "Always call read_lines first to get exact line numbers. Do not keep replacing if it is not working and use Code_write.")]
+        public ToolResult<DevelopFileLines> ReplaceLines(
+            [Description("The unique identifier of the target file within the current develop plan.")]
+            string fileId,
+
+            [Description("1-based line number of the first line to remove (line 1 is the first line of the file).")]
+            int startLine,
+
+            [Description("1-based line number of the last line to remove (inclusive).")]
+            int endLine,
+
+            [Description("The content to insert at startLine after removal. Null or empty to only delete lines.")]
+            string? content)
+        {
+            try
+            {
+                if (!_plan.Plan.TryFindFile(fileId, out var file))
+                    return new ToolResult<DevelopFileLines>(false, $"File with id {fileId} not found.");
+
+                if (file!.ReadOnly)
+                    return new ToolResult<DevelopFileLines>(false, $"File '{file.RelativePath}' is read-only.");
+
+                if (startLine < 1 || endLine < startLine)
+                    return new ToolResult<DevelopFileLines>(false, $"Invalid range: startLine ({startLine}) must be >= 1 and endLine ({endLine}) must be >= startLine.");
+
+                _context.LogInfo($"Replacing lines {startLine}–{endLine} in {file.RelativePath}");
+
+                _plan.Plan.TryReadFileContent(file, out var existingContent);
+                _version.Backup(existingContent);
+
+                // Convert to 0-based for internal use; lineCount derived from the inclusive range
+                var zeroBasedStart = startLine - 1;
+                var lineCount = endLine - startLine + 1;
+
+                if (!_plan.Plan.TryWriteFileReplace(file, content, zeroBasedStart, lineCount, out var updated, out var totalLines))
                 {
                     var rangeHint = totalLines.HasValue
-                        ? $" File has {totalLines} line(s) (valid startLine range: 1–{totalLines + 1} for Insert, 1–{totalLines} for Replace)."
+                        ? $" File has {totalLines} line(s) (valid range: 1–{totalLines})."
                         : string.Empty;
                     return new ToolResult<DevelopFileLines>(
                         false,
-                        $"Unable to write to file '{file.RelativePath}'. Ensure startLine and lineCount are valid for the chosen mode.{rangeHint}");
+                        $"Unable to replace lines in '{file.RelativePath}'. Ensure startLine and endLine are within the file.{rangeHint}");
+                }
+
+                _plan.InvokeFileUpdated(updated!);
+
+                return new ToolResult<DevelopFileLines>(updated!);
+            }
+            catch (Exception ex)
+            {
+                return new ToolResult<DevelopFileLines>(false, $"Error: {ex.Message}");
+            }
+        }
+
+        [KernelFunction("insert")]
+        [Description(
+            "Inserts content before the specified line, shifting all subsequent lines down. Line numbers are 1-based. " +
+            "To append to the end of the file, use startLine = totalLines + 1. " +
+            "Always call read_lines first to get exact line numbers.")]
+        public ToolResult<DevelopFileLines> InsertLines(
+            [Description("The unique identifier of the target file within the current develop plan.")]
+            string fileId,
+
+            [Description("1-based line number to insert before. Use totalLines + 1 to append at end of file.")]
+            int startLine,
+
+            [Description("The content to insert.")]
+            string content)
+        {
+            try
+            {
+                if (!_plan.Plan.TryFindFile(fileId, out var file))
+                    return new ToolResult<DevelopFileLines>(false, $"File with id {fileId} not found.");
+
+                if (file!.ReadOnly)
+                    return new ToolResult<DevelopFileLines>(false, $"File '{file.RelativePath}' is read-only.");
+
+                if (startLine < 1)
+                    return new ToolResult<DevelopFileLines>(false, $"Invalid startLine ({startLine}): must be >= 1.");
+
+                _context.LogInfo($"Inserting content at line {startLine} in {file.RelativePath}");
+
+                _plan.Plan.TryReadFileContent(file, out var existingContent);
+                _version.Backup(existingContent);
+
+                // Convert to 0-based for internal use
+                var zeroBasedStart = startLine - 1;
+
+                if (!_plan.Plan.TryWriteFileInsert(file, content, zeroBasedStart, out var updated, out var totalLines))
+                {
+                    var rangeHint = totalLines.HasValue
+                        ? $" File has {totalLines} line(s) (valid startLine range: 1–{totalLines + 1})."
+                        : string.Empty;
+                    return new ToolResult<DevelopFileLines>(
+                        false,
+                        $"Unable to insert into '{file.RelativePath}'. Ensure startLine is within range.{rangeHint}");
                 }
 
                 _plan.InvokeFileUpdated(updated!);

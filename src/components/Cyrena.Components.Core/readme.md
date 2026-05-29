@@ -1,39 +1,14 @@
 ## Overview
 
-`Cyrena.Components.Core` is the Blazor component library providing UI contracts, base classes, and extension methods for building UI components that integrate with Cyréna's kernel-scoped services. Extensions that add UI elements (toolbars, settings pages, shortcuts) must reference this package.
+`Cyrena.Components.Core` is the Blazor component library providing UI contracts, base classes, shared components, and extension methods for building UI components that integrate with Cyréna's kernel-scoped services. Extensions that add UI elements (toolbars, settings pages, shortcuts, docked panels) must reference this package.
 
-**Version:** 0.5.0
+**Version:** 0.6.0
 **Target Framework:** .NET 10.0
 **Namespaces:** `Cyrena.Contracts`, `Cyrena.Models`, `Cyrena.Options`, `Cyrena.Extensions`, `Cyrena.Attributes`, `Cyrena.Components.Shared`
 
 ---
 
 ## Contracts
-
-### `IDisplayService` (Kernel-locked)
-Service for showing dialogs, toast notifications, and navigation in the Blazor UI.
-
-```csharp
-public interface IDisplayService
-{
-    Task<DialogResult> ShowModal<TComponent>(ResultDialogOption option, Dialog? dialog = null) 
-        where TComponent : IComponent, IResultDialog;
-    
-    Task<DialogResult> ShowModal(string title, string content, ResultDialogOption? option = null, Dialog? dialog = null);
-    
-    Task ShowToast(ToastOption option, ToastContainer? toastContainer = null);
-    Task ShowErrorToast(string? title = null, string? content = null, bool autoHide = true);
-    Task ShowWarnToast(string? title = null, string? content = null, bool autoHide = true);
-    Task ShowSuccessToast(string? title = null, string? content = null, bool autoHide = true);
-    Task ShowInfoToast(string? title = null, string? content = null, bool autoHide = true);
-    
-    void NavigateTo(string url);
-}
-```
-
-**Dependencies:** Requires `BootstrapBlazor` components (`Dialog`, `ToastContainer`, `ToastOption`, `ResultDialogOption`, `DialogResult`).
-
-**Implementation:** `DisplayService` in `Cyrena.Components.Runtime` implements this interface.
 
 ### `IShortcut`
 Defines a keyboard shortcut or quick action that appears in the UI.
@@ -70,6 +45,23 @@ public enum ToolbarAlignment
 - `Component`: The `Type` of the Blazor component to render.
 - `Alignment`: `Start` (left side) or `End` (right side) of the toolbar.
 
+### `IDockingService`
+Manages docked panel components in the UI.
+
+```csharp
+public interface IDockingService
+{
+    public record DockRequest(Type Component, string Title, Action OnClose);
+    IDisposable OnDockRequest(Action<DockRequest> callback);
+    void Dock<TKernelComponent>(string title, Action onClose)
+        where TKernelComponent : KernelComponentBase;
+}
+```
+
+- `DockRequest`: Record containing component type, title, and close callback.
+- `OnDockRequest`: Subscribe to dock request events.
+- `Dock<TKernelComponent>`: Docks a `KernelComponentBase`-derived component.
+
 ### `IViewStartProvider`
 Provides optional `ViewStart` entries for user-configurable starting views.
 
@@ -85,7 +77,7 @@ public interface IViewStartProvider
 ## Attributes
 
 ### `KernelInjectAttribute`
-Indicates that the associated property should have a value injected from the `KernelComponentBase.Kernel` service provider. Overrides `ComponentBase.OnParametersSet`.
+Indicates that the associated property should have a value injected from the `KernelComponentBase.Kernel` service provider.
 
 ```csharp
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
@@ -125,7 +117,19 @@ public abstract class KernelComponentBase : ComponentBase
 }
 ```
 
-Components extending this class receive the active kernel instance as a parameter. When `Kernel` is set, all properties marked with `[KernelInject]` are automatically resolved from `Kernel.Services`.
+Components extending this class receive the active kernel instance as a parameter. When `Kernel` is set, all properties marked with `[KernelInject]` are automatically resolved from `Kernel.Services` via reflection.
+
+### `IWindowHandle`
+Represents a handle to an opened browser window for lifecycle management.
+
+```csharp
+public interface IWindowHandle : IDisposable
+{
+    event EventHandler<EventArgs>? Closing;
+    bool Disposed { get; }
+    void Close();
+}
+```
 
 ### `ViewStart`
 Information for a configurable starting view.
@@ -155,10 +159,6 @@ public class ComponentOptions
 
 public record ComponentMetaData(Type Component, string? Section, int Order);
 ```
-
-- `SettingsComponents`: Collection of registered settings component metadata (internal).
-- `GetSettingsComponents()`: Returns all registered settings components as an array.
-- `ComponentMetaData`: Record describing a settings component with its type, section group, and display order.
 
 ### `ComponentOptionsExtensions`
 Extension methods for registering settings components:
@@ -225,9 +225,6 @@ public static class CyrenaBuilderExtensions
 }
 ```
 
-- `AddSettingsComponent`: Registers a Blazor component as a settings tab under the specified section with optional order.
-- `AddShortcut`: Registers a shortcut action in the UI as a scoped `IShortcut` service.
-
 ### `CyrenaKernelBuilderExtensions`
 
 ```csharp
@@ -242,9 +239,6 @@ public static class CyrenaKernelBuilderExtensions
 }
 ```
 
-- `AddToolbarComponent`: Registers a component to render in the chat toolbar for the current kernel/chat.
-- The obsolete overload on `IKernelBuilder` is deprecated; prefer `CyrenaKernelBuilder`.
-
 ### `ComponentBaseExtensions`
 
 ```csharp
@@ -255,7 +249,21 @@ public static class ComponentBaseExtensions
 }
 ```
 
-Helper methods for dynamically rendering Blazor components from code with optional parameter passing.
+### `DialogServiceExtensions`
+
+```csharp
+public static class DialogServiceExtensions
+{
+    public static async Task<bool> ShowDialogAsync<TComponent>(
+        this IDialogService dialog, 
+        string title, 
+        DialogParameters parameters, 
+        MaxWidth maxWidth = MaxWidth.Medium)
+        where TComponent : ComponentBase;
+}
+```
+
+Helper method that shows a MudBlazor dialog and returns `true` if the user confirmed (not canceled), `false` otherwise. Sets `FullWidth = true` automatically.
 
 ---
 
@@ -269,16 +277,17 @@ Monaco code editor wrapper (BlazorMonaco) with syntax highlighting, dark theme, 
 - `Language` — Monaco language mode (default: `"plaintext"`)
 
 ### `ConnectionSelector.razor`
-Dropdown of available AI connections from all registered `IConnectionProvider` services.
+MudBlazor dropdown (`MudSelect`) of available AI connections from all registered `IConnectionProvider` services.
 
 **Parameters:**
 - `Value` / `ValueChanged` — Two-way bound selected connection ID
 - `Label` — Dropdown label (default: `"AI Connection"`)
+- `Required` — Whether selection is required (default: `true`)
 
-**Behavior:** Populates connections on first render and on click. Displays `Name (Source)` per option.
+**Behavior:** Populates connections on first render. Displays `Name (Source)` per option.
 
 ### `PluginSelector.razor`
-Checkbox list for activating/deactivating `IAssistantPlugin` instances filtered by the current chat's assistant mode.
+MudBlazor checkbox list (`MudCheckBox`) for activating/deactivating `IAssistantPlugin` instances filtered by the current chat's assistant mode.
 
 **Parameters:**
 - `Chat` (`ChatConfiguration`, required) — Chat whose `PluginIds` will be updated
@@ -289,6 +298,14 @@ Checkbox list for activating/deactivating `IAssistantPlugin` instances filtered 
 - If `Chat.PluginIds` is empty, all plugins are selected by default
 - Updates `Chat.PluginIds` on every selection change
 
+### `HistoryConfiguration.razor`
+MudBlazor dropdown (`MudSelect`) for configuring chat history inclusion mode.
+
+**Parameters:**
+- `Model` (`ChatConfiguration`, required) — Chat whose `HistoryInclusion` will be updated
+
+**Options:** All, Last 2 Iterations, Last 10 Iterations, Instruct (no history)
+
 ---
 
 ## Usage for Extension Developers
@@ -297,11 +314,12 @@ Reference `Cyrena.Components.Core` to:
 1. Implement `IShortcut` for quick actions
 2. Implement `IToolbarComponent` for toolbar buttons
 3. Extend `KernelComponentBase` for kernel-aware UI components
-4. Use `IDisplayService` for dialogs and toasts
+4. Use `IDockingService` for docked panels
 5. Use `[KernelInject]` for automatic service injection from kernel scope
 6. Register settings components via `AddSettingsComponent`
 7. Register toolbar components via `AddToolbarComponent`
 8. Implement `IViewStartProvider` for custom starting views
+9. Use `DialogServiceExtensions.ShowDialogAsync<TComponent>()` for simple confirmation dialogs
 
 **Example - Toolbar Component:**
 ```csharp
@@ -321,7 +339,7 @@ public class MyShortcut : IShortcut
 {
     public string Title => "My Action";
     public string Description => "Does something";
-    public string Icon => "fa-solid fa-star";
+    public string Icon => Icons.Material.Filled.Star;
     public string Color => "primary";
     public string Category => "My Category";
     public string[] Tags => ["my"];
@@ -337,13 +355,15 @@ builder.AddShortcut<MyShortcut>();
 builder.AddSettingsComponent<MySettingsComponent>("General", 1);
 ```
 
-**Example - View Start Provider:**
+**Example - Dialog:**
 ```csharp
-public class MyViewStartProvider : IViewStartProvider
+var parameters = new DialogParameters<MyDialogForm>
 {
-    public IEnumerable<ViewStart> Provide()
-    {
-        yield return new ViewStart { Href = "/my-page", Title = "My Page" };
-    }
+    { x => x.Model, model }
+};
+var confirmed = await _dialog.ShowDialogAsync<MyDialogForm>("Title", parameters);
+if (confirmed)
+{
+    // User clicked Submit
 }
 ```

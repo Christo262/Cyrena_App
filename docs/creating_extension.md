@@ -424,6 +424,8 @@ The `Resources.Read` helper (from `Cyrena.Core`) reads embedded resources by ful
 | `Cyrena.Extensa.Core` | Extension base class, `Extension` |
 | `Cyrena.Core` | Builders, contracts, models, `IAssistantPlugin` |
 | `Cyrena.Components.Core` | UI contracts, `ISettingsComponent`, `KernelComponentBase` |
+| `Microsoft.AspNetCore.Components.Web` | Blazor component support |
+| `Microsoft.SemanticKernel` | Semantic Kernel plugins (if adding AI tools) |
 
 ---
 

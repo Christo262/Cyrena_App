@@ -2,7 +2,7 @@
 
 `Cyrena.Extensa.Core` is the core extension system for Cyréna's dynamic plugin framework. It defines the contracts and models that all extensions must implement to be discovered and loaded at runtime by the Extensa loader. Extensions are compiled as separate assemblies/DLLs and loaded dynamically with dependency resolution.
 
-**Version:** 0.5.0
+**Version:** 0.6.0
 **Target Framework:** .NET 10.0
 **Namespaces:** `Cyrena.Extensa.Contracts`, `Cyrena.Extensa.Models`
 
@@ -148,7 +148,7 @@ public class MyExtension : Extension
 
 ## Package Information
 - **PackageId**: `Cyrena.Extensa.Core`
-- **Version**: `0.5.0`
+- **Version**: `0.6.0`
 - **Authors**: Vaya Nova
 - **Description**: Core models, interfaces & services to develop extensions for Cyrena
 - **Title**: Cyréna Extensa Core

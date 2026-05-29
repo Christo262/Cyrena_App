@@ -1,38 +1,38 @@
 .footer {
-  background: linear-gradient(180deg, #0a1628 0%, #0d1b2a 100%);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: #2b2b2b;
+  border-top: 1px solid #3d3d3d;
 }
 
 .footer-link {
-  color: rgba(255, 255, 255, 0.5);
+  color: #a0a0a0;
   transition: color 0.2s ease, transform 0.2s ease;
   display: inline-block;
 }
 
 .footer-link:hover {
-  color: #64c8ff;
+  color: #e95420;
   transform: translateX(4px);
 }
 
 .footer-link-small {
-  color: rgba(255, 255, 255, 0.4);
+  color: #808080;
   transition: color 0.2s ease;
 }
 
 .footer-link-small:hover {
-  color: rgba(255, 255, 255, 0.7);
+  color: #a0a0a0;
 }
 
 .social-link {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.6);
+  background: rgba(233, 84, 32, 0.1);
+  border: 1px solid rgba(233, 84, 32, 0.2);
+  color: #e95420;
   transition: all 0.2s ease;
 }
 
 .social-link:hover {
-  background: rgba(13, 110, 253, 0.2);
-  border-color: rgba(13, 110, 253, 0.4);
-  color: #64c8ff;
+  background: rgba(233, 84, 32, 0.2);
+  border-color: rgba(233, 84, 32, 0.4);
+  color: #e95420;
   transform: translateY(-2px);
 }

@@ -293,22 +293,31 @@ namespace Cyrena.Coding.Extensions
             return false;
         }
 
-        public static bool TryWriteFileLines(
-    this DevelopPlan plan,
-    DevelopFile file,
-    string? content,
-    int startLine,       // 0-based internally; callers must convert from 1-based before calling
-    int lineCount,
-    CodeWriteMode mode,
-    out DevelopFileLines? lines,
-    out int? totalLines)
+        /// <summary>
+        /// Overwrites the entire file with new content.
+        /// </summary>
+        public static bool TryWriteFileOverwrite(
+            this DevelopPlan plan,
+            DevelopFile file,
+            string? content,
+            out DevelopFileLines? lines)
         {
-            if (mode == CodeWriteMode.Overwrite)
-            {
-                totalLines = null;
-                return plan.TryWriteFileContentAsLines(file, content, out lines);
-            }
+            return plan.TryWriteFileContentAsLines(file, content, out lines);
+        }
 
+        /// <summary>
+        /// Replaces a range of lines (0-based startLine, lineCount lines) with new content.
+        /// Passing null or empty content deletes the lines without inserting anything.
+        /// </summary>
+        public static bool TryWriteFileReplace(
+            this DevelopPlan plan,
+            DevelopFile file,
+            string? content,
+            int startLine,
+            int lineCount,
+            out DevelopFileLines? lines,
+            out int? totalLines)
+        {
             if (!plan.TryReadFileLines(file, out var current) || current == null)
             {
                 lines = null;
@@ -323,7 +332,48 @@ namespace Cyrena.Coding.Extensions
 
             totalLines = existingLines.Count;
 
-            // Insert allows startLine == totalLines (append after last line)
+            if (startLine < 0 || lineCount <= 0 || startLine + lineCount > totalLines)
+            {
+                lines = null;
+                return false;
+            }
+
+            existingLines.RemoveRange(startLine, lineCount);
+
+            var incomingLines = SplitIncomingLines(content);
+            if (incomingLines.Count > 0)
+                existingLines.InsertRange(startLine, incomingLines);
+
+            var updatedContent = string.Join("\n", existingLines);
+            return plan.TryWriteFileContentAsLines(file, updatedContent, out lines);
+        }
+
+        /// <summary>
+        /// Inserts content before the specified line (0-based). Use startLine == existingLines.Count to append.
+        /// </summary>
+        public static bool TryWriteFileInsert(
+            this DevelopPlan plan,
+            DevelopFile file,
+            string? content,
+            int startLine,
+            out DevelopFileLines? lines,
+            out int? totalLines)
+        {
+            if (!plan.TryReadFileLines(file, out var current) || current == null)
+            {
+                lines = null;
+                totalLines = null;
+                return false;
+            }
+
+            var existingLines = current.Lines
+                .OrderBy(x => x.Index)
+                .Select(x => x.Text ?? string.Empty)
+                .ToList();
+
+            totalLines = existingLines.Count;
+
+            // Allow startLine == totalLines to support appending after the last line
             if (startLine < 0 || startLine > totalLines)
             {
                 lines = null;
@@ -331,21 +381,7 @@ namespace Cyrena.Coding.Extensions
             }
 
             var incomingLines = SplitIncomingLines(content);
-
-            if (mode == CodeWriteMode.Insert)
-            {
-                existingLines.InsertRange(startLine, incomingLines);
-            }
-            else if (mode == CodeWriteMode.Replace)
-            {
-                if (lineCount <= 0 || startLine + lineCount > totalLines)
-                {
-                    lines = null;
-                    return false;
-                }
-                existingLines.RemoveRange(startLine, lineCount);
-                existingLines.InsertRange(startLine, incomingLines);
-            }
+            existingLines.InsertRange(startLine, incomingLines);
 
             var updatedContent = string.Join("\n", existingLines);
             return plan.TryWriteFileContentAsLines(file, updatedContent, out lines);

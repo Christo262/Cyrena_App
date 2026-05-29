@@ -2,6 +2,7 @@
 
 `Cyrena.Persistence.Core` provides the persistence abstraction layer for the Cyréna framework. It defines the generic repository contract `IStore<T>`, the persistence builder interface `ICyrenaPersistenceBuilder`, and extension methods for convenient querying. Concrete implementations (e.g., `Cyrena.Persistence.File`) provide the actual storage backend.
 
+**Version:** 0.6.0
 **Target Framework:** .NET 10.0
 **Namespaces:** `Cyrena.Persistence.Contracts`, `Cyrena.Persistence.Options`, `Cyrena.Extensions`
 

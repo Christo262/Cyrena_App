@@ -75,6 +75,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/developer/components/cyrena-coding-core/cyrena-coding-core.component').then(m => m.CyrenaCodingCoreComponent)
       },
       {
+        path: 'voice',
+        loadComponent: () => import('./features/developer/components/cyrena-voice-core/cyrena-voice-core.component').then(m => m.CyrenaVoiceCoreComponent)
+      },
+      {
         path: 'extensions',
         loadComponent: () => import('./features/developer/components/extension-development/extension-development.component').then(m => m.ExtensionDevelopmentComponent)
       }

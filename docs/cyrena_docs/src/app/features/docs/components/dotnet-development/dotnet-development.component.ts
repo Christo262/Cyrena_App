@@ -59,29 +59,22 @@ export class DotnetDevelopmentComponent {
     { name: 'Attributes', purpose: 'Custom attributes for metadata and decoration.', readOnly: false },
     { name: 'Contracts', purpose: 'Dependency-injection interfaces.', readOnly: false },
     { name: 'Extensions', purpose: 'Static helper / extension classes.', readOnly: false },
-    { name: 'Models', purpose: 'Data classes and DTOs.', readOnly: false },
-    { name: 'Services', purpose: 'Implementations of the contracts.', readOnly: false },
-    { name: 'Options', purpose: 'Configuration-related POCOs.', readOnly: false },
-    { name: '*.cs (project root)', purpose: 'Miscellaneous C# source files. Cyrena can read and edit .cs files here but not create new ones.', readOnly: false },
-    { name: '*.csproj / *.sln / *.slnx', purpose: 'Project and solution descriptors.', readOnly: true }
+    { name: 'Models', purpose: 'Data models and DTOs.', readOnly: false },
+    { name: 'Services', purpose: 'Business logic services.', readOnly: false }
   ];
 
   readonly blazorFolders: BlazorFolder[] = [
-    { name: 'Components', content: '.razor component files.', readOnly: false },
-    { name: 'Components/Layout', content: 'Layout components.', readOnly: false },
-    { name: 'Components/Pages', content: 'Page components.', readOnly: false },
-    { name: 'Components/Shared', content: 'Shared UI pieces.', readOnly: false },
-    { name: 'wwwroot/css', content: '.css style-sheet files.', readOnly: false },
-    { name: 'wwwroot/js', content: '.js script files.', readOnly: false },
-    { name: '*.json', content: 'Configuration files.', readOnly: true }
+    { name: 'Components', content: 'Reusable Razor components (.razor).', readOnly: false },
+    { name: 'Pages', content: 'Razor page components for routing.', readOnly: false },
+    { name: 'Layout', content: 'Main layout components.', readOnly: false },
+    { name: 'wwwroot', content: 'Static web assets (CSS, JS, images).', readOnly: false }
   ];
 
   readonly mvcFolders: MvcFolder[] = [
-    { name: 'Controllers', content: 'C# controller classes.', readOnly: false },
-    { name: 'Views (including all sub-folders)', content: '.cshtml Razor view files.', readOnly: false },
-    { name: 'wwwroot/css', content: '.css style-sheet files.', readOnly: false },
-    { name: 'wwwroot/js', content: '.js script files.', readOnly: false },
-    { name: '*.json', content: 'Configuration files.', readOnly: true }
+    { name: 'Controllers', content: 'MVC controller classes.', readOnly: false },
+    { name: 'Views', content: 'Razor view templates (.cshtml).', readOnly: false },
+    { name: 'ViewModels', content: 'View-specific models.', readOnly: false },
+    { name: 'wwwroot', content: 'Static web assets.', readOnly: false }
   ];
 
   readonly steps: Step[] = [

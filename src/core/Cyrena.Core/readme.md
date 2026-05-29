@@ -1,70 +1,9 @@
-# Cyrena.Core SDK
-
-**Target Framework:** .NET 10.0  
-**Core Dependency:** Microsoft.SemanticKernel
-
-Cyrena.Core is the core library for the Cyrena AI assistant application. It provides Semantic Kernel integration, chat management, LLM connection handling, and assistant mode configuration. **This library does not define application plugins** — it provides the underlying infrastructure that plugins consume.
-
----
-
-## Architecture Overview
-
-### Relationship Between Concepts
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Application Runtime                          │
-│                                                                 │
-│  ┌──────────────────┐     ┌─────────────────────────────────┐  │
-│  │  Application     │     │       Cyrena.Core               │  │
-│  │  Plugins         │     │                                 │  │
-│  │  (loaded from    │────▶│  ┌───────────────────────────┐   │  │
-│  │   other          │     │  │  IAssistantPlugin        │   │  │
-│  │   assemblies)    │     │  │  (service in DI)         │   │  │
-│  │                  │     │  │  Configures modes        │   │  │
-│  └──────────────────┘     │  └───────────┬───────────────┘   │  │
-│         │                  │              │                   │  │
-│         │ Adds to DI:      │              │ Registers         │  │
-│         │ • IAssistantPlugin│              │                   │  │
-│         │ • IAssistantMode │◀─────────────┘                   │  │
-│         │                  │                                  │  │
-│         │                  │  ┌───────────────────────────┐   │  │
-│         │                  │  │  IAssistantMode           │   │  │
-│         │                  │  │  (kernel configuration)   │   │  │
-│         │                  │  └───────────────────────────┘   │  │
-│         │                  │                                  │  │
-│         │                  │  ┌───────────────────────────┐   │  │
-│         │                  │  │  IKernelController        │   │  │
-│         │                  │  │  (manages per-chat        │   │  │
-│         │                  │  │   kernel instances)       │   │  │
-│         │                  │  └───────────────────────────┘   │  │
-│         │                  │                                  │  │
-│         │                  │  ┌───────────────────────────┐   │  │
-│         │                  │  │  IChatMessageService      │   │  │
-│         │                  │  │  (dual history model)     │   │  │
-│         │                  │  └───────────────────────────┘   │  │
-│         │                  │                                  │  │
-│         │                  │  ┌───────────────────────────┐   │  │
-│         │                  │  │  IConnection              │   │  │
-│         │                  │  │  (LLM provider adapter)   │   │  │
-│         │                  │  └───────────────────────────┘   │  │
-│         │                  └─────────────────────────────────┘  │
-│         │                                                       │
-└─────────┴───────────────────────────────────────────────────────┘
-
-Key Point: IAssistantPlugin is NOT the application plugin. It is a DI service
-used to configure kernel behavior. Application plugins are loaded separately
-from other assemblies and may register IAssistantPlugin or IAssistantMode
-implementations into the DI container.
-```
-
----
-
 ## Overview
 
 `Cyrena.Core` is the foundational class library of the Cyréna AI assistant framework. It defines all core contracts, data models, application builders, and extension methods that the rest of the solution depends on. Any extension or plugin for Cyréna must reference this package.
 
 **Namespace:** `Cyrena` (contracts, models, options, extensions)
+**Project Type:** Class Library
 **Target Framework:** .NET 10.0
 
 ---
@@ -124,8 +63,6 @@ public interface IChatMessageService : IDisposable
     void LoadHistory(IEnumerable<ChatMessageContent> kernelHistory, IEnumerable<ChatMessageContent>? displayHistory);
     Task LoadHistoryAsync();
     Task AddMessage(ChatMessageContent content);
-    Task AddMessage(AuthorRole role, string? content);
-    Task AddMessage(AuthorRole role, string? input, params AdditionalMessageContent[] items);
     Task ClearHistoryAsync();
     void Stream(string? token);
 }
@@ -143,19 +80,21 @@ public interface IChatConfigurationService
 ```
 
 ### `IConnection` (Kernel-locked)
-Connection to an LLM service provider.
+Connection to an LLM service provider. Receives a `ChatMessageContent` to process.
 
 ```csharp
 public interface IConnection
 {
-    Task HandleAsync(AuthorRole role, string input, Kernel kernel, CancellationToken ct = default);
-    Task HandleAsync(AuthorRole role, string input, Kernel kernel, CancellationToken ct = default, params AdditionalMessageContent[] items);
+    Task HandleAsync(ChatMessageContent content, CancellationToken ct = default);
     void FunctionCallStart();
 }
 ```
 
+- `HandleAsync`: Processes a chat message content (sends to LLM, handles response).
+- `FunctionCallStart`: Called by function invocation filter to signal tool call start, helping suppress "thinking" messages.
+
 ### `IConnectionProvider`
-Manages available LLM connections and attaches them to kernels.
+Provides connections to LLM backends.
 
 ```csharp
 public interface IConnectionProvider
@@ -183,24 +122,42 @@ public abstract class ConversationHistoryTransformer : IConversationHistoryTrans
 }
 ```
 
+### `ICyrenaFileExporter` (Kernel-locked)
+Exports conversation files as a `.cyrena` zipped archive with manifest info.
+
+```csharp
+public interface ICyrenaFileExporter
+{
+    Task<CyrenaFileManifest> ExportFilesAsync(string extensionId, Version extensionVersion, string importerId, Dictionary<string, string?> properties, string outPath, CancellationToken cancellationToken = default);
+}
+```
+
+### `ICyrenaFileImporter` (Global service)
+Handles processing of imported `.cyrena` files based on manifest. Must be registered as a global singleton.
+
+```csharp
+public interface ICyrenaFileImporter
+{
+    string Id { get; }
+    Task ImportAsync(CyrenaFileManifest manifest, string absoluteDataPath, CancellationToken cancellationToken = default);
+}
+```
+
 ### `IFileHandler` (Kernel-locked)
-Handles file attachments in chat messages. Determines supported file types and converts file data into `AdditionalMessageContent`.
+Handles file attachments in chat messages.
 
 ```csharp
 public interface IFileHandler
 {
     bool HandlesType(string contentType, string fileName);
-    Task<AdditionalMessageContent?> GetMessageContent(Stream data, string contentType, string name);
-    Task<AdditionalMessageContent?> GetMessageContent(byte[] data, string contentType, string name);
-    Task<KernelContent?> GetKernelContent(Stream data, string contentType, string name);
-    Task<KernelContent?> GetKernelContent(byte[] data, string contentType, string name);
+    Task<KernelContent?> GetKernelContent(byte[] data, string contentType, string name, IReadOnlyDictionary<string, object?>? metadata = null);
     string[] GetSupportedMimeTypes();
     Dictionary<string, string> GetExtensionMimeTypeMapping();
 }
 ```
 
 ### `IFileHandlerFactory` (Kernel-locked)
-Provides easier access to all `IFileHandler` instances in a `Kernel`.
+Provides easier access to all `IFileHandler` instances in a `Kernel`. Also manages file attachments persistence.
 
 ```csharp
 public interface IFileHandlerFactory
@@ -208,20 +165,27 @@ public interface IFileHandlerFactory
     bool HasFileHandlers { get; }
     bool CanHandleType(string contentType, string fileName);
     string[] GetSupportedMimeTypes();
-    Task<AdditionalMessageContent?> GetMessageContent(Stream data, string contentType, string name);
-    Task<AdditionalMessageContent?> GetMessageContent(byte[] data, string contentType, string name);
-    Task<KernelContent?> GetKernelContent(Stream data, string contentType, string name);
-    Task<KernelContent?> GetKernelContent(byte[] data, string contentType, string name);
+    Task<KernelContent> GetKernelContent(string fileId, CancellationToken cancellationToken = default);
+    Task<KernelContent?> SaveAsync(Stream data, string contentType, string name, CancellationToken cancellationToken = default);
+    Task<KernelContent?> SaveAsync(byte[] data, string contentType, string name, CancellationToken cancellationToken = default);
+    Task CancelAsync(KernelContent item, CancellationToken cancellationToken = default);
     string? GetExtension(string mimeType);
+    Task<IEnumerable<FileAttachment>> ListAttachmentsAsync(CancellationToken cancellationToken = default);
+    Task<byte[]> GetFileDataAsync(string id, CancellationToken cancellationToken = default);
+    Task DeleteFileAttachmentAsync(string id, CancellationToken cancellationToken = default);
+    Task<FileAttachment> CreateAsync(string name, string contentType, byte[] content, CancellationToken cancellationToken = default);
+    Task UpdateAsync(FileAttachment att, CancellationToken cancellationToken = default);
+    Task<FileAttachment?> GetAttachmentAsync(string id, CancellationToken cancellationToken = default);
 }
 ```
 
 ### `IKernelController`
-Manages all `Kernel` instances, loading, creating, updating, and unloading them.
+Manages all `Kernel` instances. Creates, loads, updates, and kills kernels when needed.
 
 ```csharp
 public interface IKernelController : IDisposable
 {
+    IReadOnlyList<Kernel> ActiveKernels { get; }
     Task<Kernel> LoadAsync(ChatConfiguration config);
     Task<Kernel> LoadAsync(string id);
     Task Delete(ChatConfiguration config);
@@ -235,7 +199,19 @@ public interface IKernelController : IDisposable
     IDisposable OnChatCreate(Action<ChatConfiguration> cb);
     IDisposable OnChatUpdate(Action<ChatConfiguration> cb);
     IDisposable OnChatUnload(Action<ChatConfiguration> cb);
+    IDisposable OnChatLoadStart(Action<ChatConfiguration> cb);
     IDisposable OnChatLoaded(Action<ChatConfiguration> cb);
+    IDisposable OnChatLoadError(Action<Exception> cb);
+}
+```
+
+### `IKernelResolver` (Kernel-locked)
+Provides access to the current kernel instance via a factory function.
+
+```csharp
+public interface IKernelResolver
+{
+    Func<Kernel> Resolve { get; }
 }
 ```
 
@@ -249,8 +225,6 @@ public interface IPromptManager
     string AddPrompt(int order, string content);
     void UpdatePrompt(string id, string content);
     void RemovePrompt(string id);
-    [Obsolete("Use IConversationHistoryTransformer instead")]
-    Func<ChatHistory, ChatOptions, IEnumerable<ChatMessageContent>>? ModifyKernelHistoryFunc { get; set; }
 }
 ```
 
@@ -260,9 +234,9 @@ Manages a single chat iteration from user input to model completion.
 ```csharp
 public interface IIterationService : IDisposable
 {
-    string? Input { get; set; }
+    ChatMessageContent? Input { get; set; }
     bool Inferring { get; }
-    string? IterationId { get; }
+    Ulid? IterationId { get; }
     bool IsPaused { get; }
     int QueueCount { get; }
     bool IsPausedByAi { get; }
@@ -272,7 +246,7 @@ public interface IIterationService : IDisposable
     void InferenceEnd();
     IDisposable OnIterationStart(Action<bool> callback);
     IDisposable OnIterationEnd(Action<bool> callback);
-    void Iterate(AuthorRole role, Kernel kernel, params AdditionalMessageContent[]? items);
+    void Iterate();
     void Cancel();
     void PauseQueue(bool by_ai = false);
     void ContinueQueue();
@@ -297,8 +271,8 @@ Cross-platform file dialog abstraction.
 ```csharp
 public interface IFileDialog
 {
-    Task<string?> OpenAsync(string title, (string filterName, string[] extensions)? ftr);
-    Task<string?> ShowSaveFileAsync(string title, (string filterName, string[] extensions)? ftr, string? defaultPath = null);
+    Task<string?> OpenAsync(string title, (string filterName, string[] extensions)? filter);
+    Task<string?> ShowSaveFileAsync(string title, (string filterName, string[] extensions)? filter, string? defaultPath = null);
     void ExploreFolder(string folderPath);
     Task<string?> SelectFolder(string title = "Select Folder", string? current = null);
 }
@@ -338,6 +312,53 @@ public sealed class ChatConfiguration : Entity
     public Dictionary<string, string?> Properties { get; set; }
     public List<string> PluginIds { get; set; }
     public string? WorkingDirectory { get; set; }
+    public string FileStoragePath { get; set; }
+    public HistoryInclusionMode HistoryInclusion { get; set; } = HistoryInclusionMode.All;
+}
+```
+
+### `ChatMessageContentEntity` (extends `Entity`)
+Used to persist chat history to storage.
+
+```csharp
+public sealed class ChatMessageContentEntity : Entity
+{
+    public ChatMessageContentEntity();
+    public ChatMessageContentEntity(ChatMessageContent content, Ulid? iterationId = null);
+    
+    public Ulid? IterationId { get; set; }
+    public DateTime Date { get; set; }
+    public string? Role { get; set; }
+    public List<KernelContentEntity> Items { get; set; }
+    public string? ModelId { get; set; }
+    public IReadOnlyDictionary<string, object?>? Metadata { get; set; }
+    public string? MimeType { get; set; }
+    
+    public ChatMessageContent AsChatMessage();
+}
+
+public sealed class KernelContentEntity : Entity
+{
+    public KernelContentEntity();
+    public KernelContentEntity(KernelContent item);
+    
+    public KernelContent? Item { get; set; }
+    public bool IsContentType<TKernelContent>() where TKernelContent : KernelContent;
+}
+```
+
+### `CyrenaFileManifest`
+Represents the manifest inside a `.cyrena` zipped archive.
+
+```csharp
+public sealed class CyrenaFileManifest
+{
+    public string Extension { get; set; } = default!;           // JsonPropertyName: "extension.required"
+    public Version Version { get; set; } = default!;          // JsonPropertyName: "required.extension.version.min"
+    public string ImporterId { get; set; } = default!;        // JsonPropertyName: "importer.id"
+    public Dictionary<string, string?> Properties { get; set; } // JsonPropertyName: "cyrena.properties"
+    
+    public string? this[string key] { get; set; }
 }
 ```
 
@@ -362,8 +383,9 @@ Application-level DI builder.
 ```csharp
 public sealed class CyrenaBuilder
 {
-    public static string AppDataDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena");
-    public static string UserContentDirectory = Path.Combine(AppDataDirectory, "public");
+    public static readonly string AppDataDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".cyrena");
+    public static readonly string UserContentDirectory = Path.Combine(AppDataDirectory, "public");
+    public static readonly string ConversationsData = Path.Combine(AppDataDirectory, "conversations");
     
     public IServiceCollection Services { get; }
     public IDictionary<string, IList<Assembly>> FeatureAssemblies { get; }
@@ -373,8 +395,6 @@ public sealed class CyrenaBuilder
     
     public void AddBuildAction(Action<CyrenaBuilder> action);
     public void AddRunAction(Action<IServiceProvider, CancellationToken> action);
-    public CancellationToken GetLifetimeCT();
-    public void CancelLifetimeCT();
     public void Build();
 }
 ```
@@ -411,18 +431,6 @@ public interface IEntity { string Id { get; set; } }
 public abstract class Entity : IEntity { public virtual string Id { get; set; } = default!; }
 ```
 
-### `AdditionalMessageContent`
-Named wrapper for `KernelContent`.
-
-```csharp
-public class AdditionalMessageContent
-{
-    public AdditionalMessageContent(string name, KernelContent item);
-    public string Name { get; set; }
-    public KernelContent Item { get; set; }
-}
-```
-
 ### `ConnectionInfo`
 LLM connection metadata.
 
@@ -430,13 +438,46 @@ LLM connection metadata.
 public record ConnectionInfo(string Id, string Name, string Source, string ModelId, IConnectionProvider Provider, bool SupportImages, bool SupportFiles);
 ```
 
+### `FileAttachment` (extends `Entity`)
+Represents a persisted file attachment.
+
+```csharp
+public sealed class FileAttachment : Entity
+{
+    public string MimeType { get; set; } = default!;
+    public string Path { get; set; } = default!;
+    public string InternalName { get; set; } = default!;
+    public List<string> Tools { get; set; }
+    public Dictionary<string, string?> Properties { get; set; }
+    public string? this[string key] { get; set; }
+    
+    public static FileAttachment From(string file_name, string content_type, string path, string original_name, params string[] tools);
+    public FileReferenceContent ToFileReference();
+}
+```
+
+### `HistoryInclusionMode`
+Controls how much chat history is sent to the AI.
+
+```csharp
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum HistoryInclusionMode
+{
+    All,        // Includes entire history
+    LastTwo,    // Includes only last 2 iterations
+    LastTen,    // Includes only last 10 iterations
+    Instruct    // Includes no history, instruct mode
+}
+```
+
 ### `Prompt`
 System prompt with ordering.
 
 ```csharp
-public sealed class Prompt : Entity
+public sealed class Prompt
 {
     public Prompt();
+    public string Id { get; init; }
     public int Order { get; init; }
     public string Content { get; init; } = default!;
 }
@@ -448,11 +489,10 @@ Represents a single queued chat input message.
 ```csharp
 public sealed class QueuedInput
 {
-    public QueuedInput(AuthorRole role, string? content, AdditionalMessageContent[]? items);
+    public QueuedInput(ChatMessageContent message);
     public string Id { get; }
-    public AuthorRole Role { get; }
-    public string Content { get; set; }
-    public List<AdditionalMessageContent> Items { get; set; }
+    public AuthorRole Role => Message.Role;
+    public ChatMessageContent Message { get; set; }
 }
 ```
 
@@ -460,43 +500,32 @@ public sealed class QueuedInput
 Function call result wrapper.
 
 ```csharp
-public class ToolResult : IJsonSerializable
+public class ToolResult
 {
     public ToolResult();
     public ToolResult(bool success, string? message);
     public bool Success { get; set; }
     public string? Message { get; set; }
-    public string ToJson();
 }
 
-public class ToolResult<T> : ToolResult where T : class
+public class ToolResult<T> : ToolResult, ISuppressibleResult where T : class
 {
     public ToolResult();
     public ToolResult(bool success, string? message) : base(success, message);
     public ToolResult(T result, bool success = true, string? message = null) : base(success, message);
     public T? Result { get; set; }
+    public string Suppress();
 }
 ```
 
-### `InfoMessageContentItem`
-Display-only content item extending `KernelContent`.
+### `ISuppressibleResult`
+Interface for suppressing function results to reduce context size.
 
 ```csharp
-public sealed class InfoMessageContentItem : KernelContent
+public interface ISuppressibleResult
 {
-    public InfoMessageContentItem();
-    public InfoMessageContentItem(string fileName);
-    public string FileName { get; set; } = default!;
+    string Suppress();
 }
-```
-
-### `IJsonSerializable` / `JsonStringObject`
-JSON serialization marker interface.
-
-```csharp
-public interface IJsonSerializable { string ToJson(); }
-[Obsolete]
-public abstract class JsonStringObject : IJsonSerializable { public string ToJson(); }
 ```
 
 ---
@@ -536,7 +565,7 @@ public static class CyrenaBuilderExtensions
     public static T GetFeatureOption<T>(this CyrenaBuilder builder) where T : class;
     public static void AddFeatureAssembly(this CyrenaBuilder builder, string key, Assembly assembly);
     public static void AddFeatureAssembly<T>(this CyrenaBuilder builder, string key);
-    public static IList<Assembly> GetFeatureAssemblies(this CyrenaOptions builder, string key);
+    public static IList<Assembly> GetFeatureAssemblies(this CyrenaOptions options, string key);
     public static void AddStartupTask<TStartupTask>(this CyrenaBuilder builder) where TStartupTask : class, IStartupTask;
     public static void AddAssistantMode<TAssistantMode>(this CyrenaBuilder builder) where TAssistantMode : class, IAssistantMode;
     public static void AddAssistantPlugin<TAssistantPlugin>(this CyrenaBuilder builder) where TAssistantPlugin : class, IAssistantPlugin;
@@ -559,6 +588,7 @@ public static class CyrenaKernelBuilderExtensions
 ```csharp
 public static class ChatMessageServiceExtensions
 {
+    public static Task AddMessage(this IChatMessageService service, AuthorRole role, string? content);
     public static Task LogInfo(this IChatMessageService service, string? message);
     public static Task LogSuccess(this IChatMessageService service, string? message);
     public static Task LogWarn(this IChatMessageService service, string? message);
@@ -589,6 +619,15 @@ public static class KernelBuilderExtensions
 }
 ```
 
+### `KernelContentExtensions`
+
+```csharp
+public static class KernelContentExtensions
+{
+    public static TextContent ToTextContent(this FileReferenceContent reference);
+}
+```
+
 ### `Resources`
 
 ```csharp
@@ -611,3 +650,6 @@ Reference `Cyrena.Core` to:
 6. Use `ToolResult` for function call results
 7. Use `IFileHandler` and `IFileHandlerFactory` for file attachment support
 8. Use `IConversationHistoryTransformer` for history modification
+9. Use `ISuppressibleResult` to reduce context size after tool calls
+10. Use `ICyrenaFileExporter` and `ICyrenaFileImporter` for custom file import/export
+11. Use `HistoryInclusionMode` to control context window size
