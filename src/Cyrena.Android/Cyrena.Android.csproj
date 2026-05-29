@@ -69,8 +69,9 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" />
     </ItemGroup>
 
+
     <ItemGroup>
-      <ProjectReference Include="..\Cyrena\Cyrena.csproj" />
+      <ProjectReference Include="..\components\Cyrena\Cyrena.csproj" />
     </ItemGroup>
 
 </Project>

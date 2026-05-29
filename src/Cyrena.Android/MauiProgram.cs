@@ -10,11 +10,7 @@ using Cyrena.Android.Services;
 using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Options;
-using Cyrena.Runtime.Ollama.Services;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Maui.LifecycleEvents;
 
 
 namespace Cyrena.Android
@@ -31,15 +27,6 @@ namespace Cyrena.Android
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
-#if ANDROID
-            builder.ConfigureLifecycleEvents(events =>
-             {
-                 events.AddAndroid(android => android.OnCreate((activity, bundle) =>
-                 {
-                     AndroidW.WebView.SetWebContentsDebuggingEnabled(true);
-                 }));
-             });
-#endif
             var cyrena = builder.Services.AddCyrenaRuntime()
                .AddExtensa(e =>
                {

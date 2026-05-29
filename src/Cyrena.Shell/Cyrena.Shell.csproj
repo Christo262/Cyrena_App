@@ -34,11 +34,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Cyrena\Cyrena.csproj" />
+    <Folder Include="Components\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\" />
+    <ProjectReference Include="..\components\Cyrena\Cyrena.csproj" />
   </ItemGroup>
 
   <Target Name="PublishCyrenaWebView" Condition="$([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('linux-'))" BeforeTargets="Publish">

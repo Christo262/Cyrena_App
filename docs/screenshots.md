@@ -9,11 +9,6 @@ Working inside active engineering projects
 
 ![Working Window](../images/working.png)
 
-## AI-Assisted Development
-Prompt-driven engineering workflows
-
-![HUD Mode](../images/new_chat_agent.png)
-
 ## Local Or Cloud Models (Ollama)
 Configure local AI providers
 
@@ -29,11 +24,17 @@ Connect cloud AI providers
 ## Application Settings
 Configure platform behavior
 
-![OpenAI](../images/openai_settings.png)
+![Feature Activation](../images/feature_activation.png)
 
 ---
 
 ## Extension Management
 Extend Cyréna with domain-specific capabilities
 
-![OpenAI](../images/extensions.png)
+![Extensions](../images/extensions.png)
+
+---
+
+## Prompt Queuing
+
+![Prompt](../images/prompt_q.png)

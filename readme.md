@@ -1,398 +1,128 @@
 ﻿# Cyréna
 
-Cyréna is an AI-native desktop engineering workspace that adapts to your workflow through extensions.
+Cyréna is an **AI-native workspace** built around extensions, dynamic prompts, and user-controlled model selection.
 
-It runs alongside your IDE, not inside it. Extensions let you install only what you need instead of shipping a massive monolithic app.
+It gives you a single workspace where different AI assistants can be equipped with only the capabilities they need for the task at hand. You can queue work, activate or deactivate features per conversation, and switch between local or cloud models using providers like Ollama and OpenAI.
 
-Cyréna helps developers build, maintain, and evolve real software projects across multiple engineering domains including .NET, embedded systems, firmware, web platforms, and static websites.
+Cyréna is not just a chat app, and it is not just a coding assistant. It is a modular AI environment for software engineering, embedded development, productivity, knowledge work, and custom workflows.
 
-You choose the model.
-Cyréna orchestrates the workflow.
+**You choose the model. Cyréna orchestrates the work.**
 
-[Download (alpha)](https://cyrena.dev/download.html) | [Cyréna HUD (Windows)](docs/hud.md) | [Website](https://cyrena.dev) | [Docs](https://cyrena.dev/docs.html) | [Screenshots](docs/screenshots.md) | [My Model Experience](model-reviews.md)
+[Download (alpha)](https://cyrena.dev/download.html) | [Website](https://cyrena.dev) | [Docs](https://cyrena.dev/docs.html) | [Screenshots](docs/screenshots.md)
 
-![Cyréna](images/new_chat.png)
+![Cyréna](images/all_devices.png)
 
-👉 [Getting Started(YouTube)](https://cyrena.dev/docs.html#/docs/getting-started)
-
----
-
-## Why Cyréna Exists
-
-Cyréna was built from a practical problem.
-
-AI app builders could generate software quickly, but the infrastructure, hosting, and execution environment remained locked behind proprietary platforms. The software was not truly mine.
-
-Cyréna solves that by helping developers move faster with AI while keeping full control over their code, architecture, infrastructure, and deployment.
-
-The goal is not magic.
-
-The goal is disciplined AI-assisted engineering inside real projects.
+👉 [Getting Started (YouTube)](https://cyrena.dev/docs.html#/docs/getting-started)
 
 ---
 
 ## What Cyréna Actually Is
 
-Cyréna is a desktop application for AI-assisted engineering.
+Cyréna is a cross-platform application (Desktop & Android) that acts as an intelligent layer between you and your AI models. It works seamlessly with **OpenAI** and **Ollama**, giving you the freedom to use powerful cloud models or keep everything local and private.
 
-It works with OpenAI and Ollama, allowing you to use cloud or local models and switch between them depending on the task.
+### A Modular Ecosystem
+Cyréna is built entirely around **Extensions**. This architecture allows it to expand beyond coding into any domain:
 
-Cyréna is designed to slot into your existing workflows and tools, enhancing and accelerating them rather than disrupting them.
-
-It can:
-
-* implement features
-* modify existing codebases
-* repair build failures
-* generate documentation
-* retain project-specific knowledge
-* support repeatable engineering workflows
-
-Cyréna is built around extensions.
-
-![Cyréna with IDEs](images/cyrena_with_ide.png)
-
-Extensions allow support for different engineering domains such as .NET, Angular, Arduino, PlatformIO, and static websites.
-
-The extension model also allows Cyréna to expand beyond software engineering into entirely new domains over time.
-
-Developers remain in control of their code, infrastructure, and workflows.
-
----
-
-## Demo
-
-👉 [.Net(YouTube)](https://youtu.be/fXxOaspi9s8)
-👉 [Arduino(YouTube)](https://youtu.be/ZVLid5-ZZAw)
-
-This is not autocomplete.
-
-This is structured AI-assisted engineering inside real projects.
+* **Engineering:** Implement features, repair build failures, and manage codebases (.NET, Angular, Embedded, etc.).
+* **Productivity:** Structured task management, document synthesis, and workflow automation.
+* **Knowledge:** Persistent technical memory and cross-project intelligence.
+* **Custom Domains:** The ability to define new project structures and behaviors via extensions.
 
 ---
 
 ## Core Platform Concepts
 
 ### Extension-Driven Architecture
-
-Cyréna is built around extensions.
-
-Every engineering domain is implemented as an extension, including:
-
-* .NET
-* Arduino IDE
-* PlatformIO
-* Angular
-* Static Website Development
+Every capability in Cyréna is an extension. This means the app doesn't become "bloated" as it grows. If you aren't doing embedded work, you don't need the Arduino extension. 
 
 Extensions define:
+* **Project Structures:** How files and data are organized.
+* **Workflows:** The step-by-step process to achieve a goal.
+* **Tooling Constraints:** The specific rules the AI must follow.
+* **Domain Behavior:** How the workspace reacts to different types of input.
 
-* project structures
-* prompts
-* workflows
-* tooling constraints
-* repair strategies
-* domain-specific behavior
+### Persistent Intelligence
+Cyréna doesn't just "chat"; it remembers, though the method depends on the assistant you're using:
 
-This allows Cyréna to adapt to different workflows without becoming a generic “AI assistant.”
+* **Coding Assistant:** Uses **API References** (structured technical documents) and **Sticky Notes** (lightweight, persistent architectural decisions) to maintain a grounded memory of your project.
+* **General Assistant:** Can be equipped with the **Long-Term Memory extension**, allowing for cross-conversation persisted memory and personal context.
 
----
+### Core Platform Orchestration
+Cyréna provides a set of core features that ensure the AI remains focused, efficient, and reliable across any assistant context:
 
-### Dynamic System Prompts
+* **Prompt Queuing:** A platform-wide capability that allows you to stack multiple high-level goals and have Cyréna execute them sequentially.
+* **Feature Activation:** Users can toggle specific abilities on or off for any conversation. This ensures the AI only has the tools it needs for the current task, reducing noise and potential errors.
+* **Dynamic Prompts:** The instruction set provided to the AI evolves in real-time based on active features. If a feature is deactivated, it ceases to exist in the AI's world for that session, ensuring the context is always "just enough" for reliable execution.
 
-Cyréna dynamically updates system prompts based on:
-
-* active extensions
-* project type
-* enabled capabilities
-* engineering domain
-* current workflow context
-
-The model only receives the instructions relevant to the active task.
-
-This keeps prompts focused, smaller, and domain-aware.
+### Iterative Loops (Coding Domain)
+Specifically for the Coding Assistant, Cyréna employs a disciplined execution loop to handle complex engineering tasks:
+1. **Inspect** current state $\rightarrow$ 2. **Load** context $\rightarrow$ 3. **Implement** changes $\rightarrow$ 4. **Validate/Build** $\rightarrow$ 5. **Repair** $\rightarrow$ 6. **Persist** knowledge.
 
 ---
 
-### Feature Activation
+## Supported Domains
 
-Features can be enabled or disabled per chat.
+### 💻 Software Engineering
+* **.NET:** Class Libraries, Blazor, MVC.
+* **Web:** Angular, Static Websites (HTML/CSS/JS).
+* **Embedded:** Arduino IDE, PlatformIO (ESP-IDF, Arduino Framework).
 
-Disabled functionality is removed from the model’s available toolset entirely.
-
-This prevents:
-
-* irrelevant tool usage
-* accidental actions
-* prompt bloat
-* workflow confusion
-
-The AI only knows what it needs to know.
-
----
-
-### Prompt Queuing
-
-Cyréna supports prompt queuing.
-
-Developers can queue multiple engineering tasks and allow the platform to work through them sequentially.
-
-Each iteration:
-
-1. Loads relevant context
-2. Inspects project files
-3. Performs the requested work
-4. Builds and validates
-5. Repairs issues if necessary
-6. Persists technical knowledge
-7. Continues to the next queued task
-
-This allows longer engineering workflows to execute in a controlled and repeatable way.
-
----
-
-## Multi-Domain Engineering Support
-
-Cyréna currently supports multiple engineering domains through extensions.
-
-### .NET
-
-* C# Class Libraries
-* Blazor Applications
-* MVC Applications
-* MVC Libraries
-
-### Embedded & Firmware
-
-* Arduino IDE
-* PlatformIO
-
-  * Arduino Framework
-  * ESP-IDF
-
-### Web Development
-
-* Angular
-* Static HTML/CSS/JavaScript websites
-
-Each domain has its own:
-
-* project structures
-* prompts
-* engineering rules
-* architecture constraints
-* repair workflows
-
-Different domains. Same engineering discipline.
-
----
-
-## API References
-
-API References are structured technical documents generated and maintained by the platform.
-
-They provide persistent technical memory describing:
-
-* APIs
-* architecture rules
-* service contracts
-* module behavior
-* integration patterns
-* implementation details
-
-API References are grounded in real project code rather than hallucinated summaries.
-
-This allows Cyréna to maintain long-term project understanding beyond normal chat context limitations.
-
----
-
-## Sticky Notes
-
-Sticky Notes act as lightweight persistent project memory.
-
-They capture:
-
-* architectural decisions
-* engineering constraints
-* developer reminders
-* project-specific rules
-* workflow guidance
-
-Sticky Notes survive chat resets and model switches.
-
----
-
-## Project-Aware Engineering
-
-Cyréna works directly inside real project structures.
-
-It:
-
-* reads existing files
-* inspects architecture
-* follows project conventions
-* performs minimal edits
-* validates builds
-* repairs failures iteratively
-
-The platform is designed to avoid uncontrolled code generation and reduce architectural entropy over time.
-
----
-
-## Iterative Repair Loops
-
-Engineering tasks operate through structured loops:
-
-1. Inspect project state
-2. Load API References
-3. Read Sticky Notes
-4. Review relevant files
-5. Implement minimal changes
-6. Build and validate
-7. Repair failures
-8. Persist technical knowledge
-9. Summarise work completed
-
-This approach keeps workflows controlled and repeatable.
 
 ---
 
 ## Offline-First & Model Agnostic
 
-Cyréna is designed to work with:
-
-* Ollama
-* OpenAI
-* compatible AI providers
-
-Developers can:
-
-* run models locally
-* switch providers mid-project
-* work offline
-* keep code on their own infrastructure
-
-The platform is model agnostic.
-
-You bring the model.
-Cyréna provides the engineering workflow.
-
----
-
-## Static Website Development
-
-Cyréna now includes a static website engineering extension.
-
-The Website extension supports:
-
-* semantic HTML5
-* responsive CSS
-* vanilla JavaScript
-* structured project layouts
-* SEO-friendly static content
-* accessibility-aware markup
-* asset management
-* multi-page websites
-
-This extension was used to rebuild the Cyréna marketing website from Angular-rendered landing pages into static crawlable content.
+Cyréna is designed for total control.
+* **Local First:** Full support for Ollama to keep your data on your own hardware.
+* **Cloud Flexible:** Easy integration with OpenAI and other compatible providers.
+* **Model Agnostic:** Switch models mid-project to find the best tool for the specific task.
 
 ---
 
 ## Requirements
 
-* .NET 10
-* Windows / Linux / macOS
-* Ollama or OpenAI
-* Recommended: ≥16k context models
+### Base Requirements
+* **Hardware:** 8GB RAM (Minimum)
+* **AI Access:** Ollama or OpenAI API accounts
+* **OS (Desktop):** Windows and Linux (Official Support). *Note: macOS may work, but is currently untested/unsupported.*
+* **OS (Android):** Android Min API 24
+### Test Environment (Reference)
+* **CPU:** Ryzen 7 8700f
+* **RAM:** 48GB
+* **GPU:** 12GB RTX 3060
+* **Primary Test Model:** `gemma4:31b` (via Ollama)
+Cyréna is tested heavily with local and cloud-hosted Ollama/OpenAI models, including `gemma4:31b`, which provides a strong balance of reasoning quality, coding ability, and local-first control.
 
-Hardware requirements scale with model size.
 
----
+### Development Requirements
+* **SDK:** .NET 10 SDK
+* **IDE:** Visual Studio, VSCode, or JetBrains Rider
+* **Android:** MAUI Workload
+* **Shell (Desktop):** Blazor & Avalonia
 
-## Getting Started
-
-### Setup Ollama
-
-1. Run Cyréna
-2. Open Settings
-3. Add an Ollama connection
-4. Configure model + tokens + context
-5. Save
-
-### Setup OpenAI
-
-1. Open Settings
-2. Add API key + model
-3. Save
-
-### Create a Project
-
-1. Click **New Chat**
-2. Select a project type
-3. Configure the project
-4. Submit
-
----
-
-## Hardware Notes
-
-Baseline development system:
-
-* RTX 3060 12GB
-* 48GB RAM
-* Ryzen 7 8700F
-
-Typical local test configuration:
-
-* `gpt-oss:20b`
-* 8k tokens
-* 16k context
-
-Larger models require additional VRAM and RAM.
+### Project Structure
+* `/src/Cyrena.Shell`: Desktop version.
+* `/src/Cyrena.Android`: Android version. *(Note: This project is purposefully coded to run on Windows for testing purposes, but is intended for Android deployment).*
 
 ---
 
 ## Philosophy
 
-Cyréna is being built around:
+Cyréna is built on the belief that AI should enhance human agency, not replace it. We focus on:
+* **Disciplined Behavior:** Predictable, reversible, and supervised AI actions.
+* **Architecture Safety:** Reducing entropy through project-aware reasoning.
+* **User Sovereignty:** You own your code, your data, and your infrastructure.
 
-* disciplined AI behavior
-* reversible engineering workflows
-* project-aware reasoning
-* persistent technical memory
-* predictable code generation
-* developer supervision
-* architecture safety
-* long-term maintainability
-
-The goal is not replacing developers.
-
-The goal is building better engineering workflows.
+**The goal is not magic. The goal is a better way to work.**
 
 ---
 
 ## Thanks to Open Source
+Cyréna stands on the shoulders of:
 
-Cyréna stands on the shoulders of excellent open-source projects:
-
-* [.NET](https://github.com/dotnet)
-* [Ollama](https://ollama.com)
-* [Arduino](https://www.arduino.cc/)
-* [MudBlazor](https://github.com/MudBlazor/MudBlazor/)
-* [BlazorMonaco](https://github.com/serdarciplak/BlazorMonaco)
-* [Photino.NET](https://github.com/tryphotino/photino.NET)
-* [Bootstrap](https://getbootstrap.com/)
-* [Avalonia](https://github.com/AvaloniaUI/Avalonia)
+[.NET](https://github.com/dotnet) | [Ollama](https://ollama.com) | [MudBlazor](https://github.com/MudBlazor/MudBlazor/) | [BlazorMonaco](https://github.com/serdarciplak/BlazorMonaco) | [Photino.NET](https://github.com/tryphotino/photino.NET) | [Avalonia](https://github.com/AvaloniaUI/Avalonia)
 
 ---
 
 ## Disclaimer
-
-Cyréna modifies real files inside real projects.
-
-Always use version control.
-Always review AI-generated changes.
-
-You are responsible for your codebase.
-
-Provided as-is. Use at your own risk.
+Cyréna modifies real files. **Always use version control.** You are responsible for your codebase. Provided as-is.

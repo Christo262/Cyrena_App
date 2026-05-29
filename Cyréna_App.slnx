@@ -22,7 +22,6 @@
       <Deploy Solution="Debug|*" />
     </Project>
     <Project Path="src/Cyrena.Shell/Cyrena.Shell.csproj" Id="58a14d80-8a42-42de-8391-570e403dbee8" />
-    <Project Path="src/Cyrena/Cyrena.csproj" Id="9edb268b-eb4b-46d9-ae58-72a87bbf57a8" />
   </Folder>
   <Folder Name="/src/canvas/">
     <Project Path="src/canvas/Cyrena.Canvas/Cyrena.Canvas.csproj" Id="93554c8b-6458-46d5-a612-054e6e72a86a" />
@@ -30,6 +29,7 @@
   <Folder Name="/src/components/">
     <Project Path="src/components/Cyrena.Components.Core/Cyrena.Components.Core.csproj" Id="01d4b14c-48f9-4158-a6a5-e2bfcc5187b2" />
     <Project Path="src/components/Cyrena.Components.Runtime/Cyrena.Components.Runtime.csproj" />
+    <Project Path="src/components/Cyrena/Cyrena.csproj" />
   </Folder>
   <Folder Name="/src/core/">
     <Project Path="src/core/Cyrena.Core/Cyrena.Core.csproj" Id="e480a90d-03ab-4e4a-819e-b60f31560803" />
