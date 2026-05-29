@@ -1,5 +1,6 @@
 ﻿using Cyrena.Canvas.Contracts;
 using Cyrena.Canvas.Models;
+using Cyrena.Canvas.Options;
 using Cyrena.Contracts;
 using Cyrena.Models;
 using Cyrena.Options;
@@ -10,7 +11,6 @@ namespace Cyrena.Canvas.Services
 {
     internal class CanvasService : ICanvasService
     {
-        internal const string CanvasTitle = "canvas.title";
         private readonly IFileHandlerFactory _files;
         private readonly CanvasPipeline _pipeline;
         public CanvasService(IFileHandlerFactory files)
@@ -21,38 +21,32 @@ namespace Cyrena.Canvas.Services
 
         public CanvasDocument? Current { get; private set; }      
         
-        public async Task<CanvasDocument> CreateAsync(string title, CanvasDocumentType type, CancellationToken cancellationToken = default)
+        public async Task<CanvasDocument> CreateAsync(string name, CanvasDocumentType type, string? language = "plaintext", CancellationToken cancellationToken = default)
         {
-            string name;
-            string content;
             string contentType;
             switch (type)
             {
                 case CanvasDocumentType.Html:
-                    name = $"{title}.html";
-                    content = $"<body style=\"background-color:white;\"><h1>{title}</h1></body>";
                     contentType = "text/html" ;
+                    language = "html";
                     break;
                 case CanvasDocumentType.Markdown:
-                    name = $"{title}.md";
-                    content = $"# {title}";
                     contentType= "text/markdown" ;
+                    language = "markdown";
                     break;
                 default:
-                    name = $"{title}.txt";
-                    content = title;
                     contentType = "text/plain" ;
                     break;
             }
-            var data = Encoding.UTF8.GetBytes(content);
+            var data = Encoding.UTF8.GetBytes("");
             var att = await _files.CreateAsync(name, contentType, data, cancellationToken);
-            att.Properties[CanvasTitle] = title;
             att.Tools.AddRange(["Canvas_activate", "Canvas_delete", "Canvas_write", "Canvas_get_active"]);
+            att.Properties[CanvasOptions.LangProp] = language;
             await _files.UpdateAsync(att, cancellationToken);
             var doc = new CanvasDocument()
             {
                 DocumentType = type,
-                Title = title,
+                Name = name,
                 Id = att.Id
             };
             _pipeline.InvokeDocumentCreate(doc);
@@ -68,9 +62,10 @@ namespace Cyrena.Canvas.Services
                 if (file.Tools.Contains("Canvas_activate"))
                     docs.Add(new CanvasDocument()
                     {
-                        Title = file[CanvasTitle],
+                        Name = file.Id,
                         Id = file.Id,
-                        DocumentType = file.Id.EndsWith(".html") ? CanvasDocumentType.Html : file.Id.EndsWith(".md") ? CanvasDocumentType.Markdown : CanvasDocumentType.Text
+                        DocumentType = file.Id.EndsWith(".html") ? CanvasDocumentType.Html : file.Id.EndsWith(".md") ? CanvasDocumentType.Markdown : CanvasDocumentType.Text,
+                        Language = file[CanvasOptions.LangProp]
                     });
             }
             return docs;
@@ -142,35 +137,12 @@ namespace Cyrena.Canvas.Services
             var doc = new CanvasDocument()
             {
                 Id = id,
-                Title = att[CanvasTitle],
+                Name = att.Id,
                 DocumentType = att.Id.EndsWith(".html") ? CanvasDocumentType.Html : att.Id.EndsWith(".md") ? CanvasDocumentType.Markdown : CanvasDocumentType.Text,
                 Content = text.Text,
                 Path = att.Path,
+                Language = att[CanvasOptions.LangProp]
             };
-            return doc;
-        }
-
-        public async Task<CanvasDocument> CreateFromAttachmentAsync(string originalId, CanvasDocumentType type, string title, CancellationToken cancellationToken = default)
-        {
-            var att = await _files.GetAttachmentAsync(originalId, cancellationToken);
-            if (att == null)
-                throw new FileNotFoundException($"Unable to find attachment with id {originalId}");
-            var content = await _files.GetKernelContent(originalId, cancellationToken);
-            if (content is not TextContent text)
-                throw new InvalidOperationException($"Attachment {originalId} is not a text-content file");
-            var data = await _files.GetFileDataAsync(originalId, cancellationToken);
-
-            var natt = await _files.CreateAsync(att.InternalName, att.MimeType, data, cancellationToken);
-            natt.Properties[CanvasTitle] = att.Id;
-            natt.Tools.AddRange(["Canvas_activate", "Canvas_delete", "Canvas_write", "Canvas_get_active"]);
-            await _files.UpdateAsync(att, cancellationToken);
-            var doc = new CanvasDocument()
-            {
-                DocumentType = type,
-                Title = title,
-                Id = natt.Id
-            };
-            _pipeline.InvokeDocumentCreate(doc);
             return doc;
         }
 

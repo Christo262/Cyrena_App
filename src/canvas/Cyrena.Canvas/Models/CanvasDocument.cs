@@ -7,13 +7,12 @@ namespace Cyrena.Canvas.Models
     {
         public CanvasDocument() { }
 
-        [JsonIgnore]
-        public string ConversationId { get; set; } = default!;
         public CanvasDocumentType DocumentType { get; set; }
         [JsonIgnore]
         public string? Content { get; set; }
-        public string? Title { get; set; }
+        public string? Name { get; set; }
         [JsonIgnore]
         public string? Path { get; set; }
+        public string? Language { get; set; }
     }
 }

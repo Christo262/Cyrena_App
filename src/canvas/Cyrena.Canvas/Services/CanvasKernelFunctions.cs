@@ -71,16 +71,13 @@ namespace Cyrena.Canvas.Services
             "Use this when the user wants a new document, draft, note, code file, or other canvas item. " +
             "The created document becomes the active canvas document immediately.")]
         public async Task<ToolResult<CanvasDocument>> CreateAsync(
-            [Description("The title of the new canvas document.")]
-        string title,
-
-            [Description("The type of canvas document to create.")]
-        CanvasDocumentType documentType,
-
+            [Description("The name of the new canvas document. Examples: index.html, MyModel.cs, main.py, readme.md")]string name,
+            [Description("The type of canvas document to create. Html & Markdown types support previewing for user. Use Text for any other files.")]CanvasDocumentType documentType,
+            [Description("The language of the document, eg. html, csharp, python, plaintext")] string? language = "plaintext",
             CancellationToken cancellationToken = default)
         {
-            await _chat.LogInfo($"Creating canvas {title}...");
-            var doc = await _canvas.CreateAsync(title, documentType, cancellationToken);
+            await _chat.LogInfo($"Creating canvas {name}...");
+            var doc = await _canvas.CreateAsync(name, documentType,language, cancellationToken);
             await _canvas.ActivateAsync(doc.Id, cancellationToken);
 
             return new ToolResult<CanvasDocument>(doc);

@@ -1,5 +1,6 @@
 ﻿using Cyrena.Attributes;
 using Cyrena.Canvas.Contracts;
+using Cyrena.Canvas.Models;
 using Cyrena.Contracts;
 
 namespace Cyrena.Canvas.Components.Shared
@@ -9,11 +10,12 @@ namespace Cyrena.Canvas.Components.Shared
         [KernelInject] private ICanvasService _canvas { get; set; } = default!;
         [KernelInject] private IDockingService _dock { get; set; } = default!;
         private List<IDisposable> _disposables { get; set; } = new List<IDisposable>();
-
+        private CanvasDocument? _current { get; set; }
         protected override void OnInitialized()
         {
             _disposables.Add(_canvas.OnDocumentActivate(doc =>
             {
+                _current = doc;
                 this.InvokeAsync(async () =>
                 {
                     Toggle();
@@ -25,12 +27,12 @@ namespace Cyrena.Canvas.Components.Shared
         private void Toggle()
         {
             if (_open) return;
-            _dock.Dock<CanvasPreview>("Preview", () =>
-            {
+            if(_current?.DocumentType == CanvasDocumentType.Html || _current?.DocumentType == CanvasDocumentType.Markdown)
+                _dock.Dock<CanvasPreview>("Preview", () => { });
+            _dock.Dock<CanvasEditor>("Code", () => {
                 _open = false;
                 this.InvokeAsync(StateHasChanged);
             });
-            _dock.Dock<CanvasEditor>("Code", () => { });
             _open = true;
         }
 

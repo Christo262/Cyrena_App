@@ -3,5 +3,19 @@
 
 @if (_current != null)
 {
+    <MudPaper Class="px-2">
+        <MudStack Row Justify="Justify.FlexEnd">
+            <MudTooltip Text="Save File">
+                <MudIconButton Icon="@Icons.Material.Filled.Save" Size="Size.Small" OnClick="SaveFileAsync" />
+            </MudTooltip>
+            @if(_current.DocumentType == Models.CanvasDocumentType.Html)
+            {
+                <MudTooltip Text="Export Canvas">
+                    <MudIconButton Icon="@Icons.Material.Filled.DownloadForOffline" Size="Size.Small" OnClick="ExportAsync" />
+                </MudTooltip>
+            }
+        </MudStack>
+    </MudPaper>
+
     <CodeInput @ref="_code" Language="@_lang" @bind-Value="_current.Content" @bind-Value:after="SaveAsync"></CodeInput>
 }

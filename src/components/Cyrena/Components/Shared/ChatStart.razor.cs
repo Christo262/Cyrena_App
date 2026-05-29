@@ -17,6 +17,7 @@ namespace Cyrena.Components.Shared
         [Inject] private ISnackbar _snackbar { get; set; } = default!;
         [Inject] private IJSRuntime _js { get; set; } = default!;
         [Inject] private ISetupService _setup { get; set; } = default!;
+        [Inject] private IImportService _import { get; set; } = default!;
         [Inject] private ComponentOptions _ui { get; set; } = default!;
 
         private ChatConfiguration? _model;
@@ -61,6 +62,17 @@ namespace Cyrena.Components.Shared
         private void Settings()
         {
             _showConfig = true;
+        }
+
+        private async Task ImportAsync()
+        {
+            try
+            {
+                await _import.StartImportAsync();
+            }catch (Exception ex)
+            {
+                _snackbar.Add(ex.Message, Severity.Error);
+            }
         }
 
         private async Task Send()

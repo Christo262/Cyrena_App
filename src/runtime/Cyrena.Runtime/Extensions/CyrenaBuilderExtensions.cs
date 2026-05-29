@@ -24,6 +24,8 @@ namespace Cyrena.Extensions
             builder.Services.AddSingleton<IKernelController, KernelController>();
             builder.AddAssistantPlugin<AllAssistantsPlugin>();
 
+            builder.Services.AddSingleton<IImportService, ImportService>();
+
             return builder;
         }
     }

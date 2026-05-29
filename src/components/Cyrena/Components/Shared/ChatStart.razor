@@ -33,7 +33,15 @@ else
             </div>
             
             <div class="d-flex flex-row">
-                <div class="mr-1 ml-auto">
+                @if (!OperatingSystem.IsAndroid()) //Not supported on android yet
+                {
+                    <div class="mr-1 ml-auto">
+                        <MudTooltip Text="Import Cyrena File">
+                            <MudIconButton Icon="@Icons.Material.Filled.LabelImportant" Size="Size.Small" Color="Color.Inherit" OnClick="ImportAsync" />
+                        </MudTooltip>
+                    </div>
+                }
+                <div class="mr-1">
                     <MudTooltip Text="Configure">
                         <MudIconButton Icon="@Icons.Material.Filled.Settings" Size="Size.Small" Color="Color.Inherit" OnClick="Settings" />
                     </MudTooltip>

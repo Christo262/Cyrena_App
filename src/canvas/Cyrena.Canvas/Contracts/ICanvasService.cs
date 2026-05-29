@@ -11,10 +11,9 @@ namespace Cyrena.Canvas.Contracts
 
         Task<IEnumerable<CanvasDocument>> ListAsync(CancellationToken cancellationToken = default);
         Task DeleteAsync(string id, CancellationToken cancellationToken = default);
-        Task<CanvasDocument> CreateAsync(string title, CanvasDocumentType documentType, CancellationToken cancellationToken = default);
+        Task<CanvasDocument> CreateAsync(string name, CanvasDocumentType documentType, string? language = "plaintext", CancellationToken cancellationToken = default);
         Task<bool> ActivateAsync(string id, CancellationToken cancellationToken = default);
         Task<CanvasDocument> WriteAsync(string content, int startLine = 0, int lineCount = 0, CancellationToken cancellationToken = default);
-        Task<CanvasDocument> CreateFromAttachmentAsync(string originalId, CanvasDocumentType type, string title, CancellationToken cancellationToken = default);
 
         IDisposable OnDocumentCreate(Action<CanvasDocument> cb);
         IDisposable OnDocumentDelete(Action<CanvasDocument> cb);
