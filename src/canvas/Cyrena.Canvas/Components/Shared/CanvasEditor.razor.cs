@@ -13,6 +13,7 @@ namespace Cyrena.Canvas.Components.Shared
     {
         [KernelInject] private ICanvasService _canvas { get; set; } = default!;
         [KernelInject] private ICyrenaFileExporter _exporter { get; set; } = default!;
+        [KernelInject] private IIterationService _its { get; set; } = default!;
         [Inject] private IFileDialog _dialog { get; set; } = default!;
         [Inject] private ISnackbar _toasts { get; set; } = default!;
         private List<IDisposable> _disposables { get; set; } = new List<IDisposable>();
@@ -55,6 +56,14 @@ namespace Cyrena.Canvas.Components.Shared
             _current = _canvas.Current;
         }
 
+        private IEnumerable<CanvasDocument> _docs = Enumerable.Empty<CanvasDocument>();
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (!firstRender) return;
+            _docs = await _canvas.ListAsync();
+            this.StateHasChanged();
+        }
+
         private async Task SaveAsync()
         {
             if (_current == null) return;
@@ -76,6 +85,12 @@ namespace Cyrena.Canvas.Components.Shared
                         return _current.Language ?? "plaintext";
                 }
             }
+        }
+
+        private async Task ChangeActive(string? e)
+        {
+            if(!_its.Inferring && !string.IsNullOrEmpty(e))
+                await _canvas.ActivateAsync(e);
         }
 
         private async Task ExportAsync()

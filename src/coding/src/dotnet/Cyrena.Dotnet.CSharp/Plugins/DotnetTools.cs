@@ -158,10 +158,12 @@ namespace Cyrena.Dotnet.CSharp.Plugins
             process.WaitForExit();
             process.WaitForExit(); // flush buffers
 
-            if (process.ExitCode != 0)
-                return new ToolResult<ConsoleOutput>(output, false, $"dotnet {arguments} failed");
+            const string lineNumberWarning = "IMPORTANT: Line numbers in build output refer to generated code, not source files — do not use them to locate code in .razor or .cs files. Search for the relevant code by name or pattern instead.";
 
-            return new ToolResult<ConsoleOutput>(output, true, $"dotnet {arguments} succeeded");
+            if (process.ExitCode != 0)
+                return new ToolResult<ConsoleOutput>(output, false, $"dotnet {arguments} failed. {lineNumberWarning}");
+
+            return new ToolResult<ConsoleOutput>(output, true, $"dotnet {arguments} succeeded. {lineNumberWarning}");
         }
 
         public static string ReadTemplate(string name)

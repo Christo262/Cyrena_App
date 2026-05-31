@@ -239,3 +239,7 @@ pre:hover .btn-copy-code {
 .chat-menu-item:hover .chat-menu-item-ctx {
     display: block;
 }
+
+.h-100-48 {
+    height:calc(100% - 48px) !important;
+}

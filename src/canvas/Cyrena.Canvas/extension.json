@@ -3,7 +3,7 @@
   "name": "Canvas",
   "version": "0.6.0",
   "entryAssemblyFile": "Cyrena.Canvas.dll",
-  "description": "Text editor canvas",
+  "description": "Provides a persistent, editable canvas for collaborative content creation and code development.",
   "dependencies": [
     {
       "id": "cyrena",

@@ -3,7 +3,7 @@
 <MudDrawer @bind-Open="_show" Width="60%" Class="mud-height-full" Anchor="Anchor.End" Fixed="false" Elevation="0" Variant="DrawerVariant.Persistent">
     @if (_requests.Count > 0 && _show)
     {
-        <MudTabs Class="h-100" ApplyEffectsToContainer="true" TabPanelsClass="h-100">
+        <MudTabs Class="h-100" ApplyEffectsToContainer="true" TabPanelsClass="h-100-48">
             <Header>
                 <MudTooltip Text="Close">
                     <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="CloseAll" />

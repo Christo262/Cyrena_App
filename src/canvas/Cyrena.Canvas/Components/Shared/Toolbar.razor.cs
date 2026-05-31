@@ -28,11 +28,21 @@ namespace Cyrena.Canvas.Components.Shared
         {
             if (_open) return;
             if(_current?.DocumentType == CanvasDocumentType.Html || _current?.DocumentType == CanvasDocumentType.Markdown)
+            {
                 _dock.Dock<CanvasPreview>("Preview", () => { });
-            _dock.Dock<CanvasEditor>("Code", () => {
-                _open = false;
-                this.InvokeAsync(StateHasChanged);
-            });
+                _dock.Dock<CanvasEditor>("Code", () => {
+                    _open = false;
+                    this.InvokeAsync(StateHasChanged);
+                });
+            }
+            else
+            {
+                _dock.Dock<CanvasEditor>("Code", () => {
+                    _open = false;
+                    this.InvokeAsync(StateHasChanged);
+                });
+                _dock.Dock<CanvasPreview>("Preview", () => { });
+            }
             _open = true;
         }
 
