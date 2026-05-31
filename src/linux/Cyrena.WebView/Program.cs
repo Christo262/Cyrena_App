@@ -1,4 +1,5 @@
-﻿using Photino.NET;
+using Photino.NET;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 
 internal sealed record AppArgs(
@@ -49,14 +50,21 @@ internal sealed record AppArgs(
 
 internal static class Program
 {
+    private static string GetIconPath()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            return "favicon.png";
+
+        return "favicon.ico";
+    }
+
     [STAThread]
     private static void Main(string[] args)
     {
         var appArgs = AppArgs.Parse(args);
-
         var window = new PhotinoWindow()
             .SetTitle(appArgs.Title)
-            .SetIconFile("favicon.ico")
+            .SetIconFile(GetIconPath())
             .SetUseOsDefaultLocation(false)
             .SetUseOsDefaultSize(false)
             .SetWidth(appArgs.Width)
@@ -64,7 +72,6 @@ internal static class Program
             .SetContextMenuEnabled(false)
             .SetDevToolsEnabled(false)
             .SetFileSystemAccessEnabled(true)
-            .Center()
             .Load(new Uri(appArgs.Url));
 
         window.WindowSizeChanged += Window_WindowSizeChanged;

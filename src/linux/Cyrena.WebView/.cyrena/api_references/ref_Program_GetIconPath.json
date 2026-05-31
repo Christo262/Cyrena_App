@@ -1,0 +1,16 @@
+{
+  "Title": "Program.GetIconPath",
+  "Keywords": [
+    "Program",
+    "GetIconPath",
+    "icon",
+    "Linux",
+    "PNG",
+    "ICO",
+    "RuntimeInformation"
+  ],
+  "Summary": "OS-aware icon path selector that returns PNG for Linux and ICO for Windows/macOS.",
+  "Link": null,
+  "Content": "## Program.GetIconPath\n\n**Location:** \u0060Program.cs\u0060 \u2014 \u0060internal static class Program\u0060\n\n**Signature:**\n\u0060\u0060\u0060csharp\nprivate static string GetIconPath()\n\u0060\u0060\u0060\n\n**Behavior:**\n- On Linux (\u0060RuntimeInformation.IsOSPlatform(OSPlatform.Linux)\u0060): returns \u0060\u0022favicon.png\u0022\u0060\n- On all other platforms (Windows, macOS): returns \u0060\u0022favicon.ico\u0022\u0060\n\n**Rationale:**\nPhotino.NET uses GTK on Linux, and GTK does not support \u0060.ico\u0060 files for window icons. The \u0060SetIconFile()\u0060 method on Linux requires a PNG image. Windows natively supports \u0060.ico\u0060 files, which can contain multiple resolutions.\n\n**Usage:**\nCalled during \u0060PhotinoWindow\u0060 initialization to pass the correct icon file path to \u0060.SetIconFile()\u0060.\n\n**Dependencies:**\n- \u0060System.Runtime.InteropServices.RuntimeInformation\u0060\n- \u0060System.Runtime.InteropServices.OSPlatform\u0060\n\n**Related:**\n- \u0060PhotinoWindow.SetIconFile(string)\u0060 \u2014 Photino API that consumes the returned path.\n- Requires \u0060favicon.png\u0060 to exist in the output directory alongside \u0060favicon.ico\u0060.\n",
+  "Id": "ref_Program_GetIconPath"
+}
