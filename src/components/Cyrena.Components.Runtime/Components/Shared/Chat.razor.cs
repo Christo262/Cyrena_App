@@ -21,6 +21,7 @@ namespace Cyrena.Components.Shared
         public bool AutoRefocus { get; set; } = true;
         private ElementReference _scrollHost;
         private Markdig.MarkdownPipeline _mdp = default!;
+        private MessageDisplayHistoryPager _pager = default!;
 
         [KernelInject] private IIterationService _its { get; set; } = default!;
         [KernelInject] private IChatMessageService _msg { get; set; } = default!;
@@ -42,6 +43,7 @@ namespace Cyrena.Components.Shared
                 .Build();
             if(_its.Input == null)
                 _its.Input = new ChatMessageContent(_msg.Options.User, "");
+            _pager = new MessageDisplayHistoryPager(_msg);
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -178,18 +180,24 @@ namespace Cyrena.Components.Shared
                 {
                     if(AutoRefocus)
                     await _area.FocusAsync();
+                    _busy = false;
                 }
             });
         }
 
         private string? _stream;
+        private bool _busy { get; set; }
         public void OnStreamToken(string? token)
         {
+
             _stream += token;
+            if (_busy) return;
+            _busy = true;
             this.InvokeAsync(async () =>
             {
                 this.StateHasChanged();
                 await ScrollToBottomAsync(false);
+                _busy = false;
             });
         }
 
@@ -217,6 +225,35 @@ namespace Cyrena.Components.Shared
             _its_start.Dispose();
             _dsp_hst.Dispose();
             _dsp_st.Dispose();
+        }
+    }
+
+    internal class MessageDisplayHistoryPager
+    {
+        private readonly IChatMessageService _msg;
+        public MessageDisplayHistoryPager(IChatMessageService msg)
+        {
+            _msg = msg;
+            _history = _msg.DisplayHistory;
+        }
+
+        private IReadOnlyList<ChatMessageContent> _history { get; set; }
+        public IEnumerable<ChatMessageContent> History => _history.TakeLast(_pageCount);
+        private int _pageCount { get; set; } = 10;
+
+        private void OnDisplayHistoryChanged(ChatHistory history)
+        {
+            _history = _msg.DisplayHistory;
+        }
+
+        public void IncreasePageCount()
+        {
+            _pageCount = _pageCount + 10;
+        }
+
+        public bool CanLoadMore()
+        {
+            return _pageCount < _history.Count;
         }
     }
 }

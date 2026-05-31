@@ -5,7 +5,7 @@
 
 <div class="d-flex flex-column h-100" @ref="_dropZone">
     <div class="pa-2 flex-grow-1 overflow-auto relative" style="min-height: 0;" @ref="_scrollHost">
-        @if (_msg.DisplayHistory.Count == 0)
+        @if (_pager.History.Count() == 0)
         {
             <MudText Color="Color.Surface">
                 <MudText Typo="Typo.subtitle1" Class="mb-1"><b>Start chatting</b></MudText>
@@ -14,9 +14,15 @@
         }
         else
         {
-            for (int i = 0; i < _msg.DisplayHistory.Count; i++)
+            @if (_pager.CanLoadMore())
             {
-                var msg = _msg.DisplayHistory[i];
+                <div class="d-flex mb-3 justify-center">
+                    <MudButton OnClick="_pager.IncreasePageCount" Color="Color.Primary" Size="Size.Small">Show More</MudButton>
+                </div>
+            }
+            for (int i = 0; i < _pager.History.Count(); i++)
+            {
+                var msg = _pager.History.ElementAt(i);
                 if (msg.Role == _msg.Options.LogError)
                 {
                     <div class="d-flex mb-3 justify-start">

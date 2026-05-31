@@ -11,8 +11,9 @@
     <Header>
     </Header>
     <ChildContent>
-        @foreach (var item in _active)
+        @for(int i = 0; i < _active.Count; i++)
         {
+            var item = _active[i];
             <MudTabPanel ID="@item" Text="@item.GetTitle()" ShowCloseIcon>
                 <KernelInstance Kernel="item" />
             </MudTabPanel>

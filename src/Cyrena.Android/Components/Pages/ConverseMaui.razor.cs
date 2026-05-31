@@ -23,8 +23,10 @@ namespace Cyrena.Android.Components.Pages
         {
             if (!_rendered) return;
             _loading = true;
+            await Task.Delay(20);
             try
             {
+                _watcher?.Dispose();
                 if (string.IsNullOrEmpty(Id))
                     throw new NullReferenceException("No id provided");
                 _kernel = await _controller.LoadAsync(Id);
