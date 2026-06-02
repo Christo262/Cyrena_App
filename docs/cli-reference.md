@@ -1,17 +1,43 @@
 # CLI Reference
 
-Cyréna CLI commands must be run from the Cyréna installation directory.
+Cyréna provides a `cyrena` command for running CLI commands.
+
+If Cyréna has been added to your `PATH`, commands can be run from any directory:
+
+```bash
+cyrena help
+```
+
+If Cyréna is not on your `PATH`, commands must be run from the Cyréna installation directory using the local command:
+
+```bash
+./cyrena help
+```
 
 ## Running a Command
 
+When `cyrena` is available on your `PATH`:
+
 ```bash
-./Cyrena.Shell help
+cyrena help
 ```
 
-On Windows, use:
+From the Cyréna installation directory:
 
 ```bash
-./Cyrena.Shell.exe help
+./cyrena help
+```
+
+On Windows, the same command is provided by `cyrena.cmd`:
+
+```powershell
+cyrena help
+```
+
+Or, from the installation directory:
+
+```powershell
+.\cyrena help
 ```
 
 ## Getting Help for a Specific Command
@@ -19,13 +45,25 @@ On Windows, use:
 To view help for a specific command, pass the command name to `--help`:
 
 ```bash
-./Cyrena.Shell --help set
+cyrena --help set
+```
+
+From the Cyréna installation directory:
+
+```bash
+./cyrena --help set
 ```
 
 On Windows:
 
-```bash
-./Cyrena.Shell.exe --help set
+```powershell
+cyrena --help set
+```
+
+Or, from the installation directory:
+
+```powershell
+.\cyrena --help set
 ```
 
 Example output:
@@ -59,14 +97,22 @@ This is useful when you need to change settings before Cyréna starts, such as w
 
 ### Example
 
+When `cyrena` is available on your `PATH`:
+
 ```bash
-./Cyrena.Shell set --port 5000 --launch-window true
+cyrena set --port 5000 --launch-window true
 ```
 
-On Windows:
+From the Cyréna installation directory:
 
 ```bash
-./Cyrena.Shell.exe set --port 5000 --launch-window true
+./cyrena set --port 5000 --launch-window true
+```
+
+On Windows, from the installation directory:
+
+```powershell
+.\cyrena set --port 5000 --launch-window true
 ```
 
 ## `kill` Command
@@ -77,14 +123,20 @@ This command includes validation to ensure that only the user who started Cyrén
 
 Use this command if you cannot access the tray icon and need to stop Cyréna manually.
 
-### macOS / Linux
+When `cyrena` is available on your `PATH`:
 
 ```bash
-./Cyrena.Shell kill
+cyrena kill
 ```
 
-### Windows
+From the Cyréna installation directory:
 
 ```bash
-./Cyrena.Shell.exe kill
+./cyrena kill
+```
+
+On Windows, from the installation directory:
+
+```powershell
+.\cyrena kill
 ```

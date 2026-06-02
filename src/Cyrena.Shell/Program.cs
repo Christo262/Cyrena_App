@@ -29,8 +29,11 @@ namespace Cyrena.Shell
                 if (!string.IsNullOrEmpty(result.Message))
                     Console.WriteLine(result.Message);
 
-                Console.WriteLine("Press any key to exit");
-                var key = Console.ReadKey();
+                if(OperatingSystem.IsWindows()) //Prevent just closing window and not showing output
+                {
+                    Console.WriteLine("Press any key to exit");
+                    var key = Console.ReadKey();
+                }
                 return result.ExitCode ?? -1;
             }
             return app.StartWithClassicDesktopLifetime(args);

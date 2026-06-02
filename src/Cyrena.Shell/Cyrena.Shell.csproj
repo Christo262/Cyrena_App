@@ -42,6 +42,15 @@
     <ProjectReference Include="..\runtime\Cyrena.CLI\Cyrena.CLI.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="cyrena">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="cyrena.cmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
   <Target Name="PublishCyrenaWebView" Condition="$([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('linux-'))" BeforeTargets="Publish">
 
     <Exec Command="dotnet publish ../linux/Cyrena.WebView/Cyrena.WebView.csproj -c $(Configuration) -r $(RuntimeIdentifier) --self-contained true -p:PublishSingleFile=true -p:PublishDir=$(PublishDir)webview/" />
