@@ -127,12 +127,23 @@ namespace Cyrena.Components.Layout
             _controller.Unload(ChatConfiguration);
         }
 
-        private void NewWindow()
+        private async Task NewWindow()
         {
             if (!_ui.MenuOptions.AllowNewTab) return;
             var options = _services.GetRequiredService<ISettingsService>().Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
-            _open = false;
-            _windows.Show($"{_nav.BaseUri.TrimEnd('/')}/converse-blank/{ChatConfiguration.Id}", options.Width, options.Height);
+            var url = $"{_nav.BaseUri.TrimEnd('/')}/converse-blank/{ChatConfiguration.Id}";
+            var pm = new ConverseBlankOptions() { Url = url, Height = options.Height, Width = options.Width };
+            var rf = await _dialog.ShowAsync<_NewWindowOptions>(null, new DialogParameters()
+            {
+                {nameof(_NewWindowOptions.Options), pm }
+            }, new DialogOptions()
+            {
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true,
+            });
+            var result = await rf.Result;
+            if (result is { Canceled: false })
+                _open = false;
         }
 
         public void Dispose()

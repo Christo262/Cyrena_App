@@ -30,3 +30,7 @@ window.triggerClick = (element) => {
         element.click();
     }
 };
+
+window.copyToClipboard = (data) => {
+    navigator.clipboard.writeText(data);
+}

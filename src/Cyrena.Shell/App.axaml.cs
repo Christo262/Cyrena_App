@@ -6,9 +6,11 @@ using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Options;
 using Cyrena.Shell.Extensions;
+using Cyrena.Shell.Models;
 using Cyrena.Shell.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using MudBlazor;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -60,6 +62,7 @@ namespace Cyrena.Shell
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
+                var settings = CyrenaRuntime.CreateSettings();
                 desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
                 _splashWindow = new SplashWindow();
@@ -77,14 +80,16 @@ namespace Cyrena.Shell
                         };
                         try
                         {
-                            using var check = await http.GetAsync("/api/is-alive");
+                            var squawk = settings.Read<Squawk>(Squawk.Key);
+                            using var check = await http.GetAsync($"/api/is-alive?squawk={squawk?.Value}");
                             if (check.IsSuccessStatusCode)
                             {
                                 if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                                     desktop.Shutdown();
                                 return;
                             }
-
+                            else if (check.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                                throw new Exception($"Another user is running Cyréna on the same port. Try 'Cyrena.Shell set --port=8001' to specify a different port");
                         }
                         catch { }
                         await _background.StartAsync(_backgroundToken.Token);
@@ -118,7 +123,8 @@ namespace Cyrena.Shell
                         var fd = _background.Services.GetRequiredService<IFileDialog>();
                         if (fd is FileDialog nfd)
                             nfd.SetWindow(_splashWindow);
-                        var options = CyrenaRuntime.CreateSettings().Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
+                        var options = settings.Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
+                        settings.Save<Squawk>(Squawk.Key, new Squawk());
                         if (options.LaunchWindowOnStartup == true)
                             ShowWindow();
                     });                   
@@ -138,8 +144,13 @@ namespace Cyrena.Shell
             }
         }
 
-        private void Exit()
+        public void Exit()
         {
+            if (!Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
+            {
+                Avalonia.Threading.Dispatcher.UIThread.Post(Exit);
+                return;
+            }
             if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 desktop.Shutdown();
             if (_background != null)

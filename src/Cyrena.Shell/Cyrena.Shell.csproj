@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\components\Cyrena\Cyrena.csproj" />
+    <ProjectReference Include="..\runtime\Cyrena.CLI\Cyrena.CLI.csproj" />
   </ItemGroup>
 
   <Target Name="PublishCyrenaWebView" Condition="$([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('linux-'))" BeforeTargets="Publish">

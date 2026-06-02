@@ -2,7 +2,6 @@
   "profiles": {
     "Cyrena.Shell": {
       "commandName": "Project",
-      "launchBrowser": false,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

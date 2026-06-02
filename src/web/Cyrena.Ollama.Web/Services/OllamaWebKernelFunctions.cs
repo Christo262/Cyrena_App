@@ -35,7 +35,7 @@ namespace Cyrena.Ollama.Web.Services
             [Description("The full URL of the page to fetch.")] string url,
             CancellationToken cancellationToken = default)
         {
-            await _chat.LogInfo("Fetchin with Ollama Web...");
+            await _chat.LogInfo("Fetching with Ollama Web...");
             return await _web.FetchAsync(url, cancellationToken);
         }
     }

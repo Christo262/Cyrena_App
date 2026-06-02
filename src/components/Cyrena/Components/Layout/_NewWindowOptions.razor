@@ -1,0 +1,41 @@
+<MudDialog>
+    <DialogContent>
+        <MudTextField Value="@Options.Url" Disabled Variant="Variant.Outlined" Margin="Margin.Dense" Label="Local URL"/>
+        <MudStack Row>
+            <MudButton OnClick="Copy" Size="Size.Small" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.ContentCopy">Copy URL</MudButton>
+            <MudSpacer/>
+            <MudButton OnClick="NewWindow" Size="Size.Small" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Window">New Window</MudButton>
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="Color.Error">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Inject]
+    private IJSRuntime _js { get; set; } = default!;
+    [Inject]
+    private IWindowLauncher _win { get; set; } = default!;
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter]
+    public ConverseBlankOptions Options { get; set; } = default!;
+
+    private async Task Copy()
+    {
+        await _js.InvokeVoidAsync("copyToClipboard", Options.Url);
+        MudDialog.Close(DialogResult.Ok(Options));
+    }
+
+    private void NewWindow()
+    {
+        _win.Show(Options.Url, Options.Width, Options.Height);
+        MudDialog.Close(DialogResult.Ok(Options));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Close(DialogResult.Cancel());
+    }
+}
