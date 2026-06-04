@@ -60,6 +60,7 @@ namespace Cyrena.Dotnet.CSharp.Services
                 {
                     project.ProjectTypeId = project_type.Id;
                     project.ProjectTypeName = project_type.ProjectTypeName;
+                    project.Plan = project_type.IndexPlan(project);
                 }
             }
             var sln_model = new SolutionViewModel(options.ChatConfiguration.WorkingDirectory!);

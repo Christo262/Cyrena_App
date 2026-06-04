@@ -5,6 +5,7 @@
     /// </summary>
     public interface IImportService
     {
+        bool HasImporters();
         Task StartImportAsync(CancellationToken cancellationToken = default!);
     }
 }

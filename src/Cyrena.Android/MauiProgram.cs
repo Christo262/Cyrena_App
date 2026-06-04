@@ -11,6 +11,7 @@ using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Options;
 using Microsoft.Extensions.Logging;
+using Shiny;
 
 
 namespace Cyrena.Android
@@ -23,18 +24,21 @@ namespace Cyrena.Android
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseShiny()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
             var cyrena = builder.Services.AddCyrenaRuntime()
-               .AddExtensa(e =>
-               {
-                   e.ExtensionInfoFileName = "extension.json";
-                   e.ExtensionsDirectory = Path.Combine(CyrenaBuilder.AppDataDirectory, "extensions");
-                   e.InstallationsDirectory = Path.Combine(CyrenaBuilder.AppDataDirectory, "install");
-               })
-               .AddExtension<CyrenaExtension>(CyrenaExtension.Id, CyrenaExtension.Name, CyrenaExtension.Version, CyrenaExtension.Description);
+                .AddExtensa(e =>
+                {
+                    e.ExtensionInfoFileName = "extension.json";
+                    e.ExtensionsDirectory = Path.Combine(CyrenaBuilder.AppDataDirectory, "extensions");
+                    e.InstallationsDirectory = Path.Combine(CyrenaBuilder.AppDataDirectory, "install");
+                })
+                .AddExtension<CyrenaExtension>(CyrenaExtension.Id, CyrenaExtension.Name, CyrenaExtension.Version,
+                    CyrenaExtension.Description);
+            builder.Services.AddBluetoothLE();
 
             cyrena.Services.AddSingleton<IFileDialog, FileDialog>();
             cyrena.Services.AddSingleton<IWindowLauncher, WindowLauncher>();

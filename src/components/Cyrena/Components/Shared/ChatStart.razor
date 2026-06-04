@@ -33,7 +33,7 @@ else
             </div>
             
             <div class="d-flex flex-row">
-                @if (!OperatingSystem.IsAndroid()) //Not supported on android yet
+                @if (_import.HasImporters()) //Not supported on android yet
                 {
                     <div class="mr-1 ml-auto">
                         <MudTooltip Text="Import Cyrena File">

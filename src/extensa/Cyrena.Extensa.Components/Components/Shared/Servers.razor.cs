@@ -102,5 +102,26 @@ namespace Cyrena.Extensa.Components.Shared
                 _snackbar.Add(ex.Message, Severity.Error);
             }
         }
+
+        private async Task InstallExtension()
+        {
+            var path = await _files.OpenAsync("Select ZIP file", null);
+            if(string.IsNullOrEmpty(path))
+            return;
+            if (!File.Exists(path))
+            {
+                _snackbar.Add("ZIP file not found");
+                return;
+            }
+            try
+            {
+                var name = Path.GetFileName(path);
+                File.Copy(path, Path.Combine(_options.Value.InstallationsDirectory, name));
+                _snackbar.Add("Restart application to complete installation.", Severity.Info);
+            }catch(Exception ex)
+            {
+                _snackbar.Add(ex.Message, Severity.Error);
+            }
+        }
     }
 }

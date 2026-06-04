@@ -7,6 +7,10 @@
         <MudButton OnClick="OpenExtensions" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Class="me-1">Extensions Folder</MudButton>
         <MudButton OnClick="OpenInstallations" Variant="Variant.Filled" Color="Color.Info" Size="Size.Small">Installations Folder</MudButton>
     }
+
+    <MudTooltip Text="Install">
+        <MudButton Size="Size.Small" OnClick="InstallExtension" Variant="Variant.Filled" Color="Color.Primary">Install</MudButton>
+    </MudTooltip>
 </div>
 <MudAlert Severity="Severity.Success">
     <span class="text-danger">*</span> Extension servers provide additional extensions and updates to Cyréna. Add custom servers to host your own. Visit <a href="https://cyrena.dev" target="_blank">cyrena.dev</a> to learn more.

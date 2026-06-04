@@ -20,6 +20,11 @@ namespace Cyrena.Runtime.Services
             _services = services;
         }
 
+        public bool HasImporters()
+        {
+            return  _services.GetServices<ICyrenaFileImporter>().Any();
+        }
+
         public async Task StartImportAsync(CancellationToken cancellationToken = default)
         {
             string? dest = null;

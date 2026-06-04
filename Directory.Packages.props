@@ -11,6 +11,8 @@
     <PackageVersion Include="Cyrena.Persistence.Core" Version="0.6.0" />
     <PackageVersion Include="Cyrena.Persistence.File" Version="0.6.0" />
     <PackageVersion Include="Microsoft.Maui.Essentials" Version="10.0.70" />
+    <PackageVersion Include="Shiny.BluetoothLE" Version="4.0.1" />
+    <PackageVersion Include="Shiny.Hosting.Maui" Version="4.0.1" />
   </ItemGroup>
   <!--Third-party-->
   <ItemGroup>
