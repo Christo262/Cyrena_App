@@ -22,6 +22,7 @@ namespace Cyrena.Coding.Services
             var refresher = _services.GetService<IDevelopPlanIndexer>();
             if(refresher != null)
             {
+                _logger.LogInformation("Found develop plan refresher");
                 var its = _services.GetRequiredService<IIterationService>();
                 its.OnIterationStart(e =>
                 {

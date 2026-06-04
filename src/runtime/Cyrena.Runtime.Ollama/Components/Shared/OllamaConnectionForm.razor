@@ -13,23 +13,25 @@
                 <MudSelectItem Value="128">128</MudSelectItem>
                 <MudSelectItem Value="256">256</MudSelectItem>
                 <MudSelectItem Value="512">512</MudSelectItem>
-                <MudSelectItem Value="1024">1,024</MudSelectItem>
-                <MudSelectItem Value="2048">2,048</MudSelectItem>
-                <MudSelectItem Value="4096">4,096</MudSelectItem>
-                <MudSelectItem Value="8192">8,192</MudSelectItem>
-                <MudSelectItem Value="16384">16,384</MudSelectItem>
-                <MudSelectItem Value="32768">32,768</MudSelectItem>
+                <MudSelectItem Value="1024">1k</MudSelectItem>
+                <MudSelectItem Value="2048">2k</MudSelectItem>
+                <MudSelectItem Value="4096">4k</MudSelectItem>
+                <MudSelectItem Value="8192">8k</MudSelectItem>
+                <MudSelectItem Value="16384">16k</MudSelectItem>
+                <MudSelectItem Value="32768">32k</MudSelectItem>
             </MudSelect>
 
             <MudSelect @bind-Value="Model.NumContext" Dense Margin="Margin.Dense" Label="Context Length" HelperText="Sets the size of the context window used to generate the next token. (Default: 4096)">
-                <MudSelectItem Value="@(1024 * 2)">@(1024 * 2)</MudSelectItem>
-                <MudSelectItem Value="@(1024 * 4)">@(1024 * 4)</MudSelectItem>
-                <MudSelectItem Value="@(1024 * 8)">@(1024 * 8)</MudSelectItem>
-                <MudSelectItem Value="@(1024 * 16)">@(1024 * 16)</MudSelectItem>
-                <MudSelectItem Value="@(1024 * 32)">@(1024 * 32)</MudSelectItem>
-                <MudSelectItem Value="@(1024 * 64)">@(1024 * 64)</MudSelectItem>
-                <MudSelectItem Value="@(1024 * 128)">@(1024 * 128)</MudSelectItem>
-                <MudSelectItem Value="@(1024 * 256)">@(1024 * 256)</MudSelectItem>
+                <MudSelectItem Value="2000">2k</MudSelectItem>
+                <MudSelectItem Value="4000">4k</MudSelectItem>
+                <MudSelectItem Value="8000">8k</MudSelectItem>
+                <MudSelectItem Value="16000">16k</MudSelectItem>
+                <MudSelectItem Value="32000">32k</MudSelectItem>
+                <MudSelectItem Value="64000">64k</MudSelectItem>
+                <MudSelectItem Value="128000">128k</MudSelectItem>
+                <MudSelectItem Value="256000">256k</MudSelectItem>
+                <MudSelectItem Value="512000">512k</MudSelectItem>
+                <MudSelectItem Value="1000000">1M</MudSelectItem>
             </MudSelect>
 
             <MudSlider @bind-Value="Model.MTemperature" Min="0" Max="12" Step="1" TickMarks="true">

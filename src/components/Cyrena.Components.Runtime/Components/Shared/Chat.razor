@@ -25,25 +25,25 @@
                 var msg = _pager.History.ElementAt(i);
                 if (msg.Role == _msg.Options.LogError)
                 {
-                    <div class="d-flex mb-3 justify-start">
+                    <div class="d-flex mb-3 justify-start text-truncate">
                         <MudText Color="Color.Error" Style="white-space: pre-wrap;" Typo="Typo.caption">@((MarkupString)(msg.Content ?? ""))</MudText>
                     </div>
                 }
                 else if (msg.Role == _msg.Options.LogWarn)
                 {
-                    <div class="d-flex mb-3 justify-start">
+                    <div class="d-flex mb-3 justify-start text-truncate">
                         <MudText Color="Color.Warning" Style="white-space: pre-wrap;" Typo="Typo.caption">@((MarkupString)(_msg.DisplayHistory[i].Content ?? ""))</MudText>
                     </div>
                 }
                 else if (msg.Role == _msg.Options.LogSuccess)
                 {
-                    <div class="d-flex mb-3 justify-start">
+                    <div class="d-flex mb-3 justify-start text-truncate">
                         <MudText Color="Color.Success" Style="white-space: pre-wrap;" Typo="Typo.caption">@((MarkupString)(msg.Content ?? ""))</MudText>
                     </div>
                 }
                 else if (msg.Role == _msg.Options.LogInfo)
                 {
-                    <div class="d-flex mb-3 justify-start">
+                    <div class="d-flex mb-3 justify-start text-truncate">
                         <MudText Color="Color.Surface" Style="white-space: pre-wrap;" Typo="Typo.caption">@((MarkupString)(msg.Content ?? ""))</MudText>
                     </div>
                 }
