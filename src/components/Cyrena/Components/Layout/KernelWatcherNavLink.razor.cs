@@ -21,6 +21,7 @@ namespace Cyrena.Components.Layout
         [Inject] private NavigationManager _nav { get; set; } = default!;
         [Inject] private IWindowLauncher _windows { get; set; } = default!;
         [Inject] private ComponentOptions _ui { get; set; } = default!;
+        [Inject] private ISnackbar _toasts { get; set; } = default!;
 
         private IDisposable? _unload { get; set; }
         private IDisposable? _loaded { get; set; }
@@ -115,10 +116,18 @@ namespace Cyrena.Components.Layout
             await asst.EditAsync(ChatConfiguration, _services);
         }
 
-        private void Load()
+        private async Task Load()
         {
-            _open = false;
-            _nav.NavigateTo(_ui.MenuOptions.ConverseUrl.Replace("{Id}", ChatConfiguration.Id));
+            try
+            {
+                await _controller.LoadAsync(ChatConfiguration.Id);
+                _nav.NavigateTo(_ui.MenuOptions.ConverseUrl.Replace("{Id}", ChatConfiguration.Id));
+                _open = false;
+            }
+            catch (Exception ex)
+            {
+                _toasts.Add(ex.Message, Severity.Error);
+            }
         }
 
         private void Unload()

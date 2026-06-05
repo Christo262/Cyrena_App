@@ -11,12 +11,24 @@
     <Header>
     </Header>
     <ChildContent>
-        @for(int i = 0; i < _active.Count; i++)
+        @if (_active.Count == 0)
         {
-            var item = _active[i];
-            <MudTabPanel ID="@item" Text="@item.GetTitle()" ShowCloseIcon>
-                <KernelInstance Kernel="item" />
+            <MudTabPanel Text="Error" ShowCloseIcon="false">
+                <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="h-100">
+                    <MudFab StartIcon="@Icons.Material.Filled.ContentPasteOff" Size="Size.Medium" />
+                    <MudText>No Active Kernel Instances</MudText>
+                </MudStack>
             </MudTabPanel>
+        }
+        else
+        {
+            @for(int i = 0; i < _active.Count; i++)
+            {
+                var item = _active[i];
+                <MudTabPanel ID="@item" Text="@item.GetTitle()" ShowCloseIcon>
+                    <KernelInstance Kernel="item" />
+                </MudTabPanel>
+            }
         }
     </ChildContent>
 </MudDynamicTabs>

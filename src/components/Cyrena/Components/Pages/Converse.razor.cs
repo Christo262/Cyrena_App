@@ -17,9 +17,9 @@ namespace Cyrena.Components.Pages
         [Inject] private NavigationManager _nav { get; set; } = default!;
         [Inject] private ComponentOptions _ui { get; set; } = default!;
 
-        private List<Kernel> _active { get; set; } = new();
+        private List<Kernel> _active { get; set; } = [];
 
-        private List<IDisposable> _disposables = new();
+        private List<IDisposable> _disposables = [];
         private MudDynamicTabs _dynamicTabs = null!;
         private int _userIndex;
 
