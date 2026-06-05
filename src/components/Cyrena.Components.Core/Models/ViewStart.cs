@@ -5,8 +5,16 @@
     /// </summary>
     public sealed class ViewStart
     {
-        public string Href { get; set; } = default!;
-        public string Title { get; set; } = default!;
+        public ViewStart(string id, Type componentType, string title, string? description)
+        {
+            Id = id;
+            ComponentType = componentType;
+            Title = title;
+            Description = description;
+        }
+        public string Id { get; }
+        public Type ComponentType { get; set; }
+        public string Title { get; set; }
         public string? Description { get; set; }
     }
 }

@@ -16,6 +16,7 @@
     <File Path="docs/screenshots.md" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="../Cyrena_Android/src/watch/Cyrena.Watch/Cyrena.Watch.csproj" />
     <Project Path="src/Cyrena.Android/Cyrena.Android.csproj" Id="d9e9464d-88fa-4f25-a386-89e4a2f40e08">
       <Deploy Solution="Debug|*" />
     </Project>

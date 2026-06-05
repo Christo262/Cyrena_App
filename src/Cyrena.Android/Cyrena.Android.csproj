@@ -73,6 +73,7 @@
 
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\Cyrena_Android\src\watch\Cyrena.Watch\Cyrena.Watch.csproj" />
       <ProjectReference Include="..\components\Cyrena\Cyrena.csproj" />
     </ItemGroup>
 

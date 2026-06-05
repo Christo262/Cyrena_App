@@ -51,7 +51,7 @@
             <MudSelect T="string" Label="Starting View" @bind-Value="_model.ViewStart" @bind-Value:after="SaveCustomsSilent" Dense Margin="Margin.Dense" Variant="Variant.Outlined">
                 @foreach (var item in _view_starts)
                 {
-                    <MudSelectItem Value="@item.Href">@item.Title</MudSelectItem>
+                    <MudSelectItem Value="@item.Id">@item.Title</MudSelectItem>
                 }
             </MudSelect>
         </MudItem>

@@ -12,7 +12,7 @@
 
         public Background Background { get; set; }
 
-        public string ViewStart { get; set; } = "/";
+        public string ViewStart { get; set; } = "cyrena.default";
     }
 
     public class Background

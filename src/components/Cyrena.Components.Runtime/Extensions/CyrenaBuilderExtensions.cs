@@ -22,7 +22,6 @@ namespace Cyrena.Extensions
                 var uio = b.GetFeatureOption<ComponentOptions>();
                 b.Services.AddSingleton(uio);
             });
-            builder.Services.AddScoped<IViewStartProvider, ViewStartProvider>();
             return builder;
         }
     }
