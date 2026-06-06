@@ -10,7 +10,6 @@ using Cyrena.Android.Services;
 using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Options;
-using Cyrena.Watch;
 using Microsoft.Extensions.Logging;
 using Shiny;
 
@@ -38,8 +37,7 @@ namespace Cyrena.Android
                     e.InstallationsDirectory = Path.Combine(CyrenaBuilder.AppDataDirectory, "install");
                 })
                 .AddExtension<CyrenaExtension>(CyrenaExtension.Id, CyrenaExtension.Name, CyrenaExtension.Version,
-                    CyrenaExtension.Description)
-                .AddExtension<WatchExtension>("cyrena.watch", "Cyréna Watch", new(0, 1, 0));
+                    CyrenaExtension.Description);
             builder.Services.AddBluetoothLE();
 
             cyrena.Services.AddSingleton<IFileDialog, FileDialog>();
