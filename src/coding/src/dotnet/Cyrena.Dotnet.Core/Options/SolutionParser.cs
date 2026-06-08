@@ -64,7 +64,7 @@ namespace Cyrena.Dotnet.Options
                     // Only add if it's a project file (common extensions)
                     if (IsProjectFile(relativePath))
                     {
-                        projectPaths.Add(absolutePath);
+                        projectPaths.Add(absolutePath.Replace("\\", "/"));
                     }
                 }
             }
@@ -99,7 +99,7 @@ namespace Cyrena.Dotnet.Options
                     string absolutePath = Path.Combine(slnDirectory, relativePath);
                     absolutePath = Path.GetFullPath(absolutePath);
 
-                    projectPaths.Add(absolutePath);
+                    projectPaths.Add(absolutePath.Replace("\\", "/"));
                 }
             }
             catch (Exception ex)

@@ -182,28 +182,21 @@ namespace Cyrena.Coding.Services
             return count;
         }
 
-        [KernelFunction("edit")]
+        [KernelFunction("insert")]
         [Description(
-            "Edits a file by inserting or replacing lines. Always call read_lines first to get exact line numbers. " +
+            "Inserts content before the specified line without removing anything. Always call read_lines first to get exact line numbers. " +
             "startLine is 1-based (line 1 is the first line of the file). " +
-            "If lineCount is 0, content is inserted before startLine without removing anything. " +
-            "If lineCount is greater than 0, that many lines are removed starting at startLine, then content is inserted at the same position. " +
-            "To append to the end of the file, use startLine = totalLines + 1 with lineCount 0. " +
-            "To delete lines without inserting, pass null or empty content with lineCount > 0. " +
-            "CAUTION: Avoid using this function on markup files (.razor, .html, .xml etc) — tag nesting makes line-based edits unreliable. Use Code_replace or Code_write instead. " +
-            "If repeated edits are not producing the correct result, fall back to Code_write to overwrite the whole file.")]
-        public ToolResult EditLines(
+            "To append to the end of the file, use startLine = totalLines + 1. " +
+            "To replace existing content, use Code_replace instead.")]
+        public ToolResult InsertLines(
             [Description("The unique identifier of the target file within the current develop plan.")]
             string fileId,
 
-            [Description("1-based line number where the edit begins. Use totalLines + 1 to append at the end.")]
+            [Description("1-based line number to insert before. Use totalLines + 1 to append at the end.")]
             int startLine,
 
-            [Description("Number of existing lines to remove starting at startLine. Use 0 to insert without removing anything.")]
-            int lineCount,
-
-            [Description("The content to insert at startLine. Pass null or empty to only delete lines.")]
-            string? content)
+            [Description("The content to insert.")]
+            string content)
         {
             try
             {
@@ -216,45 +209,23 @@ namespace Cyrena.Coding.Services
                 if (startLine < 1)
                     return new ToolResult(false, $"Invalid startLine ({startLine}): must be >= 1.");
 
-                if (lineCount < 0)
-                    return new ToolResult(false, $"Invalid lineCount ({lineCount}): must be >= 0.");
+                _context.LogInfo($"Inserting content at line {startLine} in {file.RelativePath}");
 
                 _plan.Plan.TryReadFileContent(file, out var existingContent);
                 _version.Backup(existingContent);
 
-                // Convert to 0-based for internal use
                 var zeroBasedStart = startLine - 1;
 
-                if (lineCount == 0)
+                if (!_plan.Plan.TryWriteFileInsert(file, content, zeroBasedStart, out var inserted, out var totalLines))
                 {
-                    _context.LogInfo($"Inserting content at line {startLine} in {file.RelativePath}");
-
-                    if (!_plan.Plan.TryWriteFileInsert(file, content, zeroBasedStart, out var inserted, out var insertTotal))
-                    {
-                        var rangeHint = insertTotal.HasValue
-                            ? $" File has {insertTotal} line(s) (valid startLine range: 1–{insertTotal + 1})."
-                            : string.Empty;
-                        return new ToolResult(false, $"Unable to insert into '{file.RelativePath}'. Ensure startLine is within range.{rangeHint}");
-                    }
-
-                    _plan.InvokeFileUpdated(inserted!);
-                    return new ToolResult(true, $"File '{file.RelativePath}' (id: {file.Id}) edited. Call read_lines before making further edits.");
+                    var rangeHint = totalLines.HasValue
+                        ? $" File has {totalLines} line(s) (valid startLine range: 1–{totalLines + 1})."
+                        : string.Empty;
+                    return new ToolResult(false, $"Unable to insert into '{file.RelativePath}'. Ensure startLine is within range.{rangeHint}");
                 }
-                else
-                {
-                    _context.LogInfo($"Replacing {lineCount} line(s) at line {startLine} in {file.RelativePath}");
 
-                    if (!_plan.Plan.TryWriteFileReplace(file, content, zeroBasedStart, lineCount, out var replaced, out var replaceTotal))
-                    {
-                        var rangeHint = replaceTotal.HasValue
-                            ? $" File has {replaceTotal} line(s) (valid range: startLine 1–{replaceTotal}, lineCount 1–{replaceTotal})."
-                            : string.Empty;
-                        return new ToolResult(false, $"Unable to edit '{file.RelativePath}'. Ensure startLine and lineCount are within the file.{rangeHint}");
-                    }
-
-                    _plan.InvokeFileUpdated(replaced!);
-                    return new ToolResult(true, $"File '{file.RelativePath}' (id: {file.Id}) edited. Call read_lines before making further edits.");
-                }
+                _plan.InvokeFileUpdated(inserted!);
+                return new ToolResult(true, $"File '{file.RelativePath}' (id: {file.Id}) updated. Call read_lines before making further edits.");
             }
             catch (Exception ex)
             {
@@ -262,6 +233,57 @@ namespace Cyrena.Coding.Services
             }
         }
 
+        [KernelFunction("delete_lines")]
+        [Description(
+            "Deletes a range of lines from a file. Always call read_lines first to get exact line numbers. " +
+            "startLine and endLine are 1-based and inclusive.")]
+        public ToolResult DeleteLines(
+            [Description("The unique identifier of the target file within the current develop plan.")]
+            string fileId,
+
+            [Description("1-based line number of the first line to delete.")]
+            int startLine,
+
+            [Description("1-based line number of the last line to delete (inclusive).")]
+            int endLine)
+        {
+            try
+            {
+                if (!_plan.Plan.TryFindFile(fileId, out var file))
+                    return new ToolResult(false, $"File with id {fileId} not found.");
+
+                if (file!.ReadOnly)
+                    return new ToolResult(false, $"File '{file.RelativePath}' is read-only.");
+
+                if (startLine < 1 || endLine < startLine)
+                    return new ToolResult(false, $"Invalid range: startLine ({startLine}) must be >= 1 and endLine ({endLine}) must be >= startLine.");
+
+                _context.LogInfo($"Deleting lines {startLine}–{endLine} in {file.RelativePath}");
+
+                _plan.Plan.TryReadFileContent(file, out var existingContent);
+                _version.Backup(existingContent);
+
+                var zeroBasedStart = startLine - 1;
+                var lineCount = endLine - startLine + 1;
+
+                if (!_plan.Plan.TryWriteFileReplace(file, null, zeroBasedStart, lineCount, out var updated, out var totalLines))
+                {
+                    var rangeHint = totalLines.HasValue
+                        ? $" File has {totalLines} line(s) (valid range: 1–{totalLines})."
+                        : string.Empty;
+                    return new ToolResult(false, $"Unable to delete lines from '{file.RelativePath}'. Ensure startLine and endLine are within the file.{rangeHint}");
+                }
+
+                _plan.InvokeFileUpdated(updated!);
+                return new ToolResult(true, $"File '{file.RelativePath}' (id: {file.Id}) updated. Call read_lines before making further edits.");
+            }
+            catch (Exception ex)
+            {
+                return new ToolResult(false, $"Error: {ex.Message}");
+            }
+        }
+
+        
         [KernelFunction("delete")]
         [Description("Removes the specified file from the project.")]
         public ToolResult DeleteFile(

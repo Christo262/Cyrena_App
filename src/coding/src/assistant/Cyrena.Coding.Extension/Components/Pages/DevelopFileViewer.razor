@@ -1,9 +1,7 @@
 @page "/develop-file-viewer/{FileId}/{KernelId}"
-
 @using BlazorMonaco
 @using BlazorMonaco.Editor
 @using BlazorMonaco.Languages
-
 
 @if (_kernel != null)
 {
@@ -20,7 +18,7 @@
                     var version = _originals[i];
                     var index = i;
                     var label = string.IsNullOrEmpty(version.Label) ? $"Version {index + 1}" : version.Label;
-                    var display = $"{version.Timestamp:MMM d, HH:mm:ss}  —  {label}";
+                    var display = $"{version.Timestamp:MMM d, HH:mm:ss} - {label}";
                     <MudSelectItem Value="@index">@display</MudSelectItem>
                 }
             </MudSelect>
@@ -39,7 +37,5 @@
             </MudTooltip>
         }
     </div>
-
-    <StandaloneDiffEditor @ref="_diffEditor" Id="@FileId" ConstructionOptions="DiffEditorConstructionOptions"
-                          OnDidInit="EditorOnDidInit" />
+    <StandaloneDiffEditor @ref="_diffEditor" Id="@FileId" ConstructionOptions="DiffEditorConstructionOptions" OnDidInit="EditorOnDidInit"></StandaloneDiffEditor>
 }

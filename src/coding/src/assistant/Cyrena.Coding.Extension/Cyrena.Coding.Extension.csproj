@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BlazorMonaco" />
     <PackageReference Include="Cyrena.Components.Core" />
     <PackageReference Include="Cyrena.Extensa.Core" />
     <PackageReference Include="Cyrena.Persistence.File" />

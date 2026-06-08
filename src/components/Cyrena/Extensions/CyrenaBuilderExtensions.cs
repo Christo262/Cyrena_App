@@ -14,7 +14,6 @@ namespace Cyrena.Extensions
             builder.AddFeatureAssembly<DefaultAssistantMode>("blazor");
             builder.AddSettingsComponent<CustomizationSettings>("Personalization");
             builder.Services.AddScoped<HeadOutletStateChangeTracker>();
-            builder.Services.AddSingleton<IViewStartProvider, DefaultViewStartProvider>();
             builder.Services.AddScoped<IViewStart, ViewStartService>();
             builder.AddAssistantPlugin<ToolCallInclusionPlugin>();
             builder.AddSettingsComponent<Settings>("Application", 0);
