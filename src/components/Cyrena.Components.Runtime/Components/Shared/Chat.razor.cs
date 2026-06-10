@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Cyrena.Contracts;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Cyrena.Models;
 using Cyrena.Attributes;
@@ -40,6 +39,7 @@ namespace Cyrena.Components.Shared
 
             _mdp = new Markdig.MarkdownPipelineBuilder()
                 .UseAdvancedExtensions()
+                .UseMathematics()
                 .Build();
             if(_its.Input == null)
                 _its.Input = new ChatMessageContent(_msg.Options.User, "");
@@ -115,6 +115,7 @@ namespace Cyrena.Components.Shared
             
             _its.Iterate();
             await Task.Delay(100);
+            await _area.ClearAsync();
             await InvokeAsync(StateHasChanged);
         }
 
@@ -125,6 +126,13 @@ namespace Cyrena.Components.Shared
                 await Send();
                 return;
             }
+        }
+
+        private void BindItsContent(string? e)
+        {
+            if(_its.Input == null)
+                _its.Input = new ChatMessageContent(_msg.Options.User, "");
+            _its.Input.Content = e;
         }
 
         private void Cancel() => _its.Cancel();

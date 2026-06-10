@@ -20,7 +20,6 @@ namespace Cyrena.Platform.Tests.Services
 
         public Task LoadAsync(CyrenaKernelBuilder builder)
         {
-            builder.AddToolbarComponent<BrowserTest>(ToolbarAlignment.End);
             return Task.CompletedTask;
         }
     }

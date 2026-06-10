@@ -157,7 +157,8 @@
                               Immediate
                               MaxLines="6"
                               OnKeyDown="ComposerKeyDown"
-                              @bind-Value="_its.Input.Content"
+                              Value="_its.Input.Content"
+                              ValueChanged="BindItsContent"
                               Sizing="InputSizing.Auto"
                               Margin="Margin.Dense"
                               Placeholder="@(_its.QueueCount > 0 || _its.Inferring ? "Queue..." : "Reply...")" />

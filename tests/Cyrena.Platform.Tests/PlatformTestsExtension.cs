@@ -12,7 +12,6 @@ namespace Cyrena.Platform.Tests
         public override void BuildExtension(CyrenaBuilder builder)
         {
             builder.AddAssistantPlugin<TestAssistantPlugin>();
-            builder.Services.AddScoped<IViewStartProvider, ViewStartProvider>();
             builder.AddFeatureAssembly<PlatformTestsExtension>("blazor");
         }
     }

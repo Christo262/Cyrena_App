@@ -9,15 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="favicon.ico">
+    <None Include="favicon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
 
     <ItemGroup>
-    <Content Include="favicon.png">
+    <None Include="favicon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
 
     <ItemGroup>

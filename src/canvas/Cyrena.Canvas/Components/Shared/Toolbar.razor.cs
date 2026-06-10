@@ -16,10 +16,7 @@ namespace Cyrena.Canvas.Components.Shared
             _disposables.Add(_canvas.OnDocumentActivate(doc =>
             {
                 _current = doc;
-                this.InvokeAsync(async () =>
-                {
-                    Toggle();
-                });
+                this.InvokeAsync( Toggle);
             }));
         }
 
