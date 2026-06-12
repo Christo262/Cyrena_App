@@ -1,0 +1,23 @@
+@inherits KernelComponentBase
+
+<div class="h-100 d-flex flex-column pa-4">
+    <div class="flex-1 overflow-auto">
+        @if (_currentPlan is not null)
+        {
+            @foreach (var item in _currentPlan.Folders)
+            {
+                <PlanFolderNode Folder="item" OnDelete="DeleteFolder"></PlanFolderNode>
+            }
+            <MudButton StartIcon="@Icons.Material.Filled.CreateNewFolder" OnClick="AddFolder">Add Folder</MudButton>
+            <br/>
+            @foreach (var item in _currentPlan.AllowedFileTypes)
+            {
+                <MudChip T="string" Value="item" OnClose="chip => RemoveFileType(chip.Value)">@item</MudChip>
+            }
+            <MudChip T="string" Value="string.Empty" OnClick="AddFileType">Add File Type</MudChip>
+        }
+    </div>
+    <MudStack Row="true" AlignItems="AlignItems.End" Justify="Justify.FlexEnd">
+        <MudButton Color="Color.Primary" OnClick="SaveAsync" Variant="Variant.Filled">Save</MudButton>
+    </MudStack>
+</div>

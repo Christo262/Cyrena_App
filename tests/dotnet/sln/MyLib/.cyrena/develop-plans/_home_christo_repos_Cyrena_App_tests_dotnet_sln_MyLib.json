@@ -1,0 +1,86 @@
+{
+  "AllowedFileTypes": [
+    "cs",
+    "json",
+    "md"
+  ],
+  "IgnoredDirectories": [
+    ".cyrena",
+    "bin",
+    "obj"
+  ],
+  "Folders": [
+    {
+      "Name": "Attributes",
+      "AllowedFileTypes": [
+        "cs"
+      ],
+      "Children": [],
+      "Id": "attributes"
+    },
+    {
+      "Name": "Contracts",
+      "AllowedFileTypes": [
+        "cs"
+      ],
+      "Children": [],
+      "Id": "contracts"
+    },
+    {
+      "Name": "Models",
+      "AllowedFileTypes": [
+        "cs"
+      ],
+      "Children": [],
+      "Id": "models"
+    },
+    {
+      "Name": "Options",
+      "AllowedFileTypes": [
+        "cs"
+      ],
+      "Children": [],
+      "Id": "options"
+    },
+    {
+      "Name": "Services",
+      "AllowedFileTypes": [
+        "cs"
+      ],
+      "Children": [],
+      "Id": "services"
+    },
+    {
+      "Name": "Components",
+      "AllowedFileTypes": [
+        "cs",
+        "razor",
+        "css"
+      ],
+      "Children": [
+        {
+          "Name": "Pages",
+          "AllowedFileTypes": [
+            "cs",
+            "razor",
+            "css"
+          ],
+          "Children": [],
+          "Id": "components_pages"
+        },
+        {
+          "Name": "Shared",
+          "AllowedFileTypes": [
+            "cs",
+            "razor",
+            "css"
+          ],
+          "Children": [],
+          "Id": "components_shared"
+        }
+      ],
+      "Id": "components"
+    }
+  ],
+  "Id": "_home_christo_repos_Cyrena_App_tests_dotnet_sln_MyLib"
+}

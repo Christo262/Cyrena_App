@@ -1,0 +1,35 @@
+@using Cyrena.Coding.Options
+@using Microsoft.Extensions.DependencyInjection
+@inherits KernelComponentBase
+
+@if (_show)
+{
+    <MudTooltip Text="Develop Plan">
+        <MudIconButton Icon="@Icons.Material.Filled.AccountTree" 
+                       Size="Size.Small"
+                       Class="me-1"
+                       OnClick="Toggle" />
+    </MudTooltip>
+}
+
+@code {
+    [KernelInject] private IDockingService _dock { get; set; } = null!;
+    
+    private bool _show { get; set; }
+    protected override void OnInitialized()
+    {
+        var dynamics = Kernel.Services.GetService<DynamicDiscoveryOptions>();
+        _show = dynamics != null;
+    }
+
+    private bool _isOpen { get; set; }
+    private void Toggle()
+    {
+        if(_isOpen)return;
+        _dock.Dock<DevelopPlanEditor>("Develop Plan", () =>
+        {
+            _isOpen = false;
+        });
+        _isOpen = true;
+    }
+}

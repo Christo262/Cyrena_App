@@ -6,6 +6,8 @@ using Cyrena.Extensions;
 using Cyrena.Models;
 using Microsoft.SemanticKernel;
 using System.ComponentModel;
+using Cyrena.Coding.Options;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Cyrena.Coding.Services
 {
@@ -14,15 +16,17 @@ namespace Cyrena.Coding.Services
         private readonly IDevelopPlanService _plan;
         private readonly IChatMessageService _context;
         private readonly IVersionControl _version;
+        private readonly IServiceProvider _services;
 
         public BaseFileKernelFunctions(
             IDevelopPlanService plan,
             IChatMessageService context,
-            IVersionControl version)
+            IVersionControl version, IServiceProvider services)
         {
             _plan = plan;
             _context = context;
             _version = version;
+            _services = services;
         }
 
         [KernelFunction("read")]
@@ -312,6 +316,33 @@ namespace Cyrena.Coding.Services
             {
                 return new ToolResult(false, $"Error: {ex.Message}");
             }
+        }
+
+        [KernelFunction("create")]
+        [Description("Creates a new file.")]
+        public ToolResult CreateFile(
+            [Description("The name of the file including the file type extension. i.e. MyModel.cs, main.py, styles.css")]string name,
+            [Description("The content to insert into the file. Leave empty to create file with no content.")]string? content,
+            [Description("Provide if the file needs to be created in a specific folder in the develop plan. Empty folderId will create the file in the root directory.")]string? folderId = null)
+        {
+            var options = _services.GetService<DynamicDiscoveryOptions>();
+            if (options == null)
+                return new ToolResult(false, "This function is not currently accessible. Please use dedicated create file functions.");
+            var extension = Path.GetExtension(name).Replace(".", string.Empty);
+            if (string.IsNullOrEmpty(folderId))
+            {
+                if(!_plan.Plan.AllowedFileTypes.Contains(extension))
+                    return new ToolResult(false, $"Unable to create file. Root directory only supports the following file types: {string.Join(", *.", _plan.Plan.AllowedFileTypes)}.");
+                _context.LogInfo($"Creating file {name} in {folderId ?? "root"}");
+                var rootFile = _plan.Plan.CreateFile($"root_{extension}_{Path.GetFileNameWithoutExtension(name)}", name, content);
+                return new ToolResult(true, $"File '{rootFile.RelativePath}' (id: {rootFile.Id}) created. Call read_lines before making further edits.");
+            }
+
+            if (!_plan.Plan.TryFindFolder(folderId, out var folder))
+                return new ToolResult(false, $"Folder {folderId} not found.");
+            _context.LogInfo($"Creating file {name} in {folderId ?? "root"}");
+            var file = _plan.Plan.CreateFile(folder!, $"{folderId}_{extension}_{Path.GetFileNameWithoutExtension(name)}", name, content);
+            return new ToolResult(true, $"File '{file.RelativePath}' (id: {file.Id}) created. Call read_lines before making further edits.");
         }
     }
 }

@@ -4,25 +4,27 @@ using System.Text.Json.Serialization;
 
 namespace Cyrena.Coding.Models
 {
-    public class DevelopPlan : ISuppressibleResult
+    public class DevelopPlan : FileTypeAllowance, ISuppressibleResult
     {
         public DevelopPlan(string rootDirectory)
         {
-            Files = new List<DevelopFile>();
-            Folders = new List<DevelopFolder>();
+            Files = [];
+            Folders = [];
             RootDirectory = rootDirectory;
             DataDirectory = Path.Combine(rootDirectory, ".cyrena");
+            Id = RootDirectory.Replace(@"\", "_").Replace("/", "_").Replace(".", "_");
         }
 
         [JsonConstructor]
         internal DevelopPlan()
         {
-            Files = new List<DevelopFile>();
-            Folders = new List<DevelopFolder>();
+            Files = [];
+            Folders = [];
             RootDirectory = string.Empty;
             DataDirectory = string.Empty;
         }
 
+        [JsonIgnore] public string Id { get; } = null!;
         [JsonIgnore]
         public string RootDirectory { get; set; }
         [JsonIgnore]

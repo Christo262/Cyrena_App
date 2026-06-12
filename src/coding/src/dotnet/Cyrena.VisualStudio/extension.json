@@ -1,0 +1,17 @@
+{
+  "id": "cyrena.visual.studio",
+  "name": "Visual Studio",
+  "version": "0.6.0",
+  "entryAssemblyFile": "Cyrena.VisualStudio.dll",
+  "description": "Builds .NET projects and solutions with a dynamic enforced structure. In solution mode, only supported project types are indexed — unsupported projects are ignored rather than blocked. Project and solution descriptor files (.csproj, .sln, .slnx) are read-only to the agent and will never be modified.",
+  "dependencies": [
+    {
+      "id": "cyrena.developer",
+      "minVersion": "0.6.0"
+    },
+    {
+      "id": "cyrena.api_references",
+      "minVersion": "0.6.0"
+    }
+  ]
+}

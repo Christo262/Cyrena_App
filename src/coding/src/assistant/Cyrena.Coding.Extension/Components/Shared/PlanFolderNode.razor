@@ -1,0 +1,73 @@
+<MudStack Row Class="border-t border-l mud-border-primary border-solid">
+    <MudButton StartIcon="@_buttonIcon" OnClick="Toggle">
+        <MudText Typo="Typo.body1">@Folder.Name</MudText>
+    </MudButton>
+    <MudSpacer></MudSpacer>
+    <MudIconButton Size="Size.Small" OnClick="Delete" Icon="@Icons.Material.Filled.Delete" Color="Color.Error"></MudIconButton>
+</MudStack>
+<MudCollapse Expanded="_expanded" Class="border-l border-solid mud-border-primary ps-4">
+    @foreach (var item in Folder.Children)
+    {
+        <PlanFolderNode OnDelete="DeleteFolder" Folder="item"></PlanFolderNode>
+    }
+    <MudButton StartIcon="@Icons.Material.Filled.CreateNewFolder" OnClick="AddFolder">Add Folder</MudButton>
+    <br/>
+            
+    @foreach (var item in Folder.AllowedFileTypes)
+    {
+        <MudChip T="string" Value="item" OnClose="chip => RemoveFileType(chip.Value)">@item</MudChip>
+    }
+    <MudChip T="string" Value="string.Empty" OnClick="AddFileType">Add File Type</MudChip>
+</MudCollapse>
+
+@code {
+    [Parameter] public required DynamicDevelopFolder Folder { get; set; }
+    [Parameter] public EventCallback<DynamicDevelopFolder> OnDelete { get; set; }
+    [Inject] private IDialogService _dialog { get; set; } = null!;
+    private bool _expanded = false;
+    private void RemoveFileType(string? e)
+    {
+        if(!string.IsNullOrEmpty(e))
+            Folder.RemoveAllowedFile(e);
+    }
+    
+    private string _buttonIcon => _expanded ? Icons.Material.Filled.FolderOpen : Icons.Material.Filled.Folder;
+
+    private async Task AddFileType()
+    {
+        var type = await _dialog.ShowNameFormDialog("File Type", null);
+        if(!string.IsNullOrEmpty(type))
+            Folder.AddAllowedFile(type);
+    }
+
+    private void DeleteFolder(DynamicDevelopFolder folder)
+    {
+        if(Folder.Children.Contains(folder))
+            Folder.Children.Remove(folder);
+    }
+
+    private async Task AddFolder()
+    {
+        var type = await _dialog.ShowNameFormDialog("Folder Name", null);
+        if (!string.IsNullOrEmpty(type))
+        {
+            var folder = new DynamicDevelopFolder()
+            {
+                Id = $"{Folder.Id}_{type.ToLower()}",
+                Name = type,
+                AllowedFileTypes = new List<string>(Folder.AllowedFileTypes),
+            };
+            Folder.Children.Add(folder);
+        }
+    }
+
+    private async Task Delete()
+    {
+        await OnDelete.InvokeAsync(Folder);
+    }
+
+    private void Toggle()
+    {
+        _expanded = !_expanded;
+    }
+}

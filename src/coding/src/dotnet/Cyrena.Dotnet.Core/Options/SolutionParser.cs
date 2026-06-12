@@ -64,7 +64,7 @@ namespace Cyrena.Dotnet.Options
                     // Only add if it's a project file (common extensions)
                     if (IsProjectFile(relativePath))
                     {
-                        projectPaths.Add(absolutePath.Replace("\\", "/"));
+                        projectPaths.Add(absolutePath.Replace(@"\", "/"));
                     }
                 }
             }

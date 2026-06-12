@@ -54,6 +54,14 @@ namespace Cyrena.Coding.Extensions
                     File.WriteAllText(extPath, content);
                 return ext;
             }
+
+            if (folder.IsVirtual)
+            {
+                var folderPath = Path.Combine(plan.RootDirectory, folder.RelativePath);
+                if (!Directory.Exists(folderPath))
+                    Directory.CreateDirectory(folderPath);
+                folder.IsVirtual = false;
+            }
             var path = Path.Combine(plan.RootDirectory, folder.RelativePath, fileName);
             if (!File.Exists(path))
                 File.WriteAllText(path, content);
@@ -193,8 +201,10 @@ namespace Cyrena.Coding.Extensions
 
         public static void IndexFiles(this DevelopPlan plan, DevelopFolder folder, string extension, string id_prefix, bool readOnly = false)
         {
+            if (!readOnly) folder.AddAllowedFile(extension);
             var cmp_path = Path.Combine(plan.RootDirectory, folder.RelativePath);
-
+            if(!Directory.Exists(cmp_path))
+                return;
             var files = Directory.GetFiles(cmp_path, $"*.{extension}");
             foreach (var file in files)
             {
@@ -223,6 +233,7 @@ namespace Cyrena.Coding.Extensions
 
         public static void IndexFiles(this DevelopPlan plan, string extension, string id_prefix, bool readOnly = false)
         {
+            if (!readOnly) plan.AddAllowedFile(extension);
             var files = Directory.GetFiles(plan.RootDirectory, $"*.{extension}");
             foreach (var file in files)
             {

@@ -1,0 +1,16 @@
+{
+  "Title": "LoginModel",
+  "Keywords": [
+    "LoginModel",
+    "model",
+    "validation",
+    "data annotations",
+    "username",
+    "password",
+    "remember me"
+  ],
+  "Summary": "Reusable login model with data validation attributes for cross-project use.",
+  "Link": null,
+  "Content": "## LoginModel\n\n**Namespace:** \u0060MyLib.Models\u0060\n\nA reusable login model with built-in data validation attributes, suitable for use in ASP.NET Core MVC, Razor Pages, Blazor, or API projects.\n\n### Properties\n\n| Property | Type | Attributes | Description |\n|----------|------|------------|-------------|\n| \u0060Username\u0060 | \u0060string\u0060 | \u0060[Required]\u0060, \u0060[StringLength(256)]\u0060, \u0060[Display(Name = \u0022Username\u0022)]\u0060 | The username or email address used to log in. Required, max 256 characters. |\n| \u0060Password\u0060 | \u0060string\u0060 | \u0060[Required]\u0060, \u0060[DataType(DataType.Password)]\u0060, \u0060[StringLength(128, MinimumLength = 6)]\u0060, \u0060[Display(Name = \u0022Password\u0022)]\u0060 | The password for authentication. Required, between 6 and 128 characters. Rendered as a password input. |\n| \u0060RememberMe\u0060 | \u0060bool\u0060 | \u0060[Display(Name = \u0022Remember me?\u0022)]\u0060 | Indicates whether the user wants to persist their login session across browser sessions. |\n\n### Validation Rules\n\n- **Username:** Required, maximum length 256.\n- **Password:** Required, minimum length 6, maximum length 128, data type \u0060Password\u0060.\n- **RememberMe:** No validation constraints; purely UI/display.\n\n### Usage Example\n\n\u0060\u0060\u0060csharp\npublic IActionResult Login(LoginModel model)\n{\n    if (!ModelState.IsValid)\n    {\n        return View(model);\n    }\n\n    // Proceed with authentication...\n}\n\u0060\u0060\u0060\n\n### Notes\n\n- All string properties are initialized to \u0060string.Empty\u0060 to avoid null reference issues in consuming projects.\n- Compatible with \u0060System.ComponentModel.DataAnnotations\u0060 validators.\n",
+  "Id": "models_LoginModel"
+}

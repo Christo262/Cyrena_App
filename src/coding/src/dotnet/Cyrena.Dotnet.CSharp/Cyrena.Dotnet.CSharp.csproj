@@ -50,10 +50,11 @@
     <EmbeddedResource Include="Resources\templates\razor-partial.txt" />
     <EmbeddedResource Include="Resources\templates\service.txt" />
     <EmbeddedResource Include="Resources\templates\view.txt" />
+    <None Remove="Resources\dynamic-cs-prompt.md" />
+    <EmbeddedResource Include="Resources\dynamic-cs-prompt.md" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cyrena.Coding.Core" />
     <PackageReference Include="Cyrena.Components.Core" />
     <PackageReference Include="Cyrena.Extensa.Core" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />

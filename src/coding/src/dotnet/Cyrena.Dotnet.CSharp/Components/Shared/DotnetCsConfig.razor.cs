@@ -17,7 +17,6 @@ namespace Cyrena.Dotnet.CSharp.Components.Shared
         [Parameter] public ChatConfiguration Model { get; set; } = default!;
         [CascadingParameter] private IMudDialogInstance? _mudDialog { get; set; }
         private DotnetCsModel _model = default!;
-        private EditContext _context = default!;
         private MudForm _form = default!;
 
         protected override void OnInitialized()
@@ -28,7 +27,6 @@ namespace Cyrena.Dotnet.CSharp.Components.Shared
                 ConnectionId = Model.ConnectionId,
                 ProjectFilePath = Model[DotnetOptions.ProjectFilePath],
             };
-            _context = new EditContext(_model);
         }
 
         private async Task ChooseProj()
