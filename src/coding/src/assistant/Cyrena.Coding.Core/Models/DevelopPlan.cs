@@ -14,6 +14,15 @@ namespace Cyrena.Coding.Models
             DataDirectory = Path.Combine(rootDirectory, ".cyrena");
             Id = RootDirectory.Replace(@"\", "_").Replace("/", "_").Replace(".", "_");
         }
+        
+        public DevelopPlan(string rootDirectory, string id)
+        {
+            Files = [];
+            Folders = [];
+            RootDirectory = rootDirectory;
+            DataDirectory = Path.Combine(rootDirectory, ".cyrena");
+            Id = id;
+        }
 
         [JsonConstructor]
         internal DevelopPlan()

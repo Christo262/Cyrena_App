@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyBlazorLib", "MyBlazorLib\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyBlazorApp", "MyBlazorApp\MyBlazorApp.csproj", "{5D7AD9C4-7C62-449B-BE5B-718995E0D674}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MauiApp2", "MauiApp2\MauiApp2.csproj", "{DAB13001-BAEB-49F1-889A-2B5EA3AC75CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{5D7AD9C4-7C62-449B-BE5B-718995E0D674}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D7AD9C4-7C62-449B-BE5B-718995E0D674}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D7AD9C4-7C62-449B-BE5B-718995E0D674}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAB13001-BAEB-49F1-889A-2B5EA3AC75CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAB13001-BAEB-49F1-889A-2B5EA3AC75CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAB13001-BAEB-49F1-889A-2B5EA3AC75CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAB13001-BAEB-49F1-889A-2B5EA3AC75CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

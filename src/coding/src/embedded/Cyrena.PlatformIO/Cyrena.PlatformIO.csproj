@@ -10,6 +10,8 @@
     <EmbeddedResource Include="Resources\prompt.md">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
+    <None Remove="Resources\dynamic.prompt.md" />
+    <EmbeddedResource Include="Resources\dynamic.prompt.md" />
   </ItemGroup>
   
   <ItemGroup>

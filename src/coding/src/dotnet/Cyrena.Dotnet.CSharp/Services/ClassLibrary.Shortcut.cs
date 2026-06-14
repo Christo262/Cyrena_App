@@ -24,7 +24,7 @@ namespace Cyrena.Dotnet.CSharp.Services
         public string Description => "Develop a .NET C# Class Library.";
         public string Icon => "bi bi-collection";
         public string Color => "warning";
-        public string Category => ".NET Development";
+        public string Category => ".NET C# Development";
         public string[] Tags => ["C#", "csproj"];
 
         public async Task OnClick()
@@ -36,7 +36,7 @@ namespace Cyrena.Dotnet.CSharp.Services
             };
             model[DevelopOptions.BuilderId] = ClassLibrary.Id;
             model[ChatConfiguration.Icon] = Icon;
-            model[ChatConfiguration.Group] = ".NET Development";
+            model[ChatConfiguration.Group] = Category;
             model.HistoryInclusion = HistoryInclusionMode.Instruct;
             var parameters = new DialogParameters<DotnetCsConfig>
             {

@@ -5,248 +5,214 @@ namespace Cyrena.Dotnet.Options
 {
     public class ProjectParser
     {
+        private static readonly HashSet<string> SupportedExtensions = [".csproj", ".fsproj"];
+
         /// <summary>
-        /// Parses a .csproj file and extracts project information
+        /// Parses a .csproj or .fsproj file and extracts project information
         /// </summary>
-        /// <param name="csprojPath">Path to the .csproj file</param>
-        /// <returns>ProjectFileInfo containing SDK type and root namespace</returns>
-        public static ProjectFileInfo ParseProject(string csprojPath)
+        public static ProjectFileInfo ParseProject(string projectPath)
         {
-            if (!File.Exists(csprojPath))
-            {
-                throw new FileNotFoundException($"Project file not found: {csprojPath}");
-            }
+            if (!File.Exists(projectPath))
+                throw new FileNotFoundException($"Project file not found: {projectPath}");
+
+            var extension = Path.GetExtension(projectPath).ToLowerInvariant();
+            if (!SupportedExtensions.Contains(extension))
+                throw new ArgumentException($"Unsupported project type: {extension}");
 
             var projectInfo = new ProjectFileInfo
             {
-                FilePath = Path.GetFullPath(csprojPath),
-                FileName = Path.GetFileName(csprojPath)
+                FilePath = Path.GetFullPath(projectPath),
+                FileName = Path.GetFileName(projectPath),
+                IsFSharp = extension == ".fsproj"
             };
 
             try
             {
-                XDocument doc = XDocument.Load(csprojPath);
+                XDocument doc = XDocument.Load(projectPath);
                 XElement? root = doc.Root;
 
                 if (root == null)
-                {
                     throw new InvalidOperationException("Invalid project file: no root element");
-                }
 
-                // Check if this is an SDK-style project
                 XAttribute? sdkAttribute = root.Attribute("Sdk");
                 projectInfo.IsSdkStyle = sdkAttribute != null;
                 projectInfo.SdkType = sdkAttribute?.Value;
 
-                // Extract RootNamespace
                 XElement? rootNamespaceElement = root.Descendants("RootNamespace").FirstOrDefault();
-
                 if (rootNamespaceElement != null && !string.IsNullOrWhiteSpace(rootNamespaceElement.Value))
                 {
-                    // RootNamespace is explicitly set
                     projectInfo.RootNamespace = rootNamespaceElement.Value.Trim();
                     projectInfo.IsRootNamespaceExplicit = true;
                 }
                 else
                 {
-                    // RootNamespace not set - use project file name without extension
-                    projectInfo.RootNamespace = Path.GetFileNameWithoutExtension(csprojPath);
+                    projectInfo.RootNamespace = Path.GetFileNameWithoutExtension(projectPath);
                     projectInfo.IsRootNamespaceExplicit = false;
                 }
 
-                // Extract Target Framework(s)
                 projectInfo.TargetFrameworks = ExtractTargetFrameworks(root);
-
-                // Extract NuGet packages
                 projectInfo.NuGetPackages = ExtractNuGetPackages(root);
-
-                // Extract Framework references
                 projectInfo.FrameworkReferences = ExtractFrameworkReferences(root);
-
-                // Extract OutputType
                 projectInfo.OutputType = ExtractOutputType(root);
+
+                if (projectInfo.IsFSharp)
+                    projectInfo.CompileOrder = ExtractCompileOrder(root);
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to parse project file: {csprojPath}", ex);
+                throw new InvalidOperationException($"Failed to parse project file: {projectPath}", ex);
             }
 
             return projectInfo;
         }
 
         /// <summary>
-        /// Extracts target framework(s) as a single string
+        /// Gets the ordered list of <Compile> entries from an fsproj
         /// </summary>
+        public static List<string> GetCompileOrder(string fsprojPath)
+        {
+            if (!File.Exists(fsprojPath))
+                throw new FileNotFoundException($"Project file not found: {fsprojPath}");
+
+            if (!fsprojPath.EndsWith(".fsproj", StringComparison.OrdinalIgnoreCase))
+                throw new ArgumentException("GetCompileOrder is only valid for .fsproj files");
+
+            XDocument doc = XDocument.Load(fsprojPath);
+            return ExtractCompileOrder(doc.Root!);
+        }
+
+        /// <summary>
+        /// Rebuilds the <Compile> block in an fsproj with the provided ordered relative paths
+        /// </summary>
+        public static void SetCompileOrder(string fsprojPath, IEnumerable<string> orderedRelativePaths)
+        {
+            if (!File.Exists(fsprojPath))
+                throw new FileNotFoundException($"Project file not found: {fsprojPath}");
+
+            if (!fsprojPath.EndsWith(".fsproj", StringComparison.OrdinalIgnoreCase))
+                throw new ArgumentException("SetCompileOrder is only valid for .fsproj files");
+
+            XDocument doc = XDocument.Load(fsprojPath);
+            XElement? root = doc.Root;
+
+            if (root == null)
+                throw new InvalidOperationException("Invalid fsproj: no root element");
+
+            var existingItemGroup = root.Descendants("Compile").FirstOrDefault()?.Parent;
+
+            if (existingItemGroup != null)
+            {
+                existingItemGroup.Elements("Compile").Remove();
+                foreach (var path in orderedRelativePaths)
+                    existingItemGroup.Add(new XElement("Compile", new XAttribute("Include", path)));
+            }
+            else
+            {
+                var itemGroup = new XElement("ItemGroup");
+                foreach (var path in orderedRelativePaths)
+                    itemGroup.Add(new XElement("Compile", new XAttribute("Include", path)));
+                root.Add(itemGroup);
+            }
+
+            doc.Save(fsprojPath);
+        }
+
+        private static List<string> ExtractCompileOrder(XElement root)
+        {
+            return root
+                .Descendants("Compile")
+                .Select(x => x.Attribute("Include")?.Value)
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => x!)
+                .ToList();
+        }
+
         private static string ExtractTargetFrameworks(XElement root)
         {
-            // Try TargetFrameworks (plural) first - used for multi-targeting
             var targetFrameworksElement = root.Descendants("TargetFrameworks").FirstOrDefault();
             if (targetFrameworksElement != null && !string.IsNullOrWhiteSpace(targetFrameworksElement.Value))
-            {
-                // Already in the format we want: "net8.0;net9.0;net10.0"
-                // Convert semicolons to comma-space for readability
                 return targetFrameworksElement.Value.Trim().Replace(";", ", ");
-            }
 
-            // Try TargetFramework (singular) - used for single target
             var targetFrameworkElement = root.Descendants("TargetFramework").FirstOrDefault();
             if (targetFrameworkElement != null && !string.IsNullOrWhiteSpace(targetFrameworkElement.Value))
-            {
                 return targetFrameworkElement.Value.Trim();
-            }
 
-            // Legacy format: TargetFrameworkVersion (e.g., "v4.7.2")
             var targetFrameworkVersionElement = root.Descendants("TargetFrameworkVersion").FirstOrDefault();
             if (targetFrameworkVersionElement != null && !string.IsNullOrWhiteSpace(targetFrameworkVersionElement.Value))
-            {
                 return targetFrameworkVersionElement.Value.Trim();
-            }
 
             return string.Empty;
         }
 
-        /// <summary>
-        /// Extracts NuGet package references
-        /// </summary>
         private static List<NuGetPackage> ExtractNuGetPackages(XElement root)
         {
             var packages = new List<NuGetPackage>();
-
-            // SDK-style projects use <PackageReference>
-            var packageReferences = root.Descendants("PackageReference");
-            foreach (var packageRef in packageReferences)
+            foreach (var packageRef in root.Descendants("PackageReference"))
             {
                 var includeAttr = packageRef.Attribute("Include");
-                if (includeAttr != null && !string.IsNullOrWhiteSpace(includeAttr.Value))
+                if (includeAttr == null || string.IsNullOrWhiteSpace(includeAttr.Value))
+                    continue;
+
+                var package = new NuGetPackage { Name = includeAttr.Value.Trim() };
+
+                var versionAttr = packageRef.Attribute("Version");
+                if (versionAttr != null && !string.IsNullOrWhiteSpace(versionAttr.Value))
+                    package.Version = versionAttr.Value.Trim();
+                else
                 {
-                    var package = new NuGetPackage
-                    {
-                        Name = includeAttr.Value.Trim()
-                    };
-
-                    // Version can be in attribute or child element
-                    var versionAttr = packageRef.Attribute("Version");
-                    if (versionAttr != null && !string.IsNullOrWhiteSpace(versionAttr.Value))
-                    {
-                        package.Version = versionAttr.Value.Trim();
-                    }
-                    else
-                    {
-                        var versionElement = packageRef.Element("Version");
-                        if (versionElement != null && !string.IsNullOrWhiteSpace(versionElement.Value))
-                        {
-                            package.Version = versionElement.Value.Trim();
-                        }
-                    }
-
-                    packages.Add(package);
+                    var versionElement = packageRef.Element("Version");
+                    if (versionElement != null && !string.IsNullOrWhiteSpace(versionElement.Value))
+                        package.Version = versionElement.Value.Trim();
                 }
+
+                packages.Add(package);
             }
-
-            // Legacy projects use packages.config, but also can have <Reference> with HintPath pointing to packages folder
-            // For now, we'll just handle PackageReference which covers most modern scenarios
-
             return packages;
         }
 
-        /// <summary>
-        /// Extracts framework references
-        /// </summary>
         private static List<string> ExtractFrameworkReferences(XElement root)
         {
-            var frameworkRefs = new List<string>();
-
-            var frameworkReferences = root.Descendants("FrameworkReference");
-            foreach (var frameworkRef in frameworkReferences)
-            {
-                var includeAttr = frameworkRef.Attribute("Include");
-                if (includeAttr != null && !string.IsNullOrWhiteSpace(includeAttr.Value))
-                {
-                    frameworkRefs.Add(includeAttr.Value.Trim());
-                }
-            }
-
-            return frameworkRefs;
+            return root.Descendants("FrameworkReference")
+                .Select(x => x.Attribute("Include")?.Value)
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => x!)
+                .ToList();
         }
 
-        /// <summary>
-        /// Extracts the output type (e.g., "Exe", "WinExe", "Library")
-        /// </summary>
         private static string? ExtractOutputType(XElement root)
         {
             var outputTypeElement = root.Descendants("OutputType").FirstOrDefault();
-            if (outputTypeElement != null && !string.IsNullOrWhiteSpace(outputTypeElement.Value))
-            {
-                return outputTypeElement.Value.Trim();
-            }
-            return null;
+            return !string.IsNullOrWhiteSpace(outputTypeElement?.Value)
+                ? outputTypeElement!.Value.Trim()
+                : null;
         }
 
-        /// <summary>
-        /// Checks if a project is SDK-style (without parsing full details)
-        /// </summary>
-        /// <param name="csprojPath">Path to the .csproj file</param>
-        /// <returns>True if the project uses SDK attribute</returns>
-        public static bool IsSdkStyleProject(string csprojPath)
+        public static bool IsSdkStyleProject(string projectPath)
         {
-            if (!File.Exists(csprojPath))
-            {
-                throw new FileNotFoundException($"Project file not found: {csprojPath}");
-            }
+            if (!File.Exists(projectPath))
+                throw new FileNotFoundException($"Project file not found: {projectPath}");
 
             try
             {
-                XDocument doc = XDocument.Load(csprojPath);
+                XDocument doc = XDocument.Load(projectPath);
                 return doc.Root?.Attribute("Sdk") != null;
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to check project file: {csprojPath}", ex);
+                throw new InvalidOperationException($"Failed to check project file: {projectPath}", ex);
             }
         }
 
-        /// <summary>
-        /// Gets the root namespace (explicit or inferred)
-        /// </summary>
-        /// <param name="csprojPath">Path to the .csproj file</param>
-        /// <returns>The root namespace</returns>
-        public static string GetRootNamespace(string csprojPath)
-        {
-            var projectInfo = ParseProject(csprojPath);
-            return projectInfo.RootNamespace;
-        }
+        public static string GetRootNamespace(string projectPath)
+            => ParseProject(projectPath).RootNamespace;
 
-        /// <summary>
-        /// Gets the target frameworks as a string
-        /// </summary>
-        /// <param name="csprojPath">Path to the .csproj file</param>
-        /// <returns>Target frameworks string (e.g., "net8.0" or "net8.0, net9.0")</returns>
-        public static string GetTargetFrameworks(string csprojPath)
-        {
-            var projectInfo = ParseProject(csprojPath);
-            return projectInfo.TargetFrameworks;
-        }
+        public static string GetTargetFrameworks(string projectPath)
+            => ParseProject(projectPath).TargetFrameworks;
 
-        /// <summary>
-        /// Gets the list of NuGet packages
-        /// </summary>
-        /// <param name="csprojPath">Path to the .csproj file</param>
-        /// <returns>List of NuGet packages</returns>
-        public static List<NuGetPackage> GetNuGetPackages(string csprojPath)
-        {
-            var projectInfo = ParseProject(csprojPath);
-            return projectInfo.NuGetPackages;
-        }
+        public static List<NuGetPackage> GetNuGetPackages(string projectPath)
+            => ParseProject(projectPath).NuGetPackages;
 
-        /// <summary>
-        /// Gets the list of framework references
-        /// </summary>
-        /// <param name="csprojPath">Path to the .csproj file</param>
-        /// <returns>List of framework reference names</returns>
-        public static List<string> GetFrameworkReferences(string csprojPath)
-        {
-            var projectInfo = ParseProject(csprojPath);
-            return projectInfo.FrameworkReferences;
-        }
+        public static List<string> GetFrameworkReferences(string projectPath)
+            => ParseProject(projectPath).FrameworkReferences;
     }
 }

@@ -79,8 +79,11 @@ namespace Cyrena.Coding.Services
                     return;
                 }
                 d_plan.Plan.AllowedFileTypes = targetPlan.AllowedFileTypes;
+                d_plan.Plan.ReadOnlyFileTypes = targetPlan.ReadOnlyFileTypes;
                 foreach(var fsType in d_plan.Plan.AllowedFileTypes)
                     d_plan.Plan.IndexFiles(fsType, $"root_{fsType}_");
+                foreach(var fsType in d_plan.Plan.ReadOnlyFileTypes)
+                    d_plan.Plan.IndexFiles(fsType, $"root_{fsType}_",true);
                 foreach (var item in targetPlan.Folders)
                 {
                     TraverseDynamics(d_plan, item);
@@ -95,8 +98,11 @@ namespace Cyrena.Coding.Services
         {
             var folder = plan.Plan.GetOrCreateFolder(dynamicFolder.Id, dynamicFolder.Name);
             folder.AllowedFileTypes = dynamicFolder.AllowedFileTypes;
+            folder.ReadOnlyFileTypes = dynamicFolder.ReadOnlyFileTypes;
             foreach(var fsType in folder.AllowedFileTypes)
                 plan.Plan.IndexFiles(folder,fsType, $"{folder.Id}_{fsType}_");
+            foreach(var fsType in folder.ReadOnlyFileTypes)
+                plan.Plan.IndexFiles(folder,fsType, $"{folder.Id}_{fsType}_", true);
             foreach (var item in dynamicFolder.Children)
                 TraverseDynamics(plan, item, folder);
         }
@@ -105,8 +111,11 @@ namespace Cyrena.Coding.Services
         {
             var folder = plan.Plan.GetOrCreateFolder(parent, dynamicFolder.Id, dynamicFolder.Name);
             folder.AllowedFileTypes = dynamicFolder.AllowedFileTypes;
+            folder.ReadOnlyFileTypes = dynamicFolder.ReadOnlyFileTypes;
             foreach(var fsType in folder.AllowedFileTypes)
                 plan.Plan.IndexFiles(folder,fsType, $"{folder.Id}_{fsType}_");
+            foreach(var fsType in folder.ReadOnlyFileTypes)
+                plan.Plan.IndexFiles(folder,fsType, $"{folder.Id}_{fsType}_", true);
             foreach (var item in dynamicFolder.Children)
                 TraverseDynamics(plan, item, folder);
         }

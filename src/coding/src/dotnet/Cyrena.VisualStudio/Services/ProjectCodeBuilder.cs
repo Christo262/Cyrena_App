@@ -53,7 +53,7 @@ public class ProjectCodeBuilder : ICodeBuilder
         options.AddDynamicSolutionController();
         var prompt = Resources.Read(typeof(ProjectCodeBuilder).Assembly, _handler.PromptId);
         options.GetFeatureOption<IPromptManager>().AddPrompt(0, prompt);
-        var plan = new DevelopPlan(options.ChatConfiguration.WorkingDirectory!);
+        var plan = new DevelopPlan(options.ChatConfiguration.WorkingDirectory!, project.ProjectName);
         return Task.FromResult(plan);
     }
 

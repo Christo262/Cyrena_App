@@ -22,8 +22,8 @@ namespace Cyrena.PlatformIO.Models
             _nav = nav;
         }
 
-        public string Title => "PlatformIO";
-        public string Description => "Develop a PlatformIO project";
+        public string Title => "Structured PlatformIO";
+        public string Description => "Develop a PlatformIO project with strict structure";
         public string Icon => "bi bi-cpu";
         public string Color => "primary";
         public string Category => "Embedded";
@@ -46,7 +46,7 @@ namespace Cyrena.PlatformIO.Models
                 { x => x.Model, model }
             };
             var options = new DialogOptions { MaxWidth = MaxWidth.Small };
-            var dialog = await _dialog.ShowAsync<Configure>("PlatformIO", parameters, options);
+            var dialog = await _dialog.ShowAsync<Configure>("Structured PlatformIO", parameters, options);
             var result = await dialog.Result;
 
             if (result is not null && !result.Canceled)

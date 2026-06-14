@@ -13,11 +13,23 @@
     <MudButton StartIcon="@Icons.Material.Filled.CreateNewFolder" OnClick="AddFolder">Add Folder</MudButton>
     <br/>
             
-    @foreach (var item in Folder.AllowedFileTypes)
-    {
-        <MudChip T="string" Value="item" OnClose="chip => RemoveFileType(chip.Value)">@item</MudChip>
-    }
-    <MudChip T="string" Value="string.Empty" OnClick="AddFileType">Add File Type</MudChip>
+    <div class="rounded-lg border border-solid pa-2 mb-2">
+        <MudText Typo="Typo.caption">read/write file types</MudText><br/>
+        @foreach (var item in Folder.AllowedFileTypes)
+        {
+            <MudChip T="string" Value="item" OnClose="chip => RemoveFileType(chip.Value)">@item</MudChip>
+        }
+        <MudChip T="string" Value="string.Empty" OnClick="AddFileType">Add File Type</MudChip>
+    </div>
+            
+    <div class="rounded-lg border border-solid pa-2">
+        <MudText Typo="Typo.caption">read only file types</MudText><br/>
+        @foreach (var item in Folder.ReadOnlyFileTypes)
+        {
+            <MudChip T="string" Value="item" OnClose="chip => RemoveReadFileType(chip.Value)">@item</MudChip>
+        }
+        <MudChip T="string" Value="string.Empty" OnClick="AddReadFileType">Add File Type</MudChip>
+    </div>
 </MudCollapse>
 
 @code {
@@ -59,6 +71,19 @@
             };
             Folder.Children.Add(folder);
         }
+    }
+    
+    private void RemoveReadFileType(string? e)
+    {
+        if(!string.IsNullOrEmpty(e))
+            Folder.RemoveReadOnlyFile(e);
+    }
+
+    private async Task AddReadFileType()
+    {
+        var type = await _dialog.ShowNameFormDialog("File Type", null);
+        if(!string.IsNullOrEmpty(type))
+            Folder.AddReadOnlyFile(type);
     }
 
     private async Task Delete()

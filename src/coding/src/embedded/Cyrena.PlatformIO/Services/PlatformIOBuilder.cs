@@ -64,7 +64,7 @@ namespace Cyrena.PlatformIO.Services
                 { x => x.Model, config }
             };
             var options = new DialogOptions { MaxWidth = MaxWidth.Small };
-            var dialog = await dialogService.ShowAsync<Configure>("PlatformIO", parameters, options);
+            var dialog = await dialogService.ShowAsync<Configure>("Structured PlatformIO", parameters, options);
             var result = await dialog.Result;
 
             if (result is not null && !result.Canceled)

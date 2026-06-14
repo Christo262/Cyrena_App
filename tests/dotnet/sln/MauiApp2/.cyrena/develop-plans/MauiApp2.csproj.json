@@ -1,0 +1,180 @@
+{
+  "AllowedFileTypes": [
+    "cs",
+    "json",
+    "xaml"
+  ],
+  "ReadOnlyFileTypes": [
+    "csproj"
+  ],
+  "IgnoredDirectories": [
+    ".cyrena",
+    "bin",
+    "obj"
+  ],
+  "Folders": [
+    {
+      "Name": "Data",
+      "AllowedFileTypes": [
+        "cs"
+      ],
+      "ReadOnlyFileTypes": [],
+      "Children": [],
+      "Id": "data"
+    },
+    {
+      "Name": "Models",
+      "AllowedFileTypes": [
+        "cs"
+      ],
+      "ReadOnlyFileTypes": [],
+      "Children": [],
+      "Id": "models"
+    },
+    {
+      "Name": "PageModels",
+      "AllowedFileTypes": [
+        "cs"
+      ],
+      "ReadOnlyFileTypes": [],
+      "Children": [],
+      "Id": "pagemodels"
+    },
+    {
+      "Name": "Pages",
+      "AllowedFileTypes": [
+        "cs",
+        "xaml"
+      ],
+      "ReadOnlyFileTypes": [],
+      "Children": [
+        {
+          "Name": "Controls",
+          "AllowedFileTypes": [
+            "cs",
+            "xaml"
+          ],
+          "ReadOnlyFileTypes": [],
+          "Children": [],
+          "Id": "pages_controls"
+        }
+      ],
+      "Id": "pages"
+    },
+    {
+      "Name": "Platforms",
+      "AllowedFileTypes": [
+        "cs",
+        "xaml"
+      ],
+      "ReadOnlyFileTypes": [],
+      "Children": [
+        {
+          "Name": "Android",
+          "AllowedFileTypes": [
+            "cs"
+          ],
+          "ReadOnlyFileTypes": [],
+          "Children": [],
+          "Id": "platforms_android"
+        },
+        {
+          "Name": "iOS",
+          "AllowedFileTypes": [
+            "cs"
+          ],
+          "ReadOnlyFileTypes": [],
+          "Children": [],
+          "Id": "platforms_ios"
+        },
+        {
+          "Name": "MacCatalyst",
+          "AllowedFileTypes": [
+            "cs"
+          ],
+          "ReadOnlyFileTypes": [],
+          "Children": [],
+          "Id": "platforms_maccatalyst"
+        },
+        {
+          "Name": "Windows",
+          "AllowedFileTypes": [
+            "cs",
+            "xaml"
+          ],
+          "ReadOnlyFileTypes": [],
+          "Children": [],
+          "Id": "platforms_windows"
+        }
+      ],
+      "Id": "platforms"
+    },
+    {
+      "Name": "Resources",
+      "AllowedFileTypes": [
+        "cs",
+        "json",
+        "xaml"
+      ],
+      "ReadOnlyFileTypes": [],
+      "Children": [
+        {
+          "Name": "Fonts",
+          "AllowedFileTypes": [
+            "cs"
+          ],
+          "ReadOnlyFileTypes": [],
+          "Children": [],
+          "Id": "resources_fonts"
+        },
+        {
+          "Name": "Raw",
+          "AllowedFileTypes": [
+            "json"
+          ],
+          "ReadOnlyFileTypes": [],
+          "Children": [],
+          "Id": "resources_raw"
+        },
+        {
+          "Name": "Styles",
+          "AllowedFileTypes": [
+            "xaml"
+          ],
+          "ReadOnlyFileTypes": [],
+          "Children": [],
+          "Id": "resources_styles"
+        }
+      ],
+      "Id": "resources"
+    },
+    {
+      "Name": "Services",
+      "AllowedFileTypes": [
+        "cs"
+      ],
+      "ReadOnlyFileTypes": [],
+      "Children": [],
+      "Id": "services"
+    },
+    {
+      "Name": "Utilities",
+      "AllowedFileTypes": [
+        "cs"
+      ],
+      "ReadOnlyFileTypes": [],
+      "Children": [],
+      "Id": "utilities"
+    },
+    {
+      "Name": "Properties",
+      "AllowedFileTypes": [
+        "json"
+      ],
+      "ReadOnlyFileTypes": [],
+      "Children": [],
+      "Id": "properties"
+    }
+  ],
+  "Id": "MauiApp2.csproj"
+}

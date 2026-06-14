@@ -28,6 +28,7 @@ namespace Cyrena.Coding.Components.Shared
                     Id = _plan.Plan.Id,
                     AllowedFileTypes =  _plan.Plan.AllowedFileTypes,
                     IgnoredDirectories =  _plan.Plan.IgnoredDirectories,
+                    ReadOnlyFileTypes =   _plan.Plan.ReadOnlyFileTypes,
                 };
                 foreach (var folder in _plan.Plan.Folders)
                 {
@@ -51,6 +52,21 @@ namespace Cyrena.Coding.Components.Shared
             var type = await _dialog.ShowNameFormDialog("File Type", null);
             if(!string.IsNullOrEmpty(type))
                 _currentPlan.AddAllowedFile(type);
+        }
+        
+        private void RemoveReadFileType(string? e)
+        {
+            if (_currentPlan == null) return;
+            if(!string.IsNullOrEmpty(e))
+                _currentPlan.RemoveReadOnlyFile(e);
+        }
+
+        private async Task AddReadFileType()
+        {
+            if (_currentPlan == null) return;
+            var type = await _dialog.ShowNameFormDialog("File Type", null);
+            if(!string.IsNullOrEmpty(type))
+                _currentPlan.AddReadOnlyFile(type);
         }
 
         private async Task AddFolder()
@@ -82,6 +98,7 @@ namespace Cyrena.Coding.Components.Shared
                 Id = folder.Id,
                 Name = folder.Name,
                 AllowedFileTypes = folder.AllowedFileTypes,
+                ReadOnlyFileTypes =  folder.ReadOnlyFileTypes,
             };
             foreach (var item in folder.Folders)
             {

@@ -201,7 +201,9 @@ namespace Cyrena.Coding.Extensions
 
         public static void IndexFiles(this DevelopPlan plan, DevelopFolder folder, string extension, string id_prefix, bool readOnly = false)
         {
-            if (!readOnly) folder.AddAllowedFile(extension);
+            if (readOnly) folder.AddReadOnlyFile(extension);
+            else folder.AddAllowedFile(extension);
+            
             var cmp_path = Path.Combine(plan.RootDirectory, folder.RelativePath);
             if(!Directory.Exists(cmp_path))
                 return;
@@ -233,7 +235,9 @@ namespace Cyrena.Coding.Extensions
 
         public static void IndexFiles(this DevelopPlan plan, string extension, string id_prefix, bool readOnly = false)
         {
-            if (!readOnly) plan.AddAllowedFile(extension);
+            if (readOnly) plan.AddReadOnlyFile(extension);
+            else plan.AddAllowedFile(extension);
+            
             var files = Directory.GetFiles(plan.RootDirectory, $"*.{extension}");
             foreach (var file in files)
             {

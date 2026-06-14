@@ -25,7 +25,7 @@ namespace Cyrena.Dotnet.CSharp.Models
         public string Description => "Develop a new .NET solution.";
         public string Icon => "bi bi-webcam";
         public string Color => "info";
-        public string Category => ".NET Development";
+        public string Category => ".NET C# Development";
         public string[] Tags => ["sln", "slnx"];
 
         public async Task OnClick()
@@ -37,7 +37,7 @@ namespace Cyrena.Dotnet.CSharp.Models
             };
             model[DevelopOptions.BuilderId] = ".net-solution";
             model[ChatConfiguration.Icon] = Icon;
-            model[ChatConfiguration.Group] = ".NET Development";
+            model[ChatConfiguration.Group] = Category;
             model.HistoryInclusion = HistoryInclusionMode.Instruct;
 
             var parameters = new DialogParameters<DotnetConversationForm>
