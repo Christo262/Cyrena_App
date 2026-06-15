@@ -5,7 +5,7 @@ namespace Cyrena.Dotnet.Options
 {
     public class ProjectParser
     {
-        private static readonly HashSet<string> SupportedExtensions = [".csproj", ".fsproj"];
+        private static readonly HashSet<string> SupportedExtensions = [".csproj", ".fsproj", ".esproj"];
 
         /// <summary>
         /// Parses a .csproj or .fsproj file and extracts project information

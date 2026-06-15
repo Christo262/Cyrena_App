@@ -10,6 +10,7 @@ using Cyrena.Models;
 using Cyrena.VisualStudio.Components.Shared;
 using Cyrena.VisualStudio.Contracts;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.SemanticKernel;
 using MudBlazor;
 
 namespace Cyrena.VisualStudio.Services;
@@ -45,6 +46,8 @@ public class ProjectCodeBuilder : ICodeBuilder
             ProjectTypeId = Id,
             ProjectTypeName = $".{_handler.Filter}"
         };
+        project[DotnetOptions.Namespace] = vsproj.RootNamespace;
+        project[DotnetOptions.TargetFrameworks] = vsproj.TargetFrameworks;
         var sln_model = new SolutionViewModel(options.ChatConfiguration.WorkingDirectory!);
         sln_model.Projects.Add(project);
         options.UseDynamicDiscovery(plan => _handler.Initialize(plan));
@@ -53,6 +56,12 @@ public class ProjectCodeBuilder : ICodeBuilder
         options.AddDynamicSolutionController();
         var prompt = Resources.Read(typeof(ProjectCodeBuilder).Assembly, _handler.PromptId);
         options.GetFeatureOption<IPromptManager>().AddPrompt(0, prompt);
+
+        if (_handler.Tools.Dotnet)
+            options.Plugins.AddFromType<DotnetFunctions>("dotnet");
+        if (_handler.Tools.FSharp)
+            options.Plugins.AddFromType<FSharpFunctions>("fsproj");
+
         var plan = new DevelopPlan(options.ChatConfiguration.WorkingDirectory!, project.ProjectName);
         return Task.FromResult(plan);
     }

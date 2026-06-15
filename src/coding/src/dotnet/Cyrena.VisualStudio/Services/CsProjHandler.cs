@@ -1,15 +1,17 @@
 using Cyrena.Coding.Extensions;
 using Cyrena.Coding.Models;
 using Cyrena.VisualStudio.Contracts;
+using Cyrena.VisualStudio.Models;
 
 namespace Cyrena.VisualStudio.Services;
 
-public class CsProjFileHandler : IProjHandler
+public class CsProjHandler : IProjHandler
 {
     public string Filter => "csproj";
     public string Title => "C# Project";
     public string PromptId => "Cyrena.VisualStudio.Resources.cs-prompt.md";
     public string Description { get; } = "Build a .NET C# project with custom structure.";
+    public Tools Tools => new() { Dotnet = true, FSharp = false };
 
     public void Initialize(DevelopPlan plan)
     {

@@ -446,5 +446,41 @@ namespace Cyrena.Coding.Extensions
                 .Replace("\r\n", "\n")
                 .Replace("\r", "\n");
         }
+
+        public static bool TryFindFileByPath(this DevelopPlan plan, string relativePath, out DevelopFile? file, bool recursive = true)
+        {
+            var normalized = relativePath.Replace('\\', '/').TrimStart('/');
+
+            var easy = plan.Files.FirstOrDefault(x =>
+                x.RelativePath.Replace('\\', '/').TrimStart('/').Equals(normalized, StringComparison.OrdinalIgnoreCase));
+
+            if (easy != null) { file = easy; return true; }
+
+            if (recursive)
+                foreach (var folder in plan.Folders)
+                    if (plan.TryFindFileByPath(folder, normalized, out file))
+                        return true;
+
+            file = null;
+            return false;
+        }
+
+        public static bool TryFindFileByPath(this DevelopPlan plan, DevelopFolder folder, string relativePath, out DevelopFile? file, bool recursive = true)
+        {
+            var normalized = relativePath.Replace('\\', '/').TrimStart('/');
+
+            var easy = folder.Files.FirstOrDefault(x =>
+                x.RelativePath.Replace('\\', '/').TrimStart('/').Equals(normalized, StringComparison.OrdinalIgnoreCase));
+
+            if (easy != null) { file = easy; return true; }
+
+            if (recursive)
+                foreach (var child in folder.Folders)
+                    if (plan.TryFindFileByPath(child, normalized, out file))
+                        return true;
+
+            file = null;
+            return false;
+        }
     }
 }

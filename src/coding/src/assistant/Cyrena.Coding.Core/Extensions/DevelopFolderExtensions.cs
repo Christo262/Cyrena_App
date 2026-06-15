@@ -17,7 +17,8 @@ namespace Cyrena.Coding.Extensions
                 Id = id,
                 Name = name,
                 RelativePath = name,
-                IsVirtual = !Directory.Exists(path)
+                IsVirtual = !Directory.Exists(path),
+                AllowedFileTypes = plan.AllowedFileTypes,
             };
             plan.Folders.Add(folder);
             return folder;
@@ -43,7 +44,8 @@ namespace Cyrena.Coding.Extensions
                 Id = id,
                 Name = name,
                 RelativePath = Path.Combine(folder.RelativePath, name),
-                IsVirtual = !Directory.Exists(path)
+                IsVirtual = !Directory.Exists(path),
+                AllowedFileTypes = folder.AllowedFileTypes,
             };
             folder.Folders.Add(model);
             return model;

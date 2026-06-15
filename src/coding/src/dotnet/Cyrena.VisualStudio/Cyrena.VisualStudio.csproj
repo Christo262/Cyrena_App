@@ -7,6 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="Resources\es-prompt.md" />
+      <None Remove="Resources\fs-prompt.md" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Cyrena.Components.Core" />
         <PackageReference Include="Cyrena.Extensa.Core" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
@@ -24,6 +29,8 @@
 
     <ItemGroup>
       <EmbeddedResource Include="Resources\cs-prompt.md" />
+      <EmbeddedResource Include="Resources\es-prompt.md" />
+      <EmbeddedResource Include="Resources\fs-prompt.md" />
     </ItemGroup>
 
     <ItemGroup>

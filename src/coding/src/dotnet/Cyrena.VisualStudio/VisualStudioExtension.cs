@@ -9,6 +9,8 @@ public class VisualStudioExtension : Extension
 {
     public override void BuildExtension(CyrenaBuilder builder)
     {
-        builder.AddProjectHandler<CsProjFileHandler>();
+        builder.AddProjectHandler<CsProjHandler>();
+        builder.AddProjectHandler<FsProjHandler>();
+        builder.AddProjectHandler<EsProjHandler>();
     }
 }
