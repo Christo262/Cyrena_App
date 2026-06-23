@@ -3,7 +3,7 @@
         <MudForm @ref="_form" Model="_model">
             <MudTextField @bind-Value="_model.Title" Label="Title" Required="true" Class="mb-2" Variant="Variant.Outlined" Margin="Margin.Dense" />
             <ConnectionSelector @bind-Value="_model.ConnectionId" />
-            <MudTextField @bind-Value="_model.ProjectFilePath" Label="Project File" Required="true" 
+            <MudTextField @bind-Value="_model.ProjectFilePath" Label="@(IsSolutionFile ? "Solution File":"Project File")" Required="true" 
                           Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.FileOpen" Variant="Variant.Outlined" Margin="Margin.Dense"
                           OnAdornmentClick="ChooseFile" Class="mb-2" />
             <PluginSelector Chat="Model"/>

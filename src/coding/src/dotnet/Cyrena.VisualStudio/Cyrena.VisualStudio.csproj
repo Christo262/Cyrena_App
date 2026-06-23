@@ -31,6 +31,8 @@
       <EmbeddedResource Include="Resources\cs-prompt.md" />
       <EmbeddedResource Include="Resources\es-prompt.md" />
       <EmbeddedResource Include="Resources\fs-prompt.md" />
+      <None Remove="Resources\sln-prompt.md" />
+      <EmbeddedResource Include="Resources\sln-prompt.md" />
     </ItemGroup>
 
     <ItemGroup>

@@ -10,7 +10,7 @@ namespace Cyrena.Extensa.Contracts
         /// <summary>
         /// Called by the Extensa.Loader to add the extension to the application dependencies
         /// </summary>
-        /// <param name="builder"><see cref="IFrameworkBuilder"/></param>
+        /// <param name="builder"><see cref="CyrenaBuilder"/></param>
         void BuildExtension(CyrenaBuilder builder);
     }
 }

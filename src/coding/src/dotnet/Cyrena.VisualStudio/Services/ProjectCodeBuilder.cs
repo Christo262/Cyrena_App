@@ -77,7 +77,7 @@ public class ProjectCodeBuilder : ICodeBuilder
         var parameters = new DialogParameters<Configure>
         {
             { nameof(Configure.Model), config },
-            {nameof(Configure.Filter), _handler.Filter}
+            {nameof(Configure.Filter), new[]{_handler.Filter} },
         };
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true };
         var rf = await dialog.ShowAsync<Configure>(_handler.Title, parameters, options);

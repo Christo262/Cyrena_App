@@ -36,7 +36,7 @@ public class ProjectShortcut : IShortcut
         var parameters = new DialogParameters<Configure>
         {
             { nameof(Configure.Model), model },
-            {nameof(Configure.Filter), _handler.Filter}
+            {nameof(Configure.Filter), new[]{_handler.Filter}}
         };
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true };
         var dialog = await _dialog.ShowAsync<Configure>(Title, parameters, options);
