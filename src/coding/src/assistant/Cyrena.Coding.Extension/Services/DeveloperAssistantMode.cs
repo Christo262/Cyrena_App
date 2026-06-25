@@ -42,7 +42,6 @@ namespace Cyrena.Coding.Services
                 throw new NullReferenceException($"Unable to find code builder with id {config[DevelopOptions.BuilderId]}");
 
             var persistence = builder.AddFilePersistence(Path.Combine(config.WorkingDirectory, ".cyrena"));
-            persistence.AddSingletonStore<DynamicDevelopPlan>("develop-plans");
             builder.Services.Configure<ChatOptions>(o =>
             {
                 o.IncludeLogsInDisplay = true;
@@ -55,7 +54,6 @@ namespace Cyrena.Coding.Services
             builder.Plugins.AddFromType<BaseFileKernelFunctions>("Code");
             builder.Plugins.AddFromType<ProjectInformation>("Project");
             builder.AddToolbarComponent<VersionControlViewer>(ToolbarAlignment.Start);
-            builder.AddToolbarComponent<DevelopPlanEditorButton>(ToolbarAlignment.Start);
             builder.KernelBuilder.AddStartupTask<DevelopPlanWatcher>();
         }
 

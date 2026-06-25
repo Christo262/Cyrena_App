@@ -38,7 +38,7 @@ public class ProjectCodeBuilder : ICodeBuilder
         
         var project = new ProjectModel()
         {
-            Id = Guid.NewGuid().ToString(),
+            Id = vsproj.FileName,
             ConversationId = options.ChatConfiguration.Id,
             ProjectFilePath = proj,
             ProjectName = Path.GetFileName(proj),
@@ -48,11 +48,13 @@ public class ProjectCodeBuilder : ICodeBuilder
         };
         project[DotnetOptions.Namespace] = vsproj.RootNamespace;
         project[DotnetOptions.TargetFrameworks] = vsproj.TargetFrameworks;
+        project.Plan = new DevelopPlan(options.ChatConfiguration.WorkingDirectory!, project.Id);
         var sln_model = new SolutionViewModel(options.ChatConfiguration.WorkingDirectory!);
         sln_model.Projects.Add(project);
-        options.UseDynamicDiscovery(plan => _handler.Initialize(plan));
+        options.UseDynamicDiscovery<DynamicPlanInitializer>();
         options.ChatConfiguration[DotnetOptions.LastProject] = project.Id;
         options.Services.AddSingleton(sln_model);
+        options.Services.AddSingleton<IEnumerable<IProjHandler>>([_handler]);
         options.AddDynamicSolutionController();
         var prompt = Resources.Read(typeof(ProjectCodeBuilder).Assembly, _handler.PromptId);
         options.GetFeatureOption<IPromptManager>().AddPrompt(0, prompt);

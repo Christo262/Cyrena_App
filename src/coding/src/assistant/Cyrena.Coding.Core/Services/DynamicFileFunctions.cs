@@ -11,23 +11,14 @@ using System.ComponentModel;
 
 namespace Cyrena.Coding.Services
 {
-    internal class DynamicFileFunctions
+    internal class DynamicFileFunctions(
+        IDevelopPlanService plan,
+        IChatMessageService context,
+        IVersionControl version,
+        IServiceProvider services)
     {
-        private readonly IDevelopPlanService _plan;
-        private readonly IChatMessageService _context;
-        private readonly IVersionControl _version;
-        private readonly IServiceProvider _services;
-
-        public DynamicFileFunctions(
-            IDevelopPlanService plan,
-            IChatMessageService context,
-            IVersionControl version, IServiceProvider services)
-        {
-            _plan = plan;
-            _context = context;
-            _version = version;
-            _services = services;
-        }
+        private readonly IVersionControl _version = version;
+        private readonly IServiceProvider _services = services;
 
         [KernelFunction("create")]
         [Description("Creates a new file.")]
@@ -36,23 +27,20 @@ namespace Cyrena.Coding.Services
     [Description("The content to insert into the file. Leave empty to create file with no content.")] string? content,
     [Description("Provide if the file needs to be created in a specific folder in the develop plan. Empty folderId will create the file in the root directory.")] string? folderId = null)
         {
-            var options = _services.GetService<DynamicDiscoveryOptions>();
-            if (options == null)
-                return new ToolResult(false, "This function is not currently accessible. Please use dedicated create file functions.");
             var extension = Path.GetExtension(name).Replace(".", string.Empty);
             if (string.IsNullOrEmpty(folderId))
             {
-                if (!_plan.Plan.AllowedFileTypes.Contains(extension))
-                    return new ToolResult(false, $"Unable to create file. Root directory only supports the following file types: {string.Join(", *.", _plan.Plan.AllowedFileTypes)}.");
-                _context.LogInfo($"Creating file {name} in {folderId ?? "root"}");
-                var rootFile = _plan.Plan.CreateFile($"root_{extension}_{Path.GetFileNameWithoutExtension(name)}", name, content);
+                if (!plan.Plan.AllowedFileTypes.Contains(extension))
+                    return new ToolResult(false, $"Unable to create file. Root directory only supports the following file types: {string.Join(", *.", plan.Plan.AllowedFileTypes)}.");
+                context.LogInfo($"Creating file {name} in {folderId ?? "root"}");
+                var rootFile = plan.Plan.CreateFile($"root_{extension}_{Path.GetFileNameWithoutExtension(name)}", name, content);
                 return new ToolResult(true, $"File '{rootFile.RelativePath}' (id: {rootFile.Id}) created. Call read_lines before making further edits.");
             }
 
-            if (!_plan.Plan.TryFindFolder(folderId, out var folder))
+            if (!plan.Plan.TryFindFolder(folderId, out var folder))
                 return new ToolResult(false, $"Folder {folderId} not found.");
-            _context.LogInfo($"Creating file {name} in {folderId ?? "root"}");
-            var file = _plan.Plan.CreateFile(folder!, $"{folderId}_{extension}_{Path.GetFileNameWithoutExtension(name)}", name, content);
+            context.LogInfo($"Creating file {name} in {folderId ?? "root"}");
+            var file = plan.Plan.CreateFile(folder!, $"{folderId}_{extension}_{Path.GetFileNameWithoutExtension(name)}", name, content);
             return new ToolResult(true, $"File '{file.RelativePath}' (id: {file.Id}) created. Call read_lines before making further edits.");
         }
 
@@ -62,18 +50,15 @@ namespace Cyrena.Coding.Services
             [Description("The name of the new folder")] string name,
             [Description("The folder Id of the parent folder this folder must be created in. Leave empty to create at root/.")] string? parentFolderId)
         {
-            var options = _services.GetService<DynamicDiscoveryOptions>();
-            if (options == null)
-                return new ToolResult<DevelopFolder>(false, "This function is not currently accessible. Please use dedicated create file functions.");
             if (string.IsNullOrEmpty(parentFolderId))
             {
-                var folder = _plan.Plan.GetOrCreateFolder(name.ToLower(), name);
+                var folder = plan.Plan.GetOrCreateFolder(name.ToLower(), name);
                 return new ToolResult<DevelopFolder>(folder);
             }
 
-            if (!_plan.Plan.TryFindFolder(parentFolderId, out var parent))
+            if (!plan.Plan.TryFindFolder(parentFolderId, out var parent))
                 return new ToolResult<DevelopFolder>(false, $"Unable to find parent folder with id {parentFolderId}");
-            var model = _plan.Plan.GetOrCreateFolder(parent!, name.ToLower(), name);
+            var model = plan.Plan.GetOrCreateFolder(parent!, name.ToLower(), name);
             return new ToolResult<DevelopFolder>(model);
         }
 
@@ -83,12 +68,9 @@ namespace Cyrena.Coding.Services
             [Description("The id of the folder to delete.")] string folderId,
             [Description("If true, deletes sub-folders and files within the folder.")] bool recursive)
         {
-            var options = _services.GetService<DynamicDiscoveryOptions>();
-            if (options == null)
-                return new ToolResult<DevelopFolder>(false, "This function is not currently accessible. Please use dedicated create/delete file functions.");
-            if (_plan.Plan.TryFindFolder(folderId, out var folder))
+            if (plan.Plan.TryFindFolder(folderId, out var folder))
             {
-                var s = _plan.Plan.RemoveFolder(folder!, recursive);
+                var s = plan.Plan.RemoveFolder(folder!, recursive);
                 if (s)
                     return new ToolResult(true, "Folder removed");
                 else

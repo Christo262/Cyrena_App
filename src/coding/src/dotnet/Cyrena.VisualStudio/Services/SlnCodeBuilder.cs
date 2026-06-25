@@ -56,7 +56,7 @@ internal class SlnCodeBuilder(IServiceProvider services, IKernelController kerne
             project[DotnetOptions.Namespace] = vsproj.RootNamespace;
             project[DotnetOptions.TargetFrameworks] = vsproj.TargetFrameworks;
             project.Plan = new DevelopPlan(project.ProjectDirectory, vsproj.FileName);
-            handler.Initialize(project.Plan);
+            // handler.Initialize(project.Plan);
         }
         var sln_model = new SolutionViewModel(options.ChatConfiguration.WorkingDirectory!);
         sln_model.Projects.AddRange(projects);
@@ -75,12 +75,8 @@ internal class SlnCodeBuilder(IServiceProvider services, IKernelController kerne
         }
         options.ChatConfiguration[DotnetOptions.LastProject] = active.Id;
         options.Services.AddSingleton(sln_model);
-        options.UseDynamicDiscovery(plan =>
-        {
-            var filter = Path.GetExtension(plan.Id).TrimStart(".").ToString();
-            var handler = _handlers.First(x => string.Equals(x.Filter, filter, StringComparison.OrdinalIgnoreCase));
-            handler.Initialize(plan);
-        });
+        options.Services.AddSingleton(_handlers);
+        options.UseDynamicDiscovery<DynamicPlanInitializer>();
         options.AddDynamicSolutionController();
         var prompt = Resources.Read(typeof(ProjectCodeBuilder).Assembly, "Cyrena.VisualStudio.Resources.sln-prompt.md");
         options.GetFeatureOption<IPromptManager>().AddPrompt(0, prompt);

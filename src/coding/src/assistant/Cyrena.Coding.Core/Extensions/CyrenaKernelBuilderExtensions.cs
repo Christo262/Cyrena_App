@@ -1,5 +1,4 @@
-using Cyrena.Coding.Models;
-using Cyrena.Coding.Options;
+using Cyrena.Coding.Contracts;
 using Cyrena.Coding.Services;
 using Cyrena.Extensions;
 using Cyrena.Models;
@@ -10,29 +9,12 @@ namespace Cyrena.Coding.Extensions;
 
 public static class CyrenaKernelBuilderExtensions
 {
-    public static CyrenaKernelBuilder UseDynamicDiscovery(this CyrenaKernelBuilder builder, Action<DevelopPlan> initialization)
+    public static CyrenaKernelBuilder UseDynamicDiscovery<TDynamicPlanInitializer>(this CyrenaKernelBuilder builder)
+    where TDynamicPlanInitializer : class, IDynamicPlanInitializer
     {
-        var options = builder.TryGetDynamicOptions();
-        if(options != null)
-            throw new InvalidOperationException("Dynamic discovery is already configured");
-        options = new DynamicDiscoveryOptions()
-        {
-            Initialization = initialization
-        };
-        builder.Services.AddSingleton(options);
+        builder.Services.AddSingleton<IDynamicPlanInitializer,TDynamicPlanInitializer>();
+        builder.KernelBuilder.AddStartupTask<DynamicDevelopPlanWatcher>();
         builder.Plugins.AddFromType<DynamicFileFunctions>("FS");
         return builder;
-    }
-
-    public static DynamicDiscoveryOptions? TryGetDynamicOptions(this CyrenaKernelBuilder builder)
-    {
-        try
-        {
-            return builder.GetFeatureOption<DynamicDiscoveryOptions>();
-        }
-        catch
-        {
-            return null;
-        }
     }
 }

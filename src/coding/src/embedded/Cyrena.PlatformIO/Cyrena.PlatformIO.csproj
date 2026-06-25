@@ -15,7 +15,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Cyrena.Coding.Core" />
     <PackageReference Include="Cyrena.Components.Core" />
     <PackageReference Include="Cyrena.Extensa.Core" />
     <PackageReference Include="Cyrena.Persistence.Core" />
@@ -26,6 +25,10 @@
     <Content Update="extension.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\assistant\Cyrena.Coding.Core\Cyrena.Coding.Core.csproj" />
   </ItemGroup>
 
 </Project>

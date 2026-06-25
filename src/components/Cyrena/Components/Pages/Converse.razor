@@ -1,10 +1,9 @@
 @page "/converse/{Id}"
 @using Cyrena.Components.Shared
 
-
 @if (_loading)
 {
-    
+
 }else if (_kernel is not null)
 {
     <KernelInstance Kernel="_kernel" AutoRefocus="true"></KernelInstance>
