@@ -1,34 +1,11 @@
 @page "/converse/{Id}"
-@page "/converse"
 @using Cyrena.Components.Shared
 
-<MudDynamicTabs @ref="_dynamicTabs" ActivePanelIndex="@_userIndex" ActivePanelIndexChanged="OnTabChange"
-                Class="mud-height-full"
-                TabPanelsClass="overflow-auto h-100"
-                CloseTab="@OnCloseTab"
-                ApplyEffectsToContainer
-                KeepPanelsAlive>
-    <Header>
-    </Header>
-    <ChildContent>
-        @if (_active.Count == 0)
-        {
-            <MudTabPanel Text="Error" ShowCloseIcon="false">
-                <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="h-100">
-                    <MudFab StartIcon="@Icons.Material.Filled.ContentPasteOff" Size="Size.Medium" />
-                    <MudText>No Active Kernel Instances</MudText>
-                </MudStack>
-            </MudTabPanel>
-        }
-        else
-        {
-            @for(int i = 0; i < _active.Count; i++)
-            {
-                var item = _active[i];
-                <MudTabPanel ID="@item" Text="@item.GetTitle()" ShowCloseIcon>
-                    <KernelInstance Kernel="item" />
-                </MudTabPanel>
-            }
-        }
-    </ChildContent>
-</MudDynamicTabs>
+
+@if (_loading)
+{
+    
+}else if (_kernel is not null)
+{
+    <KernelInstance Kernel="_kernel" AutoRefocus="true"></KernelInstance>
+}

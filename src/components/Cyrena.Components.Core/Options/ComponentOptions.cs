@@ -21,6 +21,11 @@ namespace Cyrena.Options
         {
             public string ConverseUrl { get; set; } = "converse/{Id}";
             public bool AllowNewTab { get; set; } = true;
+
+            public string GetConverseUrl(string id)
+            {
+                return ConverseUrl.Replace("{Id}", id);
+            }
         }
 
         public class FileSystemConfig

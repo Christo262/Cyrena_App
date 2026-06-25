@@ -13,7 +13,14 @@
             {
                 <MudIcon Icon="@ChatConfiguration[ChatConfiguration.Icon]" Size="Size.Small" />
             }
-            <MudText Typo="Typo.subtitle2" Class="ml-2 text-truncate">@ChatConfiguration.Title</MudText>
+            @if (_active)
+            {
+                <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-2 text-truncate">@ChatConfiguration.Title</MudText>
+            }
+            else
+            {
+                <MudText Typo="Typo.subtitle2" Class="ml-2 text-truncate">@ChatConfiguration.Title</MudText>
+            }
         </div>
     </TitleContent>
 <ChildContent>

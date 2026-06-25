@@ -28,11 +28,9 @@ namespace Cyrena.Runtime.Services
 
         public async Task<Kernel> LoadAsync(ChatConfiguration config)
         {
-            if (_instances.ContainsKey(config.Id))
-            {
-                var ext = _instances.GetValueOrDefault(config.Id);
-                return ext!;
-            }
+            var ext = _instances.GetValueOrDefault(config.Id);
+            if(ext != null)
+                return ext;
 
             try
             {
@@ -114,6 +112,9 @@ namespace Cyrena.Runtime.Services
 
         public async Task<Kernel> LoadAsync(string id)
         {
+            var ext = _instances.GetValueOrDefault(id);
+            if(ext != null)
+                return ext;
             var config = await _store.FindAsync(x => x.Id == id);
             if (config == null)
                 throw new Exception("Config not found");

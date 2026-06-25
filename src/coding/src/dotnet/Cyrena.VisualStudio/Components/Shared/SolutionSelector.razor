@@ -1,7 +1,7 @@
 @inherits KernelComponentBase
 
 <MudTooltip Text="Projects">
-    <MudSelect T="string" Variant="Variant.Outlined" Dense="true" Style="width: 250px" Margin="Margin.Dense" Value="@_sln.Current.Id" ValueChanged="OnSlnChange">
+    <MudSelect T="string" Disabled="_its.Inferring" Variant="Variant.Outlined" Dense="true" Style="width: 250px" Margin="Margin.Dense" Value="@_sln.Current.Id" ValueChanged="OnSlnChange">
         @foreach (var item in _sln.GetValidProjects())
         {
             <MudSelectItem Value="item.Id">@item.ProjectName</MudSelectItem>

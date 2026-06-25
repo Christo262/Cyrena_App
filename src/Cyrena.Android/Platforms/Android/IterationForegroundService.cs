@@ -29,7 +29,7 @@ namespace Cyrena.Platforms
             var builder = new NotificationCompat.Builder(this, ChannelId);
             builder.SetContentTitle("Cyréna");
             builder.SetContentText("Conversations loaded...");
-            builder.SetSmallIcon(Resource.Drawable.notification);
+            builder.SetSmallIcon(Microsoft.Maui.Resource.Drawable.notification);
             builder.SetOngoing(true);
             var launchIntent = PackageManager?.GetLaunchIntentForPackage(PackageName!)!;
             launchIntent.SetFlags(ActivityFlags.SingleTop);

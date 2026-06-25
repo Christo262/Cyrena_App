@@ -32,6 +32,8 @@ namespace Cyrena.Components.Layout
         private bool _is_its { get; set; }
         private bool _open { get; set; }
 
+        private bool _active => _nav.Uri.EndsWith(ChatConfiguration.Id);
+
         protected override void OnInitialized()
         {
             _unload = _controller.OnChatUnload((cfg) =>
@@ -134,6 +136,7 @@ namespace Cyrena.Components.Layout
         {
             if(_controller.KernelActive(ChatConfiguration.Id))
             _controller.Unload(ChatConfiguration);
+            _open = false;
         }
 
         private async Task NewWindow()
