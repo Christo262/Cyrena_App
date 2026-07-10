@@ -36,11 +36,6 @@ Before creating any file you MUST:
 2. Verify the file extension is listed in that folder's AllowedFileTypes
 3. Only then create the file using the appropriate creation function
 
-**If the folder does not exist in the DevelopPlan:**
-→ Do NOT create the folder
-→ Report to the user that the folder does not exist in the plan
-→ Ask the user to add it via the plan editor
-
 **If the file type is not in the folder's AllowedFileTypes:**
 → Do NOT create the file
 → Report to the user that the file type is not allowed in that folder
@@ -50,8 +45,6 @@ Before creating any file you MUST:
 → You may read the file for context
 → You may NOT write to or modify it under any circumstances
 → If a change is required, explain to the user what needs to change and let them do it manually
-
-You may never create folders. Folders are discovered from disk and managed by the user via the plan editor.
 
 --------------------------------------------------
 File Creation Functions

@@ -28,6 +28,8 @@ public class CsProjHandler : IProjHandler
             plan.Discover("json", true, false);
         if(plan.ContainsFileTypes("xaml"))
             plan.Discover("xaml", true, false);
+        if(plan.ContainsFileTypes("axaml"))
+            plan.Discover("axaml", true, false);
         if (Directory.Exists(Path.Combine(plan.RootDirectory, "wwwroot")))
         {
             var folder = plan.GetOrCreateFolder("wwwroot", "wwwroot");

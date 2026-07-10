@@ -28,7 +28,7 @@
         {
             if(Result is ISuppressibleResult res)
                 return res.Suppress();
-            return $"[RESULT: {Success}, MESSAGE:{Message ?? "empty"}";
+            return $"[RESULT: {Success}, MESSAGE:{Message ?? "empty"}]";
         }
     }
 }

@@ -201,13 +201,8 @@ namespace Cyrena.Runtime.Services
 
         private void DisposeKernel(Kernel kernel)
         {
-            //semantic kernel does not expose dispose at this time, so we need to hack it.
-            switch (kernel.Services)
-            {
-                case IDisposable disposable:
-                    disposable.Dispose();
-                    break;
-            }
+            if(kernel.Services is IDisposable disposable)
+                disposable.Dispose();
         }
 
         public Kernel? GetKernel(string id)

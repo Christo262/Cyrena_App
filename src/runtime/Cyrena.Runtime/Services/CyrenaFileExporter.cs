@@ -29,10 +29,18 @@ namespace Cyrena.Runtime.Services
             var json = JsonSerializer.Serialize(manifest);
             var manifestPath = Path.Combine(_config.Config.FileStoragePath, "cyrena.manifest.json");
             File.WriteAllText(manifestPath, json);
-
-            await ZipFile.CreateFromDirectoryAsync(_config.Config.FileStoragePath, outPath, cancellationToken);
-            File.Delete(manifestPath);
-            return manifest;
+            
+            try
+            {
+                await ZipFile.CreateFromDirectoryAsync(_config.Config.FileStoragePath, outPath, cancellationToken);
+                File.Delete(manifestPath);
+                return manifest;
+            }
+            catch (Exception)
+            {
+                File.Delete(manifestPath);
+                throw;
+            }
         }
     }
 }

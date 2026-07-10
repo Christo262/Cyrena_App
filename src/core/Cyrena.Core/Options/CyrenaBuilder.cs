@@ -41,8 +41,6 @@ namespace Cyrena.Options
                 BuildActions[i].Invoke(this);
             Services.AddSingleton(new CyrenaOptions(FeatureAssemblies));
         }
-
-        private bool _disposed { get; set; }
     }
 
     public sealed class CyrenaOptions

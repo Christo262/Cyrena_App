@@ -87,7 +87,7 @@ namespace Cyrena.Runtime.Ollama.Services
 
                 if (string.IsNullOrEmpty(text))
                 {
-                    await _chat.AddMessage(AuthorRole.Assistant, text);
+                    await _chat.AddMessage(AuthorRole.Assistant, "[Empty Response]");
                     return;
                 }
 

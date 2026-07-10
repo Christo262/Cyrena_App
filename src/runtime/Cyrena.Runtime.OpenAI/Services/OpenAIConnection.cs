@@ -69,12 +69,20 @@ namespace Cyrena.Runtime.OpenAI.Services
                 foreach (var transformer in transformers)
                     await transformer.ApplyPostStreamModification(history);
 
-                await _chat.AddMessage(AuthorRole.Assistant, _responseBuilder.ToString());
+                var text = _responseBuilder.ToString();
+                _responseBuilder = null;
+
+                if (string.IsNullOrEmpty(text))
+                {
+                    await _chat.AddMessage(AuthorRole.Assistant, "[Empty Response]");
+                    return;
+                }
+
+                await _chat.AddMessage(AuthorRole.Assistant, text);
             }
             finally
             {
                 _its.InferenceEnd();
-                _responseBuilder = null;
             }
         }
 

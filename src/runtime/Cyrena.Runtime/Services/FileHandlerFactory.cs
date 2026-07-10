@@ -105,7 +105,7 @@ namespace Cyrena.Runtime.Services
                 throw new FileNotFoundException($"Unable to find file with id {att.Id}");
             ext.Properties = att.Properties;
             ext.Tools = att.Tools;
-            await _store.SaveAsync(att, cancellationToken);
+            await _store.SaveAsync(ext, cancellationToken);
         }
 
         public async Task<KernelContent> GetKernelContent(string fileId, CancellationToken cancellationToken = default)

@@ -12,7 +12,7 @@
 
         @if (_originals != null && _originals.Count > 0)
         {
-            <MudSelect T="int" @bind-Value="_selectedVersionIndex" @bind-Value:after="OnVersionSelected" Style="max-width:320px" Dense="true" Variant="Variant.Outlined">
+            <MudSelect T="int" @bind-Value="_selectedVersionIndex" @bind-Value:after="OnVersionSelected" Style="max-width:320px" Dense="true" Margin="Margin.Dense" Variant="Variant.Outlined">
                 @for (int i = _originals.Count - 1; i >= 0; i--)
                 {
                     var version = _originals[i];
