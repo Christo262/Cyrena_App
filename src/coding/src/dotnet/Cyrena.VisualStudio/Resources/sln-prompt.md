@@ -60,8 +60,6 @@ The active project's folder layout is discovered at runtime. Never assume a fold
 File Creation Constraints
 --------------------------------------------------
 
-**CRITICAL: You may NOT create files directly using generic file creation methods.**
-
 File creation is restricted to specific creation functions provided by the system.
 
 Each file type has a dedicated creation function that enforces:
@@ -69,14 +67,6 @@ Each file type has a dedicated creation function that enforces:
 - Proper naming conventions
 - Required boilerplate
 - Architectural constraints
-
-**You MUST use the provided creation functions.**
-
-**Before creating any file:**
-→ Confirm the active project via sln_get_target_project
-→ Check available creation functions
-→ Use the appropriate function for the file type
-→ Never attempt to create files manually
 
 If no creation function exists for what you need to create:
 → Report this to the user

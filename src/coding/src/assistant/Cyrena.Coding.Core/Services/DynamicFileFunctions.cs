@@ -48,9 +48,13 @@ namespace Cyrena.Coding.Services
         [Description("Creates a new folder.")]
         public ToolResult<DevelopFolder> CreateFolder(
             [Description("The name of the new folder")] string name,
-            [Description("The folder Id of the parent folder this folder must be created in. Leave empty to create at root/.")] string? parentFolderId)
+            [Description("The Id of the parent folder. Pass \"root\" (the literal string) to create a top-level folder in the project plan. Pass the Id of an existing folder (from Project_get_plan or a previous FS_create_folder call) to create a child folder.\n The Id of a project file is not a valid value.")] string parentFolderId)
         {
-            if (string.IsNullOrEmpty(parentFolderId))
+            var isRoot = string.IsNullOrEmpty(parentFolderId)
+                         || parentFolderId.Equals("root", StringComparison.OrdinalIgnoreCase)
+                         || parentFolderId == "/";
+
+            if (isRoot)
             {
                 var folder = plan.Plan.GetOrCreateFolder(name.ToLower(), name);
                 return new ToolResult<DevelopFolder>(folder);
@@ -58,6 +62,7 @@ namespace Cyrena.Coding.Services
 
             if (!plan.Plan.TryFindFolder(parentFolderId, out var parent))
                 return new ToolResult<DevelopFolder>(false, $"Unable to find parent folder with id {parentFolderId}");
+
             var model = plan.Plan.GetOrCreateFolder(parent!, name.ToLower(), name);
             return new ToolResult<DevelopFolder>(model);
         }

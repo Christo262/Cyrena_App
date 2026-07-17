@@ -1,0 +1,5 @@
+{
+  "Title": "JS location: all JS lives in Cyrena project",
+  "Content": "All JavaScript for the solution lives in the Cyrena project, NOT in the extension projects (e.g. Cyrena.Screens). Extension projects (Cyrena.Screens, etc.) reference and call into JS modules that are defined and owned by Cyrena.\n\nWhen asked to find, read, or modify a JS file:\n- Switch to the Cyrena project first\n- Locate the JS file there (e.g. screen-share.js, app.js, etc.)\n- Read/edit it\n- Switch back to the extension project for C# changes\n\nThis has been forgotten multiple times. Do not assume JS lives in the extension that consumes it.",
+  "Id": "04219c28-9bf9-4752-8743-20c6ada757de"
+}

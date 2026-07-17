@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\components\Cyrena.Components.Core\Cyrena.Components.Core.csproj" />
+        <ProjectReference Include="..\..\extensa\Cyrena.Extensa.Core\Cyrena.Extensa.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Resources\prompt.md" />
+      <EmbeddedResource Include="Resources\prompt.md" />
+    </ItemGroup>
+
+</Project>

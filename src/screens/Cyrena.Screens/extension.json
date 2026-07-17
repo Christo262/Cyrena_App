@@ -1,0 +1,13 @@
+{
+  "id": "cyrena.screens",
+  "name": "Screen Share",
+  "version": "0.6.0",
+  "entryAssemblyFile": "Cyrena.Screens.dll",
+  "description": "Let Cyrena see your screen",
+  "dependencies": [
+    {
+      "id": "cyrena",
+      "minVersion": "0.6.0"
+    }
+  ]
+}

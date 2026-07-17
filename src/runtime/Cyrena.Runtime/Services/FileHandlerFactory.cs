@@ -190,6 +190,8 @@ namespace Cyrena.Runtime.Services
         {
             var count = await _store.CountAsync(x => x.InternalName == name);
             var file_name = count == 0 ? name : $"{Path.GetFileNameWithoutExtension(name)}({count}){Path.GetExtension(name)}";
+            if(!Directory.Exists(_config.Config.FileStoragePath))
+                Directory.CreateDirectory(_config.Config.FileStoragePath);
             var att = FileAttachment.From(file_name, contentType, Path.Combine(_config.Config.FileStoragePath, file_name), name);
             await _store.SaveAsync(att, cancellationToken);
             return att;
