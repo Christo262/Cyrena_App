@@ -1,0 +1,57 @@
+{
+  "name": "cyrena-electron",
+  "version": "0.6.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron . --title \"Cyréna\" --url \"http://localhost:8000\" --width 1024 --height 768",
+    "dist": "electron-builder --linux",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Christo262/Cyrena_App.git"
+  },
+  "author": "cyrena.dev <info@vayanova.co.za>",
+  "desktopName": "dev.cyrena.shell.desktop",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Christo262/Cyrena_App/issues"
+  },
+  "homepage": "https://github.com/Christo262/Cyrena_App#readme",
+  "devDependencies": {
+    "electron": "^43.1.1",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "dev.cyrena.shell",
+    "productName": "Cyréna",
+    "copyright": "Copyright © 2026 Cyréna",
+    "directories": {
+      "output": "../../../install/bin"
+    },
+    "files": [
+      "main.js",
+      "favicon.png",
+      "package.json"
+    ],
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "category": "Development",
+      "icon": "favicon.png",
+      "syncDesktopName": true,
+      "artifactName": "cyrena.${arch}.${ext}"
+    },
+    "protocols": {
+      "name": "Cyréna Deep Link",
+      "schemes": [
+        "cyrena"
+      ]
+    }
+  }
+}

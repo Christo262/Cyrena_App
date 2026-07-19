@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -55,7 +57,7 @@ namespace Cyrena.Shell.Services
 
             var path = Path.Combine(
                 webViewDirectory,
-                "Cyrena.WebView");
+                GetWebViewName());
 
             if (!File.Exists(path))
                 return;
@@ -101,6 +103,19 @@ namespace Cyrena.Shell.Services
                 process.Dispose();
                 throw;
             }
+        }
+
+        private string GetWebViewName()
+        {
+            if (RuntimeInformation.ProcessArchitecture == Architecture.Arm64)
+            {
+                return "cyrena.arm64.AppImage";
+            }
+            else if (RuntimeInformation.ProcessArchitecture == Architecture.X64)
+            {
+                return "cyrena.x86_64.AppImage";
+            }
+            return "cyrena.x86_64.AppImage";
         }
 
         private void Process_Exited(object? sender, EventArgs e)
