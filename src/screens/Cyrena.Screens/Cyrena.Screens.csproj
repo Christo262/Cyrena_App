@@ -17,7 +17,13 @@
 
     <ItemGroup>
       <None Remove="Resources\prompt.md" />
-      <EmbeddedResource Include="Resources\prompt.md" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Resources\fn-res-prompt.md" />
+      <EmbeddedResource Include="Resources\fn-res-prompt.md" />
+      <None Remove="Resources\usr-msg-prompt.md" />
+      <EmbeddedResource Include="Resources\usr-msg-prompt.md" />
     </ItemGroup>
 
 </Project>

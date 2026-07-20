@@ -3,6 +3,7 @@ using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Models;
 using Cyrena.Screens.Contracts;
+using Cyrena.Screens.Models;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 
@@ -19,22 +20,25 @@ internal class Functions
     private readonly IIterationService _its;
     private readonly IChatMessageService _chat;
     private readonly IFileHandlerFactory _files;
+    private readonly ScreenInteropModeService _mode;
 
     public Functions(
         IScreenInterop screen,
         IIterationService its,
         IChatMessageService chat,
-        IFileHandlerFactory files)
+        IFileHandlerFactory files,
+        ScreenInteropModeService mode)
     {
         _screen = screen;
         _its = its;
         _chat = chat;
         _files = files;
+        _mode = mode;
     }
 
     [KernelFunction("capture")]
-    [Description("Captures a single frame from the user's shared screen and sends it as the next user message.")]
-    public async Task<ToolResult> ScreenshotAsync()
+    [Description("Captures a single frame from the user's shared screen")]
+    public async Task<object> ScreenshotAsync()
     {
         if (!_screen.IsActive)
             return new ToolResult(false, "No screen is currently shared. Ask the user to share their screen first.");
@@ -77,17 +81,22 @@ internal class Functions
         if (attachment is null)
             return new ToolResult(false, "File handler could not process the captured image.");
 
-        // Build the user message and add the captured frame as its
-        // only item. The text portion is empty — the AI reads the
-        // image directly. The user sees a pill in the chat just like
-        // a paste.
-        var message = new ChatMessageContent(AuthorRole.User, fileName);
-        message.Items.Add(attachment);
+        if (_mode.Mode == InteropMode.UserMessage)
+        {
+            // Build the user message and add the captured frame as its
+            // only item. The text portion is empty — the AI reads the
+            // image directly. The user sees a pill in the chat just like
+            // a paste.
+            if (_its.Input == null)
+                _its.Input = new ChatMessageContent(AuthorRole.User, fileName);
+            if(string.IsNullOrEmpty(_its.Input.Content))
+                _its.Input.Content = fileName;
+            _its.Input.Items.Add(attachment);
 
-        _its.Input = message;
-        _its.Iterate();
-
-        return new ToolResult(true, $"Captured {fileName} ({bytes.LongLength} bytes) and sent it as the next user message.");
+            return new ToolResult(true, $"Captured {fileName} ({bytes.LongLength} bytes) and sent it as the next user message.");
+        }
+        
+        return attachment;
     }
 
     private static byte[]? DecodeDataUrl(string dataUrl)

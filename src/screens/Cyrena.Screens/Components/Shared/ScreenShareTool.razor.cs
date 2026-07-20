@@ -2,6 +2,7 @@ using Cyrena.Attributes;
 using Cyrena.Models;
 using Cyrena.Screens.Contracts;
 using Cyrena.Screens.Models;
+using Cyrena.Screens.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MudBlazor;
@@ -13,6 +14,9 @@ public partial class ScreenShareTool : IDisposable
     [Inject] private IScreenInterop _screen { get; set; } = null!;
     [Inject] private ISnackbar _snackbar { get; set; } = null!;
     [Inject] private IJSRuntime _js { get; set; } = null!;
+    [Inject] private IDialogService _dialog { get; set; } = null!;
+
+    [KernelInject] private ScreenInteropModeService _mode { get; set; } = null!;
 
     private bool _supported;
     private bool _busy;
@@ -35,6 +39,16 @@ public partial class ScreenShareTool : IDisposable
         _busy = true;
         try
         {
+            //Select the mode first
+            var rf = await _dialog.ShowAsync<InteropModeSelect>(null, new DialogParameters()
+            {
+                {nameof(InteropModeSelect.Interop), _mode}
+            }, new DialogOptions()
+            {
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true,
+            });
+            var rfr = await rf.Result;
             // Result is intentionally NOT discarded — we surface it as
             // a snackbar so the user knows the share actually went
             // through. Without this, the picker closing is the only

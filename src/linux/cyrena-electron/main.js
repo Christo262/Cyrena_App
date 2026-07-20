@@ -51,7 +51,8 @@ function createWindow() {
         webPreferences: {
             nodeIntegration: false,    // Safe architecture for web layers
             contextIsolation: true,
-            devTools: false            // Equivalent to SetDevToolsEnabled(false)
+            devTools: false,           // Equivalent to SetDevToolsEnabled(false)
+            autoplayPolicy: 'no-user-gesture-required' // ALLOWS AUTOMATIC AUDIO PLAYBACK
         }
     });
 
@@ -75,7 +76,7 @@ function createWindow() {
         }
     });
 
-    // 5. Automatically resolve screen share requests for localhost
+    // 5. Automatically resolve screen share requests for localhost (Includes audio fallback)
     session.defaultSession.setDisplayMediaRequestHandler(async (request, callback) => {
         try {
             const sources = await desktopCapturer.getSources({ types: ['screen', 'window'] });
@@ -84,7 +85,7 @@ function createWindow() {
             if (primarySource) {
                 callback({ 
                     video: primarySource,
-                    audio: 'loopback' 
+                    audio: 'loopback' // Captures system output audio during screen share
                 });
             } else {
                 callback(new Error('No desktop capture sources found.'));
@@ -110,7 +111,23 @@ if (!gotTheLock) {
         }
     });
 
-    app.whenReady().then(createWindow);
+    app.whenReady().then(() => {
+        // AUTO-APPROVE AUDIO CAPTURE AND MICROPHONE REQUESTS
+        session.defaultSession.setPermissionCheckHandler((webContents, permission) => {
+            if (permission === 'media' || permission === 'audioCapture') return true;
+            return false;
+        });
+
+        session.defaultSession.setPermissionRequestHandler((webContents, permission, callback) => {
+            if (permission === 'media' || permission === 'audioCapture') {
+                callback(true);
+            } else {
+                callback(false);
+            }
+        });
+
+        createWindow();
+    });
 }
 
 app.on('window-all-closed', () => {

@@ -31,10 +31,8 @@ internal class AssistantPlugin : IAssistantPlugin
         
         builder.AddToolbarComponent<ScreenShareTool>(ToolbarAlignment.End);
         builder.Services.AddSingleton<IScreenInterop>(_interop);
+        builder.Services.AddSingleton<ScreenInteropModeService>();
         builder.Plugins.AddFromType<Functions>("Screen");
-
-        var prompts = builder.GetFeatureOption<IPromptManager>();
-        prompts.AddPrompt(20, Resources.Read(typeof(AssistantPlugin).Assembly, "Cyrena.Screens.Resources.prompt.md"));
         return Task.CompletedTask;
     }
 }
