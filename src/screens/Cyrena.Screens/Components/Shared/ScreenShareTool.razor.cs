@@ -39,16 +39,7 @@ public partial class ScreenShareTool : IDisposable
         _busy = true;
         try
         {
-            //Select the mode first
-            var rf = await _dialog.ShowAsync<InteropModeSelect>(null, new DialogParameters()
-            {
-                {nameof(InteropModeSelect.Interop), _mode}
-            }, new DialogOptions()
-            {
-                MaxWidth = MaxWidth.Medium,
-                FullWidth = true,
-            });
-            var rfr = await rf.Result;
+            _mode.SetInteropMode(InteropMode.UserMessage);
             // Result is intentionally NOT discarded — we surface it as
             // a snackbar so the user knows the share actually went
             // through. Without this, the picker closing is the only

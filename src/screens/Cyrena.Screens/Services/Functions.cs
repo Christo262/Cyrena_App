@@ -88,10 +88,13 @@ internal class Functions
             // image directly. The user sees a pill in the chat just like
             // a paste.
             if (_its.Input == null)
-                _its.Input = new ChatMessageContent(AuthorRole.User, fileName);
-            if(string.IsNullOrEmpty(_its.Input.Content))
-                _its.Input.Content = fileName;
+                _its.Input = new ChatMessageContent(AuthorRole.User, "");
             _its.Input.Items.Add(attachment);
+            if (string.IsNullOrEmpty(_its.Input.Content))
+            {
+                _its.Input.Content = fileName;
+                _its.Iterate();
+            }
 
             return new ToolResult(true, $"Captured {fileName} ({bytes.LongLength} bytes) and sent it as the next user message.");
         }
