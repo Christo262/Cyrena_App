@@ -28,7 +28,7 @@
     "productName": "Cyréna",
     "copyright": "Copyright © 2026 Cyréna",
     "directories": {
-      "output": "../../../install/bin/linux"
+      "output": "dist"
     },
     "files": [
       "main.js",

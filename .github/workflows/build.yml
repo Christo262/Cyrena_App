@@ -49,7 +49,7 @@ jobs:
           dotnet-version: '10.x'
 
       - name: Publish Windows ${{ matrix.arch }}
-        run: dotnet publish src/Cyrena.Shell/Cyrena.Shell.csproj -c Release -r win-${{ matrix.arch }} -o ./build/windows/${{ matrix.arch }}
+        run: dotnet publish src/Cyrena.Shell/Cyrena.Shell.csproj -c Release -r win-${{ matrix.arch }} -o ./build/windows/${{ matrix.arch }} --self-contained
 
       - name: Upload Windows ${{ matrix.arch }} artifact
         uses: actions/upload-artifact@v7
@@ -78,10 +78,10 @@ jobs:
           cache-dependency-path: src/linux/cyrena-electron/package-lock.json
 
       - name: Publish Linux x64
-        run: dotnet publish src/Cyrena.Shell/Cyrena.Shell.csproj -c Release -r linux-x64 -o ./build/linux/x64
+        run: dotnet publish src/Cyrena.Shell/Cyrena.Shell.csproj -c Release -r linux-x64 -o ./build/linux/x64 --self-contained
 
       - name: Publish Linux arm64
-        run: dotnet publish src/Cyrena.Shell/Cyrena.Shell.csproj -c Release -r linux-arm64 -o ./build/linux/arm64
+        run: dotnet publish src/Cyrena.Shell/Cyrena.Shell.csproj -c Release -r linux-arm64 -o ./build/linux/arm64 --self-contained
 
       - name: Install dependencies (cyrena-electron)
         working-directory: src/linux/cyrena-electron
@@ -89,7 +89,7 @@ jobs:
 
       - name: Build electron app (both arches)
         working-directory: src/linux/cyrena-electron
-        run: npm run dist
+        run: npm run dist:ci
 
       - name: Sort AppImages into webview folders
         shell: bash
@@ -143,7 +143,7 @@ jobs:
           dotnet-version: '10.x'
 
       - name: Publish macOS ${{ matrix.arch }}
-        run: dotnet publish src/Cyrena.Shell/Cyrena.Shell.csproj -c Release -r osx-${{ matrix.arch }} -o ./build/macos/${{ matrix.arch }}
+        run: dotnet publish src/Cyrena.Shell/Cyrena.Shell.csproj -c Release -r osx-${{ matrix.arch }} -o ./build/macos/${{ matrix.arch }} --self-contained
 
       - name: Upload macOS ${{ matrix.arch }} artifact
         uses: actions/upload-artifact@v7
