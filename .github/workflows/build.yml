@@ -1,0 +1,159 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+      - v0.6.0
+  pull_request:
+    branches:
+      - master
+      - v0.6.0
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Run tests
+        run: dotnet test --configuration Release --no-restore
+
+  build-windows:
+    name: Build Windows (${{ matrix.arch }})
+    runs-on: windows-latest
+    needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x64, arm64]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Publish Windows ${{ matrix.arch }}
+        run: dotnet publish src/Cyrena.Shell/Cyrena.Shell.csproj -c Release -r win-${{ matrix.arch }} -o ./build/windows/${{ matrix.arch }}
+
+      - name: Upload Windows ${{ matrix.arch }} artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cyrena-windows-${{ matrix.arch }}
+          path: ./build/windows/${{ matrix.arch }}
+          retention-days: 1
+
+  build-linux:
+    name: Build Linux (${{ matrix.arch }})
+    runs-on: ubuntu-latest
+    needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x64, arm64]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: src/linux/cyrena-electron/package-lock.json
+
+      - name: Publish Linux ${{ matrix.arch }}
+        run: dotnet publish src/Cyrena.Shell/Cyrena.Shell.csproj -c Release -r linux-${{ matrix.arch }} -o ./build/linux/${{ matrix.arch }}
+
+      - name: Install dependencies (cyrena-electron)
+        working-directory: src/linux/cyrena-electron
+        run: npm ci
+
+      - name: Build electron app
+        working-directory: src/linux/cyrena-electron
+        # electron-builder needs an explicit arch flag to cross-build arm64 on an x64 runner.
+        # Confirm your "dist" script forwards extra args to electron-builder.
+        run: npm run dist -- --${{ matrix.arch }}
+
+      - name: Create webview directory
+        run: mkdir -p ./build/linux/${{ matrix.arch }}/webview
+
+      - name: Move correct AppImage to webview folder
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ matrix.arch }}" = "x64" ]; then
+            found=$(find src/linux/cyrena-electron/dist -name "*.AppImage" \( -name "*x86_64*" -o -name "*x64*" \) -print -quit)
+          else
+            found=$(find src/linux/cyrena-electron/dist \( -name "*arm64*.AppImage" -o -name "*aarch64*.AppImage" \) -print -quit)
+          fi
+
+          if [ -z "$found" ]; then
+            echo "::error::No AppImage found for arch ${{ matrix.arch }}"
+            exit 1
+          fi
+
+          mv "$found" ./build/linux/${{ matrix.arch }}/webview/
+
+      - name: Upload Linux ${{ matrix.arch }} artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cyrena-linux-${{ matrix.arch }}
+          path: ./build/linux/${{ matrix.arch }}
+          retention-days: 1
+
+  build-macos:
+    name: Build macOS (${{ matrix.arch }})
+    runs-on: macos-latest
+    needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x64, arm64]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Publish macOS ${{ matrix.arch }}
+        run: dotnet publish src/Cyrena.Shell/Cyrena.Shell.csproj -c Release -r osx-${{ matrix.arch }} -o ./build/macos/${{ matrix.arch }}
+
+      - name: Upload macOS ${{ matrix.arch }} artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cyrena-macos-${{ matrix.arch }}
+          path: ./build/macos/${{ matrix.arch }}
+          retention-days: 1
