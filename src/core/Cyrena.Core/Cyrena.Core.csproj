@@ -43,7 +43,7 @@
     </None>
   </ItemGroup>
 
-  <Target Name="PostPack" AfterTargets="Pack">
+  <Target Name="PostPack" AfterTargets="Pack" Condition="'$(Configuration)' == 'Debug'">
     <ItemGroup>
       <NugetPackages Include="bin\Debug\$(PackageId).$(PackageVersion).nupkg" />
     </ItemGroup>
