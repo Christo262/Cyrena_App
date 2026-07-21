@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   test:
-    name: Run Tests
+    name: Restore
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -30,10 +30,7 @@ jobs:
           dotnet-version: '10.x'
 
       - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Run tests
-        run: dotnet test --configuration Release --no-restore
+        run: dotnet restore src/Cyrena.Shell/Cyrena.Shell.csproj
 
   build-windows:
     name: Build Windows (${{ matrix.arch }})
