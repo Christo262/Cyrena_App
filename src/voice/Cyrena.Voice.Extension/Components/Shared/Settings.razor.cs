@@ -11,18 +11,21 @@ namespace Cyrena.Voice.Components.Shared
 {
     public partial class Settings
     {
-        [Inject] private IServiceProvider _services { get; set; } = default!;
-        [Inject] private ISettingsService _settings { get; set; } = default!;
-        [Inject] private IFileDialog _file { get; set; } = default!;
-        [Inject] private IJSRuntime _js { get; set; } = default!;
-        [Inject] private ISnackbar _snackbar { get; set; } = default!;
+        [Inject] private IServiceProvider _services { get; set; } = null!;
+        [Inject] private ISettingsService _settings { get; set; } = null!;
+        [Inject] private IFileDialog _file { get; set; } = null!;
+        [Inject] private IJSRuntime _js { get; set; } = null!;
+        [Inject] private ISnackbar _snackbar { get; set; } = null!;
 
-        private WebViewVoiceOptions _options = default!;
+        private VoiceOptions _options = null!;
+        private ESpeakOptions _espeak = null!;
+        
         private IEnumerable<IVoiceChain> _chains { get; set; } = [];
 
         protected override void OnInitialized()
         {
-            _options = _settings.Read<WebViewVoiceOptions>(WebViewVoiceOptions.Key) ?? new WebViewVoiceOptions();
+            _options = _settings.Read<VoiceOptions>(VoiceOptions.Key) ?? new VoiceOptions();
+            _espeak = _settings.Read<ESpeakOptions>(ESpeakOptions.Key) ?? new ESpeakOptions();
             _chains = _services.GetServices<IVoiceChain>();
             _r = (int)(_options.Rate * 10);
             _p = (int)(_options.Pitch * 10);
@@ -54,7 +57,8 @@ namespace Cyrena.Voice.Components.Shared
             _options.Rate = (float)_r / 10.0f;
             _options.Pitch = (float)_p / 10.0f;
             _options.Volume = (float)_v / 10.0f;
-            _settings.Save(WebViewVoiceOptions.Key, _options);
+            _settings.Save(VoiceOptions.Key, _options);
+            _settings.Save(ESpeakOptions.Key, _espeak);
         }
 
         private async Task SelectGgml()

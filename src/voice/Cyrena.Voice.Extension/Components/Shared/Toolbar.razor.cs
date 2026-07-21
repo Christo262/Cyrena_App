@@ -64,7 +64,7 @@ namespace Cyrena.Voice.Components.Shared
             try
             {
                 var chains = _services.GetServices<IVoiceChain>();
-                var options = _settings.Read<WebViewVoiceOptions>(WebViewVoiceOptions.Key) ?? new WebViewVoiceOptions();
+                var options = _settings.Read<VoiceOptions>(VoiceOptions.Key) ?? new VoiceOptions();
                 _chain = chains.FirstOrDefault(x => x.Id == options.DefaultVoiceChain);
                 if (_chain == null)
                     throw new InvalidOperationException($"Unable to configure voice mode");

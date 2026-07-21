@@ -42,7 +42,7 @@ namespace Cyrena.Voice.Services
         {
             if (IsInitialized)
                 return Task.CompletedTask;
-            var options = _settings.Read<WebViewVoiceOptions>(WebViewVoiceOptions.Key) ?? new WebViewVoiceOptions();
+            var options = _settings.Read<VoiceOptions>(VoiceOptions.Key) ?? new VoiceOptions();
             if (string.IsNullOrEmpty(options.WhisperModelPath))
                 throw new InvalidOperationException($"Please configure a Whisper model first in Settings.");
             if (!File.Exists(options.WhisperModelPath))

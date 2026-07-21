@@ -47,7 +47,7 @@ namespace Cyrena.Runtime.Services
                 builder.Plugins.AddFromType<AttachmentKernelFunctions>("Attachment");
             builder.Services.AddSingleton<IFileHandlerFactory, FileHandlerFactory>();
             builder.Services.AddSingleton<IConversationHistoryTransformer, HistoryInclusionTransformer>();
-            builder.Services.AddSingleton<IConversationHistoryTransformer, FileReferenceContentTransformer>();
+            builder.Services.AddSingleton<IConversationHistoryTransformer, SerializableContentTransformer>();
 
             builder.Services.AddSingleton<ICyrenaFileExporter, CyrenaFileExporter>();
 

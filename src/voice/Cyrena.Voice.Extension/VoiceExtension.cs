@@ -1,4 +1,4 @@
-﻿using Cyrena.Extensa.Models;
+using Cyrena.Extensa.Models;
 using Cyrena.Extensions;
 using Cyrena.Options;
 using Cyrena.Voice.Components.Shared;
@@ -17,6 +17,9 @@ namespace Cyrena.Voice
             builder.Services.AddKeyedScoped<ITextAudioConverter, WebViewTextAudioConverter>(WebViewTextAudioConverter.Key);
             builder.Services.AddKeyedScoped<IAudioPlayer, WebViewAudioPlayer>(WebViewAudioPlayer.Key);
             builder.Services.AddScoped<IVoiceChain, WebViewWhisperVoiceChain>();
+            
+            builder.Services.AddKeyedScoped<ITextAudioConverter, ESpeakTextAudioConverter>(ESpeakTextAudioConverter.Key);
+            builder.Services.AddScoped<IVoiceChain, ESpeakWhisperVoiceChain>();
 
             builder.AddSettingsComponent<Settings>("Voice", 10);
             builder.AddAssistantPlugin<VoiceModeAssistantPlugin>();

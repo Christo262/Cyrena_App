@@ -22,7 +22,7 @@ namespace Cyrena.Voice.Services
 
         public Task LoadAsync(CyrenaKernelBuilder builder)
         {
-            var options = _settings.Read<WebViewVoiceOptions>(WebViewVoiceOptions.Key) ?? new WebViewVoiceOptions();
+            var options = _settings.Read<VoiceOptions>(VoiceOptions.Key) ?? new VoiceOptions();
             if (string.IsNullOrEmpty(options.DefaultVoiceChain))
                 return Task.CompletedTask;
                 

@@ -22,7 +22,8 @@ namespace Cyrena.Models
             Id = Ulid.NewUlid().ToString();
             IterationId = iterationId;
             Date = DateTime.Now;
-            Items = content.Items.Select(x => new KernelContentEntity(x)).ToList();
+            var items = content.Items.Select(x => new KernelContentEntity(x)).ToList();
+            Items = items.Where(x => x.Item != null).ToList();
             MimeType = content.MimeType;
             Role = content.Role.Label;
         }
@@ -84,12 +85,5 @@ namespace Cyrena.Models
         }
 
         public KernelContent? Item { get; set; }
-
-        public bool IsContentType<TKernelContent>()
-            where TKernelContent : KernelContent
-        {
-            if(Item == null) return false;
-            return Item.GetType() == typeof(TKernelContent);
-        }
     }
 }

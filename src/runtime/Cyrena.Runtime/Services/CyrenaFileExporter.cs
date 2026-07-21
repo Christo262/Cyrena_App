@@ -32,6 +32,8 @@ namespace Cyrena.Runtime.Services
             
             try
             {
+                if(File.Exists(outPath))
+                    File.Delete(outPath);
                 await ZipFile.CreateFromDirectoryAsync(_config.Config.FileStoragePath, outPath, cancellationToken);
                 File.Delete(manifestPath);
                 return manifest;

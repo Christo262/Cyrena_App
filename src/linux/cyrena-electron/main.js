@@ -47,12 +47,13 @@ function createWindow() {
         height: appArgs.height,
         icon: path.join(__dirname, 'favicon.png'), // Photino Linux fallback
         useContentSize: false,
-        center: true, 
+        center: true,
+        devTools:true,
         webPreferences: {
             nodeIntegration: false,    // Safe architecture for web layers
             contextIsolation: true,
-            devTools: false,           // Equivalent to SetDevToolsEnabled(false)
-            autoplayPolicy: 'no-user-gesture-required' // ALLOWS AUTOMATIC AUDIO PLAYBACK
+            devTools: true,           // Equivalent to SetDevToolsEnabled(false)
+            autoplayPolicy: 'no-user-gesture-required', // ALLOWS AUTOMATIC AUDIO PLAYBACK
         }
     });
 
@@ -83,7 +84,7 @@ function createWindow() {
             const primarySource = sources[0]; // Resolves to the main desktop workspace
 
             if (primarySource) {
-                callback({ 
+                callback({
                     video: primarySource,
                     audio: 'loopback' // Captures system output audio during screen share
                 });
@@ -99,36 +100,25 @@ function createWindow() {
     mainWindow.loadURL(appArgs.url);
 }
 
-// Single instance lock to prevent launching multiple shells against the same port
-const gotTheLock = app.requestSingleInstanceLock();
-if (!gotTheLock) {
-    app.quit();
-} else {
-    app.on('second-instance', () => {
-        if (mainWindow) {
-            if (mainWindow.isMinimized()) mainWindow.restore();
-            mainWindow.focus();
+app.commandLine.appendSwitch('enable-speech-dispatcher');
+
+app.whenReady().then(() => {
+    // AUTO-APPROVE AUDIO CAPTURE AND MICROPHONE REQUESTS
+    session.defaultSession.setPermissionCheckHandler((webContents, permission) => {
+        if (permission === 'media' || permission === 'audioCapture') return true;
+        return false;
+    });
+
+    session.defaultSession.setPermissionRequestHandler((webContents, permission, callback) => {
+        if (permission === 'media' || permission === 'audioCapture') {
+            callback(true);
+        } else {
+            callback(false);
         }
     });
 
-    app.whenReady().then(() => {
-        // AUTO-APPROVE AUDIO CAPTURE AND MICROPHONE REQUESTS
-        session.defaultSession.setPermissionCheckHandler((webContents, permission) => {
-            if (permission === 'media' || permission === 'audioCapture') return true;
-            return false;
-        });
-
-        session.defaultSession.setPermissionRequestHandler((webContents, permission, callback) => {
-            if (permission === 'media' || permission === 'audioCapture') {
-                callback(true);
-            } else {
-                callback(false);
-            }
-        });
-
-        createWindow();
-    });
-}
+    createWindow();
+});
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();

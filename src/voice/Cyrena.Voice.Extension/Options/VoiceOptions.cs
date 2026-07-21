@@ -1,6 +1,6 @@
 ﻿namespace Cyrena.Voice.Options
 {
-    public class WebViewVoiceOptions
+    public class VoiceOptions
     {
         public const string Key = "webview.voice";
 

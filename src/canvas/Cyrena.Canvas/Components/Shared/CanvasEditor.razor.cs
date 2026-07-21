@@ -11,11 +11,12 @@ namespace Cyrena.Canvas.Components.Shared
 {
     public partial class CanvasEditor
     {
-        [KernelInject] private ICanvasService _canvas { get; set; } = default!;
-        [KernelInject] private ICyrenaFileExporter _exporter { get; set; } = default!;
-        [KernelInject] private IIterationService _its { get; set; } = default!;
-        [Inject] private IFileDialog _dialog { get; set; } = default!;
-        [Inject] private ISnackbar _toasts { get; set; } = default!;
+        [KernelInject] private ICanvasService _canvas { get; set; } = null!;
+        [KernelInject] private ICyrenaFileExporter _exporter { get; set; } = null!;
+        [KernelInject] private IIterationService _its { get; set; } = null!;
+        [KernelInject] private IChatConfigurationService _cht { get; set; } = null!;
+        [Inject] private IFileDialog _dialog { get; set; } = null!;
+        [Inject] private ISnackbar _toasts { get; set; } = null!;
         private List<IDisposable> _disposables { get; set; } = new List<IDisposable>();
         private CanvasDocument? _current { get; set; }
         private CodeInput? _code { get; set; }
@@ -104,8 +105,13 @@ namespace Cyrena.Canvas.Components.Shared
             {
                 var properties = new Dictionary<string, string?>();
                 properties[CanvasOptions.Entry] = _current.Id;
+                var content = _current.Content?.ToString();
+                _current.Content = _current.Content?.Replace($"{_cht.Config.Id}/files/", ""); //fix links for export
+                await SaveAsync();
                 var manifest = await _exporter.ExportFilesAsync(CanvasOptions.ExtensionId, CanvasOptions.Version, CanvasOptions.ImporterId, properties, path);
                 _toasts.Add("Export complete", Severity.Success);
+                _current.Content = content;
+                await SaveAsync();
                 var dir = Path.GetDirectoryName(path);
                 if (dir != null)
                     _dialog.ExploreFolder(dir);

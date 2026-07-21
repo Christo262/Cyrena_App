@@ -23,12 +23,12 @@ namespace Cyrena.Voice.Services
         {
             if(!string.IsNullOrEmpty(text))
             {
-                var options = _settings.Read<WebViewVoiceOptions>(WebViewVoiceOptions.Key) ?? new WebViewVoiceOptions();
+                var options = _settings.Read<VoiceOptions>(VoiceOptions.Key) ?? new VoiceOptions();
 
                 if(string.IsNullOrEmpty(options.WebViewVoice))
-                    await _js.InvokeVoidAsync("tts.speak", text, options.Rate, options.Pitch, options.Volume);
+                    await _js.InvokeVoidAsync("tts.speak", text, options.Rate, options.Pitch, options.Volume, cancellationToken);
                 else
-                    await _js.InvokeVoidAsync("tts.speakWithVoice", text, options.WebViewVoice, options.Rate, options.Pitch, options.Volume);
+                    await _js.InvokeVoidAsync("tts.speakWithVoice", text, options.WebViewVoice, options.Rate, options.Pitch, options.Volume, cancellationToken);
             }
             return new WebViewAudioArtifact();
         }

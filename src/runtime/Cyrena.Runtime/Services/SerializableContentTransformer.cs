@@ -1,5 +1,6 @@
 ﻿using Cyrena.Contracts;
 using Cyrena.Extensions;
+using Cyrena.Models;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 
@@ -9,20 +10,34 @@ namespace Cyrena.Runtime.Services
     /// SK cannot serialize <see cref="Microsoft.SemanticKernel.FileReferenceContent"/>. 
     /// This transforms any of them into text so model can refer to them
     /// </summary>
-    internal class FileReferenceContentTransformer : ConversationHistoryTransformer
+    internal class SerializableContentTransformer : ConversationHistoryTransformer
     {
 #pragma warning disable SKEXP0110
         public override Task<ChatHistory> TransformPreIterationHistory(ChatHistory history)
         {
+            var jmsgs = history.Where(x => x.Items.Any(t => t is JoinedKernelContent)).ToList();
+            foreach (var item in jmsgs)
+            {
+                var targets = item.Items.Where(x => x is JoinedKernelContent).ToList();
+                for(int i = 0; i < targets.Count(); i++)
+                {
+                    JoinedKernelContent target = (JoinedKernelContent)targets.ElementAt(i);
+                    if (target.Contents.Length > 0)
+                    {
+                        item.Items.Remove(target);
+                        foreach(var kc in target.Contents)
+                            item.Items.Add(kc);
+                    }
+                }
+            }
             var msgs = history.Where(x => x.Items.Any(t => t is FileReferenceContent));
             foreach (var item in msgs)
             {
-                var targets = item.Items.Where(x => x is FileReferenceContent);
+                var targets = item.Items.Where(x => x is FileReferenceContent).ToList();
                 for(int i = 0; i < targets.Count(); i++)
                 {
                     FileReferenceContent target = (FileReferenceContent)targets.ElementAt(i);
                     var index = item.Items.IndexOf(target);
-                    var name = target.Metadata?.ContainsKey("name") == true ? target.Metadata["name"] : "Unknown";
                     item.Items[index] = target.ToTextContent();
                 }
             }

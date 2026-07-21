@@ -146,16 +146,11 @@ namespace Cyrena.Runtime.Services
                     using var ms = new MemoryStream();
                     await data.CopyToAsync(ms);
                     await File.WriteAllBytesAsync(att.Path, ms.ToArray(), cancellationToken);
-                    if (item is ImageFileHandler image)
-                    {
-                        var metadata = new Dictionary<string, object?>()
-                        {
-                            {"name", att.Id },
-                            {"save-as", att.ToFileReference()}
-                        };
-                        return await image.GetKernelContent(ms.ToArray(), contentType, name, metadata);
-                    }
-                    return att.ToFileReference();
+                    var content = await item.GetKernelContent(ms.ToArray(), contentType, name);
+                    if (content == null)
+                        return att.ToFileReference();
+                    var jn = new JoinedKernelContent([att.ToFileReference(),content], att.ToFileReference());
+                    return jn;
                 }
             }
 
@@ -170,16 +165,11 @@ namespace Cyrena.Runtime.Services
                 {
                     var att = await SaveFileAttachment(contentType, name, cancellationToken);
                     await File.WriteAllBytesAsync(att.Path, data, cancellationToken);
-                    if (item is ImageFileHandler image)
-                    {
-                        var metadata = new Dictionary<string, object?>()
-                        {
-                            {"name", att.Id },
-                            {"save-as", att.ToFileReference()}
-                        };
-                        return await image.GetKernelContent(data, contentType, name, metadata);
-                    }
-                    return att.ToFileReference();
+                    var content = await item.GetKernelContent(data, contentType, name);
+                    if (content == null)
+                        return att.ToFileReference();
+                    var jn = new JoinedKernelContent([att.ToFileReference(),content], att.ToFileReference());
+                    return jn;
                 }
             }
 
@@ -206,7 +196,7 @@ namespace Cyrena.Runtime.Services
                 if (ext == null) return;
                 if (File.Exists(ext.Path))
                     File.Delete(ext.Path);
-                await _store.DeleteAsync(ext);
+                await _store.DeleteAsync(ext, cancellationToken);
             }
 
             if(item is ImageContent image)
@@ -217,7 +207,16 @@ namespace Cyrena.Runtime.Services
                 if (ext == null) return;
                 if (File.Exists(ext.Path))
                     File.Delete(ext.Path);
-                await _store.DeleteAsync(ext);
+                await _store.DeleteAsync(ext, cancellationToken);
+            }
+
+            if (item is JoinedKernelContent joined && joined.SaveAs is FileReferenceContent frc)
+            {
+                var ext = await _store.FindAsync(x => x.Id == frc.FileId, cancellationToken);
+                if (ext == null) return;
+                if (File.Exists(ext.Path))
+                    File.Delete(ext.Path);
+                await _store.DeleteAsync(ext, cancellationToken);
             }
         }
 #pragma warning restore SKEXP0110
