@@ -40,7 +40,7 @@ internal class PluginPackageService : IPluginPackageService
         PackageQueryOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        var url = BuildPackagesUrl(new Uri(server.BaseUrl), server.ApplicationId);
+        var url = BuildPackagesUrl(new Uri(server.BaseUrl), server.ApplicationId, options);
         _logger.LogDebug("Fetching packages from {Url}", url);
 
         using var httpClient = new HttpClient();
@@ -211,17 +211,19 @@ internal class PluginPackageService : IPluginPackageService
         return results;
     }
 
-    private string BuildPackagesUrl(Uri baseUrl, string applicationId)
+    private string BuildPackagesUrl(Uri baseUrl, string applicationId, PackageQueryOptions? options = null)
     {
         var url = $"{baseUrl}api/applications/{applicationId}/packages";
 
         var queryParams = new List<string>();
 
-        if (!string.IsNullOrWhiteSpace(_options.DetectedOs))
-            queryParams.Add($"os={Uri.EscapeDataString(_options.DetectedOs)}");
+        var os = options?.Os ?? _options.DetectedOs;
+        if (!string.IsNullOrWhiteSpace(os))
+            queryParams.Add($"os={Uri.EscapeDataString(os)}");
 
-        if (!string.IsNullOrWhiteSpace(_options.DetectedArch))
-            queryParams.Add($"arch={Uri.EscapeDataString(_options.DetectedArch)}");
+        var arch = options?.Arch ?? _options.DetectedArch;
+        if (!string.IsNullOrWhiteSpace(arch))
+            queryParams.Add($"arch={Uri.EscapeDataString(arch)}");
 
         if (queryParams.Count > 0)
             url += "?" + string.Join("&", queryParams);
@@ -235,11 +237,13 @@ internal class PluginPackageService : IPluginPackageService
 
         var queryParams = new List<string>();
 
-        if (!string.IsNullOrWhiteSpace(options?.Os))
-            queryParams.Add($"os={Uri.EscapeDataString(options.Os)}");
+        var os = options?.Os ?? _options.DetectedOs;
+        if (!string.IsNullOrWhiteSpace(os))
+            queryParams.Add($"os={Uri.EscapeDataString(os)}");
 
-        if (!string.IsNullOrWhiteSpace(options?.Arch))
-            queryParams.Add($"arch={Uri.EscapeDataString(options.Arch)}");
+        var arch = options?.Arch ?? _options.DetectedArch;
+        if (!string.IsNullOrWhiteSpace(arch))
+            queryParams.Add($"arch={Uri.EscapeDataString(arch)}");
 
         if (queryParams.Count > 0)
             url += "?" + string.Join("&", queryParams);

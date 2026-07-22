@@ -11,6 +11,7 @@ namespace Cyrena.Models
         public const string Group = "group";
         public ChatConfiguration()
         {
+            Id = Ulid.NewUlid().ToString();
             Properties = new Dictionary<string, string?>();
             PluginIds = new List<string>();
         }
@@ -82,5 +83,19 @@ namespace Cyrena.Models
                 this["working.directory"] = value;
             }
         }
+
+        public string FileStoragePath
+        {
+            get
+            {
+                return this["file_storage"] ?? string.Empty;
+            }
+            set
+            {
+                this["file_storage"] = value;
+            }
+        }
+
+        public HistoryInclusionMode HistoryInclusion { get; set; } = HistoryInclusionMode.All;
     }
 }

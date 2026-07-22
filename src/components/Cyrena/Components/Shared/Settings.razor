@@ -1,0 +1,71 @@
+@inject ISettingsService _settings
+@inject ISetupService _setup
+@inject IPinService _pin
+@inject ComponentOptions _ui
+
+<MudText Typo="Typo.h4">Application Settings</MudText>
+
+<MudGrid>
+    <MudItem xs="12" md="7" Class="mx-auto">
+        <ConnectionSelector Value="@_options.DefaultConnectionId" ValueChanged="SaveDefault"/>
+
+        @if (ComponentOptions.IsServer)
+        {
+            <MudNumericField @bind-Value="_options.ServerPort" Label="Server Port" Variant="Variant.Outlined" Margin="Margin.Dense" Class="mt-4" @bind-Value:after="Save" />
+
+            <MudCheckBox @bind-Value="_options.LaunchWindowOnStartup" Label="Show Window on Start" Class="mt-4" @bind-Value:after="Save" Dense Size="Size.Small" />
+        }
+
+        <MudCheckBox T="bool" Value="_options.UsePin" ValueChanged="UsePinChanged" Label="Use Appliction PIN" Dense Size="Size.Small" />
+
+        @if (_options.UsePin)
+        {
+            <MudButton OnClick="Configure" Color="Color.Primary">Configure PIN</MudButton>
+        }
+    </MudItem>
+</MudGrid>
+
+@code {
+    private ApplicationOptions _options = default!;
+    protected override void OnInitialized()
+    {
+        _options = _settings.Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
+    }
+
+    private void Save()
+    {
+        _settings.Save(ApplicationOptions.Key, _options);
+    }
+
+    private void SaveDefault(string? e)
+    {
+        _setup.SetDefaultConnectionId(e);
+    }
+
+    private async Task UsePinChanged(bool e)
+    {
+        if(_options.UsePin && !e) //Authorize first
+        {
+            var authed = await _pin.AuthorizeAsync();
+            if (authed)
+            {
+                _options.UsePin = e;
+                _options.PinHash = null;
+                _settings.Save(ApplicationOptions.Key, _options);
+                return;
+            }
+            else
+            {
+                return;
+            }
+        }
+        _options.UsePin = e;
+        _settings.Save(ApplicationOptions.Key, _options);
+    }
+
+    private async Task Configure()
+    {
+        await _pin.ConfigureAsync();
+        _options = _settings.Read<ApplicationOptions>(ApplicationOptions.Key) ?? new ApplicationOptions();
+    }
+}

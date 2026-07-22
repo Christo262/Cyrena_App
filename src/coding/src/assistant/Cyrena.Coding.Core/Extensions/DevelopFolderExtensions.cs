@@ -8,15 +8,17 @@ namespace Cyrena.Coding.Extensions
         {
             var ext = plan.Folders.FirstOrDefault(x => x.Id == id);
             var path = Path.Combine(plan.RootDirectory, name);
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
+            // if (!Directory.Exists(path))
+            //     Directory.CreateDirectory(path);
             if (ext != null)
                 return ext;
             var folder = new DevelopFolder()
             {
                 Id = id,
                 Name = name,
-                RelativePath = name
+                RelativePath = name,
+                IsVirtual = !Directory.Exists(path),
+                AllowedFileTypes = plan.AllowedFileTypes,
             };
             plan.Folders.Add(folder);
             return folder;
@@ -25,16 +27,25 @@ namespace Cyrena.Coding.Extensions
         public static DevelopFolder CreateFolder(this DevelopPlan plan, DevelopFolder folder, string id, string name)
         {
             var ext = folder.Folders.FirstOrDefault(x => x.Id == id);
+            if (folder.IsVirtual)
+            {
+                var parentPath = Path.Combine(plan.RootDirectory, folder.RelativePath);
+                if(!Directory.Exists(parentPath))
+                    Directory.CreateDirectory(parentPath);
+                folder.IsVirtual = false;
+            }
             var path = Path.Combine(plan.RootDirectory, folder.RelativePath, name);
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
+            // if (!Directory.Exists(path))
+            //     Directory.CreateDirectory(path);
             if (ext != null)
                 return ext;
             var model = new DevelopFolder()
             {
                 Id = id,
                 Name = name,
-                RelativePath = Path.Combine(folder.RelativePath, name)
+                RelativePath = Path.Combine(folder.RelativePath, name),
+                IsVirtual = !Directory.Exists(path),
+                AllowedFileTypes = folder.AllowedFileTypes,
             };
             folder.Folders.Add(model);
             return model;

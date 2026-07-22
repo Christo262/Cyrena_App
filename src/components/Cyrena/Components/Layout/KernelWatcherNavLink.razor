@@ -1,0 +1,42 @@
+
+<MudNavGroup Title="@ChatConfiguration.Title" @bind-Expanded="_open" Class="mb-1">
+    <TitleContent>
+        <div class="d-flex align-center">
+            @if (_is_its)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+            }
+            else if (_is_loaded){
+                <MudIcon Icon="@ChatConfiguration[ChatConfiguration.Icon]" Size="Size.Small" Color="Color.Primary"/>
+            }
+            else
+            {
+                <MudIcon Icon="@ChatConfiguration[ChatConfiguration.Icon]" Size="Size.Small" />
+            }
+            @if (_active)
+            {
+                <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="ml-2 text-truncate">@ChatConfiguration.Title</MudText>
+            }
+            else
+            {
+                <MudText Typo="Typo.subtitle2" Class="ml-2 text-truncate">@ChatConfiguration.Title</MudText>
+            }
+        </div>
+    </TitleContent>
+<ChildContent>
+        <MudNavLink OnClick="Load">Open</MudNavLink>
+        @if (_ui.MenuOptions.AllowNewTab)
+        {
+            <MudNavLink OnClick="NewWindow">New Window</MudNavLink>
+        }
+        @if (_is_loaded)
+        {
+            <MudNavLink OnClick="Unload">Unload</MudNavLink>
+        }
+        else
+        {
+            <MudNavLink OnClick="EditAsync">Edit</MudNavLink>
+            <MudNavLink OnClick="Delete">Delete</MudNavLink>
+        }
+    </ChildContent>
+</MudNavGroup>

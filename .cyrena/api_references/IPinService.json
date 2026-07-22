@@ -1,0 +1,17 @@
+{
+  "Title": "IPinService - PIN Authorization Service",
+  "Keywords": [
+    "IPinService",
+    "PIN",
+    "authorization",
+    "security",
+    "VerifyPin",
+    "HasPin",
+    "AuthorizeAsync",
+    "ConfigureAsync"
+  ],
+  "Summary": "Service contract for PIN-based authorization. Uses hashed/salted PINs via PinHasher. Never stores or compares plaintext.",
+  "Link": null,
+  "Content": "## IPinService\n\n**Namespace**: \u0060Cyrena.Contracts\u0060\n**Assembly**: \u0060Cyrena\u0060\n\n### Purpose\nService for PIN-based authorization and configuration.\n\n### Events\n\n#### AuthorizationChanged\n\u0060event EventHandler\u003Cbool\u003E? AuthorizationChanged\u0060\nFired when authorization state changes. The boolean indicates whether the user is now authorized.\n\n### Methods\n\n#### IsAuthorized() \u2192 bool\nReturns \u0060true\u0060 if:\n- PIN is not enabled (\u0060UsePin == false\u0060)\n- No PIN is configured (\u0060PinHash\u0060 is null/empty) \u2014 also shows a warning toast\n- The user has been successfully authorized (\u0060_authorized == true\u0060)\n\n#### HasPin() \u2192 bool\nReturns \u0060true\u0060 if a PIN is configured (UsePin is true AND PinHash is not empty).\nDoes not check authorization state.\n\n#### VerifyPin(string? pin) \u2192 bool\nVerifies a PIN against the stored hash using \u0060PinHasher.VerifyPin\u0060.\nReturns \u0060true\u0060 if:\n- No PIN is configured (shows warning toast)\n- The provided PIN matches the stored hash\nReturns \u0060false\u0060 if the PIN is null/empty or doesn\u0027t match.\n\n#### AuthorizeAsync() \u2192 Task\u003Cbool\u003E\nShows the \u0060EnterPin\u0060 dialog if a PIN is configured.\nReturns \u0060true\u0060 if the user enters the correct PIN or no PIN is configured.\nSets \u0060_authorized\u0060 and fires \u0060AuthorizationChanged\u0060.\n\n#### ConfigureAsync() \u2192 Task\nShows the \u0060ConfigurePin\u0060 dialog to set or change the PIN.\nIf the user submits a new PIN, hashes it with \u0060PinHasher.HashPin\u0060 and saves to \u0060ApplicationOptions.PinHash\u0060.\n\n### Implementation\n\u0060PinService\u0060 in \u0060Cyrena.Services\u0060:\n- Uses \u0060ISettingsService\u0060 to read/write \u0060ApplicationOptions\u0060\n- Uses \u0060IDialogService\u0060 to show PIN dialogs\n- Uses \u0060PinHasher\u0060 for all hash operations\n- Never stores or compares plaintext PINs\n\n### Related\n- \u0060PinHasher\u0060 - Hashing utility\n- \u0060ApplicationOptions.PinHash\u0060 - Storage location\n- \u0060EnterPin.razor\u0060 - PIN entry dialog\n- \u0060ConfigurePin.razor\u0060 - PIN configuration dialog",
+  "Id": "IPinService"
+}

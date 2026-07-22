@@ -1,38 +1,21 @@
 @using Cyrena.Components.Shared
 
-<EditForm EditContext="_context">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    <div class="mb-3">
-        <label class="form-label">Title</label>
-        <InputText @bind-Value="_model.Title" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">.ino File</label>
-        <div class="input-group">
-            <InputText @bind-Value="_model.InoPath" class="form-control" />
-            <button class="btn btn-outline-secondary" type="button" @onclick="PickProject"><i class="bi bi-folder-symlink"></i></button>
-        </div>
-    </div>
-
-    <ConnectionSelector @bind-Value="_model.ConnectionId" />
-
-    <div class="mb-3">
-        <label class="form-label">Board</label>
-        <InputText @bind-Value="_model.Board" placeholder="eg. Arduino Uno R3" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">RAM</label>
-        <InputText @bind-Value="_model.RamKb" placeholder="eg. 2KB" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Clock Speed</label>
-        <InputText @bind-Value="_model.ClockMhz" placeholder="eg. 16MHZ" class="form-control" />
-    </div>
-
-    <PluginSelector Chat="Model"/>
-</EditForm>
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="_form" Model="_model">
+            <MudTextField @bind-Value="_model.Title" Label="Title" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+            <MudTextField @bind-Value="_model.InoPath" Label=".ino File" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense"
+                Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.FolderOpen" OnAdornmentClick="PickProject" />
+            <ConnectionSelector @bind-Value="_model.ConnectionId" />
+            <MudTextField @bind-Value="_model.Board" Label="Board" Placeholder="eg. Arduino Uno R3" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+            <MudTextField @bind-Value="_model.RamKb" Label="RAM" Placeholder="eg. 2KB" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+            <MudTextField @bind-Value="_model.ClockMhz" Label="Clock Speed" Placeholder="eg. 16MHZ" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+            <PluginSelector Chat="Model" />
+            <HistoryConfiguration Model="Model" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="Color.Error">Cancel</MudButton>
+        <MudButton OnClick="Submit" Color="Color.Primary">Submit</MudButton>
+    </DialogActions>
+</MudDialog>

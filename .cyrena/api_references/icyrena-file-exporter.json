@@ -1,0 +1,16 @@
+{
+  "Title": "ICyrenaFileExporter - Cyrena File Export Contract",
+  "Keywords": [
+    "ICyrenaFileExporter",
+    "export",
+    ".cyrena",
+    "zip",
+    "manifest",
+    "file export",
+    "contract"
+  ],
+  "Summary": "Contract for exporting conversation files as a .cyrena zipped archive with manifest info. Kernel-locked service.",
+  "Link": null,
+  "Content": "## ICyrenaFileExporter\n\n**Namespace**: \u0060Cyrena.Contracts\u0060\n**Assembly**: \u0060Cyrena.Core\u0060\n\n### Purpose\nExports conversation files as a \u0060.cyrena\u0060 zipped archive with manifest info to process such files. Kernel-locked (one instance per chat).\n\n### Interface\n\u0060\u0060\u0060csharp\npublic interface ICyrenaFileExporter\n{\n    Task\u003CCyrenaFileManifest\u003E ExportFilesAsync(\n        string extensionId, \n        Version extensionVersion, \n        string importerId, \n        Dictionary\u003Cstring, string?\u003E properties, \n        string outPath, \n        CancellationToken cancellationToken = default);\n}\n\u0060\u0060\u0060\n\n### Methods\n\n#### ExportFilesAsync\nCreates a \u0060.cyrena\u0060 zipped archive containing the exported data.\n\n| Parameter | Type | Description |\n|-----------|------|-------------|\n| \u0060extensionId\u0060 | \u0060string\u0060 | ID of the extension that created the file |\n| \u0060extensionVersion\u0060 | \u0060Version\u0060 | Version of the extension |\n| \u0060importerId\u0060 | \u0060string\u0060 | ID of the \u0060ICyrenaFileImporter\u0060 that can re-import this file |\n| \u0060properties\u0060 | \u0060Dictionary\u003Cstring, string?\u003E\u0060 | Custom properties to include in the manifest |\n| \u0060outPath\u0060 | \u0060string\u0060 | Output file path for the \u0060.cyrena\u0060 archive |\n| \u0060cancellationToken\u0060 | \u0060CancellationToken\u0060 | Cancellation token |\n\n**Returns**: \u0060Task\u003CCyrenaFileManifest\u003E\u0060 - The generated manifest\n\n### Usage\n\u0060\u0060\u0060csharp\nvar exporter = kernel.GetRequiredService\u003CICyrenaFileExporter\u003E();\nvar properties = new Dictionary\u003Cstring, string?\u003E\n{\n    [\u0022document.title\u0022] = \u0022My Document\u0022,\n    [\u0022document.type\u0022] = \u0022canvas\u0022\n};\nvar manifest = await exporter.ExportFilesAsync(\n    \u0022cyrena.canvas\u0022, \n    new Version(1, 0), \n    \u0022canvas.importer\u0022,\n    properties,\n    \u0022/path/to/output.cyrena\u0022\n);\n\u0060\u0060\u0060\n\n### Related\n- \u0060ICyrenaFileImporter\u0060 - Imports files exported by this contract\n- \u0060CyrenaFileManifest\u0060 - The manifest model used in exports\n- \u0060ChatConfiguration\u0060 - May trigger exports on chat operations",
+  "Id": "icyrena-file-exporter"
+}

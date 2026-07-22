@@ -1,4 +1,3 @@
-using BootstrapBlazor.Components;
 using Cyrena.Coding.Contracts;
 using Cyrena.Coding.Models;
 using Cyrena.Coding.Options;
@@ -11,6 +10,8 @@ using Cyrena.Website.Extensions;
 using Cyrena.Website.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
+using MudBlazor;
+using static MudBlazor.CategoryTypes;
 
 namespace Cyrena.Website.Services
 {
@@ -49,21 +50,21 @@ namespace Cyrena.Website.Services
 
         public async Task EditAsync(ChatConfiguration config, IServiceProvider services)
         {
-            var dialog = services.GetRequiredService<DialogService>();
-            var result = await dialog.ShowModal<Configure>(new ResultDialogOption()
+            var dialog = services.GetRequiredService<IDialogService>();
+            var reference = await dialog.ShowAsync<Configure>("Website", new DialogParameters()
             {
-                Title = "Website",
-                Size = Size.Medium,
-                ComponentParameters = new()
-                {
-                    { nameof(Configure.Model), config },
-                },
-                ButtonYesText = "Save",
-                ButtonNoText = "Cancel",
+                {"Model", config }
+            }, new DialogOptions()
+            {
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true
             });
 
-            if (result == DialogResult.Yes)
-                await _kernel.UpdateAsync(config, true);
+            var result = await reference.Result;
+            if (result is { Canceled: false })
+            {
+                await _kernel.UpdateAsync(config);
+            }
         }
     }
 }

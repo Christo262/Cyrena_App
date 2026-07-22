@@ -17,6 +17,7 @@
             Files = plan.Files;
             Folders = plan.Folders;
             Notes = new List<StickyNote>();
+            AllowedFileTypes = plan.AllowedFileTypes;
         }
 
         public List<StickyNote> Notes { get; set; }

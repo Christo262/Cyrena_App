@@ -1,14 +1,13 @@
-﻿namespace Cyrena.Coding.Models
-{
-    public class DevelopFolder : DevelopItem
-    {
-        public DevelopFolder()
-        {
-            Files = new List<DevelopFile>();
-            Folders = new List<DevelopFolder>();
-        }
+﻿using System.Text.Json.Serialization;
 
-        public List<DevelopFile> Files { get; set; }
-        public List<DevelopFolder> Folders { get; set; }
+namespace Cyrena.Coding.Models
+{
+    public class DevelopFolder : FileTypeAllowanceDevelopItem
+    {
+        public List<DevelopFile> Files { get; set; } = [];
+        public List<DevelopFolder> Folders { get; set; } = [];
+        
+        [JsonIgnore]
+        internal bool IsVirtual { get; set; }
     }
 }

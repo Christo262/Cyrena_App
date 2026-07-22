@@ -22,5 +22,10 @@ namespace Cyrena.Dotnet.Extensions
             builder.Services.AddSingleton<ISolutionController, SolutionControllerOverride>();
             builder.KernelBuilder.AddStartupTask<SolutionOverrideStartupTask>();
         }
+
+        public static void AddDynamicSolutionController(this CyrenaKernelBuilder builder)
+        {
+            builder.Services.AddSingleton<ISolutionController, DynamicSolutionController>();
+        }
     }
 }

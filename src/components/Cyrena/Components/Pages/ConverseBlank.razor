@@ -1,0 +1,31 @@
+@page "/converse-blank/{Id}"
+@using Cyrena.Components.Shared
+@layout Layout.BlankLayout
+
+@if (_loading)
+{
+    <MudGrid Class="mud-height-full" Justify="Justify.Center">
+        <MudItem Class="text-center justify-center align-self-center m-auto" md="3">
+            <MudPaper Class="pa-2 d-flex justify-center">
+                <MudProgressCircular Color="Color.Default" Class="justify-center align-self-center m-auto" Indeterminate="true" />
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+}
+else if(_kernel != null)
+{
+    <KernelInstance Kernel="_kernel"/>
+}
+else
+{
+    <MudGrid Class="mud-height-full" Justify="Justify.Center">
+        <MudItem Class="text-center justify-center align-self-center m-auto" md="3">
+            <MudPaper Class="pa-3 text-center">
+                <div class="text-center mt-2 mb-2">
+                    <MudFab StartIcon="@Icons.Material.Filled.CrisisAlert" Color="Color.Primary" Size="Size.Medium" />
+                </div>
+                <MudText>Kernel not loaded</MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+}

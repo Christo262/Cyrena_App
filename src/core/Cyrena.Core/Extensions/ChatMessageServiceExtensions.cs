@@ -1,9 +1,16 @@
 ﻿using Cyrena.Contracts;
+using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace Cyrena.Extensions
 {
     public static class ChatMessageServiceExtensions
     {
+        public static Task AddMessage(this IChatMessageService service, AuthorRole role, string? content)
+        {
+            var msg = new ChatMessageContent(role, content);
+            return service.AddMessage(msg);
+        }
         public static Task LogInfo(this IChatMessageService service, string? message)
         {
             return service.AddMessage(service.Options.LogInfo, message);

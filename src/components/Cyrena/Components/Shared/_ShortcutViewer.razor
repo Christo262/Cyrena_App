@@ -1,0 +1,43 @@
+
+<MudMenu Label="@Category" Dense ActivationEvent="MouseEvent.LeftClick" Class="ml-2 mr-2">
+    <ActivatorContent>
+        <MudPaper Class="pa-1" Elevation="1" @onclick="@(() => context.ToggleAsync())">
+            <MudText Typo="Typo.caption">@Category</MudText>
+        </MudPaper>
+    </ActivatorContent>
+    <ChildContent>
+        @foreach (var item in Shorcuts.Where(x => x.Category == Category))
+        {
+            <MudMenuItem Label="@item.Title" OnClick="() => OnClick(item)">
+                <ChildContent>
+                    <div>
+                        <MudText Typo="Typo.body2"><MudIcon Icon="@item.Icon" Color="Color.Primary" Size="Size.Small"></MudIcon>  @item.Title</MudText>
+                        <MudText Typo="Typo.caption">@item.Description</MudText>
+                    </div>
+                </ChildContent>
+            </MudMenuItem>
+        }
+    </ChildContent>
+</MudMenu>
+
+@code {
+    [EditorRequired]
+    [Parameter] public string Category { get; set; } = default!;
+
+    [Parameter]
+    [EditorRequired]
+    public IEnumerable<IShortcut> Shorcuts { get; set; } = default!;
+
+    private bool _open;
+
+    private void Toggle()
+    {
+        _open = !_open;
+    }
+
+    private async Task OnClick(IShortcut item)
+    {
+        _open = false;
+        await item.OnClick();
+    }
+}

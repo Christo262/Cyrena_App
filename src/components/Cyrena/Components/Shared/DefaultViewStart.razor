@@ -1,0 +1,24 @@
+@attribute [ViewStart("cyrena.default", "Default")]
+
+<style>
+        .setup-shadow {
+            box-shadow: 0 0.1rem 4rem rgba(var(--mud-palette-primary-rgb), 0.8) !important;
+        }
+    </style>
+
+<MudStack Class="h-100 relative overflow-auto" Justify="Justify.Center" AlignItems="AlignItems.Center">
+
+    <div class="absolute d-flex pa-2" style="top:0;left:0;">
+        <Shortcuts />
+    </div>
+
+    <MudGrid Justify="Justify.Center">
+        <Mascot></Mascot>
+
+        <ChatStart />
+    </MudGrid>
+
+    <div class="absolute pa-2" style="bottom:0;right:0;">
+        <MudButton Href="app-setup" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" StartIcon="@Icons.Material.Filled.AutoFixHigh" Class="setup-shadow text-uppercase fw-bolder">Setup Wizard</MudButton>
+    </div>
+</MudStack>

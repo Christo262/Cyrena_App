@@ -1,0 +1,24 @@
+@inherits KernelComponentBase
+
+@if (_supported)
+{
+    @if (_screen is { IsActive: true })
+    {
+        <MudTooltip Text="Stop Sharing">
+            <MudIconButton Icon="@Icons.Material.Filled.StopScreenShare"
+                           Color="Color.Warning"
+                           Size="Size.Small"
+                           Disabled="_busy"
+                           OnClick="StopScreen" />
+        </MudTooltip>
+    }
+    else
+    {
+        <MudTooltip Text="Share Screen">
+            <MudIconButton Icon="@Icons.Material.Filled.ScreenShare"
+                           Size="Size.Small"
+                           Disabled="_busy"
+                           OnClick="ShareScreen" />
+        </MudTooltip>
+    }
+}

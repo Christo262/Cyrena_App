@@ -1,12 +1,13 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.SemanticKernel;
-using Cyrena.Contracts;
-using Cyrena.Models;
-using Cyrena.Persistence.Contracts;
-using Cyrena.Runtime.Ollama.Models;
+﻿using Cyrena.Contracts;
 using Cyrena.Extensions;
+using Cyrena.Models;
 using Cyrena.Options;
+using Cyrena.Persistence.Contracts;
 using Cyrena.Runtime.Ollama.Components.Shared;
+using Cyrena.Runtime.Ollama.Models;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.SemanticKernel;
+using static System.Net.WebRequestMethods;
 
 namespace Cyrena.Runtime.Ollama.Services
 {
@@ -23,11 +24,24 @@ namespace Cyrena.Runtime.Ollama.Services
             var connection = await _store.FindAsync(x => x.Id == connectionId);
             if (connection == null)
                 throw new NullReferenceException($"Unable to find connection");
-            var http = new HttpClient()
+            HttpClient http;
+            if (OperatingSystem.IsAndroid())
             {
-                BaseAddress = new Uri(connection.Endpoint!),
-                Timeout = TimeSpan.FromSeconds(60 * 3)
-            };
+                http = new HttpClient(new OllamaAndroidHandler(new HttpClientHandler()))
+                {
+                    BaseAddress = new(connection.Endpoint)
+                };
+            }
+            else
+            {
+                http = new HttpClient()
+                {
+                    BaseAddress = new(connection.Endpoint)
+                };
+            }
+            if (!string.IsNullOrEmpty(connection.APIKey))
+                http.DefaultRequestHeaders.Authorization =
+                                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", connection.APIKey);
             builder.AddOllamaChatCompletion(connection.ModelId!, http);
             builder.Services.AddSingleton<OllamaConnectionInfo>(connection);
             builder.Services.AddSingleton<IConnection, OllamaConnection>();

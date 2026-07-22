@@ -1,9 +1,8 @@
-﻿using BootstrapBlazor.Components;
-using Cyrena.Contracts;
 using Cyrena.Coding.Contracts;
 using Cyrena.Coding.Extensions;
 using Cyrena.Coding.Models;
 using Cyrena.Coding.Options;
+using Cyrena.Contracts;
 using Cyrena.Extensions;
 using Cyrena.Models;
 using Cyrena.PlatformIO.Components.Shared;
@@ -13,6 +12,9 @@ using Cyrena.PlatformIO.Models;
 using Cyrena.PlatformIO.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
+using MudBlazor;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Cyrena.PlatformIO.Services
 {
@@ -56,19 +58,16 @@ namespace Cyrena.PlatformIO.Services
 
         public async Task EditAsync(ChatConfiguration config, IServiceProvider services)
         {
-            var dialog = services.GetRequiredService<DialogService>();
-            var rf = await dialog.ShowModal<Configure>(new ResultDialogOption()
+            var dialogService = services.GetRequiredService<IDialogService>();
+            var parameters = new DialogParameters<Configure>
             {
-                Title = "PlatformIO",
-                Size = Size.Medium,
-                ComponentParameters = new()
-                {
-                    {nameof(Configure.Model), config }
-                },
-                ButtonYesText = "Save",
-                ButtonNoText = "Cancel",
-            });
-            if (rf == DialogResult.Yes)
+                { x => x.Model, config }
+            };
+            var options = new DialogOptions { MaxWidth = MaxWidth.Small };
+            var dialog = await dialogService.ShowAsync<Configure>("Structured PlatformIO", parameters, options);
+            var result = await dialog.Result;
+
+            if (result is not null && !result.Canceled)
                 await _kernel.UpdateAsync(config, true);
         }
     }

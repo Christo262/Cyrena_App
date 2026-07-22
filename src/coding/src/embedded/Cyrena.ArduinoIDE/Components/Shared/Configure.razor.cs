@@ -1,24 +1,22 @@
-﻿using BootstrapBlazor.Components;
 using Cyrena.ArduinoIDE.Options;
 using Cyrena.Contracts;
 using Cyrena.Coding.Options;
 using Cyrena.Models;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
+using MudBlazor;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace Cyrena.ArduinoIDE.Components.Shared
 {
-    public partial class Configure : IResultDialog
+    public partial class Configure
     {
+        [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
         [Parameter] public ChatConfiguration Model { get; set; } = default!;
         [Inject] private IFileDialog _win { get; set; } = default!;
-        [Inject] private ToastService _toasts { get;set;  } = default!;
+        [Inject] private ISnackbar _snackbar { get; set; } = default!;
         private ArduinoConfig _model { get; set; } = default!;
-        private EditContext _context = default!;
+        private MudForm _form = default!;
 
         protected override void OnInitialized()
         {
@@ -31,28 +29,22 @@ namespace Cyrena.ArduinoIDE.Components.Shared
                 Title = Model.Title,
                 ConnectionId = Model.ConnectionId
             };
-            _context = new EditContext(_model);
         }
 
-        Task IResultDialog.OnClose(DialogResult result)
+        private async Task Submit()
         {
-            return Task.CompletedTask;
+            await _form.ValidateAsync();
+            if (!_form.IsValid) return;
+
+            Model[ArduinoOptions.BoardId] = _model.Board;
+            Model[ArduinoOptions.Clock] = _model.ClockMhz;
+            Model[ArduinoOptions.Ram] = _model.RamKb;
+            Model.Title = _model.Title;
+            Model.ConnectionId = _model.ConnectionId!;
+            MudDialog.Close(DialogResult.Ok(true));
         }
 
-        async Task<bool> IResultDialog.OnClosing(DialogResult result)
-        {
-            if (result != DialogResult.Yes) return true;
-            var valid = _context.Validate();
-            if (valid)
-            {
-                Model[ArduinoOptions.BoardId] = _model.Board;
-                Model[ArduinoOptions.Clock] = _model.ClockMhz;
-                Model[ArduinoOptions.Ram] = _model.RamKb;
-                Model.Title = _model.Title;
-                Model.ConnectionId = _model.ConnectionId!;
-            }
-            return valid;
-        }
+        private void Cancel() => MudDialog.Cancel();
 
         private async Task PickProject()
         {
@@ -69,7 +61,7 @@ namespace Cyrena.ArduinoIDE.Components.Shared
             }
             catch (Exception ex)
             {
-                await _toasts.Error("Error", ex.Message);
+                _snackbar.Add(ex.Message, Severity.Error);
             }
         }
     }

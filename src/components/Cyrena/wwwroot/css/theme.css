@@ -1,0 +1,245 @@
+/*
+ * theme.css
+ *
+ * Cyrena theme overrides for MudBlazor
+ * Provides consistent scrollbar styling, chat bubbles, and utility classes.
+ */
+
+/* =====================================================================
+   1. SCROLLBAR STYLING
+   ===================================================================== */
+
+body {
+    height:100vh;
+
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #333;
+}
+
+/* =====================================================================
+   2. UTILITY CLASSES
+   ===================================================================== */
+.clickable:hover {
+    cursor: pointer;
+}
+
+.cursor-pointer:hover {
+    cursor: pointer;
+}
+
+.z-10 {
+    z-index: 1000 !important;
+}
+
+.z-20 {
+    z-index: 2000 !important;
+}
+
+.vh-25 {
+    height: 25vh !important;
+}
+
+.vh-50 {
+    height: 50vh !important;
+}
+
+.vh-75 {
+    height: 75vh !important;
+}
+
+.auto-grow {
+    overflow-y: auto;
+    resize: none;
+}
+
+.h-100 {
+    height:100% !important;
+}
+
+.vh-100 {
+    height:100vh;
+}
+
+.w-100 {
+    width:100%;
+}
+
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
+}
+
+/* =====================================================================
+   3. CHAT BUBBLES
+   ===================================================================== */
+.chat-bubble {
+    max-width: min(900px, 90%);
+    border-radius: var(--mud-default-borderradius);
+    padding: 7px 12px;
+    box-shadow: var(--mud-elevation-2) !important;
+    overflow: auto;
+    line-height: 1.45;
+    font-size: 0.9rem;
+    font-family: 'Ubuntu', 'Ubuntu Mono', -apple-system, sans-serif;
+}
+
+.chat-bubble-has-items {
+    min-width: 90%;
+}
+
+.chat-bubble p {
+    margin: 0;
+}
+
+.chat-bubble ol,
+.chat-bubble ul {
+    padding-left: 1rem;
+}
+
+/* Assistant */
+.chat-bubble-assistant {
+    background-color: var(--mud-palette-gray-light);
+    color: var(--mud-palette-text-primary);
+    border: 1px solid var(--mud-palette-divider);
+    border-top-left-radius: 4px;
+}
+
+/* User */
+.chat-bubble-user {
+    background-color: var(--mud-palette-primary-lighten);
+    color: var(--mud-palette-text-primary);
+    border: 1px solid;
+    border-color: var(--mud-palette-primary-lighten);
+    border-right: 3px solid var(--mud-palette-primary);
+    border-top-right-radius: 4px;
+}
+
+/* =====================================================================
+   4. CODE BLOCKS
+   ===================================================================== */
+code {
+    color: var(--mud-palette-light) !important;
+}
+
+pre {
+    display: block;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    overflow: auto;
+    font-size: .875em;
+    background-color: var(--mud-palette-dark);
+    color: inherit;
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+/* =====================================================================
+   6. COPY BUTTON FOR CODE BLOCKS
+   ===================================================================== */
+.btn-copy-code {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    z-index: 10;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.8);
+    background: transparent;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.btn-copy-code:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+pre:hover .btn-copy-code {
+    opacity: 1;
+}
+
+
+
+
+
+.mud-main-content {
+    height:100%;
+    overflow:auto
+}
+
+.mud-tab-panel {
+    height:100%;
+}
+
+.mud-nav-link-text {
+    margin-left:0 !important;
+}
+
+.mud-fab-size-small {
+    width: 35px;
+    height: 35px;
+}
+
+.text-center {
+    text-align:center;
+}
+.overflow-auto {
+    overflow:auto;
+}
+
+
+
+.monaco-editor-container { /* applies to all editor instances */
+    height: 100%;
+}
+
+.monaco-host {
+    isolation: isolate;
+    width: 100%;
+    height: 100%
+}
+
+.monaco-input {
+    width: 100%;
+    height: 100%;
+}
+
+    .monaco-input .monaco-editor-container {
+        height: 100%;
+    }
+
+.chat-menu-item {}
+
+.chat-menu-item-status {}
+
+.chat-menu-item-ctx {
+    display:none
+}
+
+.chat-menu-item:hover .chat-menu-item-status {display:none;}
+.chat-menu-item:hover .chat-menu-item-ctx {
+    display: block;
+}
+
+.h-100-48 {
+    height:calc(100% - 48px) !important;
+}

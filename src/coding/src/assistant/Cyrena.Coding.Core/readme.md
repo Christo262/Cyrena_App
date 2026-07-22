@@ -1,509 +1,567 @@
-# Cyrena.Coding.Core SDK
-
 ## Overview
 
-**Namespace:** `Cyrena.Coding`  
-**Project:** `Cyrena.Coding.Core.csproj`  
-**Target Framework:** `.NET 10.0`  
-**Dependencies:** `Cyrena.Core`, `Microsoft.Extensions.DependencyInjection.Abstractions`
+`Cyrena.Coding.Core` is the foundational class library for the Cyréna coding assistant. It defines all contracts, models, extensions, and configuration constants that extensions and plugins use to build project-aware AI coding capabilities.
 
-This SDK provides developer workflow abstractions for AI agents to manage code projects, perform file system operations, and persist development state.
+**Package:** `Cyrena.Coding.Core`  
+**Namespace:** `Cyrena.Coding` (contracts, models, options, extensions)  
+**Target Framework:** `net10.0`  
+**Dependency:** `Cyrena.Core` (provides `Entity`, `ChatConfiguration`, `CyrenaKernelBuilder`)
+
+---
+
+## Contracts
+
+### `ICodeBuilder`
+
+**Namespace:** `Cyrena.Coding.Contracts`
+
+Defines how different project types configure the AI assistant's `DevelopPlan`, register Semantic Kernel plugins, and set up prompts. Implement this to add support for a new project type (e.g., Rust, Go, custom framework).
+
+```csharp
+public interface ICodeBuilder
+{
+    /// <summary>Project type identifier stored in ChatConfiguration</summary>
+    string Id { get; }
+
+    /// <summary>Configures plugins/services and creates the DevelopPlan</summary>
+    Task<DevelopPlan> ConfigureAsync(CyrenaKernelBuilder options);
+
+    Task DeleteAsync(ChatConfiguration config);
+    Task EditAsync(ChatConfiguration config, IServiceProvider services);
+}
+```
+
+**Registration pattern:**
+```csharp
+builder.Services.AddSingleton<ICodeBuilder, MyProjectBuilder>();
+```
+
+**Selection at runtime:** `config[DevelopOptions.BuilderId]` must match `ICodeBuilder.Id`.
+
+**Typical `ConfigureAsync` implementation:**
+1. Create `DevelopPlan` from `options.ChatConfiguration.WorkingDirectory`
+2. Index files using `plan.IndexFiles()` or folder-specific extensions
+3. Register Semantic Kernel plugins via `options.Plugins.AddFromType<T>()`
+4. Add system prompts via `options.GetFeatureOption<IPromptManager>().AddPrompt()`
+5. Register additional services in `options.Services`
+6. Return the `DevelopPlan`
+
+---
+
+### `IDevelopPlanService`
+
+**Namespace:** `Cyrena.Coding.Contracts`
+
+Provides access to the current `DevelopPlan` and observable hooks for plan and file lifecycle events. Used for project switching in multi-project solutions.
+
+```csharp
+public interface IDevelopPlanService
+{
+    DevelopPlan Plan { get; }
+    void SetPlan(DevelopPlan newPlan);
+
+    IDisposable OnDevelopPlanChanged(Action<DevelopPlan> plan);
+    IDisposable OnFileCreated(Action<DevelopFile> cb);
+    IDisposable OnFileUpdated(Action<DevelopFile> cb);
+    IDisposable OnFileDeleted(Action<DevelopFile> cb);
+
+    void InvokeFileCreated(DevelopFile file);
+    void InvokeFileUpdated(DevelopFile file);
+    void InvokeFileDeleted(DevelopFile file);
+}
+```
+
+| Member | Description |
+|--------|-------------|
+| `Plan` | Current `DevelopPlan` instance |
+| `SetPlan(DevelopPlan)` | Replaces the plan (project switching) |
+| `OnDevelopPlanChanged` | Subscribe to plan replacement events |
+| `OnFileCreated` / `OnFileUpdated` / `OnFileDeleted` | Subscribe to file lifecycle events |
+| `InvokeFileCreated` / `InvokeFileUpdated` / `InvokeFileDeleted` | Raise events from plugins/services |
+
+**Registration:** Singleton, typically instantiated with initial plan in `IAssistantMode.ConfigureAsync`.
+
+---
+
+### `IDevelopPlanIndexer`
+
+**Namespace:** `Cyrena.Coding.Contracts`
+
+Allows the `DevelopPlan` to be refreshed in `IDevelopPlanService` when `IIterationService.OnIterationStart` is triggered. Kernel-locked.
+
+```csharp
+public interface IDevelopPlanIndexer
+{
+    /// <summary>
+    /// Refreshes the current plan. Returns a new <see cref="DevelopPlan"/> or null if no refresh is needed.
+    /// </summary>
+    DevelopPlan? RefreshPlan(DevelopPlan current);
+}
+```
+
+**Usage:** Implementations are registered as singletons and called at the start of each AI iteration to re-index files that may have changed on disk.
+
+---
+
+### `IVersionControl`
+
+**Namespace:** `Cyrena.Coding.Contracts`
+
+Capped, timestamped in-memory version history for files modified by AI. Thread-safe. Each file tracks up to `MaxVersionsPerFile` snapshots (oldest dropped first).
+
+```csharp
+public interface IVersionControl
+{
+    int MaxVersionsPerFile { get; set; }
+
+    // Write
+    void Backup(DevelopFileContent? file, string? label = null);
+    void RemoveBackup(string fileId);
+    void Clear();
+
+    // Query
+    bool HasBackup(string fileId);
+    DevelopFileVersion? GetLatest(string fileId);
+    IReadOnlyList<DevelopFileVersion> GetHistory(string fileId);
+    IEnumerable<DevelopFileVersion> GetAllLatest();
+
+    // Restore by index or timestamp
+    bool TryGetVersion(string fileId, int index, out DevelopFileVersion? version);
+    bool TryGetVersionAt(string fileId, DateTimeOffset at, out DevelopFileVersion? version);
+
+    // Rollback
+    DevelopFileVersion? RollbackTo(DevelopFileVersion version);
+    DevelopFileVersion? RollbackOne(string fileId);
+
+    // Backward-compatible shims
+    DevelopFileContent? GetBackups(string fileId);
+    IEnumerable<DevelopFileContent> GetBackups();
+}
+```
+
+**Default `MaxVersionsPerFile`:** 20  
+**Usage pattern:**
+```csharp
+// Before any file modification:
+_plan.Plan.TryReadFileContent(file, out var fileContent);
+_version.Backup(fileContent);
+// ... perform modification ...
+```
 
 ---
 
 ## Models
 
-### DevelopItem (Abstract Base Class)
-
-```csharp
-public abstract class DevelopItem : Entity, IJsonSerializable
-```
+### `DevelopPlan`
 
 **Namespace:** `Cyrena.Coding.Models`
 
-Base class for `DevelopFile` and `DevelopFolder`. Extends `Entity` and implements `IJsonSerializable`.
+Root model representing the in-memory index of a project's files and folders. Implements `ISuppressibleResult`.
 
-**Properties:**
-- `string Id` - Unique identifier (inherited from `Entity`)
-- `string Name` - Display name
-- `string RelativePath` - Path relative to project root
+```csharp
+public class DevelopPlan : ISuppressibleResult
+{
+    public DevelopPlan(string rootDirectory);
+    
+    [JsonConstructor]
+    internal DevelopPlan();  // Internal, used only by JSON deserialization
 
-**JSON Serialization:** Implements `ToJson()` and `ToString()` methods using `JsonConvert.SerializeObject`.
+    [JsonIgnore] public string RootDirectory { get; set; }
+    [JsonIgnore] public string DataDirectory { get; set; }  // RootDirectory + "/.cyrena"
+
+    public List<DevelopFile> Files { get; set; }
+    public List<DevelopFolder> Folders { get; set; }
+
+    public string Suppress() => "[PLAN:omitted; use Project_get_plan]";
+}
+```
+
+**Constructor behavior:**
+- Public constructor: Sets `RootDirectory`, `DataDirectory = Path.Combine(rootDirectory, ".cyrena")`, initializes empty `Files` and `Folders` lists.
+- Internal `[JsonConstructor]` constructor: Initializes empty collections, sets `RootDirectory` and `DataDirectory` to `string.Empty`.
+
+**`ISuppressibleResult`:** The `Suppress()` method returns a compact string representation for AI consumption, directing the AI to use `Project_get_plan` for full plan access.
 
 ---
 
-### DevelopFile
-
-```csharp
-public class DevelopFile : DevelopItem
-```
+### `DevelopItem` (abstract base)
 
 **Namespace:** `Cyrena.Coding.Models`
 
-Represents a single file in the project tree.
+Abstract base for all plan items. Extends `Cyrena.Models.Entity`.
 
-**Properties:**
-- `bool ReadOnly` - Indicates if file should not be modified (default: `false`)
-
-**Inherited from DevelopItem:**
-- `string Id`
-- `string Name`
-- `string RelativePath`
+```csharp
+public abstract class DevelopItem : Entity
+{
+    public string Name { get; set; } = default!;
+    public string RelativePath { get; set; } = default!;
+}
+```
 
 ---
 
-### DevelopFileContent
+### `DevelopFile`
+
+**Namespace:** `Cyrena.Coding.Models`
+
+Represents a file in the plan index. Implements `ISuppressibleResult`.
+
+```csharp
+public class DevelopFile : DevelopItem, ISuppressibleResult
+{
+    public bool ReadOnly { get; set; } = false;
+
+    public string Suppress()
+    {
+        return ReadOnly
+            ? $"[FILE:{Id}; read-only; content omitted; use Code_read/Code_read_lines]"
+            : $"[FILE:{Id}; content omitted; use Code_read/Code_read_lines before editing]";
+    }
+}
+```
+
+**ReadOnly:** When `true`, the AI should not modify this file. Used for build config, project files, etc.
+
+**`ISuppressibleResult`:** The `Suppress()` method returns a compact string for AI consumption. For read-only files, it includes a `read-only` marker.
+
+---
+
+### `DevelopFileContent`
+
+**Namespace:** `Cyrena.Coding.Models`
+
+File model with full text content.
 
 ```csharp
 public class DevelopFileContent : DevelopFile
+{
+    public DevelopFileContent() { }
+    public DevelopFileContent(DevelopFile file, string? content);
+    public string? Content { get; set; }
+}
 ```
 
-**Namespace:** `Cyrena.Coding.Models`
-
-Extends `DevelopFile` with editable content for file content operations.
-
-**Constructors:**
-```csharp
-public DevelopFileContent()
-public DevelopFileContent(DevelopFile file, string? content)
-```
-
-**Properties:**
-- `string? Content` - Full file content as string
-
-**Inherited from DevelopFile:**
-- `string Id`
-- `string Name`
-- `string RelativePath`
-- `bool ReadOnly`
-
-**Usage:** Created by `DevelopFileExtensions.TryReadFileContent()`.
+The copy constructor copies `Id`, `Name`, `RelativePath`, `ReadOnly` from the source `DevelopFile` and sets `Content`.
 
 ---
 
-### DevelopFileLines
+### `DevelopFileLines`
+
+**Namespace:** `Cyrena.Coding.Models`
+
+File model with line-indexed content for precise line-based editing.
 
 ```csharp
 public class DevelopFileLines : DevelopFile
+{
+    public DevelopFileLines();
+    public DevelopFileLines(DevelopFile file, string? content);
+    public List<DevelopFileLine> Lines { get; set; }
+    public int LineCount => Lines.Count;
+    public override string ToString() => string.Join("\n", Lines.OrderBy(x => x.Index).Select(x => x.Text ?? string.Empty));
+}
 ```
 
-**Namespace:** `Cyrena.Coding.Models`
+**Constructor behavior:**
+- Parameterless constructor initializes `Lines` to an empty `List<DevelopFileLine>`.
+- Copy constructor copies `Id`, `Name`, `RelativePath`, `ReadOnly` from the source `DevelopFile`, then parses `content` into `Lines`.
 
-Represents a file as a dictionary of line numbers to line content. Used for line-level operations.
-
-**Constructor:**
-```csharp
-public DevelopFileLines(DevelopFile file, string? content)
-```
-
-**Properties:**
-- `Dictionary<int, string> Lines` - Line number (0-based) to content mapping
-
-**Line Ending Handling:**
-- Detects `\r\n` (Windows) and `\n` (Unix) line endings
-- Preserves empty lines using `StringSplitOptions.None`
-- `ToString()` reconstructs content with Windows-style line endings (`\r\n`)
-
-**Usage:** Created by `DevelopFileExtensions.TryReadFileLines()` and `TryWriteFileLine()`.
+**Line splitting behavior:**
+- Normalizes all line endings to `\n` (replaces `\r\n` → `\n`, then `\r` → `\n`)
+- Splits on `\n` with `StringSplitOptions.None` (preserves empty lines)
+- Reconstructs via `ToString()` using `\n` only
 
 ---
 
-### DevelopFolder
+### `DevelopFileLine`
+
+**Namespace:** `Cyrena.Coding.Models`
+
+Represents a single line within a `DevelopFileLines` model.
+
+```csharp
+public class DevelopFileLine
+{
+    public int Index { get; set; }
+    public string? Text { get; set; }
+}
+```
+
+| Property | Description |
+|----------|-------------|
+| `Index` | 0-based line index |
+| `Text` | The line content (may be null or empty) |
+
+---
+
+### `DevelopFolder`
+
+**Namespace:** `Cyrena.Coding.Models`
+
+Represents a folder in the plan index. Supports nested folders and files.
 
 ```csharp
 public class DevelopFolder : DevelopItem
+{
+    public DevelopFolder();
+    public List<DevelopFile> Files { get; set; }
+    public List<DevelopFolder> Folders { get; set; }
+}
 ```
 
-**Namespace:** `Cyrena.Coding.Models`
-
-Represents a folder containing files and nested folders.
-
-**Properties:**
-- `List<DevelopFile> Files` - Direct file children
-- `List<DevelopFolder> Folders` - Nested folder children
-
-**Inherited from DevelopItem:**
-- `string Id`
-- `string Name`
-- `string RelativePath`
+**Constructor:** Initializes `Files` and `Folders` to empty `List<T>` instances.
 
 ---
 
-### DevelopPlan
-
-```csharp
-public class DevelopPlan : IJsonSerializable
-```
+### `DevelopFileVersion`
 
 **Namespace:** `Cyrena.Coding.Models`
 
-Root container representing an entire code project plan. This is the central object for project operations.
-
-**Constructors:**
-```csharp
-public DevelopPlan(string rootDirectory)
-internal DevelopPlan()  // JSON deserialization constructor
-```
-
-**Properties:**
-- `string RootDirectory` - Absolute path to project root (`[JsonIgnore]`)
-- `string DataDirectory` - Path to `.cyrena` data folder (`[JsonIgnore]`)
-- `List<DevelopFile> Files` - Root-level files
-- `List<DevelopFolder> Folders` - Root-level folders
-
-**Static Methods:**
-```csharp
-public static bool TryLoadFromDirectory(string dir, out DevelopPlan plan)
-```
-Attempts to load plan from `.cyrena/plan` file. Returns `true` if successful.
+Represents a single versioned snapshot of a file's content.
 
 ```csharp
-public static void Save(DevelopPlan plan)
+public class DevelopFileVersion
+{
+    public DevelopFileVersion(DevelopFileContent file, string? label = null);
+    public DevelopFileContent File { get; }
+    public DateTimeOffset Timestamp { get; }
+    public string? Label { get; }
+    public override string ToString() => $"[{Timestamp:yyyy-MM-dd HH:mm:ss}] {File.Name}{(Label != null ? $" — {Label}" : string.Empty)}";
+}
 ```
-Saves plan to `.cyrena/plan` file.
 
-**Instance Methods:**
-```csharp
-public string ToJson()
-public override string ToString()
-```
-Returns JSON representation of the plan.
+**Constructor:** Sets `Timestamp` to `DateTimeOffset.UtcNow` at creation time.
 
 ---
 
-### StickyNote
+### `ConsoleOutput`
+
+**Namespace:** `Cyrena.Coding.Models`
+
+Captures standard output from a process and returns it to the AI. Implements `ISuppressibleResult`. Thread-safe via internal locking.
+
+```csharp
+public sealed class ConsoleOutput : List<ConsoleLine>, ISuppressibleResult
+{
+    public ConsoleOutput();
+    public string? Command { get; set; }
+    public void WriteLine(string level, string? content);
+    public string Suppress();
+}
+```
+
+| Member | Description |
+|--------|-------------|
+| `Command` | The command that produced this output |
+| `WriteLine` | Thread-safe append of a `ConsoleLine` |
+| `Suppress()` | Returns compact summary: `"{command}: {level}_items={count}, ..."` |
+
+**Thread safety:** `WriteLine` uses an internal `lock` object.
+
+---
+
+### `ConsoleLine`
+
+**Namespace:** `Cyrena.Coding.Models`
+
+Represents a single line of console output.
+
+```csharp
+public class ConsoleLine
+{
+    public string Level { get; set; } = "info";
+    public string? Content { get; set; }
+}
+```
+
+| Property | Description |
+|----------|-------------|
+| `Level` | Log level (default `"info"`) |
+| `Content` | The line content |
+
+---
+
+### `StickyNote`
+
+**Namespace:** `Cyrena.Coding.Models`
+
+Simple entity for the AI to persist notes about the project across sessions.
 
 ```csharp
 public sealed class StickyNote : Entity
+{
+    public StickyNote() { }
+    public StickyNote(string? title, string? content);
+    public string? Title { get; set; }
+    public string? Content { get; set; }
+}
 ```
 
-**Namespace:** `Cyrena.Coding.Models`
+**Constructor behavior:** The parameterized constructor generates a new `Guid.NewGuid().ToString()` for `Id`.
 
-Represents a persistent AI note with title and content.
-
-**Constructors:**
-```csharp
-public StickyNote()
-public StickyNote(string? title, string? content)
-```
-
-**Properties:**
-- `string Id` - Unique identifier (auto-generated GUID)
-- `string? Title` - Note title
-- `string? Content` - Note body content
+**Storage:** Typically stored via `IStore<StickyNote>` (from Cyrena.Persistence).  
+**AI Access:** Exposed via `ProjectInformation` Semantic Kernel plugin functions (`get_plan`, `create_note`, `update_note`, `delete_note`).
 
 ---
 
-## Contracts (Interfaces)
+## Extension Methods
 
-### ICodeBuilder
-
-```csharp
-public interface ICodeBuilder
-```
-
-**Namespace:** `Cyrena.Coding.Contracts`
-
-Contract for creating and configuring the development kernel and project plans.
-
-**Properties:**
-```csharp
-string Id { get; }
-```
-Sets `ChatConfiguration` project type identifier.
-
-**Methods:**
-```csharp
-Task<DevelopPlan> ConfigureAsync(CyrenaKernelBuilder options)
-```
-Configures additional plugins/services and creates the `DevelopPlan`.
-
-```csharp
-Task DeleteAsync(ChatConfiguration config)
-```
-
-```csharp
-Task EditAsync(ChatConfiguration config, IServiceProvider services)
-```
-
----
-
-### IDevelopPlanService
-
-```csharp
-public interface IDevelopPlanService
-```
-
-**Namespace:** `Cyrena.Coding.Contracts`
-
-Contract for accessing the current `DevelopPlan`. Allows changing the plan when switching between referenced projects.
-
-**Properties:**
-```csharp
-DevelopPlan Plan { get; }
-```
-
-**Methods:**
-```csharp
-void SetPlan(DevelopPlan newPlan)
-```
-
----
-
-### IVersionControl
-
-```csharp
-public interface IVersionControl
-```
-
-**Namespace:** `Cyrena.Coding.Contracts`
-
-Used to keep in-memory backup of files modified by AI.
-
-**Methods:**
-```csharp
-void Backup(DevelopFileContent? file)
-```
-Stores a backup of the file content.
-
-```csharp
-bool HasBackup(string fileId)
-```
-Returns `true` if a backup exists for the given file ID.
-
-```csharp
-DevelopFileContent? GetBackups(string fileId)
-```
-Returns all backups for a file, or `null` if none exist.
-
-```csharp
-IEnumerable<DevelopFileContent> GetBackups()
-```
-Returns all stored backups.
-
-```csharp
-void RemoveBackup(string fileId)
-```
-Removes all backups for a file.
-
----
-
-## Extensions
-
-### DevelopFileExtensions
-
-```csharp
-public static class DevelopFileExtensions
-```
+### `DevelopFileExtensions`
 
 **Namespace:** `Cyrena.Coding.Extensions`
+**Target:** `DevelopPlan`
 
-**All methods extend `DevelopPlan`, not `DevelopFile` or `DevelopFolder`.**
+All methods operate on the plan's `RootDirectory` for disk I/O.
 
-**File Creation:**
-```csharp
-public static DevelopFile CreateFile(this DevelopPlan plan, string fileId, string fileName, string? content)
+| Method | Signature | Purpose |
+|--------|-----------|---------|
+| `CreateFile` | `(plan, fileId, fileName, content)` → `DevelopFile` | Create file in root. If `fileId` exists, ensures file on disk and returns existing model. |
+| `CreateFile` | `(plan, folder, fileId, fileName, content)` → `DevelopFile` | Create file in folder. Same idempotency behavior. |
+| `TryReadFileContent` | `(plan, file, out content)` → `bool` | Read full content. Returns `false` with `null` **without mutating plan** if file missing on disk. |
+| `TryReadFileLines` | `(plan, file, out lines)` → `bool` | Read as line-indexed model. Same non-mutating failure behavior. |
+| `TryWriteFileContent` | `(plan, file, content, out fileContent)` → `bool` | Overwrite file content on disk. |
+| `TryWriteFileOverwrite` | `(plan, file, content, out lines)` → `bool` | Overwrite entire file and return `DevelopFileLines`. |
+| `TryWriteFileReplace` | `(plan, file, content, startLine, lineCount, out lines, out totalLines)` → `bool` | Replace a range of lines (0-based `startLine`, `lineCount` lines). Returns `false` if bounds invalid. |
+| `TryWriteFileInsert` | `(plan, file, content, startLine, out lines, out totalLines)` → `bool` | Insert content before specified line (0-based). Use `startLine == totalLines` to append. |
+| `RemoveFile` | `(plan, file)` → `bool` | Delete file from disk and remove from plan (root or nested). |
+| `TryFindFile` | `(plan, fileId, out file, recursive)` → `bool` | Find by ID. Recursive by default. |
+| `TryFindFile` | `(plan, folder, fileId, out file, recursive)` → `bool` | Find by ID within folder subtree. |
+| `TryFindFileByName` | `(plan, name, out file, recursive)` → `bool` | Find by name (case-insensitive). |
+| `TryFindFileByName` | `(plan, folder, name, out file, recursive)` → `bool` | Find by name within folder subtree. |
+| `IndexFiles` | `(plan, extension, id_prefix, readOnly)` | Auto-index root files by extension. |
+| `IndexFiles` | `(plan, folder, extension, id_prefix, readOnly)` | Auto-index folder files. |
 
-public static DevelopFile CreateFile(this DevelopPlan plan, DevelopFolder folder, string fileId, string fileName, string? content)
-```
-Creates a file in the root directory or within a folder. Returns existing file if `fileId` already exists. Writes content to disk using `File.WriteAllText`.
-
-**Content Reading:**
-```csharp
-public static bool TryReadFileContent(this DevelopPlan plan, DevelopFile file, out DevelopFileContent? content)
-
-public static bool TryReadFileLines(this DevelopPlan plan, DevelopFile file, out DevelopFileLines? lines)
-```
-Reads file content as string or lines dictionary. Returns `false` and removes file from plan if file doesn't exist on disk.
-
-**Content Writing:**
-```csharp
-public static bool TryWriteFileContent(this DevelopPlan plan, DevelopFile file, string? content, out DevelopFileContent? fileContent)
-
-public static bool TryWriteFileLine(this DevelopPlan plan, DevelopFile file, int index, string line, out DevelopFileLines? lines)
-```
-Writes full content or a single line. `TryWriteFileLine` validates index is within bounds (0 to `Lines.Count - 1`). Returns `false` if file doesn't exist.
-
-**File Removal:**
-```csharp
-public static bool RemoveFile(this DevelopPlan plan, DevelopFile file)
-
-public static bool RemoveFile(this DevelopPlan pl, DevelopFolder folder, DevelopFile file)
-```
-Removes file from disk and from the plan. Recursive search through folders. Returns `true` if removed.
-
-**Search:**
-```csharp
-public static bool TryFindFile(this DevelopPlan plan, string fileId, out DevelopFile? file, bool recursive = true)
-
-public static bool TryFindFile(this DevelopPlan pl, DevelopFolder folder, string fileId, out DevelopFile? file, bool recursive = true)
-
-public static bool TryFindFileByName(this DevelopPlan plan, string name, out DevelopFile? file, bool recursive = true)
-
-public static bool TryFindFileByName(this DevelopPlan plan, DevelopFolder folder, string name, out DevelopFile? file, bool recursive = true)
-```
-Search by ID or name. Case-insensitive name comparison. Non-recursive by default searches root-level only.
-
-**Indexing:**
-```csharp
-public static void IndexFiles(this DevelopPlan plan, DevelopFolder folder, string extension, string id_prefix, bool readOnly = false)
-
-public static void IndexFiles(this DevelopPlan plan, string extension, string id_prefix, bool readOnly = false)
-```
-Scans directory for files with matching extension and adds them to the plan. Also removes entries for files that no longer exist on disk.
+**Important behavioral notes:**
+- `TryReadFileContent` / `TryReadFileLines` are pure query methods. If the file does not exist on disk, they return `false` with `null` output **without** modifying the plan. Callers must explicitly call `RemoveFile` if they want to purge stale entries.
+- `CreateFile` is idempotent by `fileId`. If a file with the given ID already exists in the plan, it ensures the file exists on disk (writing content if missing) and returns the existing model. It does not create duplicates.
+- `IndexFiles` extension stripping uses suffix-only removal (`EndsWith` + range indexer), so files like `my.component.ts` correctly produce `my.component` rather than `my.componen`.
+- `TryWriteFileReplace` validates that `startLine >= 0`, `lineCount > 0`, and `startLine + lineCount <= totalLines`. Returns `false` if any bound is invalid.
+- `TryWriteFileInsert` allows `startLine == totalLines` to append after the last line. Returns `false` if `startLine < 0` or `startLine > totalLines`.
+- All write methods normalize line endings to `\n` before writing to disk.
 
 ---
 
-### DevelopFolderExtensions
-
-```csharp
-public static class DevelopFolderExtensions
-```
+### `DevelopFolderExtensions`
 
 **Namespace:** `Cyrena.Coding.Extensions`
+**Target:** `DevelopPlan` and `DevelopFolder`
 
-**Methods extend `DevelopPlan`.**
-
-**Folder Creation:**
-```csharp
-public static DevelopFolder CreateFolder(this DevelopPlan plan, string id, string name)
-
-public static DevelopFolder CreateFolder(this DevelopPlan plan, DevelopFolder folder, string id, string name)
-```
-Creates folder on disk and adds to plan. Returns existing folder if `id` already exists.
-
-```csharp
-public static DevelopFolder GetOrCreateFolder(this DevelopPlan plan, string id, string name)
-
-public static DevelopFolder GetOrCreateFolder(this DevelopPlan plan, DevelopFolder parent, string id, string name)
-```
-Tries to find existing folder first, creates if not found. Non-recursive search.
-
-**Folder Removal:**
-```csharp
-public static bool RemoveFolder(this DevelopPlan plan, DevelopFolder folder, bool recursive = false)
-```
-Removes folder from disk (with optional recursive delete) and from plan. Returns `true` if removed.
-
-**Search:**
-```csharp
-public static bool TryFindFolder(this DevelopPlan plan, string folderId, out DevelopFolder? folder, bool recursive = true)
-
-public static bool TryFindFolder(this DevelopFolder folder, string folderId, out DevelopFolder? model, bool recursive = true)
-
-public static DevelopFolder? GetFolderOfFile(this DevelopPlan plan, DevelopFile file)
-
-public static DevelopFolder? GetFolderOfFile(this DevelopPlan plan, DevelopFolder folder, DevelopFile file)
-```
-Search for folder by ID or find which folder contains a file. Recursive by default.
+| Method | Signature | Purpose |
+|--------|-----------|---------|
+| `CreateFolder` | `(plan, id, name)` → `DevelopFolder` | Create folder in root. Idempotent by ID. |
+| `CreateFolder` | `(plan, parent, id, name)` → `DevelopFolder` | Create nested folder. Uses `parent.RelativePath` for disk path. |
+| `RemoveFolder` | `(plan, folder, recursive)` → `bool` | Delete folder from disk and plan. |
+| `TryFindFolder` | `(plan, folderId, out folder, recursive)` → `bool` | Find by ID. |
+| `TryFindFolder` | `(folder, folderId, out model, recursive)` → `bool` | Find by ID within folder subtree. |
+| `GetFolderOfFile` | `(plan, file)` → `DevelopFolder?` | Find containing folder (root-level search). |
+| `GetFolderOfFile` | `(plan, folder, file)` → `DevelopFolder?` | Find containing folder within subtree. |
+| `GetOrCreateFolder` | `(plan, id, name)` → `DevelopFolder` | Get existing or create in root. |
+| `GetOrCreateFolder` | `(plan, parent, id, name)` → `DevelopFolder` | Get existing or create nested. Searches within `parent` only (non-recursive). |
 
 ---
 
 ## Options
 
-### DevelopOptions
-
-```csharp
-public sealed class DevelopOptions
-```
+### `DevelopOptions`
 
 **Namespace:** `Cyrena.Coding.Options`
 
-Configuration constants for the developer SDK.
+Constant string keys used in `ChatConfiguration` dictionary for developer mode setup.
 
-**Constants:**
 ```csharp
-public const string AssistantModeId = "developer";
-public const string BuilderId = "dev.builder-id";
-[Obsolete]
-//Removed, uses new ChatConfiguration.WorkingDirectory.
-public const string RootDirectory = "dev.root-dir";
+public sealed class DevelopOptions
+{
+    public const string AssistantModeId = "developer";
+    public const string BuilderId = "dev.builder-id";
+}
+```
+
+| Constant | Value | Purpose |
+|----------|-------|---------|
+| `AssistantModeId` | `"developer"` | ID for the developer assistant mode |
+| `BuilderId` | `"dev.builder-id"` | Key storing the selected `ICodeBuilder.Id` |
+
+**Removed:** `RootDirectory` (`"dev.root-dir"`) was previously defined but is now commented out with `[Obsolete]`. Extensions should use `ChatConfiguration.WorkingDirectory` instead.
+
+**Usage:**
+```csharp
+// Setting configuration
+model[DevelopOptions.BuilderId] = "cs-class-library";
+
+// Reading configuration
+var builderId = config[DevelopOptions.BuilderId];
 ```
 
 ---
 
-## Usage Patterns
+## Dependencies on Cyrena.Core
 
-### Loading a Plan
-```csharp
-IDevelopPlanService planService = serviceProvider.GetRequiredService<IDevelopPlanService>();
-DevelopPlan plan = planService.Plan;
+This package depends on `Cyrena.Core` and uses the following types extensively. Extension developers must reference `Cyrena.Core` alongside this package.
+
+| Type | Source | Usage |
+|------|--------|-------|
+| `Entity` | `Cyrena.Models` | Base for `DevelopItem`, `StickyNote` |
+| `ChatConfiguration` | `Cyrena.Models` | Passed to `ICodeBuilder.DeleteAsync` / `EditAsync` |
+| `CyrenaKernelBuilder` | `Cyrena` | Passed to `ICodeBuilder.ConfigureAsync` |
+| `ISuppressibleResult` | `Cyrena` | Implemented by `DevelopFile`, `DevelopPlan`, `ConsoleOutput` |
+
+---
+
+## Class Hierarchy
+
 ```
+Cyrena.Models.Entity
+├── DevelopItem (abstract)
+│   ├── DevelopFile
+│   │   ├── DevelopFileContent
+│   │   └── DevelopFileLines
+│   └── DevelopFolder
+├── StickyNote
 
-### Creating Files
-```csharp
-DevelopFile file = plan.CreateFile("models_UserModel", "UserModel.cs", "namespace App { }");
-
-DevelopFolder src = plan.CreateFolder("src", "src");
-DevelopFile srcFile = plan.CreateFile(plan, src, "models_UserModel", "UserModel.cs", "namespace App { }");
-```
-
-### Reading File Content
-```csharp
-if (plan.TryReadFileLines(file, out DevelopFileLines? lines))
-{
-    string line0 = lines.Lines[0];
-    // lines.ToString() reconstructs with Windows line endings
-}
-```
-
-### Modifying a Single Line
-```csharp
-if (plan.TryWriteFileLine(file, 5, "new content", out var updated))
-{
-    // File updated on disk and lines returned
-}
-```
-
-### Searching Files
-```csharp
-if (plan.TryFindFile("models_UserModel", out var found))
-{
-    // Found by ID
-}
-
-if (plan.TryFindFileByName("UserModel.cs", out var found2))
-{
-    // Found by name (case-insensitive)
-}
-```
-
-### Indexing Project Files
-```csharp
-plan.IndexFiles("cs", "models_", readOnly: true);
-plan.IndexFiles(plan.Folders[0], "cs", "services_", readOnly: false);
-```
-
-### Version Control Backup
-```csharp
-IVersionControl vc = serviceProvider.GetRequiredService<IVersionControl>();
-
-if (plan.TryReadFileContent(file, out var content))
-{
-    vc.Backup(content);
-}
-
-if (vc.HasBackup(file.Id))
-{
-    var backups = vc.GetBackups(file.Id);
-}
-```
-
-### Folder Management
-```csharp
-DevelopFolder folder = plan.GetOrCreateFolder("models", "Models");
-
-var containingFolder = plan.GetFolderOfFile(file);
+DevelopPlan (ISuppressibleResult)
+DevelopFileVersion
+DevelopFileLine
+ConsoleOutput (ISuppressibleResult) → List<ConsoleLine>
+ConsoleLine
 ```
 
 ---
 
-## Integration
+## Extension Developer Quick Start
 
-### Service Registration Pattern
-Services are expected to be registered through the `ICodeBuilder.ConfigureAsync()` method which receives a `CyrenaKernelBuilder` for dependency injection setup.
+1. **Reference packages:**
+   ```xml
+   <PackageReference Include="Cyrena.Core" />
+   <PackageReference Include="Cyrena.Coding.Core" />
+   ```
 
-### Plan Persistence
-- **Save:** `DevelopPlan.Save(plan)` writes to `.cyrena/plan`
-- **Load:** `DevelopPlan.TryLoadFromDirectory(dir, out plan)` reads from `.cyrena/plan`
-- Plan objects contain `[JsonIgnore]` properties for runtime paths
+2. **Implement `ICodeBuilder`:**
+   ```csharp
+   public class MyProjectBuilder : ICodeBuilder
+   {
+       public string Id => "my-project";
+       
+       public async Task<DevelopPlan> ConfigureAsync(CyrenaKernelBuilder options)
+       {
+           var rootDir = options.ChatConfiguration.WorkingDirectory;
+           var plan = new DevelopPlan(rootDir);
+           // Index files, register plugins, add prompts...
+           return plan;
+       }
+       
+       public Task DeleteAsync(ChatConfiguration config) => Task.CompletedTask;
+       public Task EditAsync(ChatConfiguration config, IServiceProvider services) => Task.CompletedTask;
+   }
+   ```
+
+3. **Register in your extension:**
+   ```csharp
+   builder.Services.AddSingleton<ICodeBuilder, MyProjectBuilder>();
+   ```
+
+4. **Use plan extensions for file operations:**
+   ```csharp
+   plan.CreateFile("readme", "README.md", "# My Project");
+   plan.CreateFolder("src", "src");
+   plan.IndexFiles("cs", "src_");
+   ```

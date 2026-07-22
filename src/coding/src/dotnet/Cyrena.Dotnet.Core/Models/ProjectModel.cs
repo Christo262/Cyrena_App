@@ -1,11 +1,11 @@
 ﻿using Cyrena.Coding.Models;
 using Cyrena.Dotnet.Options;
 using Cyrena.Models;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Cyrena.Dotnet.Models
 {
-    public class ProjectModel : IJsonSerializable
+    public class ProjectModel 
     {
         public ProjectModel()
         {
@@ -36,22 +36,12 @@ namespace Cyrena.Dotnet.Models
         }
 
         public DevelopPlan? Plan { get; set; }
-
-        public string ToJson()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
-
-        public override string ToString()
-        {
-            return ToJson();
-        }
     }
 
     /// <summary>
     /// Only used to simplify for AI
     /// </summary>
-    public class ProjectViewModel : IJsonSerializable
+    public class ProjectViewModel 
     {
         public ProjectViewModel(ProjectModel model)
         {
@@ -66,15 +56,5 @@ namespace Cyrena.Dotnet.Models
         public string? ProjectTypeName { get; set; }
         public string? TargetFrameworks { get; set; }
         public string? RootNamespace { get; set; }
-
-        public string ToJson()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
-
-        public override string ToString()
-        {
-            return ToJson();
-        }
     }
 }

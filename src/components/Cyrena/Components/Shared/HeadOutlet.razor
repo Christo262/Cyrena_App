@@ -1,0 +1,78 @@
+@using Cyrena.Options
+@inject ISettingsService _settings
+@inject HeadOutletStateChangeTracker _tracker
+@implements IDisposable
+<style>
+    @((MarkupString)LayoutStyle())
+
+    @((MarkupString)TabsStyle())
+
+    .mud-tabs-panels {
+        background-color: transparent !important;
+    }
+</style>
+
+@code {
+    private Background _bg { get; set; } = default!;
+    protected override void OnInitialized()
+    {
+        _tracker.OnChanged += TrackerChanged;
+        var ops = _settings.Read<Customization>(Customization.Key) ?? new Customization();
+        _bg = ops.Background;
+    }
+
+    private void TrackerChanged(object? sender, EventArgs e)
+    {
+        var ops = _settings.Read<Customization>(Customization.Key) ?? new Customization();
+        _bg = ops.Background;
+        this.InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        _tracker.OnChanged -= TrackerChanged;
+    }
+
+    private string TabsStyle()
+    {
+        if (string.IsNullOrEmpty(_bg.BackgroundColor))
+        {
+            return @"
+            .mud-main-content {
+                background-color:rgba(var(--mud-palette-background-rgb), var(--mud-palette-background-opacity)) !important;
+            }
+            ";
+        }
+        try
+        {
+            return @"
+            .mud-main-content {
+                --mud-palette-background-rgb: {rgb};
+                --mud-palette-background-opacity: {opa};
+                background-color:rgba(var(--mud-palette-background-rgb), var(--mud-palette-background-opacity)) !important;
+            }
+            ".Replace("{rgb}", _bg.BackgroundColor.ToCssRgbFromHex()).Replace("{opa}", _bg.BackgroundOpacity.ToCssFloat());
+        }
+        catch
+        {
+            return @"
+            .mud-main-content {
+                background-color:rgba(var(--mud-palette-background-rgb), var(--mud-palette-background-opacity)) !important;
+            }
+            ";
+        }
+    }
+
+    private string LayoutStyle()
+    {
+        if (string.IsNullOrEmpty(_bg.BackgroundImage))
+            return "";
+        return @"
+            body {
+                background-image: url('{img}');
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-position:center;
+            }".Replace("{img}", _bg.BackgroundImage);
+    }
+}

@@ -1,20 +1,20 @@
-using BootstrapBlazor.Components;
 using Cyrena.Angular.Components.Shared;
 using Cyrena.Angular.Options;
 using Cyrena.Contracts;
 using Cyrena.Coding.Options;
 using Cyrena.Models;
 using Microsoft.AspNetCore.Components;
+using MudBlazor;
 
 namespace Cyrena.Angular.Models
 {
     internal class AngularShortcut : IShortcut
     {
-        private readonly DialogService _dialog;
+        private readonly IDialogService _dialog;
         private readonly IKernelController _kernel;
         private readonly NavigationManager _nav;
 
-        public AngularShortcut(DialogService dialog, IKernelController kernel, NavigationManager nav)
+        public AngularShortcut(IDialogService dialog, IKernelController kernel, NavigationManager nav)
         {
             _dialog = dialog;
             _kernel = kernel;
@@ -38,20 +38,17 @@ namespace Cyrena.Angular.Models
             model[DevelopOptions.BuilderId] = AngularOptions.BuilderId;
             model[ChatConfiguration.Icon] = Icon;
             model[ChatConfiguration.Group] = Category;
+            model.HistoryInclusion = HistoryInclusionMode.Instruct;
 
-            var rf = await _dialog.ShowModal<Configure>(new ResultDialogOption()
+            var parameters = new DialogParameters<Configure>
             {
-                Title = "Angular",
-                Size = Size.Medium,
-                ComponentParameters = new()
-                {
-                    { nameof(Configure.Model), model }
-                },
-                ButtonNoText = "Cancel",
-                ButtonYesText = "Submit"
-            });
+                { x => x.Model, model }
+            };
+            var options = new DialogOptions { MaxWidth = MaxWidth.Small };
+            var dialog = await _dialog.ShowAsync<Configure>("Angular", parameters, options);
+            var result = await dialog.Result;
 
-            if (rf == DialogResult.Yes)
+            if (result is not null && !result.Canceled)
             {
                 await _kernel.Create(model);
                 _nav.NavigateTo($"converse/{model.Id}");

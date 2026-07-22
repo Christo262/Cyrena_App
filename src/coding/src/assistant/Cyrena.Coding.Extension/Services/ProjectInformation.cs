@@ -40,7 +40,7 @@ namespace Cyrena.Coding.Services
         {
             var note = new StickyNote(title, content);
             await _notes.AddAsync(note);
-            return new ToolResult<string>($"Note Create with id: {note.Id}");
+            return new ToolResult<string>($"Note Created with id: {note.Id}");
         }
 
         [KernelFunction("update_note")]

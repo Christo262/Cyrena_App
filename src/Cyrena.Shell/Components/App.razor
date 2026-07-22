@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Cyréna</title>
+    <base href="/" />
+
+    <link rel="stylesheet" href="@Assets["_content/MudBlazor/MudBlazor.min.css"]" />
+    <link href="css/bootstrap-icons.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="_content/Cyrena/css/theme.css" />
+
+    <Cyrena.Components.Shared.HeadOutlet @rendermode="InteractiveServer" />
+</head>
+
+<body>
+    <Routes @rendermode="InteractiveServer" />
+
+    <script src="_content/BlazorMonaco/jsInterop.js"></script>
+    <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.js"></script>
+    <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.js"></script>
+    <script src="@Assets["_framework/blazor.web.js"]"></script>
+    <script src="@Assets["_content/MudBlazor/MudBlazor.min.js"]"></script>
+    <script src="_content/Cyrena/js/cyrena.js"></script>
+    <script src="_content/Cyrena/js/runtime-scripts.js"></script>
+    <script src="_content/Cyrena/js/webview-audio-interop.js"></script>
+    <script src="_content/Cyrena/js/screen-share.js"></script>
+    </body>
+
+</html>

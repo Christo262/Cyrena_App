@@ -29,12 +29,5 @@ namespace Cyrena.Contracts
         /// </summary>
         /// <param name="id"></param>
         void RemovePrompt(string id);
-
-        /// <summary>
-        /// [OBSOLETE] use <see cref="IConversationHistoryTransformer"/>.
-        /// Allows modification of the history that is returned in <see cref="IChatMessageService.GetKernelHistory"/>. 
-        /// </summary>
-        [Obsolete]
-        Func<ChatHistory, ChatOptions, IEnumerable<ChatMessageContent>>? ModifyKernelHistoryFunc { get; set; }
     }
 }

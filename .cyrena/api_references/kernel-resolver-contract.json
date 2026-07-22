@@ -1,0 +1,16 @@
+{
+  "Title": "IKernelResolver - Kernel Access Contract",
+  "Keywords": [
+    "IKernelResolver",
+    "kernel resolver",
+    "kernel access",
+    "Func",
+    "kernel locked",
+    "Cyrena.Core",
+    "contracts"
+  ],
+  "Summary": "Provides access to the current Semantic Kernel instance via a factory function. Kernel-locked.",
+  "Link": null,
+  "Content": "## IKernelResolver\n\n**Namespace**: \u0060Cyrena.Contracts\u0060\n**Assembly**: \u0060Cyrena.Core\u0060\n\n### Purpose\nProvides access to the current \u0060Microsoft.SemanticKernel.Kernel\u0060 instance within a kernel-scoped service. Kernel-locked (one per chat).\n\n### Interface\n\u0060\u0060\u0060csharp\npublic interface IKernelResolver\n{\n    Func\u003CKernel\u003E Resolve { get; }\n}\n\u0060\u0060\u0060\n\n### Properties\n| Property | Type | Description |\n|----------|------|-------------|\n| \u0060Resolve\u0060 | \u0060Func\u003CKernel\u003E\u0060 | Factory function that returns the current Kernel instance |\n\n### Usage\n\u0060\u0060\u0060csharp\npublic class MyService\n{\n    private readonly IKernelResolver _resolver;\n    \n    public MyService(IKernelResolver resolver)\n    {\n        _resolver = resolver;\n    }\n    \n    public void DoWork()\n    {\n        var kernel = _resolver.Resolve();\n        // Use kernel...\n    }\n}\n\u0060\u0060\u0060\n\n### Related\n- \u0060KernelController\u0060 - Creates and manages kernels, registers IKernelResolver\n- \u0060IKernelController\u0060 - Manages kernel lifecycle\n- \u0060Kernel\u0060 - Microsoft.SemanticKernel.Kernel instance",
+  "Id": "kernel-resolver-contract"
+}

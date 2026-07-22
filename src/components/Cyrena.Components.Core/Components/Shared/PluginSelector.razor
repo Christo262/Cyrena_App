@@ -1,15 +1,11 @@
-﻿
-<div class="mb-3">
-    <label class="form-label">Activated Features</label>
-<div class="p-2">
+<MudPaper Elevation="0" Class="pa-2">
+    <MudText Typo="Typo.subtitle1" Class="mb-2">Activated Features</MudText>
+    <MudStack Spacing="1">
         @foreach (var item in _models)
         {
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" @bind="item.Selected" @bind:after="PopulateChat" disabled="@item.Required">
-                <label class="form-check-label">
-                    @item.Plugin.Title
-                </label>
-            </div>
+            <MudCheckBox T="bool" Value="item.Selected" ValueChanged="(bool val) => OnSelectionChanged(item, val)" Disabled="item.Required" Dense Size="Size.Small"
+                         Label="@item.Plugin.Title" Color="Color.Primary">
+            </MudCheckBox>
         }
-</div>
-</div>
+    </MudStack>
+</MudPaper>

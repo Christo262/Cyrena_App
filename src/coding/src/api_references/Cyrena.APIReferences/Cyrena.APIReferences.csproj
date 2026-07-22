@@ -17,4 +17,10 @@
     <ProjectReference Include="..\..\assistant\Cyrena.Coding.Core\Cyrena.Coding.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="extension.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

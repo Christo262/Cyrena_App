@@ -4,7 +4,7 @@
 
 @if (_tb.Any())
 {
-    <div class="d-flex flex-row mt-1 mb-2">
+    <div class="d-flex flex-row mt-1 mb-2 px-6">
         @foreach (var item in _tb.Where(x => x.Alignment == ToolbarAlignment.Start))
         {
             @this.Render(item.Component, new() { { nameof(KernelComponentBase.Kernel), Kernel } })

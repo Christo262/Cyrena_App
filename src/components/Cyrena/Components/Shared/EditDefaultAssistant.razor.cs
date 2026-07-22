@@ -1,0 +1,31 @@
+using Cyrena.Contracts;
+using Cyrena.Models;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.Extensions.DependencyInjection;
+using MudBlazor;
+using System.ComponentModel.DataAnnotations;
+
+namespace Cyrena.Components.Shared
+{
+    public partial class EditDefaultAssistant
+    {
+        [Parameter] public ChatConfiguration Model { get; set; } = default!;
+        private MudForm _form = default!;
+
+        [CascadingParameter]
+        private IMudDialogInstance MudDialog { get; set; } = default!;
+
+        private async Task Submit()
+        {
+            await _form.ValidateAsync();
+            if (_form.IsValid)
+                MudDialog.Close(DialogResult.Ok(Model));
+        }
+
+        private void Cancel()
+        {
+            MudDialog.Close(DialogResult.Cancel());
+        }
+    }
+}

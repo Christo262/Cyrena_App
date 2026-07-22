@@ -1,21 +1,24 @@
-﻿using BootstrapBlazor.Components;
 using Cyrena.Coding.Options;
 using Cyrena.Contracts;
 using Cyrena.Dotnet.Options;
 using Cyrena.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.Extensions.Configuration;
+using MudBlazor;
 using System.ComponentModel.DataAnnotations;
 
 namespace Cyrena.Dotnet.CSharp.Components.Shared
 {
-    public partial class DotnetCsConfig : IResultDialog
+    public partial class DotnetCsConfig
     {
+        [Inject] private IDialogService _dialog { get; set; } = default!;
         [Inject] private IFileDialog _file { get; set; } = default!;
+        [Inject] private ISnackbar _snackbar { get; set; } = default!;
         [Parameter] public ChatConfiguration Model { get; set; } = default!;
+        [CascadingParameter] private IMudDialogInstance? _mudDialog { get; set; }
         private DotnetCsModel _model = default!;
-        private EditContext _context = default!;
+        private MudForm _form = default!;
+
         protected override void OnInitialized()
         {
             _model = new DotnetCsModel()
@@ -24,35 +27,35 @@ namespace Cyrena.Dotnet.CSharp.Components.Shared
                 ConnectionId = Model.ConnectionId,
                 ProjectFilePath = Model[DotnetOptions.ProjectFilePath],
             };
-            _context = new EditContext(_model);
-        }
-
-        Task IResultDialog.OnClose(DialogResult result)
-        {
-            return Task.CompletedTask;
-        }
-
-        async Task<bool> IResultDialog.OnClosing(DialogResult result)
-        {
-            if (result != DialogResult.Yes) return true;
-            var valid = _context.Validate();
-            if (valid)
-            {
-                if (!File.Exists(_model.ProjectFilePath))
-                    return false;
-                Model.Title = _model.Title;
-                Model.ConnectionId = _model.ConnectionId!;
-                Model.WorkingDirectory = new FileInfo(_model.ProjectFilePath).DirectoryName;
-                Model[DotnetOptions.ProjectFilePath] = _model.ProjectFilePath;
-            }
-            return valid;
         }
 
         private async Task ChooseProj()
         {
             var f = await _file.OpenAsync("Choose .csproj", ("csproj", [".csproj"]));
-            _model.ProjectFilePath = f;
+            if (f != null)
+                _model.ProjectFilePath = f;
         }
+
+        private async Task Submit()
+        {
+            await _form.ValidateAsync();
+            if (!_form.IsValid)
+                return;
+
+            if (!File.Exists(_model.ProjectFilePath))
+            {
+                _snackbar.Add("Project file not found", Severity.Error);
+                return;
+            }
+
+            Model.Title = _model.Title;
+            Model.ConnectionId = _model.ConnectionId ?? string.Empty;
+            Model.WorkingDirectory = new FileInfo(_model.ProjectFilePath).DirectoryName ?? string.Empty;
+            Model[DotnetOptions.ProjectFilePath] = _model.ProjectFilePath;
+            _mudDialog?.Close(DialogResult.Ok(true));
+        }
+
+        private void Cancel() => _mudDialog?.Cancel();
     }
 
     internal class DotnetCsModel

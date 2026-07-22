@@ -1,0 +1,17 @@
+{
+  "Title": "CyrenaBuilderExtensions (Persistence.Core) - Store Registration",
+  "Keywords": [
+    "CyrenaBuilderExtensions",
+    "Persistence.Core",
+    "AddScopedStore",
+    "AddSingletonStore",
+    "CyrenaBuilder",
+    "ICyrenaPersistenceBuilder",
+    "store registration",
+    "Cyrena.Persistence.Core"
+  ],
+  "Summary": "Extension methods on CyrenaBuilder for registering IStore\u003CT\u003E services as scoped or singleton via the active ICyrenaPersistenceBuilder feature option. Part of Cyrena.Persistence.Core.",
+  "Link": "",
+  "Content": "# CyrenaBuilderExtensions (Persistence.Core)\n\n**Namespace**: \u0060Cyrena.Extensions\u0060\n**Assembly**: \u0060Cyrena.Persistence.Core\u0060\n**Version**: 0.6.0\n\n## Purpose\nExtension methods on \u0060CyrenaBuilder\u0060 for registering \u0060IStore\u003CT\u003E\u0060 services via the active \u0060ICyrenaPersistenceBuilder\u0060 feature option.\n\n## Class Definition\n\n\u0060\u0060\u0060csharp\npublic static class CyrenaBuilderExtensions\n{\n    public static CyrenaBuilder AddScopedStore\u003CTEntity\u003E(this CyrenaBuilder builder, string collectionName) where TEntity : class, IEntity;\n    public static CyrenaBuilder AddSingletonStore\u003CTEntity\u003E(this CyrenaBuilder builder, string collectionName) where TEntity : class, IEntity;\n}\n\u0060\u0060\u0060\n\n## Methods\n\n### \u0060AddScopedStore\u003CTEntity\u003E(string collectionName)\u0060\n\u0060\u0060\u0060csharp\npublic static CyrenaBuilder AddScopedStore\u003CTEntity\u003E(this CyrenaBuilder builder, string collectionName) where TEntity : class, IEntity;\n\u0060\u0060\u0060\nResolves the \u0060ICyrenaPersistenceBuilder\u0060 via \u0060builder.GetFeatureOption\u003CICyrenaPersistenceBuilder\u003E()\u0060 and calls \u0060AddScopedStore\u003CTEntity\u003E(collectionName)\u0060. Registers \u0060IStore\u003CTEntity\u003E\u0060 as a **scoped** service (one instance per chat/kernel scope).\n\n- \u0060TEntity\u0060 \u2014 Entity type implementing \u0060IEntity\u0060 (from \u0060Cyrena.Core\u0060).\n- \u0060collectionName\u0060 \u2014 Logical collection/table name used by the persistence backend.\n\n### \u0060AddSingletonStore\u003CTEntity\u003E(string collectionName)\u0060\n\u0060\u0060\u0060csharp\npublic static CyrenaBuilder AddSingletonStore\u003CTEntity\u003E(this CyrenaBuilder builder, string collectionName) where TEntity : class, IEntity;\n\u0060\u0060\u0060\nResolves the \u0060ICyrenaPersistenceBuilder\u0060 via \u0060builder.GetFeatureOption\u003CICyrenaPersistenceBuilder\u003E()\u0060 and calls \u0060AddSingletonStore\u003CTEntity\u003E(collectionName)\u0060. Registers \u0060IStore\u003CTEntity\u003E\u0060 as a **singleton** service.\n\n## Usage\n\nThese methods are typically called from an extension\u0027s \u0060BuildExtension\u0060 method. A concrete persistence backend (e.g. \u0060Cyrena.Persistence.File\u0060) must already be configured so that \u0060ICyrenaPersistenceBuilder\u0060 resolves.\n\n\u0060\u0060\u0060csharp\npublic override void BuildExtension(CyrenaBuilder builder)\n{\n    builder.AddScopedStore\u003CMyData\u003E(\u0022my-data\u0022);\n    builder.AddSingletonStore\u003CGlobalConfig\u003E(\u0022global-config\u0022);\n}\n\u0060\u0060\u0060\n\n## Related\n- \u0060ICyrenaPersistenceBuilder\u0060 \u2014 Feature option that this delegates to\n- \u0060IStore\u003CT\u003E\u0060 \u2014 The registered store interface\n- \u0060IEntity\u0060 \u2014 Base entity interface from \u0060Cyrena.Core\u0060",
+  "Id": "extensions_CyrenaBuilderExtensions_PersistenceCore"
+}

@@ -5,7 +5,6 @@ namespace Cyrena.Dotnet.Models
     public sealed class ProjectTypeOverride : Entity
     {
         [System.Text.Json.Serialization.JsonConstructor]
-        [Newtonsoft.Json.JsonConstructor]
         internal ProjectTypeOverride() { }
 
         public ProjectTypeOverride(string projectId)

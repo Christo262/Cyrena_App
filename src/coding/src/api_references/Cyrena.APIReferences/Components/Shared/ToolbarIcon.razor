@@ -1,8 +1,9 @@
 @inherits KernelComponentBase
 
-<Tooltip Title="API References">
-    <a href="api-references/@_kernelId" class="btn btn-sm btn-info rounded-pill me-1"><i class="bi bi-file-medical"></i></a>
-</Tooltip>
+<MudTooltip Text="API References">
+    <MudIconButton Color="Color.Inherit" Size="Size.Small" Href="@($"api-references/{_kernelId}")" Icon="@Icons.Material.Filled.Api">
+    </MudIconButton>
+</MudTooltip>
 
 @code {
     private string _kernelId { get; set; } = default!;

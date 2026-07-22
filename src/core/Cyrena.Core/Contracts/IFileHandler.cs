@@ -9,10 +9,7 @@ namespace Cyrena.Contracts
     public interface IFileHandler
     {
         bool HandlesType(string contentType, string fileName);
-        Task<AdditionalMessageContent?> GetMessageContent(Stream data, string contentType, string name);
-        Task<AdditionalMessageContent?> GetMessageContent(byte[] data, string contentType, string name);
-        Task<KernelContent?> GetKernelContent(Stream data, string contentType, string name);
-        Task<KernelContent?> GetKernelContent(byte[] data, string contentType, string name);
+        Task<KernelContent?> GetKernelContent(byte[] data, string contentType, string name, IReadOnlyDictionary<string, object?>? metadata = null);
         string[] GetSupportedMimeTypes();
         Dictionary<string, string> GetExtensionMimeTypeMapping();
     }

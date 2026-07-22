@@ -1,58 +1,33 @@
-﻿
-<h4>
-    Ollama Connections
-</h4>
+<MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center">
+    <MudText Typo="Typo.h4">Ollama Connections</MudText>
+    <MudSpacer/>
+    <MudTooltip Text="Add">
+        <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Success" Size="Size.Small" OnClick="Create" />
+    </MudTooltip>
+</MudStack>
 
-@if (_models != null)
-{
-    <table class="table table-sm">
-        <thead>
-            <tr>
-                <th>
-                    Name
-                </th>
-                <th>
-                    Model ID
-                </th>
-                <th>
-                    Endpoint
-                </th>
-                <th>
-                    Temperature
-                </th>
-                <th>
-                    <Tooltip Title="Add">
-                        <button @onclick="Create" type="button" class="btn btn-success btn-sm"><i class="bi bi-plus"></i></button>
-                    </Tooltip>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in _models)
-            {
-                <tr>
-                    <td>
-                        @item.Name
-                    </td>
-                    <td>
-                        @item.ModelId
-                    </td>
-                    <td>
-                        @item.Endpoint
-                    </td>
-                    <td>
-                        @item.Temperature
-                    </td>
-                    <td>
-                        <Tooltip Title="Edit">
-                            <button type="button" @onclick="() => Edit(item)" class="btn btn-secondary btn-sm"><i class="bi bi-pen"></i></button>
-                        </Tooltip>
-                        <Tooltip Title="Delete">
-                            <button type="button" @onclick="() => DeleteAsync(item)" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
-                        </Tooltip>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+<MudTable Items="_models" Dense="true" Hover="true">
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>Model ID</MudTh>
+        <MudTh>Endpoint</MudTh>
+        <MudTh>Temperature</MudTh>
+        <MudTh>
+
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Model ID">@context.ModelId</MudTd>
+        <MudTd DataLabel="Endpoint">@context.Endpoint</MudTd>
+        <MudTd DataLabel="Temperature">@context.Temperature</MudTd>
+        <MudTd>
+            <MudTooltip Text="Edit">
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" OnClick="() => Edit(context)" />
+            </MudTooltip>
+            <MudTooltip Text="Delete">
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => DeleteAsync(context)" />
+            </MudTooltip>
+        </MudTd>
+    </RowTemplate>
+</MudTable>

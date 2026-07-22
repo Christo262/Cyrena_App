@@ -1,0 +1,16 @@
+{
+  "Title": "MainLayout Layout Component",
+  "Keywords": [
+    "MainLayout",
+    "layout",
+    "NavMenu",
+    "sidebar",
+    "page",
+    "LayoutComponentBase",
+    "Blazor Server"
+  ],
+  "Summary": "Primary layout component providing the sidebar navigation and main content area.",
+  "Link": null,
+  "Content": "## MainLayout.razor\n\n**Path:** \u0060Components/Layout/MainLayout.razor\u0060\n\n**Type:** Layout component (\u0060@inherits LayoutComponentBase\u0060)\n\n### Purpose\n\nProvides the primary page structure: a sidebar with navigation and a main content area.\n\n### Structure\n\n\u0060\u0060\u0060razor\n\u003Cdiv class=\u0022page\u0022\u003E\n    \u003Cdiv class=\u0022sidebar\u0022\u003E\n        \u003CNavMenu /\u003E\n    \u003C/div\u003E\n\n    \u003Cmain\u003E\n        \u003Cdiv class=\u0022top-row px-4\u0022\u003E\n            \u003Ca href=\u0022https://learn.microsoft.com/aspnet/core/\u0022 target=\u0022_blank\u0022\u003EAbout\u003C/a\u003E\n        \u003C/div\u003E\n\n        \u003Carticle class=\u0022content px-4\u0022\u003E\n            @Body\n        \u003C/article\u003E\n    \u003C/main\u003E\n\u003C/div\u003E\n\n\u003Cdiv id=\u0022blazor-error-ui\u0022 data-nosnippet\u003E\n    An unhandled error has occurred.\n    \u003Ca href=\u0022.\u0022 class=\u0022reload\u0022\u003EReload\u003C/a\u003E\n    \u003Cspan class=\u0022dismiss\u0022\u003E\uD83D\uDDD9\u003C/span\u003E\n\u003C/div\u003E\n\u0060\u0060\u0060\n\n### Sections\n\n| Section | Description |\n|---------|-------------|\n| \u0060.sidebar\u0060 | Contains the \u0060NavMenu\u0060 component. |\n| \u0060.top-row\u0060 | Header bar with an external \u0022About\u0022 link to ASP.NET Core docs. |\n| \u0060article.content\u0060 | Renders \u0060@Body\u0060 \u2014 the routed page content. |\n| \u0060#blazor-error-ui\u0060 | Hidden by default; displayed when an unhandled exception occurs in the Blazor circuit. |\n\n### CSS\n\nScoped styles in \u0060MainLayout.razor.css\u0060 control the sidebar width, top-row height, and responsive behavior.\n\n### Usage\n\nSet as the default layout in \u0060Routes.razor\u0060:\n\n\u0060\u0060\u0060razor\n\u003CRouteView RouteData=\u0022routeData\u0022 DefaultLayout=\u0022typeof(Layout.MainLayout)\u0022 /\u003E\n\u0060\u0060\u0060\n\nIndividual pages can override with \u0060@layout OtherLayout\u0060.\n\n### Notes\n\n- The \u0060data-nosnippet\u0060 attribute on \u0060#blazor-error-ui\u0060 prevents search engines from indexing error text.\n- The error UI is styled by Blazor framework CSS; the dismiss button (\uD83D\uDDD9) hides it client-side.\n",
+  "Id": "components_MainLayout"
+}

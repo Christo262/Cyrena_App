@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Cyrena</RootNamespace>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.5.0</Version>
+    <Version>0.6.0</Version>
     <Authors>Vaya Nova</Authors>
     <Description>Key components and shared components</Description>
     <PackageIcon>cyrena.png</PackageIcon>
@@ -33,9 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BootstrapBlazor" />
-    <PackageReference Include="BootstrapBlazor.BootstrapIcon" />
-    <PackageReference Include="BootstrapBlazor.Html2Pdf" />
+    <PackageReference Include="MudBlazor" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
     <PackageReference Include="BlazorMonaco" />
   </ItemGroup>
@@ -47,7 +45,7 @@
     </None>
   </ItemGroup>
 
-  <Target Name="PostPack" AfterTargets="Pack">
+  <Target Name="PostPack" AfterTargets="Pack" Condition="'$(Configuration)' == 'Debug'">
     <ItemGroup>
       <NugetPackages Include="bin\Debug\$(PackageId).$(PackageVersion).nupkg" />
     </ItemGroup>

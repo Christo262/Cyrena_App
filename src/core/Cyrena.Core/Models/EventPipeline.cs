@@ -1,4 +1,6 @@
-﻿namespace Cyrena.Models
+﻿using System.Collections.Concurrent;
+
+namespace Cyrena.Models
 {
     public interface IEventPipe : IDisposable
     {
@@ -20,10 +22,7 @@
 
         public void Invoke() => _action();
 
-        public void Invoke(object obj)
-        {
-            throw new NotImplementedException();
-        }
+        public void Invoke(object obj) => Invoke();
 
         public bool IsDisposed => _disposed;
     }
@@ -52,17 +51,18 @@
 
     public abstract class EventPipeline : IDisposable
     {
-        private readonly Dictionary<string, List<IEventPipe>> _pipes;
+        private readonly ConcurrentDictionary<string, List<IEventPipe>> _pipes;
+        private readonly object _lock = new object();
         protected EventPipeline()
         {
-            _pipes = new Dictionary<string, List<IEventPipe>>();
+            _pipes = new ConcurrentDictionary<string, List<IEventPipe>>();
         }
 
         protected void InvokePipeline(string key)
         {
             if (_pipes.ContainsKey(key))
             {
-                var pipes = _pipes[key];
+                var pipes = new List<IEventPipe>(_pipes[key]);
                 foreach (var pipe in pipes)
                     if (!pipe.IsDisposed)
                         try
@@ -73,9 +73,7 @@
                         {
                             pipe.Dispose();
                         }
-                var dsp = _pipes[key].Where(x => x.IsDisposed).ToList();
-                foreach (var pipe in dsp)
-                    pipes.Remove(pipe);
+                pipes.RemoveAll(p => p.IsDisposed);
             }
         }
 
@@ -83,7 +81,7 @@
         {
             if (_pipes.ContainsKey(key))
             {
-                var pipes = _pipes[key];
+                var pipes = new List<IEventPipe>(_pipes[key]);
                 foreach (var pipe in pipes)
                     if (!pipe.IsDisposed)
                         try
@@ -94,9 +92,7 @@
                         {
                             pipe.Dispose();
                         }
-                var dsp = _pipes[key].Where(x => x.IsDisposed).ToList();
-                foreach (var pipe in dsp)
-                    pipes.Remove(pipe);
+                pipes.RemoveAll(p => p.IsDisposed);
             }
         }
 
@@ -109,7 +105,7 @@
             else
             {
                 pipes = new List<IEventPipe>();
-                _pipes.Add(key, pipes);
+                _pipes.TryAdd(key, pipes);
             }
             pipes.Add(pipe);
             return pipe;
@@ -124,7 +120,7 @@
             else
             {
                 pipes = new List<IEventPipe>();
-                _pipes.Add(key, pipes);
+                _pipes.TryAdd(key, pipes);
             }
             pipes.Add(pipe);
             return pipe;

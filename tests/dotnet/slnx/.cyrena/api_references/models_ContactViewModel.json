@@ -1,0 +1,18 @@
+{
+  "Title": "ContactViewModel Model",
+  "Keywords": [
+    "ContactViewModel",
+    "model",
+    "contact",
+    "form",
+    "validation",
+    "DataAnnotations",
+    "Required",
+    "EmailAddress",
+    "StringLength"
+  ],
+  "Summary": "Data model for contact form submissions with DataAnnotations validation rules.",
+  "Link": null,
+  "Content": "## ContactViewModel\n\n**Namespace:** \u0060MyBlazorApp.Models\u0060\n\n**Type:** \u0060public class\u0060\n\n### Properties\n\n| Property | Type | Validation | Description |\n|----------|------|------------|-------------|\n| \u0060Name\u0060 | \u0060string\u0060 | \u0060[Required]\u0060, \u0060[StringLength(100)]\u0060 | Full name of the contact. |\n| \u0060Email\u0060 | \u0060string\u0060 | \u0060[Required]\u0060, \u0060[EmailAddress]\u0060, \u0060[StringLength(200)]\u0060 | Email address for reply. |\n| \u0060Subject\u0060 | \u0060string\u0060 | \u0060[Required]\u0060, \u0060[StringLength(150)]\u0060 | Subject line of the message. |\n| \u0060Message\u0060 | \u0060string\u0060 | \u0060[Required]\u0060, \u0060[StringLength(2000)]\u0060 | Body of the message. |\n\n### Validation Rules\n\n| Field | Rule | Error Message |\n|-------|------|---------------|\n| Name | Required, max 100 chars | \u0022Name is required.\u0022 / \u0022Name cannot exceed 100 characters.\u0022 |\n| Email | Required, valid email, max 200 chars | \u0022Email is required.\u0022 / \u0022Invalid email address.\u0022 / \u0022Email cannot exceed 200 characters.\u0022 |\n| Subject | Required, max 150 chars | \u0022Subject is required.\u0022 / \u0022Subject cannot exceed 150 characters.\u0022 |\n| Message | Required, max 2000 chars | \u0022Message is required.\u0022 / \u0022Message cannot exceed 2000 characters.\u0022 |\n\n### Default Values\n\nAll string properties initialize to \u0060string.Empty\u0060 to avoid null reference issues in Blazor form binding.\n\n### Usage\n\n\u0060\u0060\u0060razor\n\u003CEditForm Model=\u0022contact\u0022 OnValidSubmit=\u0022HandleSubmit\u0022\u003E\n    \u003CDataAnnotationsValidator /\u003E\n    \u003CValidationSummary /\u003E\n\n    \u003CInputText @bind-Value=\u0022contact.Name\u0022 /\u003E\n    \u003CInputText @bind-Value=\u0022contact.Email\u0022 /\u003E\n    \u003CInputText @bind-Value=\u0022contact.Subject\u0022 /\u003E\n    \u003CInputTextArea @bind-Value=\u0022contact.Message\u0022 /\u003E\n\n    \u003Cbutton type=\u0022submit\u0022\u003ESend\u003C/button\u003E\n\u003C/EditForm\u003E\n\n@code {\n    private ContactViewModel contact = new();\n\n    private void HandleSubmit()\n    {\n        // Process validated contact form\n    }\n}\n\u0060\u0060\u0060\n\n### Notes\n\n- Designed for use with Blazor\u0027s \u0060EditForm\u0060 and \u0060DataAnnotationsValidator\u0060.\n- All properties are non-nullable strings initialized to \u0060string.Empty\u0060.\n- No service layer integration yet \u2014 this is a pure data/validation model.\n",
+  "Id": "models_ContactViewModel"
+}

@@ -8,8 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BootstrapBlazor" />
-    <PackageReference Include="BootstrapBlazor.Html2Pdf" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
     <PackageReference Include="BlazorMonaco" />
     <PackageReference Include="Markdig" />

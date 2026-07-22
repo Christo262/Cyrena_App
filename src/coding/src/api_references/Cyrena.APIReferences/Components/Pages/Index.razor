@@ -1,50 +1,54 @@
 @page "/api-references/{KernelId}"
-@attribute [TabItemOption(Text = "API References", Icon = "bi bi-file-medical")]
 
-<div class="d-flex flex-row p-2">
-    <Tooltip Title="Back">
-        <a href="converse/@KernelId" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-arrow-left"></i></a>
-    </Tooltip>
-    <h6 class="ms-3 mt-2">API References</h6>
-    <div class="ms-auto"></div>
-    <Tooltip Title="Import">
-        <button type="button" @onclick="Import" class="btn btn-sm btn-primary me-1"><i class="bi bi-box-arrow-in-down"></i></button>
-    </Tooltip>
-    <Tooltip Title="Create">
-        <a href="api-reference-create/@KernelId" class="btn btn-sm btn-info me-1"><i class="bi bi-plus"></i></a>
-    </Tooltip>
-</div>
-<div class="container overflow-auto">
-    @foreach (var item in _models)
-    {
-        <div class="my-2 rounded border p-2 bg-body">
-            <div class="row m-0">
-                <div class="col-md-6">
-                    <p class="m-0 lead">@item.Title</p>
-                    <p class="small m-0 text-muted">
-                        @item.Summary
-                    </p>
-
-                </div>
-                <div class="col-md-4 justify-content-center align-self-center">
-                    <p class="small m-0 text-truncate">
-                        @string.Join(", ", item.Keywords)
-                    </p>
-                </div>
-                <div class="col-md-2 justify-content-center align-self-center">
-                    <p class="m-0">
-                        <Tooltip Title="Edit">
-                            <a href="api-reference-edit/@item.Id/@KernelId" class="btn btn-sm btn-info me-1"><i class="bi bi-pen"></i></a>
-                        </Tooltip>
-                        <Tooltip Title="Export">
-                            <button type="button" @onclick="() => Export(item)" class="btn btn-sm btn-secondary me-1"><i class="bi bi-box-arrow-down"></i></button>
-                        </Tooltip>
-                        <Tooltip Title="Delete">
-                            <button type="button" @onclick="() => Delete(item)" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
-                        </Tooltip>
-                    </p>
-                </div>
-            </div>
-        </div>
-    }
+<div class="h-100">
+    <MudPaper Class="d-flex flex-row pa-2 mb-2" Elevation="0">
+        <MudTooltip Text="Back">
+            <MudIconButton Color="Color.Primary" Size="Size.Small" Icon="@Icons.Material.Filled.ArrowBack" OnClick="Back" Class="mr-1">
+            </MudIconButton>
+        </MudTooltip>
+        <MudText Typo="Typo.h6" Class="ms-3 mt-1">API References</MudText>
+        <MudSpacer />
+        <MudTooltip Text="Import">
+            <MudIconButton Icon="@Icons.Material.Filled.Download" Size="Size.Small" OnClick="Import" Class="mr-1">
+            </MudIconButton>
+        </MudTooltip>
+        <MudTooltip Text="Create">
+            <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Small" Href="@($"api-reference-create/{KernelId}")" Class="mr-3">
+            </MudIconButton>
+        </MudTooltip>
+    </MudPaper>
+    <MudContainer Class="overflow-auto" Style="height:calc(100% - 60px)">
+        @foreach (var item in _models)
+        {
+            <MudPaper Class="mb-2 pa-2" Elevation="1">
+                <MudGrid Class="m-0">
+                    <MudItem xs="12" md="6">
+                        <MudText Typo="Typo.body1" Class="m-0">@item.Title</MudText>
+                        <MudText Typo="Typo.caption" Class="m-0 text-muted">
+                            @item.Summary
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="12" md="4" Class="d-flex align-center">
+                        <MudText Typo="Typo.caption" Class="m-0 text-truncate">
+                            @string.Join(", ", item.Keywords)
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="12" md="2" Class="d-flex align-center">
+                        <MudTooltip Text="Edit">
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Href="@($"api-reference-edit/{item.Id}/{KernelId}")" Class="mr-1">
+                            </MudIconButton>
+                        </MudTooltip>
+                        <MudTooltip Text="Export">
+                            <MudIconButton Icon="@Icons.Material.Filled.Upload" Size="Size.Small" OnClick="() => Export(item)" Class="mr-1">
+                            </MudIconButton>
+                        </MudTooltip>
+                        <MudTooltip Text="Delete">
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => Delete(item)">
+                            </MudIconButton>
+                        </MudTooltip>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        }
+    </MudContainer>
 </div>

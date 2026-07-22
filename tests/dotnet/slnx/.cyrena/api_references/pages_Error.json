@@ -1,0 +1,18 @@
+{
+  "Title": "Error Page",
+  "Keywords": [
+    "Error",
+    "page",
+    "error",
+    "diagnostics",
+    "HttpContext",
+    "Activity",
+    "TraceIdentifier",
+    "RequestId",
+    "Development"
+  ],
+  "Summary": "Error page that displays request diagnostics and environment warnings.",
+  "Link": null,
+  "Content": "## Error.razor\n\n**Path:** \u0060Components/Pages/Error.razor\u0060\n\n**Type:** Routable page component\n\n### Route\n\n\u0060\u0060\u0060razor\n@page \u0022/Error\u0022\n\u0060\u0060\u0060\n\n### Content\n\n\u0060\u0060\u0060razor\n\u003CPageTitle\u003EError\u003C/PageTitle\u003E\n\n\u003Ch1 class=\u0022text-danger\u0022\u003EError.\u003C/h1\u003E\n\u003Ch2 class=\u0022text-danger\u0022\u003EAn error occurred while processing your request.\u003C/h2\u003E\n\n@if (ShowRequestId)\n{\n    \u003Cp\u003E\n        \u003Cstrong\u003ERequest ID:\u003C/strong\u003E \u003Ccode\u003E@RequestId\u003C/code\u003E\n    \u003C/p\u003E\n}\n\n\u003Ch3\u003EDevelopment Mode\u003C/h3\u003E\n\u003Cp\u003E\n    Swapping to \u003Cstrong\u003EDevelopment\u003C/strong\u003E environment will display more detailed information about the error that occurred.\n\u003C/p\u003E\n\u003Cp\u003E\n    \u003Cstrong\u003EThe Development environment shouldn\u0027t be enabled for deployed applications.\u003C/strong\u003E\n    It can result in displaying sensitive information from exceptions to end users.\n    For local debugging, enable the \u003Cstrong\u003EDevelopment\u003C/strong\u003E environment by setting the \u003Cstrong\u003EASPNETCORE_ENVIRONMENT\u003C/strong\u003E environment variable to \u003Cstrong\u003EDevelopment\u003C/strong\u003E\n    and restarting the app.\n\u003C/p\u003E\n\u0060\u0060\u0060\n\n### State\n\n| Member | Type | Description |\n|--------|------|-------------|\n| \u0060HttpContext\u0060 | \u0060HttpContext?\u0060 | Cascading parameter from the hosting environment. |\n| \u0060RequestId\u0060 | \u0060string?\u0060 | The request identifier for diagnostics. |\n| \u0060ShowRequestId\u0060 | \u0060bool\u0060 | \u0060true\u0060 if \u0060RequestId\u0060 is not null or empty. |\n\n### Lifecycle\n\n#### OnInitialized\n\n\u0060\u0060\u0060csharp\nprotected override void OnInitialized() =\u003E\n    RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;\n\u0060\u0060\u0060\n\nResolves the request ID from \u0060Activity.Current?.Id\u0060 (OpenTelemetry/W3C trace context) or falls back to \u0060HttpContext.TraceIdentifier\u0060.\n\n### Routing\n\nConfigured in \u0060Program.cs\u0060 as the exception handler:\n\n\u0060\u0060\u0060csharp\napp.UseExceptionHandler(\u0022/Error\u0022, createScopeForErrors: true);\n\u0060\u0060\u0060\n\n### Notes\n\n- This page is **only shown in non-Development environments** for unhandled exceptions.\n- In Development, the Developer Exception Page is shown instead.\n- The \u0060createScopeForErrors: true\u0060 parameter ensures a DI scope is created for error handling.\n- Does **not** display exception details to avoid information leakage in production.\n",
+  "Id": "pages_Error"
+}

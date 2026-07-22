@@ -1,5 +1,10 @@
 ﻿using Cyrena.Coding.Contracts;
+using Cyrena.Coding.Extensions;
+using Cyrena.Coding.Models;
+using Cyrena.Coding.Options;
 using Cyrena.Contracts;
+using Cyrena.Extensions;
+using Cyrena.Persistence.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -22,6 +27,7 @@ namespace Cyrena.Coding.Services
             var refresher = _services.GetService<IDevelopPlanIndexer>();
             if(refresher != null)
             {
+                _logger.LogInformation("Found develop plan refresher");
                 var its = _services.GetRequiredService<IIterationService>();
                 its.OnIterationStart(e =>
                 {

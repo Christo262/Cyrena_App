@@ -11,9 +11,7 @@ namespace Cyrena.Platform.Tests
     {
         public override void BuildExtension(CyrenaBuilder builder)
         {
-            throw new Exception("Failed to load this extension"); //Testing
             builder.AddAssistantPlugin<TestAssistantPlugin>();
-            builder.Services.AddScoped<IViewStartProvider, ViewStartProvider>();
             builder.AddFeatureAssembly<PlatformTestsExtension>("blazor");
         }
     }

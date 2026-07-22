@@ -1,4 +1,3 @@
-using BootstrapBlazor.Components;
 using Cyrena.Coding.Options;
 using Cyrena.Components;
 using Cyrena.Contracts;
@@ -6,6 +5,7 @@ using Cyrena.Models;
 using Cyrena.Website.Components.Shared;
 using Cyrena.Website.Options;
 using Microsoft.AspNetCore.Components;
+using MudBlazor;
 
 namespace Cyrena.Website.Models
 {
@@ -13,9 +13,9 @@ namespace Cyrena.Website.Models
     {
         private readonly IKernelController _kernel;
         private readonly NavigationManager _nav;
-        private readonly DialogService _dialog;
+        private readonly IDialogService _dialog;
 
-        public WebsiteShortcut(IKernelController kernel, NavigationManager nav, DialogService dialog)
+        public WebsiteShortcut(IKernelController kernel, NavigationManager nav, IDialogService dialog)
         {
             _kernel = kernel;
             _nav = nav;
@@ -39,24 +39,23 @@ namespace Cyrena.Website.Models
             model[DevelopOptions.BuilderId] = WebsiteOptions.BuilderId;
             model[ChatConfiguration.Icon] = Icon;
             model[ChatConfiguration.Group] = Category;
+            model.HistoryInclusion = HistoryInclusionMode.Instruct;
 
-            var result = await _dialog.ShowModal<Configure>(new ResultDialogOption()
+            var reference = await _dialog.ShowAsync<Configure>("Website", new DialogParameters()
             {
-                Title = "Website",
-                Size = Size.Medium,
-                ComponentParameters = new()
-                {
-                    { nameof(Configure.Model), model }
-                },
-                ButtonYesText = "Create",
-                ButtonNoText = "Cancel",
+                {"Model", model }
+            }, new DialogOptions()
+            {
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true
             });
 
-            if (result != DialogResult.Yes)
-                return;
-
-            await _kernel.Create(model);
-            _nav.NavigateTo($"converse/{model.Id}");
+            var result = await reference.Result;
+            if(result is { Canceled: false })
+            {
+                await _kernel.Create(model);
+                _nav.NavigateTo($"converse/{model.Id}");
+            }
         }
     }
 }

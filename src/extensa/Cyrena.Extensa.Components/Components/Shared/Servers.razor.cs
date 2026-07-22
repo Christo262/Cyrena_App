@@ -1,20 +1,22 @@
-﻿using BootstrapBlazor.Components;
 using Cyrena.Contracts;
 using Cyrena.Extensa.Contracts;
 using Cyrena.Extensa.Models;
 using Cyrena.Extensa.Options;
+using Cyrena.Options;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
+using MudBlazor;
 
 namespace Cyrena.Extensa.Components.Shared
 {
     public partial class Servers
     {
         [Inject] private IPluginServerService _service { get; set; } = default!;
-        [Inject] private DialogService _dialog { get; set; } = default!;
+        [Inject] private IDialogService _dialog { get; set; } = default!;
         [Inject] private IFileDialog _files { get; set;  } = default!;
         [Inject] private IOptions<ExtensaOptions> _options { get; set; } = default!;
-        [Inject] private ToastService _toasts { get; set; } = default!;
+        [Inject] private ISnackbar _snackbar { get; set; } = default!;
+        [Inject] private ComponentOptions _ui { get; set; } = default!;
 
         private IEnumerable<PluginServer> _models = Enumerable.Empty<PluginServer>();
 
@@ -33,18 +35,11 @@ namespace Cyrena.Extensa.Components.Shared
         private async Task Add()
         {
             var model = new PluginServer();
-            var result = await _dialog.ShowModal<ServerForm>(new ResultDialogOption()
-            {
-                Title = "Add Extension Server",
-                Size = Size.Medium,
-                ButtonYesText = "Submit",
-                ButtonNoText = "Cancel",
-                ComponentParameters = new()
-                {
-                    {"Model", model }
-                }
-            });
-            if(result == DialogResult.Yes)
+            var parameters = new DialogParameters<ServerForm> { { x => x.Model, model } };
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small };
+            var dialog = await _dialog.ShowAsync<ServerForm>("Add Extension Server", parameters, options);
+            var result = await dialog.Result;
+            if (result != null && !result.Canceled)
             {
                 await _service.AddServerAsync(model);
                 _models = await _service.GetAllServers();
@@ -54,32 +49,29 @@ namespace Cyrena.Extensa.Components.Shared
 
         private async Task Edit(PluginServer model)
         {
-            var result = await _dialog.ShowModal<ServerForm>(new ResultDialogOption()
-            {
-                Title = "Edit Extension Server",
-                Size = Size.Medium,
-                ButtonYesText = "Submit",
-                ButtonNoText = "Cancel",
-                ComponentParameters = new()
-                {
-                    {"Model", model }
-                }
-            });
-            if (result == DialogResult.Yes)
+            var parameters = new DialogParameters<ServerForm> { { x => x.Model, model } };
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small };
+            var dialog = await _dialog.ShowAsync<ServerForm>("Edit Extension Server", parameters, options);
+            var result = await dialog.Result;
+            if (result != null && !result.Canceled)
             {
                 await _service.UpdateServerAsync(model);
                 _models = await _service.GetAllServers();
                 this.StateHasChanged();
             }
         }
-
         private async Task Delete(PluginServer model)
         {
-            var result = await _dialog.ShowModal("Delete Extension Server", $"Are you sure you want to delete {model.Name}?", new ResultDialogOption()
+            var parameters = new DialogParameters
             {
-                Size = Size.Medium,
-            });
-            if(result == DialogResult.Yes)
+                { "ContentText", $"Are you sure you want to delete {model.Name}?" },
+                { "ButtonText", "Delete" },
+                { "CancelText", "Cancel" }
+            };
+            var options = new DialogOptions { CloseButton = true };
+            var dialog = await _dialog.ShowAsync<MudMessageBox>("Delete Extension Server", parameters, options);
+            var result = await dialog.Result;
+            if(result != null && !result.Canceled)
             {
                 await _service.RemoveServerAsync(model.Id);
                 _models = await _service.GetAllServers();
@@ -95,7 +87,7 @@ namespace Cyrena.Extensa.Components.Shared
             }
             catch (Exception ex)
             {
-                await _toasts.Error("Error", ex.Message);
+                _snackbar.Add(ex.Message, Severity.Error);
             }
         }
 
@@ -107,7 +99,28 @@ namespace Cyrena.Extensa.Components.Shared
             }
             catch (Exception ex)
             {
-                await _toasts.Error("Error", ex.Message);
+                _snackbar.Add(ex.Message, Severity.Error);
+            }
+        }
+
+        private async Task InstallExtension()
+        {
+            var path = await _files.OpenAsync("Select ZIP file", null);
+            if(string.IsNullOrEmpty(path))
+            return;
+            if (!File.Exists(path))
+            {
+                _snackbar.Add("ZIP file not found");
+                return;
+            }
+            try
+            {
+                var name = Path.GetFileName(path);
+                File.Copy(path, Path.Combine(_options.Value.InstallationsDirectory, name));
+                _snackbar.Add("Restart application to complete installation.", Severity.Info);
+            }catch(Exception ex)
+            {
+                _snackbar.Add(ex.Message, Severity.Error);
             }
         }
     }

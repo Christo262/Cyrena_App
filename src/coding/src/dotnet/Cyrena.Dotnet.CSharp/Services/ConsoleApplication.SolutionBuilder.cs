@@ -1,9 +1,7 @@
-using BootstrapBlazor.Components;
 using Cyrena.Coding.Contracts;
 using Cyrena.Coding.Models;
 using Cyrena.Coding.Options;
 using Cyrena.Contracts;
-using Cyrena.Dotnet.Contracts;
 using Cyrena.Dotnet.CSharp.Components.Shared;
 using Cyrena.Dotnet.CSharp.Plugins;
 using Cyrena.Dotnet.Extensions;
@@ -13,6 +11,8 @@ using Cyrena.Extensions;
 using Cyrena.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
+using MudBlazor;
+using Cyrena.Dotnet.Contracts;
 
 namespace Cyrena.Dotnet.CSharp.Services
 {
@@ -69,19 +69,15 @@ namespace Cyrena.Dotnet.CSharp.Services
 
         public async Task EditAsync(ChatConfiguration config, IServiceProvider services)
         {
-            var dialog = services.GetRequiredService<DialogService>();
-            var rf = await dialog.ShowModal<DotnetCsConfig>(new ResultDialogOption()
+            var dialog = services.GetRequiredService<IDialogService>();
+            var parameters = new DialogParameters<DotnetCsConfig>
             {
-                Title = ConsoleApplication.Name,
-                Size = Size.Medium,
-                ComponentParameters = new()
-                {
-                    {nameof(DotnetCsConfig.Model), config }
-                },
-                ButtonYesText = "Save",
-                ButtonNoText = "Cancel",
-            });
-            if (rf == DialogResult.Yes)
+                { nameof(DotnetCsConfig.Model), config }
+            };
+            var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true };
+            var rf = await dialog.ShowAsync<DotnetCsConfig>(ConsoleApplication.Name, parameters, options);
+            var result = await rf.Result;
+            if (result is { Canceled: false })
                 await _kernel.UpdateAsync(config, true);
         }
     }

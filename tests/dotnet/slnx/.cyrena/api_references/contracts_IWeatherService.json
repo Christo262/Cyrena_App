@@ -1,0 +1,16 @@
+{
+  "Title": "IWeatherService Contract",
+  "Keywords": [
+    "IWeatherService",
+    "contract",
+    "weather",
+    "forecast",
+    "DI",
+    "service",
+    "interface"
+  ],
+  "Summary": "DI contract for retrieving weather forecast data asynchronously.",
+  "Link": null,
+  "Content": "## IWeatherService\n\n**Namespace:** \u0060MyBlazorApp.Contracts\u0060\n\n**Type:** \u0060public interface\u0060\n\n### Methods\n\n#### GetForecastsAsync\n\n\u0060\u0060\u0060csharp\nTask\u003CWeatherForecast[]\u003E GetForecastsAsync(int days = 5, int delayMilliseconds = 500);\n\u0060\u0060\u0060\n\nRetrieves a collection of simulated weather forecasts.\n\n| Parameter | Type | Default | Description |\n|-----------|------|---------|-------------|\n| \u0060days\u0060 | \u0060int\u0060 | \u00605\u0060 | Number of forecast days to generate. |\n| \u0060delayMilliseconds\u0060 | \u0060int\u0060 | \u0060500\u0060 | Simulated asynchronous delay (useful for demonstrating loading states). |\n\n**Returns:** \u0060Task\u003CWeatherForecast[]\u003E\u0060 \u2014 An array of \u0060WeatherForecast\u0060 instances.\n\n### Implementations\n\n- \u0060MyBlazorApp.Services.WeatherService\u0060\n\n### Registration\n\nRegistered as a singleton in \u0060Program.cs\u0060:\n\n\u0060\u0060\u0060csharp\nbuilder.Services.AddSingleton\u003CIWeatherService, WeatherService\u003E();\n\u0060\u0060\u0060\n\n### Usage in Components\n\n\u0060\u0060\u0060razor\n@inject MyBlazorApp.Contracts.IWeatherService WeatherService\n\n@code {\n    private WeatherForecast[]? forecasts;\n\n    protected override async Task OnInitializedAsync()\n    {\n        forecasts = await WeatherService.GetForecastsAsync();\n    }\n}\n\u0060\u0060\u0060\n\n### Notes\n\n- The default delay of 500ms is intentional for UI demonstration purposes.\n- Data is randomly generated; this is a simulation service, not a real weather API client.\n",
+  "Id": "contracts_IWeatherService"
+}

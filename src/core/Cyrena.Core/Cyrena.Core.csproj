@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Cyrena</RootNamespace>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.5.0</Version>
+    <Version>0.6.0</Version>
     <Authors>Vaya Nova</Authors>
     <Description>Core models, interfaces &amp; services to develop extensions for Cyréna</Description>
     <PackageIcon>cyrena.png</PackageIcon>
@@ -33,7 +33,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Options" />
-    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Ulid" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,7 +43,7 @@
     </None>
   </ItemGroup>
 
-  <Target Name="PostPack" AfterTargets="Pack">
+  <Target Name="PostPack" AfterTargets="Pack" Condition="'$(Configuration)' == 'Debug'">
     <ItemGroup>
       <NugetPackages Include="bin\Debug\$(PackageId).$(PackageVersion).nupkg" />
     </ItemGroup>

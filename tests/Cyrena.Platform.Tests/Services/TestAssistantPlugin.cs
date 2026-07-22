@@ -1,9 +1,8 @@
 ﻿using Cyrena.Contracts;
+using Cyrena.Extensions;
 using Cyrena.Models;
+using Cyrena.Platform.Tests.Components.Shared;
 using Microsoft.SemanticKernel;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Cyrena.Platform.Tests.Services
 {
@@ -21,7 +20,6 @@ namespace Cyrena.Platform.Tests.Services
 
         public Task LoadAsync(CyrenaKernelBuilder builder)
         {
-            builder.Plugins.AddFromType<DisplayServiceTests>("Modal");
             return Task.CompletedTask;
         }
     }

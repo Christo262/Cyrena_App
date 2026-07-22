@@ -58,10 +58,14 @@ Extensions that add UI components must use the Razor SDK:
   <ItemGroup>
     <!-- Required for Blazor components -->
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
-    <PackageReference Include="Cyrena.Extensa.Core" />
-    <PackageReference Include="Cyrena.Components.Core" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Reference the core extension system -->
+    <ProjectReference Include="..\..\extensa\Cyrena.Extensa.Core\Cyrena.Extensa.Core.csproj" />
+    <!-- Reference if adding UI components -->
+    <ProjectReference Include="..\..\components\Cyrena.Components.Core\Cyrena.Components.Core.csproj" />
+  </ItemGroup>
 </Project>
 ```
 

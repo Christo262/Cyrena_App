@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Cyréna</title>
+    <base href="/" />
+    <link rel="stylesheet" href="_content/MudBlazor/MudBlazor.min.css" />
+    <link href="css/bootstrap-icons.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="_content/Cyrena/css/theme.css" />
+    <link rel="icon" href="data:,">
+
+
+    <style>
+        body {
+            background-color: rgba(44, 44, 44, 1);
+        }
+    </style>
+    <head-outlet></head-outlet>
+</head>
+
+<body>
+
+    <div class="status-bar-safe-area"></div>
+
+    <div id="app" style="height:100dvh;overflow:hidden">
+        <div class="d-flex flex-row h-100 justify-center align-items-center">
+            <div class="d-flex flex-row h-100 justify-center align-items-center flex-column gap-3">
+                <div class="justify-center align-self-center">
+                    <img src="images/rene_f.png" style="height:100px;" />
+                    <div style="
+                        width:40px;height:40px;
+                        border: 3px solid rgba(255,255,255,0.1);
+                        border-top: 3px solid #E95420;
+                        border-radius:50%;
+                        margin:auto;
+                        animation: spin 1s linear infinite;">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <style>
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
+    </div>
+
+    <div id="blazor-error-ui" data-nosnippet>
+        An unhandled error has occurred.
+        <a href="." class="reload">Reload</a>
+        <span class="dismiss">🗙</span>
+    </div>
+
+    <script src="_content/BlazorMonaco/jsInterop.js"></script>
+    <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.js"></script>
+    <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.js"></script>
+    <script src="_framework/blazor.webview.js" autostart="false"></script>
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <script src="_content/Cyrena/js/cyrena.js"></script>
+    <script src="_content/Cyrena/js/runtime-scripts.js"></script>
+    <script src="_content/Cyrena/js/webview-audio-interop.js"></script>
+
+</body>
+
+</html>

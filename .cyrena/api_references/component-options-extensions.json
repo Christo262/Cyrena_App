@@ -1,0 +1,16 @@
+{
+  "Title": "ComponentOptionsExtensions - Settings Component Registration",
+  "Keywords": [
+    "ComponentOptionsExtensions",
+    "AddSettingsComponent",
+    "settings component",
+    "ComponentOptions",
+    "ComponentMetaData",
+    "Cyrena.Components.Core",
+    "options"
+  ],
+  "Summary": "Extension methods for registering Blazor components as settings page entries with section grouping and display ordering.",
+  "Link": null,
+  "Content": "## ComponentOptionsExtensions\n\n**Namespace**: \u0060Cyrena.Options\u0060\n**Assembly**: \u0060Cyrena.Components.Core\u0060\n\n### Purpose\nExtension methods for registering Blazor components as settings page entries with section grouping and display ordering.\n\n### Class Definition\n\n\u0060\u0060\u0060csharp\npublic static class ComponentOptionsExtensions\n{\n    [Obsolete(\u0022Use new section mapping API\u0022)]\n    public static void AddSettingsComponent\u003CTComponent\u003E(this ComponentOptions options)\n        where TComponent : ComponentBase;\n\n    public static void AddSettingsComponent\u003CTComponent\u003E(this ComponentOptions options, string section);\n\n    public static void AddSettingsComponent\u003CTComponent\u003E(this ComponentOptions options, string section, int order);\n}\n\u0060\u0060\u0060\n\n### Methods\n\n#### AddSettingsComponent\u003CTComponent\u003E() [Obsolete]\n\u0060\u0060\u0060csharp\n[Obsolete(\u0022Use new section mapping API\u0022)]\npublic static void AddSettingsComponent\u003CTComponent\u003E(this ComponentOptions options)\n    where TComponent : ComponentBase;\n\u0060\u0060\u0060\nRegisters a component with no section and order 0. **Obsolete** \u2014 use the section overloads instead.\n\n#### AddSettingsComponent\u003CTComponent\u003E(string section)\n\u0060\u0060\u0060csharp\npublic static void AddSettingsComponent\u003CTComponent\u003E(this ComponentOptions options, string section);\n\u0060\u0060\u0060\nRegisters a component under the specified section with order 0.\n\n#### AddSettingsComponent\u003CTComponent\u003E(string section, int order)\n\u0060\u0060\u0060csharp\npublic static void AddSettingsComponent\u003CTComponent\u003E(this ComponentOptions options, string section, int order);\n\u0060\u0060\u0060\nRegisters a component under the specified section with the given display order.\n\n**Duplicate prevention**: Each overload checks \u0060!options.SettingsComponents.Any(x =\u003E x.Component == typeof(TComponent))\u0060 before adding.\n\n### Usage Examples\n\n\u0060\u0060\u0060csharp\n// Direct option manipulation\nvar options = new ComponentOptions();\noptions.AddSettingsComponent\u003CMySettingsComponent\u003E(\u0022General\u0022, 1);\n\n// Via CyrenaBuilder\nbuilder.AddSettingsComponent\u003CMySettingsComponent\u003E(\u0022General\u0022, 1);\n\u0060\u0060\u0060\n\n### Related\n- \u0060ComponentOptions\u0060 - Underlying options class\n- \u0060ComponentMetaData\u0060 - Component metadata record\n- \u0060CyrenaBuilderExtensions.AddSettingsComponent\u003CTComponent\u003E()\u0060 - Builder-level registration",
+  "Id": "component-options-extensions"
+}

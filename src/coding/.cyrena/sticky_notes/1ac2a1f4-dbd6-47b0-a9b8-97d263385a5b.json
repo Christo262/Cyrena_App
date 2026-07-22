@@ -1,0 +1,5 @@
+{
+  "Title": "UI Framework: MudBlazor Only",
+  "Content": "Cyrena.ArduinoIDE uses MudBlazor as its UI component library. MudBlazor is a transient dependency \u2014 it is brought in by another project in the solution, not directly referenced by this project.\n\nBootstrapBlazor and Bootstrap CSS are no longer used in this project. All UI components must use MudBlazor. Do not introduce BootstrapBlazor or Bootstrap CSS dependencies.",
+  "Id": "1ac2a1f4-dbd6-47b0-a9b8-97d263385a5b"
+}

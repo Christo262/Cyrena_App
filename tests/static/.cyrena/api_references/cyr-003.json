@@ -1,0 +1,18 @@
+{
+  "Title": "About Page \u2014 Story, Philosophy \u0026 Contact",
+  "Keywords": [
+    "about.html",
+    "about page",
+    "contact",
+    "Christo Cilliers",
+    "vayanova",
+    "cyrena.dev",
+    "story",
+    "philosophy",
+    "app features"
+  ],
+  "Summary": "Authoritative reference for the about.html page: structure, content sections, contact card, and active-page navigation.",
+  "Link": null,
+  "Content": "## Overview\n\nThe about page (\u0060about.html\u0060) provides background on the Cyr\u00E9na project, the review philosophy, app features, and contact information.\n\n## HTML Structure\n\n- \u0060\u003Cheader class=\u0022site-header\u0022\u003E\u0060 \u2014 shared sticky header with \u0060aria-current=\u0022page\u0022\u0060 on About link.\n- \u0060\u003Csection class=\u0022hero hero-small\u0022\u003E\u0060 \u2014 smaller hero with \u0022About Cyr\u00E9na\u0022 heading and subtitle.\n- \u0060\u003Csection class=\u0022content-section\u0022\u003E\u0060 \u2014 \u0022The Story\u0022 \u2014 origin and motivation.\n- \u0060\u003Csection class=\u0022content-section alt-bg\u0022\u003E\u0060 \u2014 \u0022Review Philosophy\u0022 \u2014 5 criteria (Accuracy, Reliability, Tool use, Context awareness, Developer experience).\n- \u0060\u003Csection class=\u0022content-section\u0022\u003E\u0060 \u2014 \u0022The Cyr\u00E9na App\u0022 \u2014 key features list.\n- \u0060\u003Csection class=\u0022content-section alt-bg\u0022\u003E\u0060 \u2014 \u0022Get in Touch\u0022 \u2014 contact card for Christo Cilliers.\n- \u0060\u003Cfooter class=\u0022site-footer\u0022\u003E\u0060 \u2014 shared footer with \u0060aria-current=\u0022page\u0022\u0060 on About link.\n\n## Key Components\n\n### Hero Small\n- \u0060.hero-small\u0060 reduces vertical padding compared to the home hero.\n- Heading size is smaller (\u0060clamp(1.75rem, 4vw, 2.75rem)\u0060).\n\n### Content Sections\n- \u0060.content-section\u0060 uses left-aligned headings and \u0060max-width: 70ch\u0060 for readability.\n- \u0060.alt-bg\u0060 alternates to \u0060--color-surface\u0060 for visual rhythm.\n- \u0060.styled-list\u0060 is a disc list with strong labels for each item.\n\n### Contact Card\n- \u0060.contact-card\u0060 is a bordered card with shadow, max-width \u0060400px\u0060.\n- Contains \u0060.contact-name\u0060, email link (\u0060mailto:info@vayanova.co.za\u0060), and two external links (\u0060vayanova.co.za\u0060, \u0060cyrena.dev\u0060).\n- Links use \u0060target=\u0022_blank\u0022 rel=\u0022noopener noreferrer\u0022\u0060.\n\n## Accessibility\n- Sections use \u0060aria-labelledby\u0060.\n- Active page indicated via \u0060aria-current=\u0022page\u0022\u0060 in both header and footer.\n\n## Asset References\n- \u0060css/styles.css\u0060\n- \u0060js/main.js\u0060\n- Page links back to \u0060index.html\u0060 with hash anchors.\n",
+  "Id": "cyr-003"
+}

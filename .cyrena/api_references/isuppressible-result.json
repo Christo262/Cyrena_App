@@ -1,0 +1,16 @@
+{
+  "Title": "ISuppressibleResult - Context Size Reduction Interface",
+  "Keywords": [
+    "ISuppressibleResult",
+    "suppress",
+    "context size",
+    "tool result",
+    "function result",
+    "Cyrena.Core",
+    "contracts"
+  ],
+  "Summary": "Interface for suppressing function/tool call results to reduce context size after AI has processed them.",
+  "Link": null,
+  "Content": "## ISuppressibleResult\n\n**Namespace**: \u0060Cyrena.Models\u0060\n**Assembly**: \u0060Cyrena.Core\u0060\n\n### Purpose\nIndicates that a function/tool call result can be suppressed after the AI has processed it. This reduces context size by replacing detailed results with a compact summary.\n\n### Interface\n\u0060\u0060\u0060csharp\npublic interface ISuppressibleResult\n{\n    string Suppress();\n}\n\u0060\u0060\u0060\n\n### Methods\n\n#### Suppress()\nReturns a compact string representation of the result to replace the full result in the conversation history.\n\n\u0060\u0060\u0060csharp\nstring Suppress();\n\u0060\u0060\u0060\n\n### Implementations\n- \u0060ToolResult\u003CT\u003E\u0060 - Implements ISuppressibleResult, delegates to inner ISuppressibleResult if Result is one\n\n### Usage\n\u0060\u0060\u0060csharp\npublic class MyResult : ISuppressibleResult\n{\n    public string Suppress()\n    {\n        return \u0022[Operation completed successfully]\u0022;\n    }\n}\n\n// In tool result\nvar result = new ToolResult\u003CMyResult\u003E(new MyResult(), true, \u0022Done\u0022);\n// After AI processes: result.Suppress() returns the compact string\n\u0060\u0060\u0060\n\n### Related\n- \u0060ToolResult\u003CT\u003E\u0060 - Implements ISuppressibleResult\n- \u0060IConnection\u0060 - May call Suppress() after AI processes tool results\n- Function invocation filters in Semantic Kernel",
+  "Id": "isuppressible-result"
+}

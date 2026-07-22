@@ -1,0 +1,15 @@
+{
+  "Title": "KernelContentExtensions - File Reference Text Conversion",
+  "Keywords": [
+    "KernelContentExtensions",
+    "FileReferenceContent",
+    "TextContent",
+    "attachment",
+    "Cyrena.Core",
+    "extensions"
+  ],
+  "Summary": "Extension methods for converting FileReferenceContent to TextContent with descriptive attachment information for LLM consumption.",
+  "Link": null,
+  "Content": "## KernelContentExtensions\n\n**Namespace**: \u0060Cyrena.Extensions\u0060\n**Assembly**: \u0060Cyrena.Core\u0060\n\n### Purpose\nExtension methods for Semantic Kernel content types, particularly for converting file references to text content for LLM consumption.\n\n### Methods\n\n#### ToTextContent(this FileReferenceContent reference)\nConverts a \u0060FileReferenceContent\u0060 to a \u0060TextContent\u0060 with a descriptive string containing file ID, MIME type, and available tools.\n\n\u0060\u0060\u0060csharp\npublic static TextContent ToTextContent(this FileReferenceContent reference)\n\u0060\u0060\u0060\n\n### Output Format\n\u0060\u0060\u0060\n[Attachment: {FileId}, Content Type: {MimeType}, Tools: {tool1}, {tool2}, ...]\n\u0060\u0060\u0060\n\n### Usage\n\u0060\u0060\u0060csharp\n#pragma warning disable SKEXP0110\nvar reference = new FileReferenceContent(\u0022document.pdf\u0022);\nvar textContent = reference.ToTextContent();\n// Result: \u0022[Attachment: document.pdf, Content Type: application/pdf, Tools: Attachment_get]\u0022\n#pragma warning restore SKEXP0110\n\u0060\u0060\u0060\n\n### Related\n- \u0060FileReferenceContent\u0060 - Semantic Kernel file reference type\n- \u0060FileAttachment.ToFileReference()\u0060 - Creates FileReferenceContent from attachment\n- \u0060IFileHandlerFactory\u0060 - Manages file attachments",
+  "Id": "kernel-content-extensions"
+}

@@ -1,9 +1,9 @@
 <nav class="navbar navbar-expand-lg navbar-dark sticky-top"
-  style="background: rgba(10, 22, 40, 0.95); backdrop-filter: blur(10px);">
+  style="background: #2b2b2b; border-bottom: 1px solid #3d3d3d; box-shadow: 0 1px 4px rgba(0,0,0,0.4);">
   <div class="container">
     <a class="navbar-brand fw-bold d-flex align-items-center" href="/index.html">
-      <span class="brand-icon bg-primary rounded-3 d-inline-flex align-items-center justify-content-center me-2"
-        style="width: 36px; height: 36px;">
+      <span class="brand-icon rounded-3 d-inline-flex align-items-center justify-content-center me-2"
+        style="width: 36px; height: 36px; background: #e95420;">
         <img src="favicon.ico" class="img-fluid mh-100" alt="Cyréna" />
       </span>
       <span>Cyréna</span>
@@ -21,7 +21,7 @@
           </a>
           } @else {
           <a class="nav-link px-3 py-2 rounded-2" [routerLink]="item.route"
-            routerLinkActive="active bg-primary bg-opacity-25" [routerLinkActiveOptions]="{ exact: item.route === '/docs' }"
+            routerLinkActive="active" [routerLinkActiveOptions]="{ exact: item.route === '/docs' }"
             (click)="isMenuOpen.set(false)">
             {{ item.label }}
           </a>

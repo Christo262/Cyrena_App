@@ -1,0 +1,17 @@
+{
+  "Title": "Not Found Page",
+  "Keywords": [
+    "NotFound",
+    "page",
+    "404",
+    "not found",
+    "error",
+    "status code",
+    "MainLayout",
+    "PageTitle"
+  ],
+  "Summary": "Not Found (404) page with proper PageTitle and MainLayout.",
+  "Link": null,
+  "Content": "## NotFound.razor\n\n**Path:** \u0060Components/Pages/NotFound.razor\u0060\n\n**Type:** Routable page component\n\n### Route\n\n\u0060\u0060\u0060razor\n@page \u0022/not-found\u0022\n\u0060\u0060\u0060\n\n### Layout\n\n\u0060\u0060\u0060razor\n@layout MainLayout\n\u0060\u0060\u0060\n\nExplicitly uses \u0060MainLayout\u0060 (same as the default, but explicit for clarity).\n\n### Content\n\n\u0060\u0060\u0060razor\n\u003CPageTitle\u003ENot Found\u003C/PageTitle\u003E\n\n\u003Ch3\u003ENot Found\u003C/h3\u003E\n\u003Cp\u003ESorry, the content you are looking for does not exist.\u003C/p\u003E\n\u0060\u0060\u0060\n\n### Routing\n\nConfigured in \u0060Program.cs\u0060 as the status code page for 404 responses:\n\n\u0060\u0060\u0060csharp\napp.UseStatusCodePagesWithReExecute(\u0022/not-found\u0022, createScopeForStatusCodePages: true);\n\u0060\u0060\u0060\n\nThis means:\n- Server-side 404s (e.g., missing static files, unmatched API routes) are re-executed to this page.\n- Client-side 404s (unmatched Blazor routes) are handled by \u0060Routes.razor\u0060\u0027s \u0060NotFoundPage\u0060 attribute, which also renders this component.\n\n### Notes\n\n- \u0060createScopeForStatusCodePages: true\u0060 ensures a DI scope is created when re-executing.\n- The \u0060\u003CPageTitle\u003E\u0060 component updates the browser tab title for accessibility and SEO.\n- Previously missing \u0060\u003CPageTitle\u003E\u0060; now added for consistency.\n",
+  "Id": "pages_NotFound"
+}

@@ -1,0 +1,85 @@
+{
+  "AllowedFileTypes": [
+    "cs",
+    "razor",
+    "json"
+  ],
+  "ReadOnlyFileTypes": [
+    "csproj"
+  ],
+  "IgnoredDirectories": [
+    ".cyrena",
+    "bin",
+    "obj"
+  ],
+  "Folders": [
+    {
+      "Name": "Models",
+      "AllowedFileTypes": [
+        "cs"
+      ],
+      "ReadOnlyFileTypes": [],
+      "Children": [],
+      "Id": "models"
+    },
+    {
+      "Name": "Components",
+      "AllowedFileTypes": [
+        "razor"
+      ],
+      "ReadOnlyFileTypes": [],
+      "Children": [
+        {
+          "Name": "Pages",
+          "AllowedFileTypes": [
+            "razor"
+          ],
+          "ReadOnlyFileTypes": [],
+          "Children": [],
+          "Id": "components_pages"
+        }
+      ],
+      "Id": "components"
+    },
+    {
+      "Name": "wwwroot",
+      "AllowedFileTypes": [
+        "css",
+        "js",
+        "html"
+      ],
+      "ReadOnlyFileTypes": [],
+      "Children": [
+        {
+          "Name": "css",
+          "AllowedFileTypes": [
+            "css"
+          ],
+          "ReadOnlyFileTypes": [],
+          "Children": [],
+          "Id": "wwwroot_css"
+        },
+        {
+          "Name": "js",
+          "AllowedFileTypes": [
+            "js"
+          ],
+          "ReadOnlyFileTypes": [],
+          "Children": [],
+          "Id": "wwwroot_js"
+        }
+      ],
+      "Id": "wwwroot"
+    },
+    {
+      "Name": "Services",
+      "AllowedFileTypes": [
+        "cs"
+      ],
+      "ReadOnlyFileTypes": [],
+      "Children": [],
+      "Id": "services"
+    }
+  ],
+  "Id": "MyBlazorLib.csproj"
+}

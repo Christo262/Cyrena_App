@@ -74,6 +74,9 @@ namespace Cyrena.Dotnet.Models
         {
             return NuGetPackages.Select(p => p.ToString()).ToArray();
         }
+        
+        public bool IsFSharp { get; set; }
+        public List<string> CompileOrder { get; set; } = [];
 
         /// <summary>
         /// Returns a summary of the project information

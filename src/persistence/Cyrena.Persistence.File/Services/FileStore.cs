@@ -8,20 +8,17 @@ namespace Cyrena.Persistence.File.Services
 {
     internal class FileStore<T> : IStore<T> where T : class, IEntity
     {
-        private readonly IOptions<FilePersistenceOptions> _options;
         private readonly string _collectionName;
         private readonly IPersistenceFS _fs;
 
-        public FileStore(IOptions<FilePersistenceOptions> options, IPersistenceFS fs)
+        public FileStore(IPersistenceFS fs)
         {
-            _options = options;
             _fs = fs;
             _collectionName = typeof(T).Name;
         }
 
-        public FileStore(IOptions<FilePersistenceOptions> options, IPersistenceFS fs, string collectionName)
+        public FileStore(IPersistenceFS fs, string collectionName)
         {
-            _options = options;
             _fs = fs;
             _collectionName = collectionName;
         }

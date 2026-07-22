@@ -1,0 +1,73 @@
+@using Cyrena.Attributes
+@if (_model == null)
+{
+    <MudItem xs="12">
+        <MudPaper Class="pa-2 mr-4 ml-4 text-center">
+            <MudText>
+                <span class="text-danger">*</span> New to Cyréna? Use the Setup Wizard below. For advanced configuration, go to <MudLink Href="settings">Settings</MudLink>.
+            </MudText>
+        </MudPaper>
+    </MudItem>
+}
+else
+{
+    <MudItem lg="7" xs="12" md="7">
+        <MudPaper Class="pa-3">
+            <div class="d-flex flex-row align-center">
+                <MudTextField T="string"
+                              Variant="Variant.Outlined"
+                              Lines="1"
+                              Class="mr-2"
+                              MaxLines="6"
+                              OnKeyDown="ComposerKeyDown"
+                              Immediate
+                              Margin="Margin.Dense"
+                              @bind-Value="_input"
+                              Sizing="InputSizing.Auto"
+                              Placeholder="How can I help you?" />
+
+                <div class="mr-1">
+                    <MudTooltip Text="Send">
+                        <MudFab StartIcon="@Icons.Material.Filled.Send" Size="Size.Small" Color="Color.Primary" OnClick="Send" />
+                    </MudTooltip>
+                </div>
+            </div>
+            
+            <div class="d-flex flex-row">
+                @if (_import.HasImporters()) //Not supported on android yet
+                {
+                    <div class="mr-1 ml-auto">
+                        <MudTooltip Text="Import Cyrena File">
+                            <MudIconButton Icon="@Icons.Material.Filled.LabelImportant" Size="Size.Small" Color="Color.Inherit" OnClick="ImportAsync" />
+                        </MudTooltip>
+                    </div>
+                }
+                <div class="mr-1">
+                    <MudTooltip Text="Configure">
+                        <MudIconButton Icon="@Icons.Material.Filled.Settings" Size="Size.Small" Color="Color.Inherit" OnClick="Settings" />
+                    </MudTooltip>
+                </div>
+
+                <MudTooltip Text="Start Empty">
+                    <MudIconButton Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Small" Color="Color.Inherit" OnClick="StartEmpty" />
+                </MudTooltip>
+            </div>
+        </MudPaper>
+    </MudItem>
+
+    <MudDialog @bind-Visible="_showConfig" Options="_dialogOptions">
+        <TitleContent>
+            <MudText Typo="Typo.h6">Configure Chat</MudText>
+        </TitleContent>
+        <DialogContent>
+            <EditForm Model="_model">
+                <ConnectionSelector @bind-Value="_model.ConnectionId" />
+                <PluginSelector Chat="_model" />
+                <HistoryConfiguration Model="_model"/>
+            </EditForm>
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="() => _showConfig = false" Variant="Variant.Text">Close</MudButton>
+        </DialogActions>
+    </MudDialog>
+}

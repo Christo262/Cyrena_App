@@ -1,0 +1,13 @@
+{
+  "id": "cyrena.voice",
+  "name": "Voice Mode",
+  "version": "0.6.0",
+  "entryAssemblyFile": "Cyrena.Voice.Extension.dll",
+  "description": "A flexible voice interface for Cyréna, featuring configurable speech-to-text and text-to-speech services for a more interactive experience.",
+  "dependencies": [
+    {
+      "id": "cyrena",
+      "minVersion": "0.6.0"
+    }
+  ]
+}

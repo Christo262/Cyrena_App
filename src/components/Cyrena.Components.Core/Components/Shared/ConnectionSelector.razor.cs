@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Cyrena.Contracts;
 using Cyrena.Models;
@@ -9,8 +9,9 @@ namespace Cyrena.Components.Shared
     {
         [Inject] private IServiceProvider _services { get; set; } = default!;
         [Parameter] public string? Value { get; set; }
-        [Parameter] public EventCallback<string> ValueChanged { get; set; }
+        [Parameter] public EventCallback<string?> ValueChanged { get; set; }
         [Parameter] public string? Label { get; set; } = "AI Connection";
+        [Parameter] public bool Required { get; set; } = true;
 
         private IEnumerable<IConnectionProvider> _providers = default!;
         private List<ConnectionInfo> _models { get; set; } = new();
@@ -25,11 +26,6 @@ namespace Cyrena.Components.Shared
             if (!firstRender) return;
             await Populate();
             this.StateHasChanged();
-        }
-
-        private void OnValueChanged()
-        {
-            ValueChanged.InvokeAsync(Value);
         }
 
         private async Task Populate()

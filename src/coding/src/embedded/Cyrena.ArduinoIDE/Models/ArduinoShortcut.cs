@@ -1,23 +1,21 @@
-﻿using BootstrapBlazor.Components;
 using Cyrena.ArduinoIDE.Components.Shared;
 using Cyrena.ArduinoIDE.Options;
 using Cyrena.Contracts;
 using Cyrena.Coding.Options;
 using Cyrena.Models;
 using Microsoft.AspNetCore.Components;
-using Microsoft.SemanticKernel;
+using MudBlazor;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace Cyrena.ArduinoIDE.Models
 {
     internal class ArduinoShortcut : IShortcut
     {
-        private readonly DialogService _dialog;
+        private readonly IDialogService _dialog;
         private readonly IKernelController _kernel;
         private readonly NavigationManager _nav;
-        public ArduinoShortcut(DialogService dialog, IKernelController kernel, NavigationManager nav)
+        public ArduinoShortcut(IDialogService dialog, IKernelController kernel, NavigationManager nav)
         {
             _dialog = dialog;
             _kernel = kernel;
@@ -41,18 +39,17 @@ namespace Cyrena.ArduinoIDE.Models
             model[DevelopOptions.BuilderId] = ArduinoOptions.BuilderId;
             model[ChatConfiguration.Icon] = Icon;
             model[ChatConfiguration.Group] = "Embedded";
-            var rf = await _dialog.ShowModal<Configure>(new ResultDialogOption()
+            model.HistoryInclusion = HistoryInclusionMode.Instruct;
+
+            var parameters = new DialogParameters<Configure>
             {
-                Title = "Arduino IDE",
-                Size = Size.Medium,
-                ComponentParameters = new()
-                {
-                    {nameof(Configure.Model), model }
-                },
-                ButtonNoText = "Cancel",
-                ButtonYesText = "Submit"
-            });
-            if (rf == DialogResult.Yes)
+                { x => x.Model, model }
+            };
+            var options = new DialogOptions { MaxWidth = MaxWidth.Small };
+            var dialog = await _dialog.ShowAsync<Configure>("Arduino IDE", parameters, options);
+            var result = await dialog.Result;
+
+            if (result is not null && !result.Canceled)
             {
                 await _kernel.Create(model);
                 _nav.NavigateTo($"converse/{model.Id}");

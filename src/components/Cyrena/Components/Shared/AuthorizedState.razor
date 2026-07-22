@@ -1,0 +1,10 @@
+<MudThemeProvider Theme="@ApplicationTheme.Theme" IsDarkMode="ApplicationTheme.DarkMode" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+
+@if (_pin.IsAuthorized())
+{
+    @ChildContent
+}

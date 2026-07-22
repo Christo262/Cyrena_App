@@ -1,59 +1,48 @@
-
 <div class="d-flex mb-2">
-    <h4>Extension Servers</h4>
+    <MudText Typo="Typo.h4">Extension Servers</MudText>
     <div class="ms-auto"></div>
 
-    <button type="button" class="btn btn-sm btn-primary me-1" @onclick="OpenExtensions">Extensions Folder</button>
-    <button type="button" class="btn btn-sm btn-info" @onclick="OpenInstallations">Installations Folder</button>
-</div>
-<div class="alert alert-success" role="alert">
-    <span class="text-danger">*</span> Extension servers provide additional extensions and updates to Cyréna. Add custom servers to host your own. Visit <a href="https://cyrena.dev" target="_blank">cyrena.dev</a> to learn more.
-</div>
+    @if (_ui.FileSystemOptions.ExploreFolder)
+    {
+        <MudButton OnClick="OpenExtensions" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Class="me-1">Extensions Folder</MudButton>
+        <MudButton OnClick="OpenInstallations" Variant="Variant.Filled" Color="Color.Info" Size="Size.Small">Installations Folder</MudButton>
+    }
 
-<table class="table table-sm striped">
-    <thead>
-        <tr>
-            <th>
-                Name
-            </th>
-            <th>
-                BaseUrl
-            </th>
-            <th>
-                Enabled
-            </th>
-            <th>
-                <Tooltip Title="Add Server">
-                    <button type="button" class="btn btn-sm btn-success rounded-pill" @onclick="Add"><i class="bi bi-plus"></i></button>
-                </Tooltip>
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach(var item in _models)
-        {
-            <tr>
-                <td>
-                    @item.Name
-                </td>
-                <td>
-                    @item.BaseUrl
-                </td>
-                <td>
-                    <Switch Value="@item.IsEnabled" IsDisabled="@item.IsDefault" OnValueChanged="(e) => OnServerEnableChange(item, e)"/>
-                </td>
-                <td>
-                    @if (!item.IsDefault)
-                    {
-                        <Tooltip Title="Edit">
-                            <button type="button" class="btn btn-sm btn-primary rounded-pill" @onclick="() => Edit(item)"><i class="bi bi-pen"></i></button>
-                        </Tooltip>
-                        <Tooltip Title="Delete">
-                            <button type="button" class="btn btn-sm btn-danger rounded-pill" @onclick="() => Delete(item)"><i class="bi bi-trash"></i></button>
-                        </Tooltip>
-                    }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+    <MudTooltip Text="Install">
+        <MudButton Size="Size.Small" OnClick="InstallExtension" Variant="Variant.Filled" Color="Color.Primary">Install</MudButton>
+    </MudTooltip>
+</div>
+<MudAlert Severity="Severity.Success">
+    <span class="text-danger">*</span> Extension servers provide additional extensions and updates to Cyréna. Add custom servers to host your own. Visit <a href="https://cyrena.dev" target="_blank">cyrena.dev</a> to learn more.
+</MudAlert>
+
+<MudTable Items="_models" Dense="true" Hover="true">
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>BaseUrl</MudTh>
+        <MudTh>Enabled</MudTh>
+        <MudTh>
+            <MudTooltip Text="Add Server">
+                <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Small" Variant="Variant.Filled" Color="Color.Success" OnClick="Add" />
+            </MudTooltip>
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>@context.Name</MudTd>
+        <MudTd>@context.BaseUrl</MudTd>
+        <MudTd>
+            <MudSwitch T="bool" Value="@context.IsEnabled" Disabled="@context.IsDefault" ValueChanged="(e) => OnServerEnableChange(context, e)" />
+        </MudTd>
+        <MudTd>
+            @if (!context.IsDefault)
+            {
+                <MudTooltip Text="Edit">
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="() => Edit(context)" />
+                </MudTooltip>
+                <MudTooltip Text="Delete">
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Variant="Variant.Filled" Color="Color.Error" OnClick="() => Delete(context)" />
+                </MudTooltip>
+            }
+        </MudTd>
+    </RowTemplate>
+</MudTable>

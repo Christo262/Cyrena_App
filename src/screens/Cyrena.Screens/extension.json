@@ -1,0 +1,13 @@
+{
+  "id": "cyrena.screens",
+  "name": "Screen Share",
+  "version": "0.6.0",
+  "entryAssemblyFile": "Cyrena.Screens.dll",
+  "description": "Lets the AI see what's on your screen via the browser's native screen/window/tab picker, with a `Screen capture` kernel function for grabbing frames.",
+  "dependencies": [
+    {
+      "id": "cyrena",
+      "minVersion": "0.6.0"
+    }
+  ]
+}

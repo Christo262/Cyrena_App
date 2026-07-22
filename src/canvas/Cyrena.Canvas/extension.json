@@ -1,0 +1,13 @@
+{
+  "id": "cyrena.canvas",
+  "name": "Canvas",
+  "version": "0.6.0",
+  "entryAssemblyFile": "Cyrena.Canvas.dll",
+  "description": "Provides a persistent, editable canvas for collaborative content creation and code development.",
+  "dependencies": [
+    {
+      "id": "cyrena",
+      "minVersion": "0.6.0"
+    }
+  ]
+}

@@ -1,27 +1,39 @@
 ﻿using Cyrena.Models;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Cyrena.Coding.Models
 {
-    public class DevelopPlan : IJsonSerializable
+    public class DevelopPlan : FileTypeAllowance, ISuppressibleResult
     {
         public DevelopPlan(string rootDirectory)
         {
-            Files = new List<DevelopFile>();
-            Folders = new List<DevelopFolder>();
+            Files = [];
+            Folders = [];
             RootDirectory = rootDirectory;
             DataDirectory = Path.Combine(rootDirectory, ".cyrena");
+            Id = RootDirectory.Replace(@"\", "_").Replace("/", "_").Replace(".", "_");
+        }
+        
+        public DevelopPlan(string rootDirectory, string id)
+        {
+            Files = [];
+            Folders = [];
+            RootDirectory = rootDirectory;
+            DataDirectory = Path.Combine(rootDirectory, ".cyrena");
+            Id = id;
         }
 
         [JsonConstructor]
         internal DevelopPlan()
         {
-            Files = new List<DevelopFile>();
-            Folders = new List<DevelopFolder>();
+            Files = [];
+            Folders = [];
             RootDirectory = string.Empty;
             DataDirectory = string.Empty;
         }
 
+        [JsonIgnore] public string Id { get; } = null!;
         [JsonIgnore]
         public string RootDirectory { get; set; }
         [JsonIgnore]
@@ -30,42 +42,9 @@ namespace Cyrena.Coding.Models
         public List<DevelopFile> Files { get; set; }
         public List<DevelopFolder> Folders { get; set; }
 
-        public static bool TryLoadFromDirectory(string dir, out DevelopPlan plan)
+        public string Suppress()
         {
-            try
-            {
-                var path = Path.Combine(dir, ".cyrena", "plan");
-                if (File.Exists(path))
-                {
-                    var json = File.ReadAllText(path);
-                    var pl = JsonConvert.DeserializeObject<DevelopPlan>(json);
-                    if (pl == null)
-                    {
-                        plan = new DevelopPlan(dir);
-                        return false;
-                    }
-                    pl.RootDirectory = dir;
-                    plan = pl;
-                    return true;
-                }
-                plan = new DevelopPlan(dir);
-                return false;
-            }
-            catch
-            {
-                plan = new DevelopPlan(dir);
-                return false;
-            }
-        }
-
-        public string ToJson()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
-
-        public override string ToString()
-        {
-            return ToJson();
+            return $"[PLAN:omitted; use Project_get_plan]";
         }
     }
 }

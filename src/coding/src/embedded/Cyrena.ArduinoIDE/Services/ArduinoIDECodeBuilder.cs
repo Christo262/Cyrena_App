@@ -1,4 +1,3 @@
-﻿using BootstrapBlazor.Components;
 using Cyrena.ArduinoIDE.Components.Shared;
 using Cyrena.ArduinoIDE.Options;
 using Cyrena.ArduinoIDE.Plugins;
@@ -11,7 +10,9 @@ using Cyrena.Extensions;
 using Cyrena.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
+using MudBlazor;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Cyrena.ArduinoIDE.Services
 {
@@ -52,19 +53,16 @@ namespace Cyrena.ArduinoIDE.Services
 
         public async Task EditAsync(ChatConfiguration config, IServiceProvider services)
         {
-            var dialog = services.GetRequiredService<DialogService>();
-            var rf = await dialog.ShowModal<Configure>(new ResultDialogOption()
+            var dialogService = services.GetRequiredService<IDialogService>();
+            var parameters = new DialogParameters<Configure>
             {
-                Title = "Arduino IDE",
-                Size = Size.Medium,
-                ComponentParameters = new()
-                {
-                    {nameof(Configure.Model), config }
-                },
-                ButtonYesText = "Save",
-                ButtonNoText = "Cancel",
-            });
-            if (rf == DialogResult.Yes)
+                { x => x.Model, config }
+            };
+            var options = new DialogOptions { MaxWidth = MaxWidth.Small };
+            var dialog = await dialogService.ShowAsync<Configure>("Arduino IDE", parameters, options);
+            var result = await dialog.Result;
+
+            if (result is not null && !result.Canceled)
                 await _kernel.UpdateAsync(config, true);
         }
     }

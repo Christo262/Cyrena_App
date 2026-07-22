@@ -1,0 +1,46 @@
+@using Cyrena.Screens.Contracts
+@using Cyrena.Screens.Models
+@using Cyrena.Screens.Services
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h4">Select Screen Share Mode</MudText>
+        
+        <MudText Typo="Typo.caption">
+            Certain models struggle to handle images returned from tool calls. Use the mode selection below to select the best mode
+            to return screenshots to the model.
+        </MudText>
+        
+        <MudPaper Elevation="2" Class="pa-2 my-2">
+            <MudText Typo="Typo.h5">Message Mode</MudText>
+            <MudText Typo="Typo.body1">Returns screenshots as messages from you queued in the input queue. Most stable.</MudText>
+            <MudButton Size="Size.Medium" Color="Color.Primary" OnClick="UseMessageMode">Use Message Mode</MudButton>
+        </MudPaper>
+        
+        <MudPaper Elevation="2" Class="pa-2 my-2">
+            <MudText Typo="Typo.h5">Function Mode</MudText>
+            <MudText Typo="Typo.body1">Returns screenshots directly as the result of the tool call. Most convenient.</MudText>
+            <MudButton Size="Size.Medium" Color="Color.Primary" OnClick="UseFunctionMode">Use Function Mode</MudButton>
+        </MudPaper>
+    </DialogContent>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = null!;
+    [Parameter]
+    public ScreenInteropModeService Interop { get; set; } = null!;
+
+    private void UseMessageMode()
+    {
+        Interop.SetInteropMode(InteropMode.UserMessage);
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+    
+    private void UseFunctionMode()
+    {
+        Interop.SetInteropMode(InteropMode.FunctionResult);
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+}

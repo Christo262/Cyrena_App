@@ -1,0 +1,19 @@
+{
+  "Title": "ComponentAssistantsPlugin - Runtime Plugin Registration",
+  "Keywords": [
+    "ComponentAssistantsPlugin",
+    "IAssistantPlugin",
+    "plugin",
+    "toolbar",
+    "file handler",
+    "docking",
+    "ExportChat",
+    "ClearChat",
+    "PdfFileHandler",
+    "DockingService"
+  ],
+  "Summary": "IAssistantPlugin implementation that registers runtime UI components and services per-kernel. Adds toolbar components (ExportChat, ClearChat), file handlers (PdfFileHandler), and docking service based on connection capabilities.",
+  "Link": null,
+  "Content": "## ComponentAssistantsPlugin\n\n**Namespace**: \u0060Cyrena.Services\u0060  \n**Assembly**: \u0060Cyrena.Components.Runtime\u0060  \n**Implements**: \u0060IAssistantPlugin\u0060\n\n### Purpose\nAn internal \u0060IAssistantPlugin\u0060 that bootstraps runtime UI components and services for each chat kernel. It registers toolbar buttons, file handlers, and the docking service based on the connection\u0027s capabilities.\n\n### Implementation\n\n\u0060\u0060\u0060csharp\ninternal class ComponentAssistantsPlugin : IAssistantPlugin\n{\n    public string[] Modes =\u003E [];           // Compatible with all modes\n    public int Priority =\u003E 10;             // Execution priority\n    public string Id =\u003E \u0022cyrena.components\u0022; // Plugin identifier\n    public bool Required =\u003E true;            // Always loaded\n    public string Title =\u003E \u0022Display Components\u0022;\n\n    public Task LoadAsync(CyrenaKernelBuilder builder)\n    {\n        // Register toolbar components\n        builder.AddToolbarComponent\u003CExportChat\u003E(ToolbarAlignment.End);\n        builder.AddToolbarComponent\u003CClearChat\u003E(ToolbarAlignment.End);\n        \n        // Conditionally register PDF file handler\n        var info = builder.GetFeatureOption\u003CConnectionInfo\u003E();\n        if (info.SupportFiles)\n            builder.Services.AddSingleton\u003CIFileHandler, PdfFileHandler\u003E();\n        \n        // Register docking service\n        builder.Services.AddSingleton\u003CIDockingService, DockingService\u003E();\n        \n        return Task.CompletedTask;\n    }\n}\n\u0060\u0060\u0060\n\n### Behavior\n\n**Toolbar Registration:**\n- Registers \u0060ExportChat\u0060 component at \u0060ToolbarAlignment.End\u0060\n- Registers \u0060ClearChat\u0060 component at \u0060ToolbarAlignment.End\u0060\n- These components must exist in the \u0060Cyrena.Components.Tools\u0060 namespace\n\n**File Handler Registration:**\n- Checks \u0060ConnectionInfo.SupportFiles\u0060 flag\n- If true, registers \u0060PdfFileHandler\u0060 as \u0060IFileHandler\u0060\n- This enables PDF file attachment processing in chat\n\n**Docking Service Registration:**\n- Always registers \u0060DockingService\u0060 as \u0060IDockingService\u0060\n- Provides panel docking capabilities for kernel-aware components\n\n### Key Properties\n\n| Property | Value | Description |\n|----------|-------|-------------|\n| \u0060Modes\u0060 | \u0060[]\u0060 (empty array) | Compatible with all assistant modes |\n| \u0060Priority\u0060 | \u006010\u0060 | Standard priority for runtime components |\n| \u0060Id\u0060 | \u0060\u0022cyrena.components\u0022\u0060 | Unique plugin identifier |\n| \u0060Required\u0060 | \u0060true\u0060 | Always loaded, cannot be disabled |\n| \u0060Title\u0060 | \u0060\u0022Display Components\u0022\u0060 | Display name |\n\n### Related\n- \u0060IAssistantPlugin\u0060 - Plugin contract (Cyrena.Core)\n- \u0060ExportChat\u0060 / \u0060ClearChat\u0060 - Toolbar components (Cyrena.Components.Tools)\n- \u0060PdfFileHandler\u0060 - PDF text extraction service\n- \u0060DockingService\u0060 - Panel docking service\n- \u0060ConnectionInfo\u0060 - Connection capability flags",
+  "Id": "services_ComponentAssistantsPlugin"
+}

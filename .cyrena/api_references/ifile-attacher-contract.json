@@ -1,0 +1,16 @@
+{
+  "Title": "IFileAttacher / FileAttacher - File Attachment UI Contract",
+  "Keywords": [
+    "IFileAttacher",
+    "FileAttacher",
+    "file attachment",
+    "file attacher",
+    "chat attachment",
+    "KernelContent",
+    "Cyrena.Components.Core"
+  ],
+  "Summary": "Kernel-locked contract and abstract base class for the Blazor component used to attach files to a chat message.",
+  "Link": "",
+  "Content": "# IFileAttacher and FileAttacher\n\n**Namespace**: \u0060Cyrena.Contracts\u0060\n**Assembly**: \u0060Cyrena.Components.Core\u0060\n\nKernel-locked contracts for the component used to attach files to chat messages.\n\n\u0060\u0060\u0060csharp\npublic interface IFileAttacher : IComponent\n{\n    EventCallback\u003CKernelContent[]\u003E OnItemsAdded { get; set; }\n}\n\npublic abstract class FileAttacher : KernelComponentBase, IFileAttacher\n{\n    [Parameter] public EventCallback\u003CKernelContent[]\u003E OnItemsAdded { get; set; }\n}\n\u0060\u0060\u0060\n\n## Purpose\nThe chat UI renders whatever \u0060IFileAttacher\u0060 implementation is currently selected to let the user attach files (drag-and-drop, paste, file picker, etc.). When the user finalises a selection, the component fires \u0060OnItemsAdded\u0060 with the resolved \u0060KernelContent\u0060 items, which the parent chat message service persists.\n\n## Members\n\n### \u0060IFileAttacher.OnItemsAdded\u0060\n- \u0060EventCallback\u003CKernelContent[]\u003E\u0060 \u2014 fired when the user has added one or more content items to the current message.\n- The interface inherits from \u0060IComponent\u0060 because the attacher is itself a renderable Blazor component.\n\n### \u0060FileAttacher\u0060 (abstract base class)\n- Inherits from \u0060KernelComponentBase\u0060, so it has access to the active \u0060Kernel\u0060 and can use \u0060[KernelInject]\u0060.\n- Provides \u0060OnItemsAdded\u0060 as a default \u0060[Parameter]\u0060 so derived classes just override the render output.\n- Concrete implementations register via \u0060InterfaceOverrides.UseFileAttacher\u003CT\u003E()\u0060.\n\n## Selection Mechanism\nThe runtime picks a concrete \u0060IFileAttacher\u0060 from \u0060InterfaceOverrides.FileAttacher\u0060 (which defaults to \u0060null\u0060/built-in). To override:\n\n\u0060\u0060\u0060csharp\npublic class MyAssistantMode : IAssistantMode\n{\n    public async Task ConfigureAsync(CyrenaKernelBuilder builder)\n    {\n        var overrides = builder.GetFeatureOption\u003CInterfaceOverrides\u003E();\n        overrides.UseFileAttacher\u003CMyCustomAttacher\u003E();\n    }\n}\n\u0060\u0060\u0060\n\n## Related\n- \u0060KernelComponentBase\u0060 \u2014 base class for the abstract \u0060FileAttacher\u0060\n- \u0060InterfaceOverrides.UseFileAttacher\u003CT\u003E()\u0060 \u2014 selects which \u0060IFileAttacher\u0060 is active\n- \u0060IFileHandlerFactory\u0060 \u2014 produces the \u0060KernelContent\u0060 items that get fired through \u0060OnItemsAdded\u0060",
+  "Id": "ifile-attacher-contract"
+}

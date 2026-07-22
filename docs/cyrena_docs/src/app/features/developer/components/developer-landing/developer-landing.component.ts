@@ -48,6 +48,13 @@ export class DeveloperLandingComponent {
       icon: 'bi-code-slash'
     },
     {
+      id: 'cyrena-voice-core',
+      title: 'Cyrena.Voice.Core',
+      description: 'Voice processing pipeline contracts and artifact models for speech-to-text and text-to-speech integration.',
+      route: '/developer/voice',
+      icon: 'bi-mic'
+    },
+    {
       id: 'extension-development',
       title: 'Extension Development',
       description: 'Build custom extensions to expand Cyréna with your own integrations, workflows, and AI capabilities.',

@@ -1,0 +1,19 @@
+{
+  "Title": "HistoryInclusionMode - Chat History Inclusion Control",
+  "Keywords": [
+    "HistoryInclusionMode",
+    "history",
+    "context",
+    "chat",
+    "inclusion",
+    "enum",
+    "All",
+    "LastTwo",
+    "LastTen",
+    "Instruct"
+  ],
+  "Summary": "Enum controlling how much chat history is included when sending messages to the AI. Supports full history, limited iterations, or instruct mode.",
+  "Link": null,
+  "Content": "## HistoryInclusionMode\n\n**Namespace**: \u0060Cyrena.Models\u0060\n**Assembly**: \u0060Cyrena.Core\u0060\n\n### Purpose\nControls how chat history is sent to the AI. Determines which historical messages are included in the context window for each iteration.\n\n### Enum Definition\n\u0060\u0060\u0060csharp\n[JsonConverter(typeof(JsonStringEnumConverter))]\npublic enum HistoryInclusionMode\n{\n    All,\n    LastTwo,\n    LastTen,\n    Instruct\n}\n\u0060\u0060\u0060\n\n### Values\n| Value | Description |\n|-------|-------------|\n| \u0060All\u0060 | Includes the entire conversation history |\n| \u0060LastTwo\u0060 | Includes only the last 2 iterations (user \u002B assistant pairs) |\n| \u0060LastTen\u0060 | Includes only the last 10 iterations |\n| \u0060Instruct\u0060 | Includes no history \u2014 each message is treated as a standalone instruction |\n\n### Usage\n\u0060\u0060\u0060csharp\n// Set on chat configuration\nvar config = new ChatConfiguration();\nconfig.HistoryInclusion = HistoryInclusionMode.LastTwo;\n\n// Default value\nconfig.HistoryInclusion = HistoryInclusionMode.All; // Default\n\u0060\u0060\u0060\n\n### Related\n- \u0060ChatConfiguration\u0060 - Stores the HistoryInclusion setting\n- \u0060IConversationHistoryTransformer\u0060 - May use this mode to filter history\n- \u0060IChatMessageService\u0060 - Applies history inclusion when building kernel history",
+  "Id": "history-inclusion-mode"
+}

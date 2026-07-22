@@ -1,0 +1,31 @@
+@inherits KernelComponentBase
+@using Cyrena.Components.Shared
+
+<MudPaper Class="px-2">
+    <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center">
+        <MudSelect T="string" Value="_current?.Id" ValueChanged="ChangeActive" Label="Active Document" Variant="Variant.Outlined" Dense Margin="Margin.Dense" Disabled="_its.Inferring">
+            @foreach(var item in _docs)
+            {
+                <MudSelectItem Value="item.Id">@item.Name</MudSelectItem>
+            }
+        </MudSelect>
+        <MudSpacer/>
+        @if(_current != null)
+        {
+            <MudTooltip Text="Save File">
+                <MudIconButton Icon="@Icons.Material.Filled.Save" Size="Size.Small" OnClick="SaveFileAsync" />
+            </MudTooltip>
+            @if (_current.DocumentType == Models.CanvasDocumentType.Html)
+            {
+                <MudTooltip Text="Export Canvas">
+                    <MudIconButton Icon="@Icons.Material.Filled.DownloadForOffline" Size="Size.Small" OnClick="ExportAsync" />
+                </MudTooltip>
+            }
+        }
+    </MudStack>
+</MudPaper>
+
+@if (_current != null)
+{
+    <CodeInput @ref="_code" Language="@_lang" @bind-Value="_current.Content" @bind-Value:after="SaveAsync"></CodeInput>
+}

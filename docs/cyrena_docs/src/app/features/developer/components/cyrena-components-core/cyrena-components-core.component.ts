@@ -1,10 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
-interface DisplayMethod {
-  method: string;
-  description: string;
-}
-
 interface LanguageMapping {
   extensions: string;
   language: string;
@@ -39,18 +34,8 @@ export class CyrenaComponentsCoreComponent {
     'Cyrena.Models',
     'Cyrena.Options',
     'Cyrena.Extensions',
+    'Cyrena.Attributes',
     'Cyrena.Components.Shared'
-  ];
-
-  readonly displayMethods: DisplayMethod[] = [
-    { method: 'ShowModal<TComponent>(ResultDialogOption, Dialog?)', description: 'Shows a modal dialog with a typed Blazor component' },
-    { method: 'ShowModal(string, string, ResultDialogOption?, Dialog?)', description: 'Shows a simple text modal dialog' },
-    { method: 'ShowToast(ToastOption, ToastContainer?)', description: 'Displays a toast notification' },
-    { method: 'ShowErrorToast(string?, string?, bool)', description: 'Convenience method for error toasts' },
-    { method: 'ShowWarnToast(string?, string?, bool)', description: 'Convenience method for warning toasts' },
-    { method: 'ShowSuccessToast(string?, string?, bool)', description: 'Convenience method for success toasts' },
-    { method: 'ShowInfoToast(string?, string?, bool)', description: 'Convenience method for info toasts' },
-    { method: 'NavigateTo(string)', description: 'Navigates to a URL in the Blazor router' }
   ];
 
   readonly languageMappings: LanguageMapping[] = [
@@ -84,7 +69,8 @@ export class CyrenaComponentsCoreComponent {
 
   readonly connectionSelectorParams: SharedComponentParam[] = [
     { param: 'Value / ValueChanged', description: 'Two-way bound selected connection ID' },
-    { param: 'Label', description: 'Dropdown label (default: "AI Connection")' }
+    { param: 'Label', description: 'Dropdown label (default: "AI Connection")' },
+    { param: 'Required', description: 'Whether selection is required (default: true)' }
   ];
 
   readonly pluginSelectorParams: SharedComponentParam[] = [
@@ -92,22 +78,6 @@ export class CyrenaComponentsCoreComponent {
   ];
 
   // Code examples stored as strings to avoid Angular ICU parsing issues with curly braces
-  readonly idisplayServiceCode = `public interface IDisplayService
-{
-    Task<DialogResult> ShowModal<TComponent>(ResultDialogOption option, Dialog? dialog = null)
-        where TComponent : IComponent, IResultDialog;
-
-    Task<DialogResult> ShowModal(string title, string content, ResultDialogOption? option = null, Dialog? dialog = null);
-
-    Task ShowToast(ToastOption option, ToastContainer? toastContainer = null);
-    Task ShowErrorToast(string? title = null, string? content = null, bool autoHide = true);
-    Task ShowWarnToast(string? title = null, string? content = null, bool autoHide = true);
-    Task ShowSuccessToast(string? title = null, string? content = null, bool autoHide = true);
-    Task ShowInfoToast(string? title = null, string? content = null, bool autoHide = true);
-
-    void NavigateTo(string url);
-}`;
-
   readonly ishortcutCode = `public interface IShortcut
 {
     string Title { get; }
@@ -130,6 +100,14 @@ public enum ToolbarAlignment
     Start, End
 }`;
 
+  readonly idockingServiceCode = `public interface IDockingService
+{
+    public record DockRequest(Type Component, string Title, Action OnClose);
+    IDisposable OnDockRequest(Action<DockRequest> callback);
+    void Dock<TKernelComponent>(string title, Action onClose)
+        where TKernelComponent : KernelComponentBase;
+}`;
+
   readonly iviewStartProviderCode = `public interface IViewStartProvider
 {
     IEnumerable<ViewStart> Provide();
@@ -140,6 +118,13 @@ public enum ToolbarAlignment
     [Parameter]
     [EditorRequired]
     public Kernel Kernel { get; set; } = default!;
+}`;
+
+  readonly iwindowHandleCode = `public interface IWindowHandle : IDisposable
+{
+    event EventHandler<EventArgs>? Closing;
+    bool Disposed { get; }
+    void Close();
 }`;
 
   readonly viewStartCode = `public sealed class ViewStart
@@ -220,6 +205,16 @@ public record ComponentMetaData(Type Component, string? Section, int Order);`;
     public static RenderFragment Render(this ComponentBase cmp, Type type, Dictionary<string, object?> parameters);
 }`;
 
+  readonly dialogServiceExtensionsCode = `public static class DialogServiceExtensions
+{
+    public static async Task<bool> ShowDialogAsync<TComponent>(
+        this IDialogService dialog,
+        string title,
+        DialogParameters parameters,
+        MaxWidth maxWidth = MaxWidth.Medium)
+        where TComponent : ComponentBase;
+}`;
+
   readonly toolbarExampleCode = `public class MyToolbarComponent : KernelComponentBase
 {
     [KernelInject]
@@ -233,7 +228,7 @@ builder.AddToolbarComponent<MyToolbarComponent>(ToolbarAlignment.End);`;
 {
     public string Title => "My Action";
     public string Description => "Does something";
-    public string Icon => "fa-solid fa-star";
+    public string Icon => Icons.Material.Filled.Star;
     public string Color => "primary";
     public string Category => "My Category";
     public string[] Tags => ["my"];
@@ -245,15 +240,13 @@ builder.AddShortcut<MyShortcut>();`;
 
   readonly settingsExampleCode = `builder.AddSettingsComponent<MySettingsComponent>("General", 1);`;
 
-  readonly viewStartExampleCode = `public class MyViewStartProvider : IViewStartProvider
+  readonly dialogExampleCode = `var parameters = new DialogParameters<MyDialogForm>
 {
-    public IEnumerable<ViewStart> Provide()
-    {
-        yield return new ViewStart
-        {
-            Href = "/my-page",
-            Title = "My Page"
-        };
-    }
+    { x => x.Model, model }
+};
+var confirmed = await _dialog.ShowDialogAsync<MyDialogForm>("Title", parameters);
+if (confirmed)
+{
+    // User clicked Submit
 }`;
 }

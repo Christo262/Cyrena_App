@@ -1,10 +1,10 @@
 ﻿using Cyrena.Models;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System.ComponentModel.DataAnnotations;
 
 namespace Cyrena.APIReferences.Models
 {
-    public class ApiReference : Entity, IJsonSerializable
+    public class ApiReference : Entity, ISuppressibleResult
     {
         [Required]
         public string? Title { get; set; }
@@ -14,14 +14,9 @@ namespace Cyrena.APIReferences.Models
         public string? Link { get; set; }
         public string? Content { get; set; }
 
-        public string ToJson()
+        public string Suppress()
         {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
-
-        public override string ToString()
-        {
-            return ToJson();
+            return $"[APIREF:{Id}; content omitted; use API_reference_read before relying on details]";
         }
     }
 }

@@ -1,8 +1,7 @@
-﻿using BootstrapBlazor.Components;
-using Cyrena.Attributes;
+﻿using Cyrena.Attributes;
 using Cyrena.Contracts;
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.DependencyInjection;
+using MudBlazor;
 
 namespace Cyrena.Components.Tools
 {
@@ -10,15 +9,16 @@ namespace Cyrena.Components.Tools
     {
         [KernelInject] private IChatMessageService _chat { get; set; } = default!;
         [KernelInject] private IIterationService _its { get; set; } = default!;
-        [Inject] private DialogService _dialog { get; set; } = default!;
+        [Inject] private IDialogService _dialog { get; set; } = default!;
         private async Task ClearChatAsync()
         {
             if (_its.Inferring) return;
-            var r = await _dialog.ShowModal("Clear Chat", "Are you sure you want to delete the chat history?", new ResultDialogOption()
+            var r = await _dialog.ShowMessageBoxAsync("Clear Chat", "Are you sure you want to delete the chat history?", "Yes", "No", options:new DialogOptions()
             {
-                Size = Size.Medium
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true
             });
-            if(r == DialogResult.Yes)
+            if(r == true)
             await _chat.ClearHistoryAsync();
         }
     }

@@ -1,0 +1,88 @@
+<MudText Typo="Typo.h6" Class="mb-4">Voice Settings</MudText>
+
+<MudForm Model="_options">
+    <MudGrid>
+        <MudItem xs="12" md="9" Class="mx-auto">
+            <MudSelect T="string" @bind-Value="_options.DefaultVoiceChain" @bind-Value:after="Save" Label="Voice Service" Variant="Variant.Outlined" Dense Margin="Margin.Dense">
+                <MudSelectItem Value="@((string?)null)">
+                    <MudText>Disabled</MudText>
+                    <MudText Typo="Typo.caption">Voice mode is disabled globally</MudText>
+                </MudSelectItem>
+                @foreach (var chain in _chains)
+                {
+                    <MudSelectItem Value="@chain.Id">
+                        <MudText>@chain.Name</MudText>
+                        <MudText Typo="Typo.caption">@chain.Description</MudText>
+                    </MudSelectItem>
+                }
+            </MudSelect>
+
+            @if (_options.DefaultVoiceChain == Cyrena.Voice.Services.WebViewWhisperVoiceChain.Key)
+            {
+                <MudTextField @bind-Value="_options.WhisperModelPath" @bind-Value:after="Save" Label="Whisper Model Path" Variant="Variant.Outlined" Margin="Margin.Dense"
+                              Placeholder="/path/to/ggml.bin" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.AttachFile" OnAdornmentClick="SelectGgml" />
+
+                <MudText Typo="Typo.caption" Class="mt-2">
+                    <MudText Color="Color.Error" Inline="true">*</MudText> Whisper requires a local GGML Whisper model file.
+                    Download a model from <MudLink Href="https://huggingface.co/ggerganov/whisper.cpp/tree/main" Target="_blank">Hugging Face</MudLink>, then select the downloaded .bin file here.
+                    <br /><br />
+                    Recommended:<br />
+                    - tiny.en: fastest, lower accuracy<br />
+                    - base.en: good default<br />
+                    - small.en: better accuracy, slower<br />
+                </MudText>
+
+                <MudSelect T="string" @bind-Value="_options.WebViewVoice" @bind-Value:after="Save" Label="Voice" Variant="Variant.Outlined" Dense Margin="Margin.Dense" Class="mt-4">
+                    <MudSelectItem Value="@((string?)null)">Default</MudSelectItem>
+                    @foreach (var item in _voices)
+                    {
+                        <MudSelectItem Value="@item.Name">@item.Name - @item.Lang</MudSelectItem>
+                    }
+                </MudSelect>
+
+                <MudText Typo="Typo.body2" Class="mt-4">Speak Rate: @_r</MudText>
+                <MudSlider T="int" @bind-Value="_r" @bind-Value:after="Save" Min="5" Max="20" />
+
+                <MudText Typo="Typo.body2" Class="mt-4">Speak Pitch: @_p</MudText>
+                <MudSlider T="int" @bind-Value="_p" @bind-Value:after="Save" Min="5" Max="15" />
+
+                <MudText Typo="Typo.body2" Class="mt-4">Volume: @_v</MudText>
+                <MudSlider T="int" @bind-Value="_v" @bind-Value:after="Save" Min="0" Max="10" />
+            }
+            
+            @if (_options.DefaultVoiceChain == Cyrena.Voice.Services.ESpeakWhisperVoiceChain.Key)
+            {
+                <MudTextField @bind-Value="_options.WhisperModelPath" @bind-Value:after="Save" Label="Whisper Model Path" Variant="Variant.Outlined" Margin="Margin.Dense"
+                              Placeholder="/path/to/ggml.bin" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.AttachFile" OnAdornmentClick="SelectGgml" />
+
+                <MudText Typo="Typo.caption" Class="mt-2">
+                    <MudText Color="Color.Error" Inline="true">*</MudText> Whisper requires a local GGML Whisper model file.
+                    Download a model from <MudLink Href="https://huggingface.co/ggerganov/whisper.cpp/tree/main" Target="_blank">Hugging Face</MudLink>, then select the downloaded .bin file here.
+                    <br /><br />
+                    Recommended:<br />
+                    - tiny.en: fastest, lower accuracy<br />
+                    - base.en: good default<br />
+                    - small.en: better accuracy, slower<br />
+                </MudText>
+                
+                <MudTextField @bind-Value="_espeak.BinaryPath" @bind-Value:after="Save" Label="ESpeak Binary Path" Variant="Variant.Outlined" Margin="Margin.Dense"
+                              Placeholder="/path/to/espeak" HelperText="Path to the espeak binary. If null or empty, the converter resolves espeak from the system PATH via the OS process launcher."/>
+                
+                <MudTextField @bind-Value="_espeak.Voice" @bind-Value:after="Save" Label="Voice" Variant="Variant.Outlined" Margin="Margin.Dense"
+                              Placeholder="en" HelperText="Voice name to use (e.g. en, en+f3, de). See espeak --voices. Defaults to en."/>
+                
+                <MudText Typo="Typo.body2" Class="mt-4">Speed</MudText>
+                <MudSlider T="int" @bind-Value="_espeak.Speed" @bind-Value:after="Save" Min="80" Max="500" />
+
+                <MudText Typo="Typo.body2" Class="mt-4">Pitch</MudText>
+                <MudSlider T="int" @bind-Value="_espeak.Pitch" @bind-Value:after="Save" Min="0" Max="99" />
+
+                <MudText Typo="Typo.body2" Class="mt-4">Amplitude</MudText>
+                <MudSlider T="int" @bind-Value="_espeak.Amplitude" @bind-Value:after="Save" Min="0" Max="200" />
+                
+                <MudText Typo="Typo.body2" Class="mt-4">Word Gap</MudText>
+                <MudSlider T="int" @bind-Value="_espeak.WordGap" @bind-Value:after="Save" Min="0" Max="10" />
+            }
+        </MudItem>
+    </MudGrid>
+</MudForm>

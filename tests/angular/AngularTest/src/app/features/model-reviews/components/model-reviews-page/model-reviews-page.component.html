@@ -1,0 +1,127 @@
+<div class="container py-5">
+  <div class="text-center mb-5">
+    <h1 class="display-5 fw-bold">Models I've Used with Cyréna</h1>
+    <p class="lead text-muted">
+      A quick look at how different LLMs perform inside my custom desktop development-agent app.
+    </p>
+  </div>
+
+  <div class="d-flex justify-content-center gap-2 mb-4">
+    <button
+      class="btn"
+      [class.btn-primary]="selectedCategory() === 'All'"
+      [class.btn-outline-primary]="selectedCategory() !== 'All'"
+      (click)="setCategory('All')">
+      All
+    </button>
+    <button
+      class="btn"
+      [class.btn-primary]="selectedCategory() === 'Offline'"
+      [class.btn-outline-primary]="selectedCategory() !== 'Offline'"
+      (click)="setCategory('Offline')">
+      Offline
+    </button>
+    <button
+      class="btn"
+      [class.btn-primary]="selectedCategory() === 'Cloud'"
+      [class.btn-outline-primary]="selectedCategory() !== 'Cloud'"
+      (click)="setCategory('Cloud')">
+      Cloud
+    </button>
+  </div>
+
+  <div class="row g-4">
+    @for (review of filteredReviews(); track trackByModel($index, review)) {
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+              <span class="badge me-2" [class.bg-secondary]="review.category === 'Offline'" [class.bg-info]="review.category === 'Cloud'">
+                {{ review.category }}
+              </span>
+              <strong>{{ review.provider }} – {{ review.model }}</strong>
+              @if (review.size) {
+                <span class="text-muted ms-2">({{ review.size }})</span>
+              }
+            </div>
+            <div class="text-warning">
+              @for (star of [1,2,3,4,5]; track star) {
+                @if (star <= review.rating) {
+                  <i class="bi bi-star-fill"></i>
+                } @else {
+                  <i class="bi bi-star"></i>
+                }
+              }
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <h6 class="text-uppercase text-muted small fw-bold">Best Use Cases</h6>
+                <ul class="list-unstyled mb-0">
+                  @for (useCase of review.bestUseCases; track useCase) {
+                    <li><i class="bi bi-check-circle-fill text-success me-2"></i>{{ useCase }}</li>
+                  }
+                </ul>
+              </div>
+              <div class="col-md-6 mb-3">
+                <h6 class="text-uppercase text-muted small fw-bold">Thinking Mode</h6>
+                <p class="mb-0">{{ review.thinkingMode }}</p>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <h6 class="text-uppercase text-muted small fw-bold">Strengths</h6>
+                <ul class="list-unstyled mb-0">
+                  @for (s of review.strengths; track s) {
+                    <li><i class="bi bi-plus-circle-fill text-primary me-2"></i>{{ s }}</li>
+                  }
+                  @if (review.strengths.length === 0) {
+                    <li class="text-muted fst-italic">None noted</li>
+                  }
+                </ul>
+              </div>
+              <div class="col-md-6 mb-3">
+                <h6 class="text-uppercase text-muted small fw-bold">Weaknesses</h6>
+                <ul class="list-unstyled mb-0">
+                  @for (w of review.weaknesses; track w) {
+                    <li><i class="bi bi-dash-circle-fill text-danger me-2"></i>{{ w }}</li>
+                  }
+                  @if (review.weaknesses.length === 0) {
+                    <li class="text-muted fst-italic">None noted</li>
+                  }
+                </ul>
+              </div>
+            </div>
+
+            <hr />
+
+            <p class="mb-2">{{ review.detailedReview }}</p>
+
+            @if (review.proTip) {
+              <div class="alert alert-info mt-3 mb-0">
+                <i class="bi bi-lightbulb-fill me-2"></i>
+                <strong>Pro Tip:</strong> {{ review.proTip }}
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="mt-5">
+    <div class="card border-0 bg-light">
+      <div class="card-body">
+        <h5 class="card-title">General Tips for Getting the Most Out of These Models</h5>
+        <ol class="mb-0">
+          <li><strong>Set the thinking level</strong> if the model supports it – low for speed, medium for more thoroughness, high only when you truly need deep reasoning (and are okay with longer latency).</li>
+          <li><strong>Force web searches</strong> when you suspect outdated knowledge – most models will not search unless you ask.</li>
+          <li><strong>Structure your prompts</strong> for the larger cloud models (especially minimax-m2.7): begin with a brief overview, list hard rules as bullet points, provide any relevant API reference, and end with a clear action request.</li>
+          <li><strong>When a model omits code</strong>, gently remind it: <em>“Please include the full implementation of the function; do not skip any lines.”</em></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>

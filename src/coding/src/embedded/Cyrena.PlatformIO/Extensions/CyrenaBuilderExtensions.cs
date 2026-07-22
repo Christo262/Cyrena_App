@@ -12,6 +12,8 @@ namespace Cyrena.Extensions
         {
             builder.Services.AddSingleton<ICodeBuilder, PlatformIOBuilder>();
             builder.AddShortcut<PlatformIOShortcut>();
+            builder.Services.AddSingleton<ICodeBuilder, PlatformIODynamicBuilder>();
+            builder.AddShortcut<DynamicPlatformIOShortcut>();
             return builder;
         }
     }

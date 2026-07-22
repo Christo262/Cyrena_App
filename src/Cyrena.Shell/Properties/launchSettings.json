@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Cyrena.Shell": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

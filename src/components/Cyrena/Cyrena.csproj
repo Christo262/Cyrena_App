@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFrameworks>net10.0;</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\prompt.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\prompt.md" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net10.0-android'">
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0-android'">
+    <PackageReference Include="Microsoft.Maui.Essentials" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cyrena.Components.Core\Cyrena.Components.Core.csproj" />
+    <ProjectReference Include="..\Cyrena.Components.Runtime\Cyrena.Components.Runtime.csproj" />
+    <ProjectReference Include="..\..\extensa\Cyrena.Extensa.Components\Cyrena.Extensa.Components.csproj" />
+    <ProjectReference Include="..\..\extensa\Cyrena.Extensa.Runtime\Cyrena.Extensa.Runtime.csproj" />
+    <ProjectReference Include="..\..\runtime\Cyrena.Runtime.Ollama\Cyrena.Runtime.Ollama.csproj" />
+    <ProjectReference Include="..\..\runtime\Cyrena.Runtime.OpenAI\Cyrena.Runtime.OpenAI.csproj" />
+    <ProjectReference Include="..\..\runtime\Cyrena.Runtime\Cyrena.Runtime.csproj" />
+  </ItemGroup>
+
+</Project>

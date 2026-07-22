@@ -1,21 +1,11 @@
 ﻿using Cyrena.Models;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Cyrena.Coding.Models
 {
-    public abstract class DevelopItem : Entity, IJsonSerializable
+    public abstract class DevelopItem : Entity
     {
-        public string Name { get; set; } = default!;
-        public string RelativePath { get; set; } = default!;
-
-        public string ToJson()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
-
-        public override string ToString()
-        {
-            return ToJson();
-        }
+        public string Name { get; set; } = null!;
+        public string RelativePath { get; set; } = null!;
     }
 }

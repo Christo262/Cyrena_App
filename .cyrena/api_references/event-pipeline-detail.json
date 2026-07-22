@@ -1,0 +1,13 @@
+{
+  "Title": "EventPipeline",
+  "Keywords": [
+    "EventPipeline",
+    "EventPipe",
+    "pub/sub",
+    "Cyrena.Models"
+  ],
+  "Summary": "Custom publish/sub.",
+  "Link": null,
+  "Content": "Custom publish/subscribe system with automatic cleanup of disposed subscribers. Replaces standard .NET events.\n\nContains: IEventPipe interface, EventPipe (non-generic) class, EventPipe of T generic class, and the EventPipeline abstract base class.\n\nUsage: subclass EventPipeline, define InvokePipeline and ConfigurePipe methods. Consumers call ConfigurePipe to subscribe and get an IDisposable that removes the subscription when disposed.\n\nThread safety: _pipes is a ConcurrentDictionary. InvokePipeline snapshots the list before iterating. ConfigurePipe has a small read-then-write race that is acceptable in practice.\n\nKnown issues: 1) InvokePipeline cleanup is a no-op (pipes.RemoveAll on local snapshot). 2) EventPipe.Invoke(object obj) silently drops the argument. 3) EventPipe of T .Invoke() throws NotImplementedException. 4) The _lock field is never used; dead code.",
+  "Id": "event-pipeline-detail"
+}

@@ -6,28 +6,30 @@ using Cyrena.PlatformIO.Contracts;
 using Cyrena.PlatformIO.Extensions;
 using Cyrena.Coding.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using Cyrena.Attributes;
 
 namespace Cyrena.PlatformIO.Components.Shared
 {
     public partial class Toolbar
     {
-        private IEnvironmentController _environment = default!;
-        private IDevelopPlanService _plan = default!;
-        private IChatConfigurationService _config = default!;
-        private IIterationService _its = default!;
+        [KernelInject]
+        private IEnvironmentController _environment { get; set; } = default!;
+        [KernelInject]
+        private IDevelopPlanService _plan { get; set; } = default!;
+        [KernelInject]
+        private IChatConfigurationService _config { get; set; } = default!;
+        [KernelInject]
+        private IIterationService _its { get; set; } = default!;
 
         private string? _name { get; set; }
         protected override void OnInitialized()
         {
-            _environment = Kernel.Services.GetRequiredService<IEnvironmentController>();
-            _plan = Kernel.Services.GetRequiredService<IDevelopPlanService>();
-            _config = Kernel.Services.GetRequiredService<IChatConfigurationService>();
-            _its = Kernel.Services.GetRequiredService<IIterationService>();
             _name = _environment.Current?.Name;
         }
 
-        private void OnChange()
+        private void OnChange(string? e)
         {
+            _name = e;
             if (_environment.Current!.Framework?
                 .Split(',', StringSplitOptions.TrimEntries)
                 .Any(f => f.Equals("espidf", StringComparison.OrdinalIgnoreCase)) == true)

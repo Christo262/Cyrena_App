@@ -1,10 +1,8 @@
 ﻿@inherits KernelComponentBase
 
-<div style="width:200px">
-    <select @bind="_name" @bind:after="OnChange" disabled="@_its.Inferring" class="form-control form-control-sm">
-        @foreach (var item in _environment.Environments)
-        {
-            <option value="@item.Name">@item.Name</option>
-        }
-    </select>
-</div>
+<MudSelect T="string" Value="@_name" ValueChanged="OnChange" Disabled="_its.Inferring" Style="max-width:250px">
+    @foreach (var item in _environment.Environments)
+    {
+        <MudSelectItem Value="@item.Name">@item.Name</MudSelectItem>
+    }
+    </MudSelect>

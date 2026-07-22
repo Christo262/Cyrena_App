@@ -1,0 +1,18 @@
+{
+  "Title": "Counter Page",
+  "Keywords": [
+    "Counter",
+    "page",
+    "counter",
+    "state",
+    "event",
+    "onclick",
+    "IncrementCount",
+    "interactive",
+    "demo"
+  ],
+  "Summary": "Interactive counter page demonstrating local component state and event handling.",
+  "Link": null,
+  "Content": "## Counter.razor\n\n**Path:** \u0060Components/Pages/Counter.razor\u0060\n\n**Type:** Routable page component\n\n### Route\n\n\u0060\u0060\u0060razor\n@page \u0022/counter\u0022\n\u0060\u0060\u0060\n\n### Content\n\n\u0060\u0060\u0060razor\n\u003CPageTitle\u003ECounter\u003C/PageTitle\u003E\n\n\u003Ch1\u003ECounter\u003C/h1\u003E\n\n\u003Cp role=\u0022status\u0022\u003ECurrent count: @currentCount\u003C/p\u003E\n\n\u003Cbutton class=\u0022btn btn-primary\u0022 @onclick=\u0022IncrementCount\u0022\u003EClick me\u003C/button\u003E\n\u0060\u0060\u0060\n\n### State\n\n| Member | Type | Description |\n|--------|------|-------------|\n| \u0060currentCount\u0060 | \u0060int\u0060 | The current counter value. Initialized to \u00600\u0060. |\n\n### Methods\n\n#### IncrementCount\n\n\u0060\u0060\u0060csharp\nprivate void IncrementCount() =\u003E currentCount\u002B\u002B;\n\u0060\u0060\u0060\n\nIncrements \u0060currentCount\u0060 by 1 on each button click.\n\n### Accessibility\n\n- \u0060role=\u0022status\u0022\u0060 on the count paragraph ensures screen readers announce updates when the count changes.\n\n### Notes\n\n- State is **local to the component** \u2014 it resets on page refresh or navigation.\n- No service dependencies \u2014 this is a self-contained demonstration component.\n- Uses Bootstrap \u0060btn btn-primary\u0060 styling.\n",
+  "Id": "pages_Counter"
+}

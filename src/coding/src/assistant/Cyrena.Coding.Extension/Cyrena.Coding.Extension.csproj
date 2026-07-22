@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BlazorMonaco" />
     <PackageReference Include="Cyrena.Components.Core" />
     <PackageReference Include="Cyrena.Extensa.Core" />
     <PackageReference Include="Cyrena.Persistence.File" />
@@ -16,6 +17,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Cyrena.Coding.Core\Cyrena.Coding.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="extension.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

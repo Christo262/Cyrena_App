@@ -1,67 +1,48 @@
 @page "/api-reference-edit/{RefId}/{KernelId}"
 @page "/api-reference-create/{KernelId}"
 @using Cyrena.Components.Shared
-@attribute [TabItemOption(Text = "Modify API References", Icon = "bi bi-file-medical")]
 
 @if (_model != null)
 {
-    <EditForm Model="_model" OnValidSubmit="SaveAsync" class="h-100">
+    <EditForm Model="_model" OnValidSubmit="SaveAsync" Class="h-100">
         <DataAnnotationsValidator />
-        <div class="row m-0 h-100">
-            <div class="col-md-12">
-                <div class="d-flex flex-row">
-                    <Tooltip Title="Back">
-                        <a href="api-references/@KernelId" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-arrow-left"></i></a>
-                    </Tooltip>
-                    <h6 class="ms-3 mt-2">Edit API References</h6>
-                    <div class="ms-auto"></div>
-                </div>
+        <MudGrid Class="m-0 h-100">
+            <MudItem xs="12">
+                <MudPaper Class="d-flex flex-row p-2" Elevation="0">
+                    <MudTooltip Text="Back">
+                        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Primary" Size="Size.Small" OnClick="Cancel" Class="mr-1">
+                        </MudIconButton>
+                    </MudTooltip>
+                    <MudText Typo="Typo.h6" Class="ml-3 mt-1">Edit API References</MudText>
+                    <MudSpacer />
+                </MudPaper>
+                <MudDivider />
                 <ValidationSummary />
-            </div>
+            </MudItem>
 
-            <div class="col-md-4">
-                <div class="mb-3">
-                    <label class="form-label">
-                        Title
-                    </label>
-                    <InputText @bind-Value="_model.Title" class="form-control" />
-                </div>
+            <MudItem xs="12" md="4">
+                <MudTextField @bind-Value="_model.Title" Label="Title" Variant="Variant.Outlined" Margin="Margin.Dense" Class="mb-3" />
 
-                <div class="mb-3">
-                    <label class="form-label">
-                        Summary
-                    </label>
-                    <InputTextArea @bind-Value="_model.Summary" class="form-control" />
-                </div>
+                <MudTextField @bind-Value="_model.Summary" Label="Summary" Variant="Variant.Outlined" Margin="Margin.Dense" Lines="5" Class="mb-3" />
 
-                <div class="mb-3">
-                    <label class="form-label">
-                        Keywords
-                    </label>
-                    <InputTextArea @bind-Value="_keywords" class="form-control" />
-                    <p class="small m-0 text-muted">
-                        <span class="text-danger">*</span> Enter keywords comma separated
-                    </p>
-                </div>
+                <MudTextField @bind-Value="_keywords" Label="Keywords" Variant="Variant.Outlined" Margin="Margin.Dense" Lines="5" Class="mb-3" />
+                <MudText Typo="Typo.caption" Class="text-muted">
+                    <span class="text-danger">*</span> Enter keywords comma separated
+                </MudText>
 
-                <div class="mb-3">
-                    <label class="form-label">
-                        Link
-                    </label>
-                    <InputText @bind-Value="_model.Link" class="form-control" />
-                </div>
-            </div>
-            <div class="col-md-8">
+                <MudTextField @bind-Value="_model.Link" Label="Link" Variant="Variant.Outlined" Margin="Margin.Dense" Class="mb-3" />
+            </MudItem>
+            <MudItem xs="12" md="8">
                 <CodeInput @bind-Value="_model.Content" Language="markdown"/>
-            </div>
+            </MudItem>
 
-            <div class="col-md-12 mt-2">
+            <MudItem xs="12" Class="mt-2">
                 <ValidationSummary />
-                <p class="text-center">
-                    <button type="submit" class="btn btn-success">Save</button>
-                    <button type="button" @onclick="Cancel" class="btn btn-danger">Cancel</button>
-                </p>
-            </div>
-        </div>
+                <MudStack Justify="Justify.Center" Row="true">
+                    <MudButton Variant="Variant.Filled" Color="Color.Success" ButtonType="ButtonType.Submit">Save</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="Cancel">Cancel</MudButton>
+                </MudStack>
+            </MudItem>
+        </MudGrid>
     </EditForm>
 }

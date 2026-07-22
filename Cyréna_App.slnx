@@ -1,7 +1,4 @@
 <Solution>
-  <Folder Name="/samples/">
-    <Project Path="samples/Cyrena.ToDoList/Cyrena.ToDoList.csproj" Id="5db0f7b3-3fca-4f85-a5bc-51f48b104b3b" />
-  </Folder>
   <Folder Name="/sln/">
     <File Path="contributing.md" />
     <File Path="Directory.Packages.props" />
@@ -11,20 +8,23 @@
     <File Path="readme.md" />
   </Folder>
   <Folder Name="/sln/docs/">
-    <File Path="docs/code_new_project_type.md" />
-    <File Path="docs/code_overview.md" />
+    <File Path="docs/cli-reference.md" />
     <File Path="docs/creating_extension.md" />
-    <File Path="docs/hud.md" />
     <File Path="docs/screenshots.md" />
   </Folder>
   <Folder Name="/src/">
-    <Project Path="src/Cyrena.Desktop/Cyrena.Desktop.csproj" />
-    <Project Path="src/Cyrena.HUD/Cyrena.HUD.csproj" Id="08dfc471-33df-45b6-bc2f-55006974a641" />
-    <Project Path="src/Cyrena/Cyrena.csproj" Id="9edb268b-eb4b-46d9-ae58-72a87bbf57a8" />
+    <Project Path="src/Cyrena.Android/Cyrena.Android.csproj" Id="d9e9464d-88fa-4f25-a386-89e4a2f40e08">
+      <Deploy Solution="Debug|*" />
+    </Project>
+    <Project Path="src/Cyrena.Shell/Cyrena.Shell.csproj" Id="58a14d80-8a42-42de-8391-570e403dbee8" />
+  </Folder>
+  <Folder Name="/src/canvas/">
+    <Project Path="src/canvas/Cyrena.Canvas/Cyrena.Canvas.csproj" Id="93554c8b-6458-46d5-a612-054e6e72a86a" />
   </Folder>
   <Folder Name="/src/components/">
     <Project Path="src/components/Cyrena.Components.Core/Cyrena.Components.Core.csproj" Id="01d4b14c-48f9-4158-a6a5-e2bfcc5187b2" />
     <Project Path="src/components/Cyrena.Components.Runtime/Cyrena.Components.Runtime.csproj" />
+    <Project Path="src/components/Cyrena/Cyrena.csproj" />
   </Folder>
   <Folder Name="/src/core/">
     <Project Path="src/core/Cyrena.Core/Cyrena.Core.csproj" Id="e480a90d-03ab-4e4a-819e-b60f31560803" />
@@ -34,6 +34,9 @@
     <Project Path="src/extensa/Cyrena.Extensa.Core/Cyrena.Extensa.Core.csproj" Id="cd2ba511-0d80-4544-b5d4-46d4c735cdfb" />
     <Project Path="src/extensa/Cyrena.Extensa.Runtime/Cyrena.Extensa.Runtime.csproj" Id="251829e2-237b-49a7-be18-eb994e7df6f8" />
   </Folder>
+  <Folder Name="/src/linux/">
+    <Project Path="src/linux/Cyrena.WebView/Cyrena.WebView.csproj" />
+  </Folder>
   <Folder Name="/src/memory/">
     <Project Path="src/memory/Cyrena.LTM/Cyrena.LTM.csproj" Id="8c3944be-eace-459c-84e1-f12cf69a2f14" />
   </Folder>
@@ -42,14 +45,24 @@
     <Project Path="src/persistence/Cyrena.Persistence.File/Cyrena.Persistence.File.csproj" Id="75bb36fa-c316-4ab7-8476-d5ff6cb39064" />
   </Folder>
   <Folder Name="/src/runtime/">
+    <Project Path="src/runtime/Cyrena.CLI/Cyrena.CLI.csproj" Id="1ed20171-daea-4b0a-b5d0-273af1037bbb" />
     <Project Path="src/runtime/Cyrena.Runtime.Ollama/Cyrena.Runtime.Ollama.csproj" Id="172ba23c-64b1-410c-a4e0-3608bc6bd596" />
     <Project Path="src/runtime/Cyrena.Runtime.OpenAI/Cyrena.Runtime.OpenAI.csproj" Id="9b0cc0d4-2e15-437c-90b4-2fb1d8b9b669" />
     <Project Path="src/runtime/Cyrena.Runtime/Cyrena.Runtime.csproj" Id="5eb6171f-3aea-4340-aaa9-2f70da7f0d79" />
   </Folder>
+  <Folder Name="/src/screens/">
+    <Project Path="src/screens/Cyrena.Screens/Cyrena.Screens.csproj" />
+  </Folder>
+  <Folder Name="/src/voice/">
+    <Project Path="src/voice/Cyrena.Voice.Core/Cyrena.Voice.Core.csproj" Id="c9ae0a0a-426e-48d0-9cdc-cc978f3ad48b" />
+    <Project Path="src/voice/Cyrena.Voice.Extension/Cyrena.Voice.Extension.csproj" Id="9e9ed299-da33-436e-b7c8-a157c27665dc" />
+  </Folder>
   <Folder Name="/src/web/">
+    <Project Path="src/web/Cyrena.Ollama.Web/Cyrena.Ollama.Web.csproj" Id="08c14853-0aec-438a-8632-6793ddd0e84d" />
     <Project Path="src/web/Cyrena.Tavily/Cyrena.Tavily.csproj" Id="a52527de-2b8d-4184-949d-49f7669e0409" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Cyrena.Platform.Tests/Cyrena.Platform.Tests.csproj" Id="096b9edd-2d7e-4a79-919c-1dcdf0c9e049" />
+    <Project Path="tests/Cyrena.Serialization.Tests/Cyrena.Serialization.Tests.csproj" Id="f33f4559-21f7-4ab8-92e1-43d77e9a1914" />
   </Folder>
 </Solution>

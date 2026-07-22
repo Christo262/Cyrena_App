@@ -25,7 +25,7 @@ namespace Cyrena.APIReferences.Services
         {
             var persistence = builder.GetFeatureOption<ICyrenaPersistenceBuilder>();    
             persistence.AddSingletonStore<ApiReference>("api_references");
-            builder.Plugins.AddFromType<APIReferences>();
+            builder.Plugins.AddFromType<APIReferencesKernelFunctions>("API_reference");
 
             builder.AddToolbarComponent<ToolbarIcon>(ToolbarAlignment.End);
             return Task.CompletedTask;

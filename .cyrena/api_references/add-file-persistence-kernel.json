@@ -1,0 +1,17 @@
+{
+  "Title": "KernelBuilderExtensions.AddFilePersistence - Kernel-Scoped File Persistence",
+  "Keywords": [
+    "AddFilePersistence",
+    "CyrenaKernelBuilder",
+    "kernel-scoped",
+    "file persistence",
+    "ICyrenaPersistenceBuilder",
+    "IPersistenceFS",
+    "FilePersistenceBuilder",
+    "per-chat"
+  ],
+  "Summary": "Configures file-based persistence scoped to a specific kernel/chat. Returns ICyrenaPersistenceBuilder for further store registration.",
+  "Link": "",
+  "Content": "## KernelBuilderExtensions.AddFilePersistence\n\n**Namespace**: \u0060Cyrena.Extensions\u0060\n**Assembly**: \u0060Cyrena.Persistence.File\u0060\n**Version**: 0.6.0\n\n### Purpose\nConfigures file-based persistence scoped to a specific kernel/chat. Returns \u0060ICyrenaPersistenceBuilder\u0060 for further store registration.\n\n### Method Definition\n\n\u0060\u0060\u0060csharp\npublic static class KernelBuilderExtensions\n{\n    public static ICyrenaPersistenceBuilder AddFilePersistence(\n        this CyrenaKernelBuilder builder, string path, string extension = \u0022json\u0022);\n}\n\u0060\u0060\u0060\n\n### Parameters\n\n| Parameter | Type | Default | Description |\n|-----------|------|---------|-------------|\n| \u0060builder\u0060 | \u0060CyrenaKernelBuilder\u0060 | \u2014 | The kernel builder |\n| \u0060path\u0060 | \u0060string\u0060 | \u2014 | Directory path for storing data |\n| \u0060extension\u0060 | \u0060string\u0060 | \u0060\u0022json\u0022\u0060 | File extension for entity files |\n\n### What It Does\n\n1. Configures \u0060FilePersistenceOptions\u0060 with the provided path and extension\n2. Registers \u0060IPersistenceFS\u0060 as singleton \u0060PersistenceFS\u0060\n3. Creates \u0060FilePersistenceBuilder\u0060 and registers it as \u0060ICyrenaPersistenceBuilder\u0060\n4. Returns the \u0060ICyrenaPersistenceBuilder\u0060 for further configuration\n\n### Return Value\n\u0060ICyrenaPersistenceBuilder\u0060 \u2014 Use this to register stores:\n\n\u0060\u0060\u0060csharp\nvar persistence = builder.AddFilePersistence(\u0022./chat-data\u0022, \u0022json\u0022);\npersistence.AddScopedStore\u003CMyEntity\u003E(\u0022my-entities\u0022);\n\u0060\u0060\u0060\n\n### Usage Example\n\n\u0060\u0060\u0060csharp\n// In IAssistantPlugin.LoadAsync\npublic Task LoadAsync(CyrenaKernelBuilder builder)\n{\n    var persistence = builder.AddFilePersistence(\u0022./chat-data\u0022, \u0022json\u0022);\n    persistence.AddScopedStore\u003CChatHistory\u003E(\u0022history\u0022);\n    persistence.AddScopedStore\u003CChatSettings\u003E(\u0022settings\u0022);\n    return Task.CompletedTask;\n}\n\u0060\u0060\u0060\n\n### Related\n- \u0060ICyrenaPersistenceBuilder\u0060 \u2014 Returned builder for store registration\n- \u0060FilePersistenceBuilder\u0060 \u2014 The builder implementation being created\n- \u0060PersistenceFS\u0060 \u2014 The IPersistenceFS implementation being registered\n- \u0060CyrenaBuilderExtensions.UseFilePersistence()\u0060 \u2014 Application-level variant\n- \u0060KernelBuilderExtensions.AddIsolatedFilePersistence()\u0060 \u2014 Isolated variant",
+  "Id": "add-file-persistence-kernel"
+}

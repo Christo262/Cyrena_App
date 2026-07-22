@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About — Cyréna</title>
+    <meta name="description" content="Learn more about Cyréna, the custom desktop development-agent app, and the philosophy behind these LLM reviews.">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="index.html" class="logo" aria-label="Cyréna Home">Cyréna</a>
+            <nav class="main-nav" aria-label="Main navigation">
+                <ul class="nav-list">
+                    <li><a href="index.html#quick-reference">Quick Reference</a></li>
+                    <li><a href="index.html#offline">Offline Models</a></li>
+                    <li><a href="index.html#cloud">Cloud Models</a></li>
+                    <li><a href="index.html#tips">Tips</a></li>
+                    <li><a href="about.html" aria-current="page">About</a></li>
+                </ul>
+            </nav>
+            <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="main-nav">
+                <span class="hamburger"></span>
+            </button>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <section class="hero hero-small" aria-labelledby="about-heading">
+            <div class="container">
+                <h1 id="about-heading">About Cyréna</h1>
+                <p class="hero-subtitle">A personal project born from the need to find the right LLM for real development work.</p>
+            </div>
+        </section>
+
+        <section class="content-section" aria-labelledby="story-heading">
+            <div class="container">
+                <h2 id="story-heading">The Story</h2>
+                <p>Cyréna started as a simple experiment: could a large language model reliably help with day-to-day software development? The answer turned out to be "it depends — heavily on which model you choose."</p>
+                <p>Over months of testing, I have run dozens of models through real tasks — building Arduino sketches, configuring ESP-IDF projects, writing .NET applications, and maintaining complex codebases. Some models excelled. Others stumbled. A few were outright frustrating.</p>
+                <p>This site exists to share those findings so other developers can skip the trial-and-error and pick a model that actually fits their workflow.</p>
+            </div>
+        </section>
+
+        <section class="content-section alt-bg" aria-labelledby="philosophy-heading">
+            <div class="container">
+                <h2 id="philosophy-heading">Review Philosophy</h2>
+                <p>Every review on this site comes from hands-on use inside the Cyréna desktop app. I do not benchmark token speeds or run synthetic tests. Instead, I judge models on what matters for real work:</p>
+                <ul class="styled-list">
+                    <li><strong>Accuracy</strong> — Does the code compile? Does it follow modern conventions?</li>
+                    <li><strong>Reliability</strong> — Does the model consistently produce useful output, or does it flake out?</li>
+                    <li><strong>Tool use</strong> — Can it call functions, search the web, and interact with the environment when needed?</li>
+                    <li><strong>Context awareness</strong> — Does it understand the project structure, or does it blindly patch files?</li>
+                    <li><strong>Developer experience</strong> — Is working with the model smooth, or does it fight you every step of the way?</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="content-section" aria-labelledby="app-heading">
+            <div class="container">
+                <h2 id="app-heading">The Cyréna App</h2>
+                <p>Cyréna is a custom desktop development-agent application built to bridge the gap between LLM chat interfaces and actual software engineering. It supports both offline models (via Ollama) and cloud providers, giving flexibility without sacrificing privacy when it is needed.</p>
+                <p>Key features include:</p>
+                <ul class="styled-list">
+                    <li>Unified interface for local and cloud LLMs</li>
+                    <li>Project-aware context management</li>
+                    <li>Sticky notes and API references for persistent rules</li>
+                    <li>Function calling and web search integration</li>
+                    <li>File-aware code generation and editing</li>
+                </ul>
+                <p class="placeholder-note">More details about the app will be added here as the project evolves.</p>
+            </div>
+        </section>
+        <section class="content-section alt-bg" aria-labelledby="contact-heading">
+            <div class="container">
+                <h2 id="contact-heading">Get in Touch</h2>
+                <p>Have a model you think I should test? Want to share your own experiences? I am always interested in hearing how other developers are using LLMs in their workflows.</p>
+                
+                <div class="contact-card">
+                    <p class="contact-name">Christo Cilliers</p>
+                    <a href="mailto:info@vayanova.co.za" class="contact-link">info@vayanova.co.za</a>
+                    
+                    <div class="contact-links">
+                        <a href="https://vayanova.co.za" target="_blank" rel="noopener noreferrer" class="contact-link">vayanova.co.za</a>
+                        <a href="https://cyrena.dev" target="_blank" rel="noopener noreferrer" class="contact-link">cyrena.dev</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <p class="footer-brand">Cyréna</p>
+            <p class="footer-copy">&copy; <span id="year"></span> Cyréna. All rights reserved.</p>
+            <nav class="footer-nav" aria-label="Footer navigation">
+                <ul>
+                    <li><a href="index.html#quick-reference">Quick Reference</a></li>
+                    <li><a href="index.html#offline">Offline</a></li>
+                    <li><a href="index.html#cloud">Cloud</a></li>
+                    <li><a href="index.html#tips">Tips</a></li>
+                    <li><a href="about.html" aria-current="page">About</a></li>
+                    <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                </ul>
+            </nav>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

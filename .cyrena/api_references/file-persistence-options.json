@@ -1,0 +1,16 @@
+{
+  "Title": "FilePersistenceOptions - File Persistence Configuration",
+  "Keywords": [
+    "FilePersistenceOptions",
+    "BaseDirectory",
+    "FileExtension",
+    "configuration",
+    "options",
+    "JSON",
+    "file path"
+  ],
+  "Summary": "Configuration class for file-based persistence. Defines the root directory for all collection folders and the file extension for entity JSON files.",
+  "Link": "",
+  "Content": "## FilePersistenceOptions\n\n**Namespace**: \u0060Cyrena.Options\u0060\n**Assembly**: \u0060Cyrena.Persistence.File\u0060\n**Version**: 0.6.0\n\n### Purpose\nConfiguration class for file-based persistence. Defines the root directory for all collection folders and the file extension for entity JSON files.\n\n### Class Definition\n\n\u0060\u0060\u0060csharp\npublic class FilePersistenceOptions\n{\n    public string BaseDirectory { get; set; } = \u0022./data\u0022;\n    public string FileExtension { get; set; } = \u0022json\u0022;\n}\n\u0060\u0060\u0060\n\n### Properties\n\n| Property | Type | Default | Description |\n|----------|------|---------|-------------|\n| \u0060BaseDirectory\u0060 | \u0060string\u0060 | \u0060\u0022./data\u0022\u0060 | Root directory for all collection folders |\n| \u0060FileExtension\u0060 | \u0060string\u0060 | \u0060\u0022json\u0022\u0060 | File extension for entity JSON files (without dot) |\n\n### File Layout\nGiven \u0060BaseDirectory = \u0022./data\u0022\u0060 and \u0060FileExtension = \u0022json\u0022\u0060:\n\u0060\u0060\u0060\n./data/\n  {collectionName}/\n    {entityId}.json\n\u0060\u0060\u0060\n\n### Usage\n\n**Via DI configuration:**\n\u0060\u0060\u0060csharp\nservices.Configure\u003CFilePersistenceOptions\u003E(options =\u003E\n{\n    options.BaseDirectory = Path.Combine(appDataPath, \u0022CyrenaData\u0022);\n    options.FileExtension = \u0022json\u0022;\n});\n\u0060\u0060\u0060\n\n**Via builder extension:**\n\u0060\u0060\u0060csharp\nbuilder.UseFilePersistence(options =\u003E\n{\n    options.BaseDirectory = \u0022./my-data\u0022;\n    options.FileExtension = \u0022json\u0022;\n});\n\u0060\u0060\u0060\n\n**Via kernel builder:**\n\u0060\u0060\u0060csharp\nbuilder.AddFilePersistence(\u0022./chat-data\u0022, \u0022json\u0022);\n\u0060\u0060\u0060\n\n### Related\n- \u0060PersistenceFS\u0060 \u2014 Uses these options for file paths\n- \u0060FileStore\u003CT\u003E\u0060 \u2014 Indirectly uses via PersistenceFS\n- \u0060FilePersistenceExtensions\u0060 \u2014 Extension methods that use these options",
+  "Id": "file-persistence-options"
+}

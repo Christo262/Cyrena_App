@@ -1,0 +1,20 @@
+@page "/"
+@using Cyrena.Components.Shared
+
+@if (_render && _model != null)
+{
+    @this.Render(_model.ComponentType)
+}
+
+@code {
+    private bool _render{ get; set; }
+    [Inject] private IViewStart _vs { get; set; } = default!;
+    private ViewStart? _model { get; set; }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender) return;
+        _model = _vs.GetViewStart();   
+        _render = true;
+        this.StateHasChanged();
+    }
+}

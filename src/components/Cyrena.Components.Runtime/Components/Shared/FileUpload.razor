@@ -1,18 +1,23 @@
-﻿@inherits KernelComponentBase
+@inherits FileAttacher
 
 @if (!string.IsNullOrEmpty(_accepts))
 {
-    <Tooltip Title="Attach File">
-        <button type="button" @onclick="TriggerFileUpload" class="btn btn-secondary btn-sm rounded-pill">
-            <i class="bi bi-paperclip"></i>
-        </button>
-    </Tooltip>
+    <MudTooltip Text="Attach File">
 
-   
+        <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="UploadFiles">
+            <CustomContent>
+                <MudFab StartIcon="@Icons.Material.Filled.AttachFile" Size="Size.Small" Class="mr-1"
+                    OnClick="context.OpenFilePickerAsync" />
+            </CustomContent>
+            <SelectedTemplate></SelectedTemplate>
+        </MudFileUpload>
+    </MudTooltip>
+
+    @*
     <!-- Hidden File Input -->
     <InputFile @ref="_fileInput"
                OnChange="HandleFilesSelected"
                multiple
                accept="@_accepts"
-               style="display: none;" />
+               style="display: none;" /> *@
 }

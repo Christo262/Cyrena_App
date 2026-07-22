@@ -1,7 +1,6 @@
 ﻿using Cyrena.Contracts;
 using Cyrena.Models;
 using Cyrena.Options;
-using Cyrena.Runtime.Models;
 using Cyrena.Runtime.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,18 +13,18 @@ namespace Cyrena.Extensions
             var builder = new CyrenaBuilder(services);
             builder.UseFilePersistence(fs =>
             {
-                fs.BaseDirectory = CyrenaBuilder.AppDataDirectory;
+                fs.BaseDirectory = Path.Combine(CyrenaBuilder.AppDataDirectory, "app-data");
                 fs.FileExtension = "json";
             });
-            var settings = new SettingsService(CyrenaBuilder.AppDataDirectory);
+            var settings = CyrenaRuntime.CreateSettings();
             builder.Services.AddSingleton<ISettingsService>(settings);
             builder.AddFeatureOption<ISettingsService>(settings);
-
-            builder.AddSingletonStore<ChatMessage>("chat_messages");
             builder.AddSingletonStore<ChatConfiguration>("chats");
 
             builder.Services.AddSingleton<IKernelController, KernelController>();
             builder.AddAssistantPlugin<AllAssistantsPlugin>();
+
+            builder.Services.AddSingleton<IImportService, ImportService>();
 
             return builder;
         }

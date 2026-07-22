@@ -1,0 +1,59 @@
+@page "/app-setup/ollama"
+
+<div class="h-100 overflow-auto">
+    <MudText Typo="Typo.h3">Setup Ollama</MudText>
+    <MudDivider />
+
+    <MudGrid Class="m-0">
+        <MudItem xs="12" md="9" Class="mx-auto">
+            <MudText Typo="Typo.h4">
+                <MudChip T="string" Color="Color.Primary">1</MudChip> Install Ollama
+            </MudText>
+            <MudText Typo="Typo.body1">
+                Visit <a href="https://ollama.com/download" target="_blank">ollama.com/download</a> and follow the instructions to install and run Ollama on your machine.
+            </MudText>
+
+            <MudDivider Class="my-4" />
+
+            <MudText Typo="Typo.h4">
+                <MudChip T="string" Color="Color.Primary">2</MudChip> Download a Model
+            </MudText>
+            <MudText Typo="Typo.body1">
+                Open a terminal and run the following command to download a model. The download may take a few minutes depending on your connection.
+            </MudText>
+            <pre><code>ollama pull {your-model}</code></pre>
+            <MudText Typo="Typo.body1">For example:</MudText>
+            <pre><code>ollama pull gpt-oss:20b</code></pre>
+            <MudText Typo="Typo.body1">
+                Browse available models at <a href="https://ollama.com/search" target="_blank">ollama.com/search</a>.
+            </MudText>
+
+            <MudDivider Class="my-4" />
+
+            <MudText Typo="Typo.h4">
+                <MudChip T="string" Color="Color.Primary">3</MudChip> Connect Cyréna
+            </MudText>
+            <MudPaper Class="pa-4 mt-2">
+                <EditForm Model="_model" OnValidSubmit="Submit">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <MudTextField @bind-Value="_model.Endpoint" Label="Ollama Endpoint" Variant="Variant.Outlined" Class="mb-2" />
+
+                    <MudTextField @bind-Value="_model.ModelId" Label="Model ID" Placeholder="e.g. gpt-oss:20b" Variant="Variant.Outlined" Class="mb-2" />
+
+                    <MudTextField @bind-Value="_model.Name" Label="Display Name" Placeholder="e.g. My Local Model" Variant="Variant.Outlined" Class="mb-2" />
+
+                    <MudTextField @bind-Value="_model.APIKey" Label="API Key" InputType="InputType.Password" HelperText="Provide if endpoint is https://ollama.com." Variant="Variant.Outlined" Class="mb-2" />
+
+                    <div class="text-center">
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Submit</MudButton>
+                    </div>
+                </EditForm>
+            </MudPaper>
+            <MudText Typo="Typo.body2" Class="mt-2">
+                <span class="text-danger">*</span> Advanced parameters and file or image support can be configured later in Settings (<MudIcon Icon="@Icons.Material.Filled.Settings" Size="Size.Small" />).
+            </MudText>
+        </MudItem>
+    </MudGrid>
+</div>

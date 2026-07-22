@@ -1,0 +1,9 @@
+
+<hr />
+<MudText Typo="Typo.h4">Ollama Web Search</MudText>
+
+<MudTextField T="string" Value="_model.APIKey" ValueChanged="SetApiKey" Immediate InputType="InputType.Password" Label="API Key" HelperText="Required to enable Ollama Web Search" Variant="Variant.Outlined" Margin="Margin.Dense" />
+<MudCheckBox T="bool" Value="_model.Enabled" ValueChanged="SetEnabled" Label="Enable" Class="mb-2" Dense Size="Size.Small" />
+<MudText Typo="Typo.caption" Class="text-muted">
+    <span class="text-danger">*</span> Enable/Disable web search globally, even if feature is activated in a chat.
+</MudText>

@@ -1,0 +1,57 @@
+@using Cyrena.Extensa.Components.Shared
+@inject CyrenaOptions _options
+@inherits LayoutComponentBase
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudSpacer />
+        <MudTooltip Text="Extensions">
+            <MudIconButton Href="app-extensions" Icon="@Icons.Material.Filled.Apps" Color="Color.Inherit" />
+        </MudTooltip>
+        <MudTooltip Text="Settings">
+            <MudIconButton Href="settings" Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" />
+        </MudTooltip>
+        <MudTooltip Text="Theme">
+            <MudIconButton OnClick="ChangeTheme" Icon="@(ApplicationTheme.DarkMode ? Icons.Material.Filled.DarkMode : Icons.Material.Filled.LightMode)" Color="Color.Inherit" />
+        </MudTooltip>
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="2" Variant="@DrawerVariant.Responsive" ClipMode="@DrawerClipMode.Always" Class="pa-1">
+        <MudNavMenu Rounded>
+            <MudNavLink Href="" Match="NavLinkMatch.All" Class="mb-1">
+                <div class="d-flex align-center">
+                    <MudIcon Icon="@Icons.Material.Filled.MarkUnreadChatAlt" Size="Size.Small" /> <MudText Typo="Typo.subtitle2" Class="ml-2">New Chat</MudText>
+                </div>
+            </MudNavLink>
+            @if (_chats is not null)
+            {
+                foreach (var item in _chats.Where(x => x[ChatConfiguration.Group] is null))
+                {
+                    <KernelWatcherNavLink ChatConfiguration="item"/>
+                }
+
+                @if (_groups != null)
+                {
+                    @foreach (var item in _groups.Where(x => !string.IsNullOrEmpty(x)))
+                    {
+                        <MudText Typo="Typo.caption" Class="mt-3 px-4">@item</MudText>
+                        @foreach (var m in _chats.Where(x => x[ChatConfiguration.Group] == item))
+                        {
+                            <KernelWatcherNavLink ChatConfiguration="m" />
+                        }
+                    }
+                }
+            }
+        </MudNavMenu>
+    </MudDrawer>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@if (_loading)
+{
+    <MudOverlay Visible="true" DarkBackground="true">
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+    </MudOverlay>
+}

@@ -1,1 +1,16 @@
-{"Title":"Entity / IEntity - Base Entity with ID","Keywords":["Entity","IEntity","base class","model","id","Cyrena.Core"],"Summary":"Base entity interface and abstract class providing a unique identifier for all persistent models in Cyréna.","Link":null,"Content":"## Entity / IEntity\n\n**Namespace**: `Cyrena.Models`\n**Assembly**: `Cyrena.Core`\n\n### Purpose\nBase entity interface and abstract class providing a unique identifier for all persistent models.\n\n### IEntity Interface\n```csharp\npublic interface IEntity\n{\n    string Id { get; set; }\n}\n```\n\n### Entity Abstract Class\n```csharp\npublic abstract class Entity : IEntity\n{\n    public virtual string Id { get; set; } = default!;\n}\n```\n\n### Usage\nAll persistent models in Cyréna extend `Entity`:\n- `ChatConfiguration`\n- `Prompt`\n- `ToolResult`\n- Custom extension models\n\n```csharp\npublic class MyModel : Entity\n{\n    public string Name { get; set; } = default!;\n}\n```\n\n### Related\n- `ChatConfiguration` - Chat settings model\n- `Prompt` - System prompt model\n- `IStore<T>` - Persistence contract requiring IEntity","Id":"4071da19-1dc7-431a-adf9-9324c983e065"}
+{
+  "Title": "Entity / IEntity - Base Entity with ID",
+  "Keywords": [
+    "Entity",
+    "IEntity",
+    "base class",
+    "model",
+    "id",
+    "Ulid",
+    "Cyrena.Core"
+  ],
+  "Summary": "Base entity interface and abstract class providing a unique identifier for persistent models in Cyr\u00E9na. Verified current implementation.",
+  "Link": null,
+  "Content": "## Entity / IEntity\n\n**Namespace**: \u0060Cyrena.Models\u0060\n**Assembly**: \u0060Cyrena.Core\u0060\n\n### Purpose\nBase entity interface and abstract class providing a unique identifier for persistent models in Cyr\u00E9na. Concrete entities typically generate an \u0060Ulid\u0060 ID in their constructor.\n\n### IEntity Interface\n\u0060\u0060\u0060csharp\npublic interface IEntity\n{\n    string Id { get; set; }\n}\n\u0060\u0060\u0060\n\n### Entity Abstract Class\n\u0060\u0060\u0060csharp\npublic abstract class Entity : IEntity\n{\n    public virtual string Id { get; set; } = default!;\n}\n\u0060\u0060\u0060\n\n### Models That Extend Entity (Verified)\n- \u0060ChatConfiguration\u0060 \u2014 \u0060Id = Ulid.NewUlid().ToString()\u0060 in ctor\n- \u0060FileAttachment\u0060 \u2014 internal \u0060[JsonConstructor]\u0060, Id assigned externally\n- \u0060ChatMessageContentEntity\u0060 \u2014 \u0060Id = Ulid.NewUlid().ToString()\u0060 in ctor\n- \u0060KernelContentEntity\u0060 \u2014 \u0060Id = Ulid.NewUlid().ToString()\u0060 in ctor\n\n### Models That Do NOT Extend Entity\n- \u0060Prompt\u0060 \u2014 standalone class with \u0060init\u0060-only \u0060Id\u0060 (Guid)\n- \u0060ToolResult\u0060 / \u0060ToolResult\u003CT\u003E\u0060 \u2014 result wrappers, not persistent\n- \u0060QueuedInput\u0060 \u2014 has \u0060Id\u0060 but is not persistent across restarts\n- \u0060ConnectionInfo\u0060 \u2014 record, not persistent\n- \u0060CyrenaFileManifest\u0060 \u2014 import/export manifest, not persisted to a store\n\n### Usage\n\u0060\u0060\u0060csharp\npublic class MyModel : Entity\n{\n    public MyModel()\n    {\n        Id = Ulid.NewUlid().ToString();\n    }\n    public string Name { get; set; } = default!;\n}\n\u0060\u0060\u0060\n\n### Related\n- \u0060ChatConfiguration\u0060 - Chat settings model\n- \u0060IStore\u003CT\u003E\u0060 - Persistence contract requiring \u0060IEntity\u0060\n",
+  "Id": "4071da19-1dc7-431a-adf9-9324c983e065"
+}

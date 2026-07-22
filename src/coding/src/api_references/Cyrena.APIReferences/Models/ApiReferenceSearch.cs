@@ -1,9 +1,9 @@
 ﻿using Cyrena.Models;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Cyrena.APIReferences.Models
 {
-    public class ApiReferenceSearch : IJsonSerializable
+    public class ApiReferenceSearch 
     {
         public ApiReferenceSearch(string id, string? title, string? description)
         {
@@ -16,15 +16,5 @@ namespace Cyrena.APIReferences.Models
         public string? Title { get; set; }
         public string? Description { get; set; }
         public int Score { get; set; }
-
-        public string ToJson()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
-
-        public override string ToString()
-        {
-            return ToJson();
-        }
     }
 }

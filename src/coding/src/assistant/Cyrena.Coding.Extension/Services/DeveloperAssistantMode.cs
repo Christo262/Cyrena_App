@@ -1,4 +1,3 @@
-﻿using BootstrapBlazor.Components;
 using Cyrena.Contracts;
 using Cyrena.Coding.Components.Shared;
 using Cyrena.Coding.Contracts;
@@ -38,9 +37,9 @@ namespace Cyrena.Coding.Services
             if (string.IsNullOrEmpty(config.WorkingDirectory) || !Directory.Exists(config.WorkingDirectory))
                 throw new InvalidOperationException($"RootDirectory not set, unable to configure");
 
-            var sln_builder = _services.GetServices<ICodeBuilder>().FirstOrDefault(x => x.Id == config[DevelopOptions.BuilderId]);
-            if (sln_builder == null)
-                throw new NullReferenceException($"Unable to find solution builder with id {config[DevelopOptions.BuilderId]}");
+            var code_builder = _services.GetServices<ICodeBuilder>().FirstOrDefault(x => x.Id == config[DevelopOptions.BuilderId]);
+            if (code_builder == null)
+                throw new NullReferenceException($"Unable to find code builder with id {config[DevelopOptions.BuilderId]}");
 
             var persistence = builder.AddFilePersistence(Path.Combine(config.WorkingDirectory, ".cyrena"));
             builder.Services.Configure<ChatOptions>(o =>
@@ -48,11 +47,11 @@ namespace Cyrena.Coding.Services
                 o.IncludeLogsInDisplay = true;
             });
             persistence.AddSingletonStore<StickyNote>("sticky_notes");
-            var plan = await sln_builder.ConfigureAsync(builder);
+            var plan = await code_builder.ConfigureAsync(builder);
             var plan_service = new DevelopPlanService(plan);
             builder.Services.AddSingleton<IDevelopPlanService>(plan_service);
             builder.Services.AddSingleton<IVersionControl, VersionControl>();
-            builder.Plugins.AddFromType<BaseFileKernelFunctions>("File");
+            builder.Plugins.AddFromType<BaseFileKernelFunctions>("Code");
             builder.Plugins.AddFromType<ProjectInformation>("Project");
             builder.AddToolbarComponent<VersionControlViewer>(ToolbarAlignment.Start);
             builder.KernelBuilder.AddStartupTask<DevelopPlanWatcher>();
@@ -62,25 +61,20 @@ namespace Cyrena.Coding.Services
         {
             if (string.IsNullOrWhiteSpace(config[DevelopOptions.BuilderId]))
                 return Task.CompletedTask;
-            var sln_builder = _services.GetServices<ICodeBuilder>().FirstOrDefault(x => x.Id == config[DevelopOptions.BuilderId]);
-            if(sln_builder == null)
+            var code_builder = _services.GetServices<ICodeBuilder>().FirstOrDefault(x => x.Id == config[DevelopOptions.BuilderId]);
+            if(code_builder == null)
                 return Task.CompletedTask;
-            return sln_builder.DeleteAsync(config);
+            return code_builder.DeleteAsync(config);
         }
 
         public Task EditAsync(ChatConfiguration config, IServiceProvider services)
         {
             if (string.IsNullOrWhiteSpace(config[DevelopOptions.BuilderId]))
                 return Task.CompletedTask;
-            var sln_builder = _services.GetServices<ICodeBuilder>().FirstOrDefault(x => x.Id == config[DevelopOptions.BuilderId]);
-            if (sln_builder == null)
-                return services.GetRequiredService<DialogService>().ShowModal("Error", "Unable to find handler for this project type.", new ResultDialogOption()
-                {
-                    ButtonYesText = "Okay",
-                    ShowNoButton = false,
-                    Size = Size.Medium
-                });
-            return sln_builder.EditAsync(config, services);
+            var code_builder = _services.GetServices<ICodeBuilder>().FirstOrDefault(x => x.Id == config[DevelopOptions.BuilderId]);
+            if (code_builder == null)
+                throw new InvalidOperationException("Unable to find handler for this project type.");
+            return code_builder.EditAsync(config, services);
         }
     }
 }

@@ -1,10 +1,18 @@
-﻿using System.Text;
+﻿using Cyrena.Models;
+using System.Text;
 
 namespace Cyrena.Coding.Models
 {
-    public class DevelopFile : DevelopItem
+    public class DevelopFile : DevelopItem, ISuppressibleResult
     {
         public bool ReadOnly { get; set; } = false;
+
+        public string Suppress()
+        {
+            return ReadOnly
+                ? $"[FILE:{Id}; read-only; content omitted; use Code_read/Code_read_lines]"
+                : $"[FILE:{Id}; content omitted; use Code_read/Code_read_lines before editing]";
+        }
     }
 
     public class DevelopFileContent : DevelopFile
@@ -25,7 +33,7 @@ namespace Cyrena.Coding.Models
     {
         public DevelopFileLines()
         {
-            Lines = new Dictionary<int, string>();
+            Lines = new List<DevelopFileLine>();
         }
 
         public DevelopFileLines(DevelopFile file, string? content)
@@ -34,32 +42,45 @@ namespace Cyrena.Coding.Models
             Name = file.Name;
             RelativePath = file.RelativePath;
             ReadOnly = file.ReadOnly;
-            Lines = new Dictionary<int, string>();
+            Lines = new List<DevelopFileLine>();
 
-            if (!string.IsNullOrEmpty(content))
+            if (string.IsNullOrEmpty(content))
+                return;
+
+            var lines = SplitLines(content);
+
+            for (var i = 0; i < lines.Count; i++)
             {
-                // Properly split lines while preserving empty lines
-                string[] lines;
-                if (content.Contains("\r\n"))
-                    lines = content.Split(new string[] { "\r\n" }, StringSplitOptions.None);
-                else if (content.Contains("\n"))
-                    lines = content.Split('\n');
-                else
-                    lines = content.Split('\r');
-
-                for (int i = 0; i < lines.Length; i++)
+                Lines.Add(new DevelopFileLine
                 {
-                    Lines[i] = lines[i];
-                }
+                    Index = i,
+                    Text = lines[i]
+                });
             }
         }
 
-        public Dictionary<int, string> Lines { get; set; }
+        public List<DevelopFileLine> Lines { get; set; }
+
+        public int LineCount => Lines.Count;
 
         public override string ToString()
         {
-            // Reconstruct with Windows-style line endings (\r\n)
-            return string.Join("\r\n", Lines.OrderBy(x => x.Key).Select(x => x.Value));
+            return string.Join("\n", Lines.OrderBy(x => x.Index).Select(x => x.Text ?? string.Empty));
         }
+
+        private static List<string> SplitLines(string content)
+        {
+            return content
+                .Replace("\r\n", "\n")
+                .Replace("\r", "\n")
+                .Split('\n', StringSplitOptions.None)
+                .ToList();
+        }
+    }
+
+    public class DevelopFileLine
+    {
+        public int Index { get; set; }
+        public string? Text { get; set; }
     }
 }

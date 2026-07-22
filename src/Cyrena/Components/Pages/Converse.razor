@@ -1,8 +1,0 @@
-﻿@page "/converse/{Id}"
-@using Cyrena.Components.Shared
-@attribute [TabItemOption(Text = "Converse")]
-
-@if (_kernel != null)
-{
-    <Chat Kernel="_kernel" />
-}

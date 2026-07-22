@@ -6,7 +6,7 @@ using Cyrena.Extensa.Models;
 using Cyrena.Extensa.Options;
 using Cyrena.Options;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System.IO.Compression;
 using System.Reflection;
 
@@ -84,7 +84,7 @@ namespace Cyrena.Extensions
             try
             {
                 var json = File.ReadAllText(script);
-                string[]? ids = JsonConvert.DeserializeObject<string[]>(json);
+                string[]? ids = JsonSerializer.Deserialize<string[]>(json);
                 if (ids == null)
                     throw new Exception();
                 foreach(var item in ids)
@@ -142,7 +142,7 @@ namespace Cyrena.Extensions
                     try
                     {
                         var json = File.ReadAllText(path);
-                        var extensionInfo = JsonConvert.DeserializeObject<ExtensionInfo>(json);
+                        var extensionInfo = JsonSerializer.Deserialize<ExtensionInfo>(json);
                         if (extensionInfo == null)
                             throw new NullReferenceException($"Unable to deserialize extension info from {path}");
                         loadedExtension.Description = extensionInfo.Description;
@@ -198,6 +198,9 @@ namespace Cyrena.Extensions
                             throw new UnmetDependencyException(target.Id, target.Version, d.Id, d.MinVersion);
                     }
                 }
+
+                if (target.Version < Version.Parse("0.6.0"))
+                    throw new Exception("Minimum required version is 0.6.0 for all extensions");
 
                 if (target.Status == ExtensionStatus.Unloaded)
                 {

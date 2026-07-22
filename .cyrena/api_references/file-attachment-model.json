@@ -1,0 +1,16 @@
+{
+  "Title": "FileAttachment - File Attachment Model",
+  "Keywords": [
+    "FileAttachment",
+    "file attachment",
+    "entity",
+    "persistence",
+    "FileReferenceContent",
+    "Cyrena.Core",
+    "models"
+  ],
+  "Summary": "Represents a persisted file attachment with metadata, tools access control, and conversion to FileReferenceContent for kernel usage.",
+  "Link": null,
+  "Content": "## FileAttachment\n\n**Namespace**: \u0060Cyrena.Models\u0060\n**Assembly**: \u0060Cyrena.Core\u0060\n\n### Purpose\nRepresents a persisted file attachment in the chat system. Extends \u0060Entity\u0060 with file metadata and supports conversion to \u0060FileReferenceContent\u0060 for kernel usage.\n\n### Class Definition\n\u0060\u0060\u0060csharp\npublic sealed class FileAttachment : Entity\n{\n    [JsonConstructor]\n    internal FileAttachment();\n    \n    public string MimeType { get; set; } = default!;\n    public string Path { get; set; } = default!;\n    public string InternalName { get; set; } = default!;\n    public List\u003Cstring\u003E Tools { get; set; }\n    public Dictionary\u003Cstring, string?\u003E Properties { get; set; }\n    public string? this[string key] { get; set; }\n}\n\u0060\u0060\u0060\n\n### Properties\n| Property | Type | Description |\n|----------|------|-------------|\n| \u0060Id\u0060 | \u0060string\u0060 | Unique identifier (inherited from Entity) |\n| \u0060MimeType\u0060 | \u0060string\u0060 | MIME type of the file |\n| \u0060Path\u0060 | \u0060string\u0060 | File system path to the stored file |\n| \u0060InternalName\u0060 | \u0060string\u0060 | Original file name |\n| \u0060Tools\u0060 | \u0060List\u003Cstring\u003E\u0060 | Tool IDs that can access this file (default: \u0060[\u0022Attachment_get\u0022]\u0060 |\n| \u0060Properties\u0060 | \u0060Dictionary\u003Cstring, string?\u003E\u0060 | Additional metadata |\n\n### Indexer\n\u0060\u0060\u0060csharp\npublic string? this[string key] { get; set; }\n\u0060\u0060\u0060\nSafer access to Properties dictionary.\n\n### Static Methods\n\n#### From(string file_name, string content_type, string path, string original_name, params string[] tools)\nFactory method to create a FileAttachment.\n\n\u0060\u0060\u0060csharp\npublic static FileAttachment From(string file_name, string content_type, string path, string original_name, params string[] tools)\n\u0060\u0060\u0060\n\n### Instance Methods\n\n#### ToFileReference()\nConverts the attachment to a \u0060FileReferenceContent\u0060 for use in Semantic Kernel.\n\n\u0060\u0060\u0060csharp\npublic FileReferenceContent ToFileReference()\n\u0060\u0060\u0060\n\n### Usage\n\u0060\u0060\u0060csharp\n// Create from factory\nvar attachment = FileAttachment.From(\n    \u0022document.pdf\u0022, \n    \u0022application/pdf\u0022, \n    \u0022/path/to/file\u0022, \n    \u0022My Document.pdf\u0022\n);\n\n// Convert to kernel reference\nvar reference = attachment.ToFileReference();\n\u0060\u0060\u0060\n\n### Related\n- \u0060IFileHandlerFactory\u0060 - Manages FileAttachment persistence\n- \u0060IFileHandler\u0060 - Creates file content from attachments\n- \u0060FileReferenceContent\u0060 - Semantic Kernel file reference type\n- \u0060KernelContentExtensions.ToTextContent()\u0060 - Converts FileReferenceContent to text",
+  "Id": "file-attachment-model"
+}

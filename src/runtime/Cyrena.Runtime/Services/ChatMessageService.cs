@@ -4,7 +4,6 @@ using Cyrena.Models;
 using Cyrena.Options;
 using Cyrena.Persistence;
 using Cyrena.Persistence.Contracts;
-using Cyrena.Runtime.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
@@ -16,15 +15,16 @@ namespace Cyrena.Runtime.Services
     {
         private readonly ChatMessagePipeline _pipeline;
         private readonly ChatOptions _options;
-        private readonly IStore<ChatMessage> _store;
+        private readonly IStore<ChatMessageContentEntity> _store;
         private readonly ChatConfiguration _config;
         private readonly IPromptManager _prompts;
         private readonly IIterationService _its;
         private readonly IServiceProvider _services;
+        private readonly IStore<FileAttachment> _files;
 
         private readonly ChatHistory _kernel;
         private readonly ChatHistory _display;
-        public ChatMessageService(IOptions<ChatOptions> options, ChatConfiguration config, IStore<ChatMessage> store, IPromptManager prompts, IIterationService its, IServiceProvider services)
+        public ChatMessageService(IOptions<ChatOptions> options, ChatConfiguration config, IStore<ChatMessageContentEntity> store, IPromptManager prompts, IIterationService its, IServiceProvider services, IStore<FileAttachment> files)
         {
             _options = options.Value;
             _pipeline = new ChatMessagePipeline();
@@ -36,6 +36,7 @@ namespace Cyrena.Runtime.Services
             _display = new ChatHistory();
             _its = its;
             _services = services;
+            _files = files;
         }
 
         public ChatOptions Options => _options;
@@ -74,10 +75,9 @@ namespace Cyrena.Runtime.Services
 
         public async Task LoadHistoryAsync()
         {
-            var data = await _store.FindManyAsync(x => x.ConversationId == _config.Id, new OrderBy<ChatMessage>(x => x.Date, SortDirection.Ascending));
-            var k_history = data.Select(x => new ChatMessageContent(new AuthorRole(x.Label), x.Content));
-            var d_history = data.Select(x => x.ToDisplayMessageContent());
-            d_history = d_history.Where(x => _options.IsDisplayContent(x));
+            var data = await _store.FindManyAsync(x => true, new OrderBy<ChatMessageContentEntity>(x => x.Date, SortDirection.Ascending));
+            var k_history = data.Select(x => x.AsChatMessage());
+            var d_history = k_history.Where(x => _options.IsDisplayContent(x));
             LoadHistory(k_history, d_history);
         }
 
@@ -88,7 +88,12 @@ namespace Cyrena.Runtime.Services
                 _kernel.Add(content);
                 _pipeline.InvokeKernelHistoryUpdated(_kernel);
                 if (_options.MessagePersistRoles.Contains(content.Role))
-                    await _store.AddAsync(new ChatMessage(content, _config.Id, _its.IterationId));
+                {
+                    var model = new ChatMessageContentEntity(content, _its.IterationId);
+                    await _store.AddAsync(model);
+                    var new_entity = await _store.FindAsync(x => x.Id == model.Id);
+                    content = new_entity?.AsChatMessage() ?? content;
+                }
             }
 
             if(_options.IsDisplayContent(content))
@@ -96,53 +101,18 @@ namespace Cyrena.Runtime.Services
                 _display.Add(content);
                 _pipeline.InvokeDisplayHistoryUpdated(_display);
             }
-        }
-
-        public async Task AddMessage(AuthorRole role, string? content)
-        {
-            var model = new ChatMessageContent(role, content);
-            await AddMessage(model);
-        }
-
-        public async Task AddMessage(AuthorRole role, string? input, params AdditionalMessageContent[] items)
-        {
-            var content = new ChatMessageContent(role, input);
-            if (_options.IsKernelContent(content))
-            {
-                _kernel.Add(content);
-                _pipeline.InvokeKernelHistoryUpdated(_kernel);
-                if (items.Any())
-                    foreach (var item in items)
-                        content.Items.Add(item.Item);
-                if(_options.MessagePersistRoles.Contains(content.Role))
-                    await _store.AddAsync(new ChatMessage(content, _config.Id, _its.IterationId, items));
-            }
-
-            if (_options.IsDisplayContent(content))
-            {
-                if (items.Any())
-                {
-                    var cmpn = new ChatMessageContent(role, input);
-                    foreach (var item in items)
-                        cmpn.Items.Add(new InfoMessageContentItem(item.Name));
-                    _display.Add(cmpn);
-                    _pipeline.InvokeDisplayHistoryUpdated(_display);
-                }
-                else
-                {
-                    _display.Add(content);
-                    _pipeline.InvokeDisplayHistoryUpdated(_display);
-                }
-            }
-        }
+        } 
 
         public async Task ClearHistoryAsync()
         {
-            var count = await _store.DeleteManyAsync(x => x.ConversationId == _config.Id);
+            var count = await _store.DeleteManyAsync(x => true);
             _kernel.Clear();
             _display.Clear();
             _pipeline.InvokeKernelHistoryUpdated(_kernel);
             _pipeline.InvokeDisplayHistoryUpdated(_display);
+            if (Directory.Exists(_config.FileStoragePath))
+                Directory.Delete(_config.FileStoragePath, true);
+            await _files.DeleteManyAsync(x => true);
         }
 
         public void Dispose()

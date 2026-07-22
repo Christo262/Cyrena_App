@@ -8,6 +8,7 @@ using Cyrena.Models;
 using Microsoft.SemanticKernel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Cyrena.Dotnet.CSharp.Plugins
 {
@@ -49,7 +50,7 @@ namespace Cyrena.Dotnet.CSharp.Plugins
         [KernelFunction("create_model")]
         [Description("Creates a new data class in the 'Models' directory with starter code")]
         public ToolResult<DevelopFile> CreateModel(
-            [Description("The name of the model, i.e. 'UserModel'.")]string name)
+            [Description("The name of the model, i.e. 'UserModel'.")] string name)
         {
             var folder_id = "models";
             var folder_name = "Models";
@@ -113,54 +114,88 @@ namespace Cyrena.Dotnet.CSharp.Plugins
 
         [KernelFunction("build")]
         [Description("Runs dotnet build in the project directory and returns output and errors.")]
-        public ToolResult<string[]> RunDotnetBuild()
+        public ToolResult<ConsoleOutput> RunDotnetBuild()
         {
-            const string arguments = "build";
-            _chat.LogInfo($"Running dotnet {arguments} ...");
-
-            var info = new ProcessStartInfo("dotnet", arguments)
+            try
             {
-                WorkingDirectory = _plan.Plan.RootDirectory,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
+                const string arguments = "build";
+                _chat.LogInfo($"Running dotnet {arguments} in {_plan.Plan.RootDirectory}...");
 
-            using var process = Process.Start(info);
-            if (process == null)
-                return new ToolResult<string[]>(false, "Unable to start dotnet. Verify installation.");
-
-            var logs = new List<string>();
-            var errors = new List<string>();
-
-            process.OutputDataReceived += (_, e) =>
-            {
-                if (e.Data != null)
+                var info = new ProcessStartInfo(GetDotnetExecutable(), arguments)
                 {
-                    logs.Add(e.Data);
-                    _chat.LogInfo($"\t{e.Data}");
-                }
-            };
-            process.ErrorDataReceived += (_, e) =>
-            {
-                if (e.Data != null)
+                    WorkingDirectory = _plan.Plan.RootDirectory,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                var output = new ConsoleOutput()
                 {
-                    errors.Add(e.Data);
-                    _chat.LogError($"\t{e.Data}");
-                }
-            };
+                    Command = $"dotnet {arguments}"
+                };
 
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-            process.WaitForExit();
-            process.WaitForExit(); // flush buffers
+                using var process = Process.Start(info);
+                if (process == null)
+                    return new ToolResult<ConsoleOutput>(false, "Unable to start dotnet. Verify installation.");
 
-            if (process.ExitCode != 0)
-                return new ToolResult<string[]>(errors.Concat(logs).ToArray(), false, $"dotnet {arguments} failed");
+                process.OutputDataReceived += (_, e) =>
+                {
+                    if (e.Data != null)
+                    {
+                        output.WriteLine("info", e.Data);
+                        _chat.LogInfo($"\t{e.Data}");
+                    }
+                };
+                process.ErrorDataReceived += (_, e) =>
+                {
+                    if (e.Data != null)
+                    {
+                        output.WriteLine("error", e.Data);
+                        _chat.LogError($"\t{e.Data}");
+                    }
+                };
 
-            return new ToolResult<string[]>(logs.ToArray(), true, $"dotnet {arguments} succeeded");
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+                process.WaitForExit();
+                process.WaitForExit(); // flush buffers
+
+                const string lineNumberWarning = "IMPORTANT: Line numbers in build output refer to generated code, not source files — do not use them to locate code in .razor or .cs files. Search for the relevant code by name or pattern instead.";
+
+                if (process.ExitCode != 0)
+                    return new ToolResult<ConsoleOutput>(output, false, $"dotnet {arguments} failed. {lineNumberWarning}");
+
+                return new ToolResult<ConsoleOutput>(output, true, $"dotnet {arguments} succeeded. {lineNumberWarning}");
+            }
+            catch (Exception ex)
+            {
+                _chat.LogError(ex.Message);
+                return new ToolResult<ConsoleOutput>(false, ex.Message);
+            }
         }
+
+        private string GetDotnetExecutable()
+        {
+            // 1. Check if 'dotnet' is already in the current process PATH
+            // On Windows, this usually works. On Linux, it depends on how the app was launched.
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return "dotnet";
+            }
+
+            // 2. For Linux/macOS, we need to be more explicit.
+            // We check common installation paths if the simple "dotnet" call fails.
+            string[] commonPaths = { "/usr/bin/dotnet", "/usr/local/bin/dotnet", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".dotnet/dotnet") };
+
+            foreach (var path in commonPaths)
+            {
+                if (File.Exists(path)) return path;
+            }
+
+            return "dotnet"; // Fallback to default
+        }
+
 
         public static string ReadTemplate(string name)
         {

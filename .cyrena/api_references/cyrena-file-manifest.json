@@ -1,0 +1,17 @@
+{
+  "Title": "CyrenaFileManifest - Import/Export File Manifest",
+  "Keywords": [
+    "CyrenaFileManifest",
+    "manifest",
+    "import",
+    "export",
+    ".cyrena",
+    "zip",
+    "extension",
+    "version"
+  ],
+  "Summary": "Model representing the manifest inside a .cyrena zipped archive. Contains extension requirements, version constraints, importer ID, and custom properties.",
+  "Link": null,
+  "Content": "## CyrenaFileManifest\n\n**Namespace**: \u0060Cyrena.Models\u0060\n**Assembly**: \u0060Cyrena.Core\u0060\n\n### Purpose\nRepresents the basic data for Cyr\u00E9na to import/export custom files that may require custom extensions. Stored inside a \u0060.cyrena\u0060 zipped archive.\n\n### Constructors\n\u0060\u0060\u0060csharp\n// Parameterless constructor for deserialization\ninternal CyrenaFileManifest();\n\n// Standard constructor\npublic CyrenaFileManifest(string extension, Version version, string importerId);\n\u0060\u0060\u0060\n\n### Properties\n| Property | Type | Description |\n|----------|------|-------------|\n| \u0060Extension\u0060 | \u0060string\u0060 | The extension ID required to handle this file |\n| \u0060Version\u0060 | \u0060Version\u0060 | Minimum required version of the extension |\n| \u0060ImporterId\u0060 | \u0060string\u0060 | The ID of the \u0060ICyrenaFileImporter\u0060 that can import this file |\n| \u0060Properties\u0060 | \u0060Dictionary\u003Cstring, string?\u003E\u0060 | Additional custom properties for the exporter to populate |\n\n### JSON Serialization\nProperties use \u0060JsonPropertyName\u0060 attributes for manifest file format:\n- \u0060extension.required\u0060 \u2192 \u0060Extension\u0060\n- \u0060required.extension.version.min\u0060 \u2192 \u0060Version\u0060\n- \u0060importer.id\u0060 \u2192 \u0060ImporterId\u0060\n- \u0060cyrena.properties\u0060 \u2192 \u0060Properties\u0060\n\n### Indexer\n\u0060\u0060\u0060csharp\npublic string? this[string key] { get; set; }\n\u0060\u0060\u0060\nSafer access to the Properties dictionary via \u0060TryGetValue\u0060.\n\n### Usage\n\u0060\u0060\u0060csharp\n// Create manifest\nvar manifest = new CyrenaFileManifest(\u0022cyrena.canvas\u0022, new Version(1, 0), \u0022canvas.importer\u0022);\nmanifest[\u0022document.title\u0022] = \u0022My Canvas\u0022;\n\n// Export\nvar exporter = kernel.GetRequiredService\u003CICyrenaFileExporter\u003E();\nvar result = await exporter.ExportFilesAsync(\u0022cyrena.canvas\u0022, new Version(1, 0), \u0022canvas.importer\u0022, manifest.Properties, \u0022/path/to/output.cyrena\u0022);\n\n// Import\nvar importer = services.GetServices\u003CICyrenaFileImporter\u003E().First(x =\u003E x.Id == manifest.ImporterId);\nawait importer.ImportAsync(manifest, \u0022/path/to/extracted/data\u0022);\n\u0060\u0060\u0060\n\n### Related\n- \u0060ICyrenaFileExporter\u0060 - Exports files with this manifest\n- \u0060ICyrenaFileImporter\u0060 - Imports files using this manifest\n- \u0060ChatConfiguration\u0060 - May be exported/imported as part of .cyrena files",
+  "Id": "cyrena-file-manifest"
+}

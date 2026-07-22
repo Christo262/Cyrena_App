@@ -1,0 +1,44 @@
+@page "/app-setup/openai"
+
+<div class="h-100 overflow-auto">
+    <MudText Typo="Typo.h3">Setup OpenAI</MudText>
+    <MudDivider />
+
+    <MudGrid Class="m-0">
+        <MudItem xs="12" md="9" Class="mx-auto">
+            <MudText Typo="Typo.h4">
+                <MudChip T="string" Color="Color.Primary">1</MudChip> Get an API Key
+            </MudText>
+            <MudText Typo="Typo.body1">
+                Visit <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a>, sign in, and create a new secret key. Keep it safe — you won't be able to view it again after closing the dialog.
+            </MudText>
+
+            <MudDivider Class="my-4" />
+
+            <MudText Typo="Typo.h4">
+                <MudChip T="string" Color="Color.Primary">2</MudChip> Connect Cyréna
+            </MudText>
+
+            <MudPaper Class="pa-4 mt-2">
+                <EditForm Model="_model" OnValidSubmit="Submit">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <MudTextField @bind-Value="_model.ApiKey" Label="API Key" InputType="InputType.Password" Variant="Variant.Outlined" Class="mb-2" />
+
+                    <MudTextField @bind-Value="_model.ModelId" Label="Model ID" Placeholder="e.g. gpt-4o" Variant="Variant.Outlined" Class="mb-2" />
+                    <MudText Typo="Typo.caption">Find available model IDs at <a href="https://platform.openai.com/docs/models" target="_blank">platform.openai.com/docs/models</a>.</MudText>
+
+                    <MudTextField @bind-Value="_model.DisplayName" Label="Display Name" Placeholder="e.g. My OpenAI Model" Variant="Variant.Outlined" Class="mb-2" />
+
+                    <div class="text-center">
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Submit</MudButton>
+                    </div>
+                </EditForm>
+            </MudPaper>
+            <MudText Typo="Typo.body2" Class="mt-2">
+                <span class="text-danger">*</span> Advanced parameters and file or image support can be configured later in Settings (<MudIcon Icon="@Icons.Material.Filled.Settings" Size="Size.Small" />).
+            </MudText>
+        </MudItem>
+    </MudGrid>
+</div>

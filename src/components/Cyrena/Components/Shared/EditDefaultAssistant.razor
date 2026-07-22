@@ -1,0 +1,13 @@
+<MudDialog>
+    <DialogContent>
+        <MudForm Model="Model" @ref="_form">
+            <ConnectionSelector Label="AI Connection" @bind-Value="Model.ConnectionId" />
+            <PluginSelector Chat="Model" />
+            <HistoryConfiguration Model="Model"/>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton OnClick="Submit" Color="Color.Primary">Submit</MudButton>
+    </DialogActions>
+</MudDialog>

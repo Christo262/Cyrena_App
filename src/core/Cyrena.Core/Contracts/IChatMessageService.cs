@@ -2,7 +2,6 @@
 using Cyrena.Options;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
-using System.Linq.Expressions;
 
 namespace Cyrena.Contracts
 {
@@ -12,7 +11,7 @@ namespace Cyrena.Contracts
     public interface IChatMessageService : IDisposable
     {
         /// <summary>
-        /// Contains user, assistant, system, tool call messages
+        /// Contains user, assistant, system, tool call messages that are stored
         /// </summary>
         IReadOnlyList<ChatMessageContent> KernelHistory { get; }
         /// <summary>
@@ -33,6 +32,11 @@ namespace Cyrena.Contracts
         IDisposable OnDisplayHistoryChanged(Action<ChatHistory> callback);
         IDisposable OnKernelHistoryChanged(Action<ChatHistory> callback);
         IDisposable OnHistoryLoaded(Action<ChatHistory> callback);
+        /// <summary>
+        /// Returns the kernel history for usage in <see cref="IConnection"/> 
+        /// AFTER <see cref="IConversationHistoryTransformer.TransformPreIterationHistory(ChatHistory)"/> has been applied
+        /// </summary>
+        /// <returns><see cref="ChatHistory"/></returns>
         Task<ChatHistory> GetKernelHistory();
 
         /// <summary>
@@ -51,22 +55,7 @@ namespace Cyrena.Contracts
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        Task AddMessage(ChatMessageContent content);
-        /// <summary>
-        /// Adds a new message, auto checks if its kernel or ui only
-        /// </summary>
-        /// <param name="role"></param>
-        /// <param name="content"></param>
-        /// <returns></returns>
-        Task AddMessage(AuthorRole role, string? content);
-        /// <summary>
-        /// Adds a new message with additional content, auto checks if its kernel or ui only
-        /// </summary>
-        /// <param name="role"></param>
-        /// <param name="input"></param>
-        /// <param name="items"></param>
-        /// <returns></returns>
-        Task AddMessage(AuthorRole role, string? input, params AdditionalMessageContent[] items);
+        Task AddMessage(ChatMessageContent content);       
         /// <summary>
         /// Removes the persisted chat messages and clears in memory messages
         /// </summary>

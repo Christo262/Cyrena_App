@@ -1,0 +1,28 @@
+﻿using Cyrena.Contracts;
+using Cyrena.Extensa.Models;
+using Cyrena.Extensions;
+using Cyrena.Options;
+using Cyrena.Services;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Cyrena
+{
+    public class CyrenaExtension : Extension
+    {
+        public const string Id = "cyrena";
+        public const string Name = "Cyréna";
+        public const string Description = "Cyréna core runtime. Provides the application version to the extension framework.";
+        public static Version Version = System.Version.Parse("0.6.0");
+
+        public override void BuildExtension(CyrenaBuilder builder)
+        {
+            builder.AddComponents();
+            builder.AddExtensaComponents();
+            builder.AddOllama();
+            builder.AddOpenAI();
+
+            builder.AddDefaultAssistant();
+            builder.Services.AddScoped<IPinService, PinService>();
+        }
+    }
+}

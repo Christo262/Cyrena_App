@@ -1,0 +1,58 @@
+@inherits KernelComponentBase
+
+@if(_current == null)
+{
+    <div class="pa-2">
+        @foreach(var item in _items)
+        {
+            <MudPaper Class="d-flex align-center pa-2 mb-2" Elevation="1">
+                <MudText Typo="Typo.h6" Class="m-0">@item.Id</MudText>
+                <MudIconButton Icon="@Icons.Material.Filled.Visibility" 
+                               Color="Color.Primary" 
+                               Size="Size.Small"
+                               Class="ms-auto"
+                               OnClick="() => Activate(item)" />
+            </MudPaper>
+        }
+    </div>
+}
+
+@if(_previewHtml != null && _current != null)
+{
+    if(_current.DocumentType == Models.CanvasDocumentType.Html)
+    {
+        <style>
+            .canvas-preview-frame {
+                width: 100%;
+                height: 100%;
+                border: 0;
+                display: block;
+                background: white;
+            }
+        </style>
+
+        <iframe class="canvas-preview-frame" id="@_current.Id"
+                sandbox="allow-scripts allow-forms allow-popups allow-modals"
+                srcdoc="@_previewHtml">
+        </iframe>
+    }else if(_current.DocumentType == Models.CanvasDocumentType.Markdown)
+    {
+        <style>
+            .canvas-preview-frame {
+                width: 100%;
+                height: 100%;
+                border: 0;
+                display: block;
+                overflow:auto;
+                white-space:pre-wrap;
+            }
+            .canvas-preview-frame ul, .canvas-preview-frame ol {
+                margin-left:5px;
+                padding-left:10px;
+            }
+        </style>
+        <div class="canvas-preview-frame pa-2">
+            @((MarkupString)_previewHtml)
+        </div>
+    }
+}

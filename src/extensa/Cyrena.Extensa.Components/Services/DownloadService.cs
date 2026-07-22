@@ -5,7 +5,7 @@ using Cyrena.Extensa.Options;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System.IO.Compression;
 
 namespace Cyrena.Extensa.Services
@@ -41,7 +41,7 @@ namespace Cyrena.Extensa.Services
                 var next = _manager.GetNextDownload();
                 if (next == null)
                 {
-                    await Task.Delay(100);
+                    await Task.Delay(100, stoppingToken);
                     continue;
                 }
 
@@ -69,7 +69,7 @@ namespace Cyrena.Extensa.Services
                         }
 
                         var json = File.ReadAllText(manifest);
-                        var info = JsonConvert.DeserializeObject<ExtensionInfo>(json);
+                        var info = JsonSerializer.Deserialize<ExtensionInfo>(json);
                         if (info == null)
                         {
                             Directory.Delete(extension, true);
@@ -111,7 +111,7 @@ namespace Cyrena.Extensa.Services
                 finally
                 {
                     _manager.ReportCurrentDownloadProgress(null, 0);
-                    await Task.Yield();
+                    await Task.Delay(500, stoppingToken);
                 }
             }
         }

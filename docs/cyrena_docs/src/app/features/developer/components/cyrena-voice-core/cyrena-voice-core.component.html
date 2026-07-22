@@ -1,0 +1,278 @@
+<div>
+  <h1 class="fw-bold mb-4">Cyrena.Voice.Core</h1>
+
+  <p class="lead text-secondary mb-2">
+    <code>Cyrena.Voice.Core</code> provides the foundational contracts and data models for Cyréna's voice processing pipeline.
+    It defines the interfaces that voice implementations must satisfy and the artifact types that flow through the voice chain.
+    This library contains no implementations — it is a pure contracts and models package intended to be referenced by voice provider
+    extensions and the main application.
+  </p>
+  <p class="text-secondary mb-5">
+    <strong>Version:</strong> <code>0.6.0</code> &nbsp;|&nbsp; <strong>Target Framework:</strong> <code>.NET 10.0</code> &nbsp;|&nbsp; <strong>Namespace:</strong> <code>Cyrena.Voice</code>
+  </p>
+
+  <div class="alert alert-info mb-4">
+    <strong>Voice Pipeline (4 stages):</strong>
+    <ol class="mb-0">
+      <li><strong>Record</strong> — <code>IVoiceRecorder</code> captures audio input</li>
+      <li><strong>Transcribe</strong> — <code>IVoiceTranscriber</code> converts voice to text</li>
+      <li><strong>Convert</strong> — <code>ITextAudioConverter</code> converts text back to audio (TTS)</li>
+      <li><strong>Play</strong> — <code>IAudioPlayer</code> plays the resulting audio</li>
+    </ol>
+    These stages are orchestrated by <code>IVoiceChain</code>.
+  </div>
+
+  <hr class="my-5">
+
+  <!-- Contracts -->
+  <h2 class="fw-bold mb-4">Contracts</h2>
+
+  <h3 id="iaudioplayer" class="h5 fw-bold mt-4">IAudioPlayer</h3>
+  <p class="text-secondary">Plays <code>AudioArtifact</code> instances. Lifecycle-managed with explicit initialize/deinitialize pattern.</p>
+  <pre class="bg-dark text-light p-3 rounded"><code>public interface IAudioPlayer : IDisposable
+&#123;
+    Task InitializeAsync(CancellationToken cancellationToken = default);
+    Task DeinitializeAsync(CancellationToken cancellationToken = default);
+    bool IsInitialized &#123; get; &#125;
+    bool IsPlaying &#123; get; &#125;
+    Task PlayAsync(AudioArtifact audio, CancellationToken cancellationToken = default);
+&#125;</code></pre>
+  <ul class="text-secondary mb-5">
+    <li>Must call <code>InitializeAsync</code> before <code>PlayAsync</code>. Behavior is undefined if <code>PlayAsync</code> is called before initialization.</li>
+    <li><code>IsPlaying</code> should reflect the actual playback state.</li>
+    <li><code>DeinitializeAsync</code> releases resources. <code>Dispose</code> should also clean up.</li>
+    <li>All operations accept an optional <code>CancellationToken</code>.</li>
+  </ul>
+
+  <h3 id="itextaudioconverter" class="h5 fw-bold mt-4">ITextAudioConverter</h3>
+  <p class="text-secondary">Converts text to <code>AudioArtifact</code> (text-to-speech). Lifecycle-managed with explicit initialize/deinitialize pattern.</p>
+  <pre class="bg-dark text-light p-3 rounded"><code>public interface ITextAudioConverter : IDisposable
+&#123;
+    Task InitializeAsync(CancellationToken cancellationToken = default);
+    Task DeinitializeAsync(CancellationToken cancellationToken = default);
+    bool IsInitialized &#123; get; &#125;
+    Task&lt;AudioArtifact&gt; ConvertAsync(string text, CancellationToken cancellationToken = default);
+&#125;</code></pre>
+  <ul class="text-secondary mb-5">
+    <li>Must call <code>InitializeAsync</code> before <code>ConvertAsync</code>.</li>
+    <li>Returns an <code>AudioArtifact</code> (typically a concrete subclass provided by the implementation).</li>
+    <li>All operations accept an optional <code>CancellationToken</code>.</li>
+  </ul>
+
+  <h3 id="ivoicechain" class="h5 fw-bold mt-4">IVoiceChain</h3>
+  <p class="text-secondary">Holds the voice pipeline together. Provides access to all four stages and manages their collective lifecycle.</p>
+  <pre class="bg-dark text-light p-3 rounded"><code>public interface IVoiceChain
+&#123;
+    string Id &#123; get; &#125;
+    string Name &#123; get; &#125;
+    string? Description &#123; get; &#125;
+
+    Task InitializeAsync(CancellationToken cancellationToken = default);
+    Task DeinitializeAsync(CancellationToken cancellationToken = default);
+
+    bool IsInitialized &#123; get; &#125;
+
+    IVoiceRecorder Recorder &#123; get; &#125;
+    IVoiceTranscriber Transcriber &#123; get; &#125;
+    ITextAudioConverter Converter &#123; get; &#125;
+    IAudioPlayer Player &#123; get; &#125;
+&#125;</code></pre>
+  <ul class="text-secondary mb-5">
+    <li><code>Id</code>: Unique identifier for the chain instance.</li>
+    <li><code>Name</code>: Display name.</li>
+    <li><code>Description</code>: Optional human-readable description.</li>
+    <li><code>InitializeAsync</code>: Should initialize all contained stages.</li>
+    <li><code>DeinitializeAsync</code>: Should deinitialize all contained stages.</li>
+    <li>The four stage properties (<code>Recorder</code>, <code>Transcriber</code>, <code>Converter</code>, <code>Player</code>) expose the pipeline components.</li>
+  </ul>
+
+  <h3 id="ivoicerecorder" class="h5 fw-bold mt-4">IVoiceRecorder</h3>
+  <p class="text-secondary">Records voice input and produces <code>VoiceArtifact</code> instances. Lifecycle-managed with explicit initialize/deinitialize pattern.</p>
+  <pre class="bg-dark text-light p-3 rounded"><code>public interface IVoiceRecorder : IDisposable
+&#123;
+    Task InitializeAsync(CancellationToken cancellationToken = default);
+    Task DeinitializeAsync(CancellationToken cancellationToken = default);
+    bool IsRecording &#123; get; &#125;
+    bool IsInitialized &#123; get; &#125;
+    Task StartRecording(CancellationToken cancellationToken = default);
+    Task&lt;VoiceArtifact&gt; StopRecording(CancellationToken cancellationToken = default);
+&#125;</code></pre>
+  <ul class="text-secondary mb-5">
+    <li>Must call <code>InitializeAsync</code> before <code>StartRecording</code>.</li>
+    <li><code>StartRecording</code> begins capture. <code>IsRecording</code> should be <code>true</code> during capture.</li>
+    <li><code>StopRecording</code> ends capture and returns a <code>VoiceArtifact</code> containing the recorded audio.</li>
+    <li>All operations accept an optional <code>CancellationToken</code>.</li>
+  </ul>
+
+  <h3 id="ivoicetranscriber" class="h5 fw-bold mt-4">IVoiceTranscriber</h3>
+  <p class="text-secondary">Converts <code>VoiceArtifact</code> into text (speech-to-text). Lifecycle-managed with explicit initialize/deinitialize pattern.</p>
+  <pre class="bg-dark text-light p-3 rounded"><code>public interface IVoiceTranscriber : IDisposable
+&#123;
+    Task InitializeAsync(CancellationToken cancellationToken = default);
+    Task DeinitializeAsync(CancellationToken cancellationToken = default);
+    bool IsInitialized &#123; get; &#125;
+    Task&lt;string?&gt; TranscribeAsync(VoiceArtifact artifact, CancellationToken cancellationToken = default);
+&#125;</code></pre>
+  <ul class="text-secondary mb-5">
+    <li>Must call <code>InitializeAsync</code> before <code>TranscribeAsync</code>.</li>
+    <li>Returns the transcribed text, or <code>null</code> if transcription fails or produces no result.</li>
+    <li>Accepts any <code>VoiceArtifact</code> subclass. Implementations may throw if given an unsupported artifact type.</li>
+    <li>All operations accept an optional <code>CancellationToken</code>.</li>
+  </ul>
+
+  <hr class="my-5">
+
+  <!-- Models -->
+  <h2 class="fw-bold mb-4">Models</h2>
+
+  <h3 id="audioartifact" class="h5 fw-bold mt-4">AudioArtifact</h3>
+  <p class="text-secondary">Base class for all audio output artifacts (produced by <code>ITextAudioConverter</code>, consumed by <code>IAudioPlayer</code>).</p>
+  <pre class="bg-dark text-light p-3 rounded"><code>public abstract class AudioArtifact
+&#123;
+&#125;</code></pre>
+  <ul class="text-secondary mb-5">
+    <li>Currently an empty abstract base. Implementations should subclass this to add format-specific data (e.g., raw PCM bytes, sample rate, format headers).</li>
+    <li>This is the output type of the TTS pipeline stage.</li>
+  </ul>
+
+  <h3 id="voiceartifact" class="h5 fw-bold mt-4">VoiceArtifact</h3>
+  <p class="text-secondary">Base class for all voice input artifacts (produced by <code>IVoiceRecorder</code>, consumed by <code>IVoiceTranscriber</code>).</p>
+  <pre class="bg-dark text-light p-3 rounded"><code>public abstract class VoiceArtifact
+&#123;
+&#125;</code></pre>
+  <ul class="text-secondary mb-5">
+    <li>Currently an empty abstract base. Implementations should subclass this to add format-specific data.</li>
+    <li>This is the output type of the recording pipeline stage and the input type of the transcription stage.</li>
+  </ul>
+
+  <h3 id="emptyvoiceartifact" class="h5 fw-bold mt-4">EmptyVoiceArtifact</h3>
+  <p class="text-secondary">A sentinel <code>VoiceArtifact</code> representing an empty or null recording result.</p>
+  <pre class="bg-dark text-light p-3 rounded"><code>public sealed class EmptyVoiceArtifact : VoiceArtifact
+&#123;
+&#125;</code></pre>
+  <ul class="text-secondary mb-5">
+    <li>Returned by <code>IVoiceRecorder.StopRecording()</code> when no audio was captured or the recording was cancelled.</li>
+    <li><code>IVoiceTranscriber</code> implementations should handle this gracefully (return <code>null</code> or empty string).</li>
+  </ul>
+
+  <h3 id="standardwavvoiceartifact" class="h5 fw-bold mt-4">StandardWavVoiceArtifact</h3>
+  <p class="text-secondary">A <code>VoiceArtifact</code> containing standard WAV-format audio data (16-bit mono PCM).</p>
+  <pre class="bg-dark text-light p-3 rounded"><code>public sealed class StandardWavVoiceArtifact : VoiceArtifact
+&#123;
+    public StandardWavVoiceArtifact() &#123; &#125;
+    public StandardWavVoiceArtifact(byte[] data)
+    &#123;
+        Data = data;
+    &#125;
+
+    public byte[] Data &#123; get; init; &#125; = [];
+&#125;</code></pre>
+  <div class="table-responsive mb-3">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>Data</code></td>
+          <td><code>byte[]</code></td>
+          <td>Raw WAV file bytes. Defaults to empty array.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <ul class="text-secondary mb-5">
+    <li>The constructor accepting <code>byte[]</code> is the primary way to create instances from recorded audio.</li>
+    <li>The <code>init</code> accessor means <code>Data</code> can be set at initialization time but not mutated afterward.</li>
+    <li>This is the standard artifact type expected by most <code>IVoiceTranscriber</code> implementations.</li>
+  </ul>
+
+  <hr class="my-5">
+
+  <!-- Lifecycle Pattern -->
+  <h2 class="fw-bold mb-4">Lifecycle Pattern</h2>
+
+  <p class="text-secondary">
+    All voice contracts (<code>IAudioPlayer</code>, <code>ITextAudioConverter</code>, <code>IVoiceRecorder</code>, <code>IVoiceTranscriber</code>)
+    follow the same lifecycle pattern:
+  </p>
+  <pre class="bg-dark text-light p-3 rounded mb-3"><code>[Created] -> InitializeAsync() -> [Operational] -> DeinitializeAsync() -> [Disposed]
+                              |
+                        Dispose()</code></pre>
+  <ol class="text-secondary mb-5">
+    <li><code>InitializeAsync</code> must be called before any operational method (<code>PlayAsync</code>, <code>ConvertAsync</code>, <code>StartRecording</code>, <code>StopRecording</code>, <code>TranscribeAsync</code>).</li>
+    <li><code>IsInitialized</code> must be <code>true</code> after successful initialization and <code>false</code> after deinitialization.</li>
+    <li><code>DeinitializeAsync</code> releases resources but does not necessarily dispose the instance.</li>
+    <li><code>Dispose</code> should clean up all resources. It is safe to call <code>Dispose</code> without calling <code>DeinitializeAsync</code> first.</li>
+    <li>All methods accept <code>CancellationToken cancellationToken = default</code>.</li>
+  </ol>
+
+  <hr class="my-5">
+
+  <!-- Pipeline Flow -->
+  <h2 class="fw-bold mb-4">Pipeline Flow</h2>
+
+  <p class="text-secondary">The typical voice interaction flow through the chain:</p>
+  <pre class="bg-dark text-light p-3 rounded mb-3"><code>IVoiceRecorder    ->    IVoiceTranscriber    ->    ITextAudioConverter    ->    IAudioPlayer
+     |                         |                           |                          |
+StartRecording          TranscribeAsync             ConvertAsync                 PlayAsync
+StopRecording           (returns text)            (returns AudioArtifact)      (plays audio)
+(VoiceArtifact)</code></pre>
+  <p class="text-secondary mb-5">
+    <code>IVoiceChain</code> holds references to all four stages and can be used to initialize/deinitialize the entire pipeline at once.
+  </p>
+
+  <hr class="my-5">
+
+  <!-- Usage -->
+  <h2 class="fw-bold mb-4">Usage for Extension Developers</h2>
+
+  <p class="text-secondary">To create a voice provider extension:</p>
+  <ol class="text-secondary mb-5">
+    <li>Reference <code>Cyrena.Voice.Core</code></li>
+    <li>Implement one or more of the voice contracts</li>
+    <li>Register implementations via the extension's <code>BuildExtension</code> method</li>
+    <li>Use the provided artifact types or create custom subclasses</li>
+  </ol>
+
+  <h3 class="h5 fw-bold mb-3">Example — Custom AudioArtifact Subclass</h3>
+  <pre class="bg-dark text-light p-3 rounded mb-5"><code>public sealed class Mp3AudioArtifact : AudioArtifact
+&#123;
+    public byte[] Data &#123; get; init; &#125; = [];
+    public int SampleRate &#123; get; init; &#125;
+&#125;</code></pre>
+
+  <hr class="my-5">
+
+  <!-- Dependencies -->
+  <h2 class="fw-bold mb-4">Dependencies</h2>
+  <ul class="text-secondary mb-5">
+    <li>No external NuGet package dependencies</li>
+    <li>Targets .NET 10.0</li>
+  </ul>
+
+  <hr class="my-5">
+
+  <!-- Version History -->
+  <h2 class="fw-bold mb-4">Version History</h2>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Version</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>0.6.0</code></td>
+          <td>Initial release with 5 contracts and 4 artifact models</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

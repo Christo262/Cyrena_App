@@ -1,5 +1,4 @@
-﻿using BlazorMonaco.Editor;
-using BootstrapBlazor.Components;
+using BlazorMonaco.Editor;
 using Cyrena.Contracts;
 using Cyrena.Coding.Contracts;
 using Cyrena.Coding.Extensions;
@@ -9,6 +8,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using Microsoft.SemanticKernel;
+using MudBlazor;
 
 namespace Cyrena.Coding.Components.Pages
 {
@@ -18,7 +18,7 @@ namespace Cyrena.Coding.Components.Pages
         [Parameter] public string? FileId { get; set; }
         [Inject] private IKernelController _controller { get; set; } = default!;
         [Inject] private NavigationManager _nav { get; set; } = default!;
-        [Inject] private ToastService _toasts { get; set; } = default!;
+        [Inject] private ISnackbar _snackbar { get; set; } = default!;
         [Inject] private IJSRuntime _js { get; set; } = default!;
 
         private Kernel? _kernel { get; set; }
@@ -26,31 +26,11 @@ namespace Cyrena.Coding.Components.Pages
         private DevelopFileContent? _current { get; set; }
         private int _selectedVersionIndex { get; set; }
 
-        [CascadingParameter]
-        public TabItem? Item { get; set; }
-        [CascadingParameter]
-        public Tab? Parent { get; set; }
-        private IDisposable _unload = default!;
-
-        protected override void OnInitialized()
-        {
-            _unload = _controller.OnChatUnload(cfg =>
-            {
-                if (cfg.Id == KernelId)
-                {
-                    if (Item != null && Parent != null)
-                        Parent.RemoveTab(Item);
-                }
-            });
-        }
-
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (!firstRender) return;
             if (string.IsNullOrEmpty(KernelId) || string.IsNullOrEmpty(FileId))
             {
-                if (Parent != null && Item != null)
-                    await Parent.RemoveTab(Item);
                 _nav.NavigateTo("");
                 return;
             }
@@ -80,9 +60,7 @@ namespace Cyrena.Coding.Components.Pages
             }
             catch (Exception ex)
             {
-                await _toasts.Error("Error", ex.Message);
-                if (Parent != null && Item != null)
-                    await Parent.RemoveTab(Item);
+                _snackbar.Add(ex.Message, Severity.Error);
                 _nav.NavigateTo("");
             }
         }
@@ -153,14 +131,12 @@ namespace Cyrena.Coding.Components.Pages
             if (_og_target == null || _kernel == null) return;
             IDevelopPlanService plan = _kernel.GetRequiredService<IDevelopPlanService>();
             if (!plan.Plan.TryWriteFileContent(_og_target.File, _og_target.File.Content, out var _))
-                _toasts.Warning("Error", "Something went wrong trying to revert");
+                _snackbar.Add("Something went wrong trying to revert", Severity.Warning);
             else
             {
                 var versionControl = _kernel.Services.GetRequiredService<IVersionControl>();
                 versionControl.RollbackTo(_og_target);
                 _og_target = null;
-                if (Parent != null && Item != null)
-                    Parent.RemoveTab(Item);
                 _nav.NavigateTo($"converse/{KernelId}");
             }
         }
@@ -170,14 +146,11 @@ namespace Cyrena.Coding.Components.Pages
             if (string.IsNullOrEmpty(FileId) || _kernel == null) return;
             var versionControl = _kernel.Services.GetRequiredService<IVersionControl>();
             versionControl.RemoveBackup(FileId);
-            if (Parent != null && Item != null)
-                Parent.RemoveTab(Item);
             _nav.NavigateTo($"converse/{KernelId}");
         }
 
         public async ValueTask DisposeAsync()
         {
-            _unload.Dispose();
             if (originalModel != null)
                 await originalModel.DisposeModel();
             if (modifiedModel != null)

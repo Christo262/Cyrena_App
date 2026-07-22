@@ -1,0 +1,16 @@
+{
+  "Title": "Home Page",
+  "Keywords": [
+    "Home",
+    "page",
+    "index",
+    "landing",
+    "default",
+    "route",
+    "@page \u0022/\u0022"
+  ],
+  "Summary": "Home page \u2014 the default landing page of the application.",
+  "Link": null,
+  "Content": "## Home.razor\n\n**Path:** \u0060Components/Pages/Home.razor\u0060\n\n**Type:** Routable page component\n\n### Route\n\n\u0060\u0060\u0060razor\n@page \u0022/\u0022\n\u0060\u0060\u0060\n\n### Content\n\n\u0060\u0060\u0060razor\n\u003CPageTitle\u003EHome\u003C/PageTitle\u003E\n\n\u003Ch1\u003EHello, world!\u003C/h1\u003E\n\n\u003Cp\u003EWelcome to your new app.\u003C/p\u003E\n\u0060\u0060\u0060\n\n### Layout\n\nUses the default layout (\u0060MainLayout\u0060) as configured in \u0060Routes.razor\u0060.\n\n### Notes\n\n- This is the application\u0027s landing page.\n- The \u0060NavLink\u0060 for Home uses \u0060Match=\u0022NavLinkMatch.All\u0022\u0060 so it is only active on the exact root path.\n- No business logic or services \u2014 purely presentational.\n",
+  "Id": "pages_Home"
+}

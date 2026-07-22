@@ -4,27 +4,29 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Cyrena.Contracts;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Cyrena.Models;
-using BootstrapBlazor.Components;
 using Cyrena.Attributes;
+using MudBlazor;
+using Cyrena.Options;
 
 namespace Cyrena.Components.Shared
 {
     public partial class Chat : IDisposable
     {
         [Inject] private IJSRuntime _js { get; set; } = default!;
-        [Inject] private ToastService _toasts { get; set; } = default!;
+        [Inject] private ISnackbar _snackbar { get; set; } = default!;
         [Parameter]
         public bool AutoRefocus { get; set; } = true;
         private ElementReference _scrollHost;
         private Markdig.MarkdownPipeline _mdp = default!;
+        private MessageDisplayHistoryPager _pager = default!;
 
         [KernelInject] private IIterationService _its { get; set; } = default!;
         [KernelInject] private IChatMessageService _msg { get; set; } = default!;
         [KernelInject] private ConnectionInfo _info { get; set; } = default!;
         [KernelInject] private IFileHandlerFactory _files { get; set; } = default!;
+        [KernelInject] private InterfaceOverrides _ovvr { get; set; } = default!;
 
         private DotNetObjectReference<Chat>? _dotNetRef;
 
@@ -37,7 +39,11 @@ namespace Cyrena.Components.Shared
 
             _mdp = new Markdig.MarkdownPipelineBuilder()
                 .UseAdvancedExtensions()
+                .UseMathematics()
                 .Build();
+            if(_its.Input == null)
+                _its.Input = new ChatMessageContent(_msg.Options.User, "");
+            _pager = new MessageDisplayHistoryPager(_msg);
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -46,7 +52,7 @@ namespace Cyrena.Components.Shared
             await ScrollToBottomAsync(true);
 
             _dotNetRef = DotNetObjectReference.Create(this);
-            await _js.InvokeVoidAsync("Cyrena.Runtime.registerChatPasteHandler", _area, _dotNetRef);
+            await _js.InvokeVoidAsync("Cyrena.Runtime.registerChatPasteHandler", _area.InputReference.ElementReference, _dotNetRef);
             await _js.InvokeVoidAsync("Cyrena.Runtime.registerChatDropHandler", _dropZone, _dotNetRef);
         }
 
@@ -57,9 +63,10 @@ namespace Cyrena.Components.Shared
             string? mimeType,
             long size)
         {
+            if (_its.Input == null) return;
             if (!_files.HasFileHandlers)
             {
-                await _toasts.Error("File Support Error", "Files are not supported in this chat.");
+                _snackbar.Add("Files are not supported in this chat.", Severity.Error);
                 return;
             }
 
@@ -72,7 +79,7 @@ namespace Cyrena.Components.Shared
             var name = EnsureFileNameHasExtension(fileName, mimeType);
             if (!_files.CanHandleType(mimeType, name))
             {
-                await _toasts.Error("Not Supported", $"File type is not supported: {mimeType}");
+                _snackbar.Add($"File type is not supported: {mimeType}", Severity.Error);
                 return;
             }
 
@@ -81,14 +88,13 @@ namespace Cyrena.Components.Shared
                     : base64DataUrl;
             var bytes = Convert.FromBase64String(base64Data);
 
-            AdditionalMessageContent? content = await _files.GetMessageContent(bytes, mimeType, name);
+            var content = await _files.SaveAsync(bytes, mimeType, name);
             if (content == null)
             {
-                await _toasts.Error("Not Supported", $"File type is not supported: {mimeType}");
+                _snackbar.Add($"File type is not supported: {mimeType}", Severity.Error);
                 return;
             }
-
-            _items.Add(content);
+            _its.Input.Items.Add(content);
             StateHasChanged();
         }
 
@@ -103,16 +109,30 @@ namespace Cyrena.Components.Shared
                 : $"{fileName}{extension}";
         }
 
-        private List<AdditionalMessageContent> _items = new List<AdditionalMessageContent>();
         private async Task Send()
         {
-            if (string.IsNullOrWhiteSpace(_its.Input)) return;
-
-            _its.Iterate(AuthorRole.User, Kernel, _items.ToArray());
-            _items.Clear();
-            await InvokeAsync(StateHasChanged);
+            if (_its.Input == null || string.IsNullOrEmpty(_its.Input.Content)) return;
+            
+            _its.Iterate();
             await Task.Delay(100);
-            await _js.InvokeVoidAsync("autoGrow", _area, 5);
+            await _area.ClearAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+
+        private async Task ComposerKeyDown(KeyboardEventArgs e)
+        {
+            if (e.Key == "Enter" && !e.ShiftKey)
+            {
+                await Send();
+                return;
+            }
+        }
+
+        private void BindItsContent(string? e)
+        {
+            if(_its.Input == null)
+                _its.Input = new ChatMessageContent(_msg.Options.User, "");
+            _its.Input.Content = e;
         }
 
         private void Cancel() => _its.Cancel();
@@ -131,24 +151,32 @@ namespace Cyrena.Components.Shared
         {
             _stream = null;
             _its.Input = null;
-            _items.Clear();
             this.InvokeAsync(async () =>
             {
                 StateHasChanged();
-                await _js.InvokeVoidAsync("autoGrow", _area, 5);
                 if(AutoRefocus)
                 await _area.FocusAsync();
             });
         }
 
-        private void OnItemsAdded(AdditionalMessageContent[] items)
+        private void OnItemsAdded(KernelContent[] items)
         {
-            _items.AddRange(items);
+            if (_its.Input == null) return;
+            foreach(var item in items)
+                _its.Input.Items.Add(item);
         }
 
-        private void RemoveAdditionalItem(AdditionalMessageContent item)
+        private async Task RemoveAdditionalItem(KernelContent item)
         {
-            _items.Remove(item);
+            if (_its.Input == null) return;
+            try
+            {
+                await _files.CancelAsync(item);
+            }catch (Exception ex)
+            {
+                _snackbar.Add(ex.Message, Severity.Error);
+            }
+            _its.Input.Items.Remove(item);
         }
 
         public void OnIterationEvent(bool e)
@@ -158,21 +186,26 @@ namespace Cyrena.Components.Shared
                 StateHasChanged();
                 if(!_its.Inferring)
                 {
-                    await _js.InvokeVoidAsync("autoGrow", _area, 5);
                     if(AutoRefocus)
                     await _area.FocusAsync();
+                    _busy = false;
                 }
             });
         }
 
         private string? _stream;
+        private bool _busy { get; set; }
         public void OnStreamToken(string? token)
         {
+
             _stream += token;
+            if (_busy) return;
+            _busy = true;
             this.InvokeAsync(async () =>
             {
                 this.StateHasChanged();
                 await ScrollToBottomAsync(false);
+                _busy = false;
             });
         }
 
@@ -181,25 +214,8 @@ namespace Cyrena.Components.Shared
             await _js.InvokeVoidAsync("scrollToBottom", _scrollHost, force, threshold);
         }
 
-        private async Task ComposerKeyDown(KeyboardEventArgs e)
-        {
-            if (e.Key == "Enter" && !e.ShiftKey)
-            {
-                await Send();
-                return;
-            }
-            await _js.InvokeVoidAsync("autoGrow", _area, 5);
-            StateHasChanged();
-        }
-
-        private ElementReference _area = default!;
+        private MudTextField<string> _area = default!;
         private ElementReference _dropZone = default!;
-        private async Task AutoGrow(ChangeEventArgs e)
-        {
-            _its.Input = e.Value?.ToString() ?? "";
-            await _js.InvokeVoidAsync("autoGrow", _area, 5);
-            StateHasChanged();
-        }
 
         private IDisposable _its_start = default!;
         private IDisposable _its_end = default!;
@@ -209,7 +225,7 @@ namespace Cyrena.Components.Shared
         {
             if (_dotNetRef is not null)
             {
-                _ = _js.InvokeVoidAsync("Cyrena.Runtime.unregisterChatPasteHandler", _area);
+                _ = _js.InvokeVoidAsync("Cyrena.Runtime.unregisterChatPasteHandler", _area.InputReference.ElementReference);
                 _ = _js.InvokeVoidAsync("Cyrena.Runtime.unregisterChatDropHandler", _dropZone);
                 _dotNetRef.Dispose();
             }
@@ -217,6 +233,35 @@ namespace Cyrena.Components.Shared
             _its_start.Dispose();
             _dsp_hst.Dispose();
             _dsp_st.Dispose();
+        }
+    }
+
+    internal class MessageDisplayHistoryPager
+    {
+        private readonly IChatMessageService _msg;
+        public MessageDisplayHistoryPager(IChatMessageService msg)
+        {
+            _msg = msg;
+            _history = _msg.DisplayHistory;
+        }
+
+        private IReadOnlyList<ChatMessageContent> _history { get; set; }
+        public IEnumerable<ChatMessageContent> History => _history.TakeLast(_pageCount);
+        private int _pageCount { get; set; } = 10;
+
+        private void OnDisplayHistoryChanged(ChatHistory history)
+        {
+            _history = _msg.DisplayHistory;
+        }
+
+        public void IncreasePageCount()
+        {
+            _pageCount = _pageCount + 10;
+        }
+
+        public bool CanLoadMore()
+        {
+            return _pageCount < _history.Count;
         }
     }
 }

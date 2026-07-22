@@ -8,8 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cyrena.Coding.Core" />
     <PackageReference Include="Cyrena.Persistence.Core" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\assistant\Cyrena.Coding.Core\Cyrena.Coding.Core.csproj" />
   </ItemGroup>
 
 </Project>

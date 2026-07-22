@@ -38,12 +38,6 @@ namespace Cyrena.Extensa.Loader.Models
                 _assemblies.Add(mainAppAssembly);
                 return mainAppAssembly;
             }
-            if (File.Exists(mainAppAssemblyPath))
-            {
-                var mainAppAssembly = LoadFromAssemblyPath(mainAppAssemblyPath);
-                _assemblies.Add(mainAppAssembly);
-                return mainAppAssembly;
-            }
 
             // 4. Try to load from extension folder
             string assemblyPath = Path.Combine(_extensionPath, $"{assemblyName.Name}.dll");

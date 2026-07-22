@@ -1,7 +1,10 @@
 @inherits KernelComponentBase
 
-<Tooltip Title="Projects">
-    <button type="button" class="btn btn-sm btn-primary rounded-pill me-1 px-2" @onclick="OnClick" disabled="@_its.Inferring">
-        <i class="bi bi-card-checklist"></i> @_sln.Current?.ProjectName
-    </button>
-</Tooltip>
+<MudTooltip Text="Projects">
+    <MudButton Variant="Variant.Filled" 
+    Size="Size.Small"
+               OnClick="OnClick" Disabled="@_its.Inferring" 
+               StartIcon="@Icons.Material.Filled.Assignment" Class="me-1">
+        @_sln.Current?.ProjectName
+    </MudButton>
+</MudTooltip>

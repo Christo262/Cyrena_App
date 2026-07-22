@@ -1,0 +1,47 @@
+@inherits KernelComponentBase
+
+@if (_initialized)
+{
+    @if (_recording)
+    {
+        <MudTooltip Text="Stop Recording">
+            <MudIconButton Icon="@Icons.Material.Filled.Mic" Color="Color.Error" Size="Size.Small" Class="rounded-pill me-1" OnClick="StopRecording" />
+        </MudTooltip>
+    }
+    else if (_processing)
+    {
+        <MudTooltip Text="Processing...">
+            <MudIconButton Icon="@Icons.Material.Filled.Mic" Size="Size.Small" Class="rounded-pill me-1" Disabled="true" />
+        </MudTooltip>
+    }
+    else
+    {
+        <MudTooltip Text="Start Recording">
+            <MudIconButton Icon="@Icons.Material.Filled.Mic" Size="Size.Small" Class="rounded-pill me-1" OnClick="StartRecording" />
+        </MudTooltip>
+    }
+
+    <MudOverlay @bind-Visible="_voice_mode" DarkBackground AutoClose="false" ZIndex="9999">
+        <div class="d-flex flex-column text-center">
+            @if (_processing)
+            {
+                <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+            }
+            else if (_recording)
+            {
+                <MudTooltip Text="Stop Recording">
+                    <MudFab StartIcon="@Icons.Material.Filled.Stop" Color="Color.Error" Size="Size.Large" OnClick="StopRecording" />
+                </MudTooltip>
+            }
+            else
+            {
+                <MudTooltip Text="Start Recording">
+                    <MudFab StartIcon="@Icons.Material.Filled.Mic" Color="Color.Success" Size="Size.Large" OnClick="StartRecording" />
+                </MudTooltip>
+            }
+            <MudTooltip Text="Exit Voice Mode">
+                <MudFab StartIcon="@Icons.Material.Filled.Close" Class="mt-3" Size="Size.Small" OnClick="Exit" />
+            </MudTooltip>
+        </div>
+    </MudOverlay>
+}

@@ -30,5 +30,23 @@ namespace Cyrena.Extensions
             builder.AddFeatureOption<ICyrenaPersistenceBuilder>(p);
             return p;
         }
+
+        /// <summary>
+        /// Storage mechanism that is only loaded into memory while kernel instance is active.
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="path"></param>
+        /// <param name="configure"></param>
+        /// <param name="extension"></param>
+        public static void AddIsolatedFilePersistence(this CyrenaKernelBuilder builder, string path, Action<ICyrenaPersistenceBuilder> configure, string extension = "json")
+        {
+            var options = new FilePersistenceOptions()
+            {
+                BaseDirectory = path,
+                FileExtension = extension
+            };
+            var persistence = new IsolatedFilePersistenceBuilder(builder.Services, options);
+            configure(persistence);
+        }
     }
 }

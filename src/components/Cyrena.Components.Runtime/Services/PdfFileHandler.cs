@@ -10,51 +10,14 @@ namespace Cyrena.Services
 {
     internal class PdfFileHandler : IFileHandler
     {
-        public async Task<AdditionalMessageContent?> GetMessageContent(Stream data, string contentType, string name)
-        {
-            if (!HandlesType(contentType, name))
-                return null;
-            using var ms = new MemoryStream();
-            await data.CopyToAsync(ms);
-            ms.Position = 0;
-            var pdfText = ExtractTextFromPdf(ms, name);
-            var c = new TextContent($"[FILE_START name='{name}']\n\n{pdfText}\n\n[FILE_END]") { MimeType = contentType };
-            var content = new AdditionalMessageContent(name, c);
-            return content;
-        }
-
-        public async Task<AdditionalMessageContent?> GetMessageContent(byte[] data, string contentType, string name)
+        public async Task<KernelContent?> GetKernelContent(byte[] data, string contentType, string name, IReadOnlyDictionary<string, object?>? metadata = null)
         {
             if (!HandlesType(contentType, name))
                 return null;
             using var ms = new MemoryStream(data);
             ms.Position = 0;
             var pdfText = ExtractTextFromPdf(ms, name);
-            var c = new TextContent($"[FILE_START name='{name}']\n\n{pdfText}\n\n[FILE_END]") { MimeType = contentType };
-            var content = new AdditionalMessageContent(name, c);
-            return content;
-        }
-
-        public async Task<KernelContent?> GetKernelContent(Stream data, string contentType, string name)
-        {
-            if (!HandlesType(contentType, name))
-                return null;
-            using var ms = new MemoryStream();
-            await data.CopyToAsync(ms);
-            ms.Position = 0;
-            var pdfText = ExtractTextFromPdf(ms, name);
-            var c = new TextContent(pdfText) { MimeType = contentType };
-            return c;
-        }
-
-        public async Task<KernelContent?> GetKernelContent(byte[] data, string contentType, string name)
-        {
-            if (!HandlesType(contentType, name))
-                return null;
-            using var ms = new MemoryStream(data);
-            ms.Position = 0;
-            var pdfText = ExtractTextFromPdf(ms, name);
-            var c = new TextContent(pdfText) { MimeType = contentType };
+            var c = new TextContent(pdfText, metadata:metadata) { MimeType = contentType };
             return c;
         }
 
@@ -80,9 +43,6 @@ namespace Cyrena.Services
             {
                 using var document = PdfDocument.Open(pdfStream);
                 var textBuilder = new StringBuilder();
-
-                textBuilder.AppendLine($"--- PDF: {fileName} ---");
-                textBuilder.AppendLine();
 
                 foreach (Page page in document.GetPages())
                 {

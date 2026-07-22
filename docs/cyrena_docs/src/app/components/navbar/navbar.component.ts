@@ -18,11 +18,9 @@ interface NavItem {
 export class NavbarComponent {
   readonly navItems = signal<NavItem[]>([
     { label: 'Home', route: '/index.html', external: true },
-    { label: 'Docs', route: '/docs' },
+    { label: 'Documentation', route: '/docs' },
     { label: 'Developer', route: '/developer' },
-    { label: 'Getting Started', route: '/docs/getting-started' },
-    { label: 'Download', route: '/download.html', external: true },
-    { label: 'Extensions', route: '/extensions.html', external: true }
+    { label: 'Getting Started', route: '/docs/getting-started' }
   ]);
 
   readonly isMenuOpen = signal(false);

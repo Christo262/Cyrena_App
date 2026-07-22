@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Cyrena.Voice</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Cyrena.Components.Core" />
+    <PackageReference Include="Cyrena.Extensa.Core" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+    <PackageReference Include="Whisper.net.AllRuntimes" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cyrena.Voice.Core\Cyrena.Voice.Core.csproj" />
+  </ItemGroup>
+
+</Project>

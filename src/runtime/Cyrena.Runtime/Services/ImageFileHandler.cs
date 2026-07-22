@@ -6,43 +6,11 @@ namespace Cyrena.Runtime.Services
 {
     internal class ImageFileHandler : IFileHandler
     {
-        public async Task<AdditionalMessageContent?> GetMessageContent(Stream data, string contentType, string name)
+        public async Task<KernelContent?> GetKernelContent(byte[] data, string contentType, string name, IReadOnlyDictionary<string, object?>? metadata = null)
         {
             if (!contentType.StartsWith("image/"))
                 return null;
-            using var ms = new MemoryStream();
-            await data.CopyToAsync(ms);
-            ms.Position = 0;
-            var c = new ImageContent(ms.ToArray(), contentType) { MimeType = contentType };
-            var content = new AdditionalMessageContent(name, c);
-            return content;
-        }
-
-        public async Task<AdditionalMessageContent?> GetMessageContent(byte[] data, string contentType, string name)
-        {
-            if (!contentType.StartsWith("image/"))
-                return null;
-            var c = new ImageContent(data, contentType) { MimeType = contentType };
-            var content = new AdditionalMessageContent(name, c);
-            return content;
-        }
-
-        public async Task<KernelContent?> GetKernelContent(Stream data, string contentType, string name)
-        {
-            if (!contentType.StartsWith("image/"))
-                return null;
-            using var ms = new MemoryStream();
-            await data.CopyToAsync(ms);
-            ms.Position = 0;
-            var c = new ImageContent(ms.ToArray(), contentType) { MimeType = contentType };
-            return c;
-        }
-
-        public async Task<KernelContent?> GetKernelContent(byte[] data, string contentType, string name)
-        {
-            if (!contentType.StartsWith("image/"))
-                return null;
-            var c = new ImageContent(data, contentType) { MimeType = contentType };
+            var c = new ImageContent(data, contentType) { MimeType = contentType, Metadata = metadata };
             return c;
         }
 

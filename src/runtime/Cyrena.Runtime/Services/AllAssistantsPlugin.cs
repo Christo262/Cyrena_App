@@ -19,7 +19,7 @@ namespace Cyrena.Runtime.Services
 
         public string[] Modes => [];
 
-        public int Priority => 10;
+        public int Priority => 1000;
 
         public string Id => "cyrena.runtime";
 
@@ -42,6 +42,15 @@ namespace Cyrena.Runtime.Services
                 builder.Services.AddSingleton<IFileHandler, ImageFileHandler>();
             if (info.SupportFiles)
                 builder.Services.AddSingleton<IFileHandler, TextFileHandler>();
+
+            if(info.SupportFiles || info.SupportImages)
+                builder.Plugins.AddFromType<AttachmentKernelFunctions>("Attachment");
+            builder.Services.AddSingleton<IFileHandlerFactory, FileHandlerFactory>();
+            builder.Services.AddSingleton<IConversationHistoryTransformer, HistoryInclusionTransformer>();
+            builder.Services.AddSingleton<IConversationHistoryTransformer, SerializableContentTransformer>();
+
+            builder.Services.AddSingleton<ICyrenaFileExporter, CyrenaFileExporter>();
+
             return Task.CompletedTask;
         }
     }

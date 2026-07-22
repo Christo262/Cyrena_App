@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Cyrena.WebView": {
+      "commandName": "Project",
+      "commandLineArgs": "--title \"Cyrena\" --url \"http://localhost:8000\" --width 1400 --height 900"
+    }
+  }
+}

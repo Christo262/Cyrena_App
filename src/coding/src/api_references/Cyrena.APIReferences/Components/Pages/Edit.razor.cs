@@ -1,4 +1,3 @@
-﻿using BootstrapBlazor.Components;
 using Cyrena.Contracts;
 using Cyrena.APIReferences.Models;
 using Cyrena.Extensions;
@@ -6,38 +5,22 @@ using Cyrena.Persistence.Contracts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
+using MudBlazor;
 
 namespace Cyrena.APIReferences.Components.Pages
 {
-    public partial class Edit : IDisposable
+    public partial class Edit
     {
         [Inject] private IKernelController _kernels { get; set; } = default!;
         [Inject] private NavigationManager _nav { get; set; } = default!;
-        [Inject] private ToastService _toasts { get; set; } = default!;
+        [Inject] private ISnackbar _snackbar { get; set; } = default!;
         [Parameter] public string? RefId { get; set; }
         [Parameter] public string? KernelId { get; set; }
-        [CascadingParameter]
-        public TabItem? Item { get; set; }
-        [CascadingParameter]
-        public Tab? Parent { get; set; }
-        private IDisposable _unload = default!;
 
         private Kernel _kernel = default!;
         private IStore<ApiReference> _store = default!;
         private ApiReference? _model { get; set; }
         private string? _keywords { get; set; }
-
-        protected override void OnInitialized()
-        {
-            _unload = _kernels.OnChatUnload(cfg =>
-            {
-                if (cfg.Id == KernelId)
-                {
-                    if (Item != null && Parent != null)
-                        Parent.RemoveTab(Item);
-                }
-            });
-        }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -63,10 +46,8 @@ namespace Cyrena.APIReferences.Components.Pages
             }
             catch (Exception ex)
             {
-                await _toasts.Error("Error", ex.Message);
-                if (Parent != null && Item != null)
-                    await Parent.RemoveTab(Item);
-                _nav.NavigateTo("");
+                _snackbar.Add(ex.Message, Severity.Error);
+                _nav.NavigateTo($"api-references/{KernelId}");
             }
         }
 
@@ -76,19 +57,12 @@ namespace Cyrena.APIReferences.Components.Pages
             if(_keywords != null)
                 _model.Keywords = _keywords.Split(",").Select(x => x.Trim()).ToArray();
             await _store.SaveAsync(_model);
-            if (Parent != null && Item != null)
-                await Parent.RemoveTab(Item);
+            _nav.NavigateTo($"api-references/{KernelId}");
         }
 
-        private async Task Cancel()
+        private void Cancel()
         {
-            if (Parent != null && Item != null)
-                await Parent.RemoveTab(Item);
-        }
-
-        public void Dispose()
-        {
-            _unload.Dispose();
+            _nav.NavigateTo($"api-references/{KernelId}");
         }
     }
 }

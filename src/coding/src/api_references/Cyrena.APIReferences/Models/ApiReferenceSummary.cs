@@ -1,9 +1,9 @@
 ﻿using Cyrena.Models;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Cyrena.APIReferences.Models
 {
-    public class ApiReferenceSummary : IJsonSerializable
+    public class ApiReferenceSummary 
     {
         public ApiReferenceSummary(string id, string? title, string? summary)
         {
@@ -15,14 +15,5 @@ namespace Cyrena.APIReferences.Models
         public string Id { get; set; }
         public string? Title { get; set; }
         public string? Summary { get; set; }
-        public string ToJson()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
-
-        public override string ToString()
-        {
-            return ToJson();
-        }
     }
 }
