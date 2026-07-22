@@ -51,24 +51,6 @@ jobs:
       - name: Publish Windows ${{ matrix.arch }}
         run: dotnet publish src/Cyrena.Shell/Cyrena.Shell.csproj -c Release -r win-${{ matrix.arch }} -o ./build/windows/${{ matrix.arch }} --self-contained
 
-      - name: Prepare installer files
-        run: |
-          Copy-Item -Path ".\build\windows\${{ matrix.arch }}\*" -Destination ".\install\bin\win-${{ matrix.arch }}" -Recurse -Force
-
-      - name: Setup Inno Setup
-        uses: jrsoftware/iscc-action@v2.0
-
-      - name: Build Windows Installer
-        working-directory: install
-        run: iscc.exe "win_${{ matrix.arch }}.iss" /DMyAppVersion=${{ github.ref_name }} /O"${{ github.workspace }}\build\windows\${{ matrix.arch }}\installer"
-
-      - name: Upload Windows Installer
-        uses: actions/upload-artifact@v4
-        with:
-          name: cyrena-windows-${{ matrix.arch }}-installer
-          path: ./build/windows/${{ matrix.arch }}/installer/*.exe
-          retention-days: 1
-
       - name: Upload Windows ${{ matrix.arch }} artifact
         uses: actions/upload-artifact@v7
         with:
