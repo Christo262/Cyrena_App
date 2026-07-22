@@ -1,0 +1,14 @@
+{
+  "Title": "InterfaceOverrides - Chat UI Component Overrides",
+  "Keywords": [
+    "InterfaceOverrides",
+    "UseFileAttacher",
+    "file attacher",
+    "component override",
+    "Cyrena.Components.Core"
+  ],
+  "Summary": "Kernel-locked options object that records which UI contract implementations should be used in place of the defaults. Currently only the file attacher can be overridden.",
+  "Link": "",
+  "Content": "# InterfaceOverrides\n\n**Namespace**: \u0060Cyrena.Options\u0060\n**Assembly**: \u0060Cyrena.Components.Core\u0060\n\n\u0060\u0060\u0060csharp\npublic sealed class InterfaceOverrides\n{\n    private Type? _fileAttacher { get; set; }\n\n    public void UseFileAttacher\u003CTFileAttacher\u003E()\n        where TFileAttacher : class, IFileAttacher;\n\n    public Type? FileAttacher =\u003E _fileAttacher;\n}\n\u0060\u0060\u0060\n\nUsed to change the default components used in the chat interface. Kernel-locked.\n\n## Members\n\n### \u0060UseFileAttacher\u003CTFileAttacher\u003E()\u0060\nRecords \u0060typeof(TFileAttacher)\u0060 as the implementation of \u0060IFileAttacher\u0060 to use. The constraint is \u0060class, IFileAttacher\u0060 (so the type must be a reference type implementing the contract).\n\n### \u0060FileAttacher\u0060\nRead-only property exposing the currently selected file-attacher \u0060Type\u0060, or \u0060null\u0060 if none was selected. The chat UI consults this to decide which component to render.\n\n## Usage\n\nResolve \u0060InterfaceOverrides\u0060 from the kernel scope and call \u0060UseFileAttacher\u003CT\u003E\u0060 inside \u0060IAssistantMode.ConfigureAsync\u0060:\n\n\u0060\u0060\u0060csharp\npublic class MyMode : IAssistantMode\n{\n    public string Id =\u003E \u0022my-mode\u0022;\n\n    public Task ConfigureAsync(CyrenaKernelBuilder builder)\n    {\n        var overrides = builder.Services.BuildServiceProvider()\n            .GetRequiredService\u003CInterfaceOverrides\u003E();\n        overrides.UseFileAttacher\u003CMyCustomAttacher\u003E();\n        return Task.CompletedTask;\n    }\n}\n\u0060\u0060\u0060\n\nOr, more idiomatically, inside a plugin:\n\n\u0060\u0060\u0060csharp\npublic class MyPlugin : IAssistantPlugin\n{\n    public Task LoadAsync(CyrenaKernelBuilder builder)\n    {\n        var overrides = builder.GetFeatureOption\u003CInterfaceOverrides\u003E();\n        overrides.UseFileAttacher\u003CMyCustomAttacher\u003E();\n        return Task.CompletedTask;\n    }\n}\n\u0060\u0060\u0060\n\n## Extensibility\nThe class is \u0060sealed\u0060 and currently only exposes the \u0060FileAttacher\u0060 override. New override hooks should be added here as Cyr\u00E9na grows.\n\n## Related\n- \u0060IFileAttacher\u0060 \u2014 the contract being overridden\n- \u0060FileAttacher\u0060 \u2014 abstract base class to derive concrete implementations from",
+  "Id": "interface-overrides"
+}

@@ -14,13 +14,16 @@
 The interface all extensions must implement. This is the single entry point for an extension to integrate with Cyréna.
 
 ```csharp
-public interface IExtension
+namespace Cyrena.Extensa.Contracts
 {
-    /// <summary>
-    /// Called by the Extensa.Loader to add the extension to the application dependencies
-    /// </summary>
-    /// <param name="builder"><see cref="CyrenaBuilder"/></param>
-    void BuildExtension(CyrenaBuilder builder);
+    public interface IExtension
+    {
+        /// <summary>
+        /// Called by the Extensa.Loader to add the extension to the application dependencies
+        /// </summary>
+        /// <param name="builder"><see cref="CyrenaBuilder"/></param>
+        void BuildExtension(CyrenaBuilder builder);
+    }
 }
 ```
 
@@ -38,9 +41,14 @@ public interface IExtension
 Convenience abstract base class implementing `IExtension` with an empty `BuildExtension` method.
 
 ```csharp
-public abstract class Extension : IExtension
+namespace Cyrena.Extensa.Models
 {
-    public virtual void BuildExtension(CyrenaBuilder builder) { }
+    public abstract class Extension : IExtension
+    {
+        public virtual void BuildExtension(CyrenaBuilder builder)
+        {
+        }
+    }
 }
 ```
 
@@ -50,41 +58,64 @@ Extend this class if your extension needs no build-time configuration, or overri
 Metadata describing an extension package. Used by the Extensa loader for discovery, dependency resolution, and UI display.
 
 ```csharp
-public class ExtensionInfo
+namespace Cyrena.Extensa.Models
 {
-    public string Id { get; set; } = default!;
-    public string Name { get; set; } = default!;
-    public string? Description { get; set; };
-    public Version Version { get; set; } = Version.Parse("1.0.0");
-    public string? EntryAssemblyFile { get; set; };
-    public Dependency[] Dependencies { get; set; } = [];
+    public class ExtensionInfo
+    {
+        [JsonPropertyName("id")]
+        public string Id { get; set; } = default!;
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = default!;
+        [JsonPropertyName("description")]
+        public string? Description { get; set; }
+        [JsonPropertyName("version")]
+        public Version Version { get; set; } = Version.Parse("1.0.0");
+        [JsonPropertyName("entryAssemblyFile")]
+        public string? EntryAssemblyFile { get; set; }
+        [JsonPropertyName("dependencies")]
+        public Dependency[] Dependencies { get; set; } = [];
+    }
 }
 ```
 
 **Properties:**
-- `Id`: Unique identifier for the extension (e.g., `com.example.myextension`).
-- `Name`: Human-readable name.
-- `Description`: Optional description.
-- `Version`: Extension version. Defaults to `1.0.0`.
-- `EntryAssemblyFile`: The main DLL file name containing the `IExtension` implementation.
-- `Dependencies`: Array of `Dependency` objects specifying required extensions. Defaults to empty array.
+- `Id` (`string`) — Unique identifier for the extension (e.g., `com.example.myextension`). JSON: `id`.
+- `Name` (`string`) — Human-readable name. JSON: `name`.
+- `Description` (`string?`) — Optional description. JSON: `description`.
+- `Version` (`Version`) — Extension version. Defaults to `1.0.0`. JSON: `version`.
+- `EntryAssemblyFile` (`string?`) — The main DLL file name containing the `IExtension` implementation. JSON: `entryAssemblyFile`.
+- `Dependencies` (`Dependency[]`) — Array of `Dependency` objects specifying required extensions. Defaults to empty array. JSON: `dependencies`.
 
 ### `Dependency`
 Represents a dependency on another extension with minimum version requirements.
 
 ```csharp
-public class Dependency
+namespace Cyrena.Extensa.Models
 {
-    public Dependency() { }
-    public Dependency(string id, Version minVersion);
+    public class Dependency
+    {
+        public Dependency() { }
+        public Dependency(string id, Version minVersion)
+        {
+            Id = id;
+            MinVersion = minVersion;
+        }
 
-    public string Id { get; set; } = default!;
-    public Version MinVersion { get; set; } = default!;
+        [JsonPropertyName("id")]
+        public string Id { get; set; } = default!;
+        [JsonPropertyName("minVersion")]
+        public Version MinVersion { get; set; } = default!;
+    }
 }
 ```
 
-- `Id`: The `Id` of the required extension.
-- `MinVersion`: The minimum required version.
+**Constructors:**
+- `Dependency()` — Parameterless ctor for deserialization.
+- `Dependency(string id, Version minVersion)` — Ctor taking id and minimum version.
+
+**Properties:**
+- `Id` (`string`) — The `Id` of the required extension. JSON: `id`.
+- `MinVersion` (`Version`) — The minimum required version. JSON: `minVersion`.
 
 ---
 
@@ -122,12 +153,12 @@ public class MyExtension : Extension
 ```csharp
 // In ExtensionInfo (JSON manifest):
 {
-    "Id": "com.example.advanced",
-    "Name": "Advanced Features",
-    "Version": "1.2.0",
-    "Dependencies": [
-        { "Id": "com.example.base", "MinVersion": "1.0.0" }
-    ]
+  "id": "com.example.advanced",
+  "name": "Advanced Features",
+  "version": "1.2.0",
+  "dependencies": [
+    { "id": "com.example.base", "minVersion": "1.0.0" }
+  ]
 }
 ```
 

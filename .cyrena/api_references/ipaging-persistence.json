@@ -1,0 +1,17 @@
+{
+  "Title": "IPaging / Paging - Result Paging",
+  "Keywords": [
+    "IPaging",
+    "Paging",
+    "skip",
+    "take",
+    "page",
+    "page size",
+    "Cyrena.Persistence",
+    "Cyrena.Persistence.Core"
+  ],
+  "Summary": "Paging types for Cyr\u00E9na persistence: IPaging contract and Paging implementation with Page(page, pageSize) and Create(skip?, take?) factory helpers.",
+  "Link": "",
+  "Content": "# IPaging and Paging\n\n**Namespace**: \u0060Cyrena.Persistence\u0060\n**Assembly**: \u0060Cyrena.Persistence.Core\u0060\n**Version**: 0.6.0\n\n## Purpose\n\nPaging types used by \u0060IStore\u003CT\u003E.FindManyAsync\u0060 to specify a result window.\n\n## \u0060IPaging\u0060\n\n\u0060\u0060\u0060csharp\npublic interface IPaging\n{\n    int Skip { get; }\n    int Take { get; }\n}\n\u0060\u0060\u0060\n\n| Property | Type | Description |\n|----------|------|-------------|\n| \u0060Skip\u0060 | \u0060int\u0060 | Number of items to skip from the start of the result set. |\n| \u0060Take\u0060 | \u0060int\u0060 | Number of items to take (page size). |\n\n## \u0060Paging\u0060\n\n\u0060\u0060\u0060csharp\npublic class Paging : IPaging\n{\n    public Paging(int skip, int take);\n    public int Skip { get; }\n    public int Take { get; }\n\n    public static Paging Page(int page, int pageSize) =\u003E new(page * pageSize, pageSize);\n    public static Paging? Create(int? skip, int? take) =\u003E skip != null \u0026\u0026 take != null ? new Paging(skip.Value, take.Value) : default;\n}\n\u0060\u0060\u0060\n\n| Member | Description |\n|--------|-------------|\n| \u0060Paging(int skip, int take)\u0060 | Constructor with explicit skip/take. |\n| \u0060Skip\u0060 / \u0060Take\u0060 | Read-only properties. |\n| \u0060Page(int page, int pageSize)\u0060 | Static factory: returns \u0060new Paging(page * pageSize, pageSize)\u0060. |\n| \u0060Create(int? skip, int? take)\u0060 | Static factory: returns \u0060new Paging(skip, take)\u0060 only if both inputs are non-null; otherwise returns \u0060default\u0060 (i.e. \u0060null\u0060). |\n\n## Usage Example\n\n\u0060\u0060\u0060csharp\n// Page-based (page 2, 10 items per page)\nvar data = await store.FindManyAsync(\n    new AllSpecification\u003CMyData\u003E(),\n    paging: Paging.Page(page: 2, pageSize: 10));\n\n// Skip/take-based with nullable input\nint? skip = 20, take = 5;\nvar paged = Paging.Create(skip, take);\n\u0060\u0060\u0060\n\n## Related\n- \u0060IStore\u003CT\u003E.FindManyAsync\u0060 \u2014 Consumes \u0060IPaging?\u0060 as the paging parameter\n- \u0060StoreExtensions.FindManyAsync\u0060 \u2014 Lambda overload that also accepts \u0060Paging?\u0060",
+  "Id": "ipaging-persistence"
+}

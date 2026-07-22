@@ -7,8 +7,8 @@
     ".cyrena file",
     "Importer"
   ],
-  "Summary": "Contract for the primary service that orchestrates .cyrena file imports. Must be registered as a global (non-kernel-scoped) service.\u003C/summary\u003E\n\u003C/invoke\u003E",
-  "Link": null,
-  "Content": "# IImportService\n\n**Namespace**: \u0060Cyrena.Contracts\u0060\n\n\u0060\u0060\u0060csharp\npublic interface IImportService\n{\n    bool HasImporters();\n    Task StartImportAsync(CancellationToken cancellationToken = default!);\n}\n\u0060\u0060\u0060\n\nPrimary service for orchestrating imports of \u0060.cyrena\u0060 files. Must be a global (non-kernel-scoped) service.\n\n## Members\n\n- \u0060HasImporters()\u0060 \u2014 true if at least one \u0060ICyrenaFileImporter\u0060 is registered. Use to gate UI.\n- \u0060StartImportAsync(CancellationToken)\u0060 \u2014 begins the import workflow. Typical implementation opens a file dialog, reads the manifest, dispatches to the matching \u0060ICyrenaFileImporter\u0060.\n\n## Known Issues\n- The \u0060default!\u0060 default value on \u0060cancellationToken\u0060 is a code smell; should be \u0060default\u0060.\n",
+  "Summary": "Contract for the primary service that orchestrates .cyrena file imports. Must be registered as a global (non-kernel-scoped) service.",
+  "Link": "",
+  "Content": "# IImportService\n\n**Namespace**: \u0060Cyrena.Contracts\u0060\n\n\u0060\u0060\u0060csharp\npublic interface IImportService\n{\n    bool HasImporters();\n    Task StartImportAsync(CancellationToken cancellationToken = default);\n}\n\u0060\u0060\u0060\n\nPrimary service for orchestrating imports of \u0060.cyrena\u0060 files. Must be a global (non-kernel-scoped) service.\n\n## Members\n\n- \u0060HasImporters()\u0060 \u2014 true if at least one \u0060ICyrenaFileImporter\u0060 is registered. Use to gate UI.\n- \u0060StartImportAsync(CancellationToken)\u0060 \u2014 begins the import workflow. Typical implementation opens a file dialog, reads the manifest, dispatches to the matching \u0060ICyrenaFileImporter\u0060.\n\n## Notes\n- The \u0060CancellationToken\u0060 defaults to \u0060default\u0060 (no \u0060!\u0060).\n- Not kernel-scoped \u2014 registered as a global singleton.",
   "Id": "iimport-service-contract"
 }

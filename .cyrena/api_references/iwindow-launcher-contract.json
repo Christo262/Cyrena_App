@@ -1,0 +1,14 @@
+{
+  "Title": "IWindowLauncher - Browser Window Launcher",
+  "Keywords": [
+    "IWindowLauncher",
+    "window launcher",
+    "browser window",
+    "OS window",
+    "Cyrena.Components.Core"
+  ],
+  "Summary": "Cross-platform browser window launcher contract. Implementations open OS-level windows or browser tabs at a given URL with a given size and title.",
+  "Link": "",
+  "Content": "# IWindowLauncher\n\n**Namespace**: \u0060Cyrena.Contracts\u0060\n**Assembly**: \u0060Cyrena.Components.Core\u0060\n\n\u0060\u0060\u0060csharp\npublic interface IWindowLauncher : IDisposable\n{\n    void Show(string url, int width, int height, string title = \u0022Cyr\u00E9na\u0022);\n}\n\u0060\u0060\u0060\n\nCross-platform browser window launcher. Implementations open a new OS-level window (or browser tab) at \u0060url\u0060, sized \u0060width \u00D7 height\u0060, with \u0060title\u0060 as the window title. The default \u0060title\u0060 is \u0060\u0022Cyr\u00E9na\u0022\u0060.\n\n\u0060IDisposable\u0060 because launching a window typically ties up browser/multi-window state that must be released when the host disposes.\n\n## Usage\n\n\u0060\u0060\u0060csharp\npublic class MyExtension\n{\n    [KernelInject]\n    private IWindowLauncher _launcher { get; set; } = default!;\n\n    public void OpenExternalDocs()\n    {\n        _launcher.Show(\u0022https://docs.example.com\u0022, 1024, 768, \u0022External Docs\u0022);\n    }\n}\n\u0060\u0060\u0060\n\n## Related\n- \u0060Cyrena.Runtime\u0060 / \u0060Cyrena.Shell\u0060 \u2014 provide platform-specific \u0060IWindowLauncher\u0060 implementations\n- \u0060KernelComponentBase\u0060 \u2014 common host for components that need a \u0060IWindowLauncher\u0060",
+  "Id": "iwindow-launcher-contract"
+}

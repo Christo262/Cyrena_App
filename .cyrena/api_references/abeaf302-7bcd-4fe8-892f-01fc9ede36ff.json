@@ -10,7 +10,7 @@
     "plugin"
   ],
   "Summary": "Convenience abstract base class implementing IExtension with an empty default BuildExtension method. Extension developers can extend this instead of implementing IExtension directly.",
-  "Link": null,
+  "Link": "",
   "Content": "## Extension\n\n**Namespace**: \u0060Cyrena.Extensa.Models\u0060\n**Assembly**: \u0060Cyrena.Extensa.Core\u0060\n**Version**: 0.6.0\n\nConvenience abstract base class implementing \u0060IExtension\u0060 with an empty default \u0060BuildExtension\u0060 method.\n\n### Definition\n\n\u0060\u0060\u0060csharp\npublic abstract class Extension : IExtension\n{\n    public virtual void BuildExtension(CyrenaBuilder builder) { }\n}\n\u0060\u0060\u0060\n\n### Usage\n\nExtend this class if your extension needs no build-time configuration, or override \u0060BuildExtension\u0060 to add custom setup.\n\n\u0060\u0060\u0060csharp\npublic class MyExtension : Extension\n{\n    public override void BuildExtension(CyrenaBuilder builder)\n    {\n        builder.Services.AddSingleton\u003CIMyService, MyService\u003E();\n    }\n}\n\u0060\u0060\u0060\n\n### Related\n- \u0060IExtension\u0060 \u2014 The interface this class implements\n- \u0060ExtensionInfo\u0060 \u2014 Metadata model for extension manifests",
   "Id": "abeaf302-7bcd-4fe8-892f-01fc9ede36ff"
 }

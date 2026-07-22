@@ -1,0 +1,19 @@
+{
+  "Title": "IOrderBy / OrderBy / SortDirection - Ordering",
+  "Keywords": [
+    "IOrderBy",
+    "OrderBy",
+    "OrderBySpecification",
+    "SortDirection",
+    "ordering",
+    "sort",
+    "ascending",
+    "descending",
+    "Cyrena.Persistence",
+    "Cyrena.Persistence.Core"
+  ],
+  "Summary": "Ordering types for Cyr\u00E9na persistence: IOrderBy contract, OrderBy implementation, SortDirection enum, and OrderBySpecification factory helpers.",
+  "Link": "",
+  "Content": "# IOrderBy, OrderBy, and SortDirection\n\n**Namespace**: \u0060Cyrena.Persistence\u0060\n**Assembly**: \u0060Cyrena.Persistence.Core\u0060\n**Version**: 0.6.0\n\n## Purpose\n\nOrdering types used by \u0060IStore\u003CT\u003E.FindManyAsync\u0060 to specify how query results should be sorted.\n\n## \u0060SortDirection\u0060\n\n\u0060\u0060\u0060csharp\npublic enum SortDirection\n{\n    Ascending,\n    Descending,\n}\n\u0060\u0060\u0060\n\n## \u0060IOrderBy\u003CT\u003E\u0060\n\n\u0060\u0060\u0060csharp\npublic interface IOrderBy\u003CT\u003E\n{\n    Expression\u003CFunc\u003CT, object\u003E\u003E OrderByExpression { get; }\n    SortDirection SortDirection { get; }\n}\n\u0060\u0060\u0060\n\n| Property | Type | Description |\n|----------|------|-------------|\n| \u0060OrderByExpression\u0060 | \u0060Expression\u003CFunc\u003CT, object\u003E\u003E\u0060 | The expression selecting the property to order by. |\n| \u0060SortDirection\u0060 | \u0060SortDirection\u0060 | Ascending or descending. |\n\n## \u0060OrderBy\u003CT\u003E\u0060\n\n\u0060\u0060\u0060csharp\npublic class OrderBy\u003CT\u003E : IOrderBy\u003CT\u003E\n{\n    public OrderBy(Expression\u003CFunc\u003CT, object\u003E\u003E orderByExpression, SortDirection sortDirection);\n    public Expression\u003CFunc\u003CT, object\u003E\u003E OrderByExpression { get; }\n    public SortDirection SortDirection { get; }\n}\n\u0060\u0060\u0060\n\nConcrete \u0060IOrderBy\u003CT\u003E\u0060 implementation. Both properties are read-only.\n\n## \u0060OrderBySpecification\u0060\n\nStatic helper class with two factory methods for ergonomic ordering:\n\n\u0060\u0060\u0060csharp\npublic static class OrderBySpecification\n{\n    public static OrderBy\u003CT\u003E OrderBy\u003CT\u003E(Expression\u003CFunc\u003CT, object\u003E\u003E expression, SortDirection sortDirection = SortDirection.Ascending);\n    public static OrderBy\u003CT\u003E OrderByDescending\u003CT\u003E(Expression\u003CFunc\u003CT, object\u003E\u003E expression, SortDirection sortDirection = SortDirection.Descending);\n}\n\u0060\u0060\u0060\n\n| Method | Description |\n|--------|-------------|\n| \u0060OrderBy(expression, sortDirection = Ascending)\u0060 | Creates an \u0060OrderBy\u003CT\u003E\u0060 for ascending sort by default. |\n| \u0060OrderByDescending(expression, sortDirection = Descending)\u0060 | Creates an \u0060OrderBy\u003CT\u003E\u0060 for descending sort by default. |\n\n## Usage Example\n\n\u0060\u0060\u0060csharp\n// Ascending\nvar data = await store.FindManyAsync(\n    new AllSpecification\u003CMyData\u003E(),\n    OrderBySpecification.OrderBy(x =\u003E x.CreatedAt));\n\n// Descending\nvar dataDesc = await store.FindManyAsync(\n    new AllSpecification\u003CMyData\u003E(),\n    OrderBySpecification.OrderByDescending(x =\u003E x.CreatedAt));\n\u0060\u0060\u0060\n\n## Related\n- \u0060IStore\u003CT\u003E.FindManyAsync\u0060 \u2014 Consumes \u0060IOrderBy\u003CT\u003E?\u0060 as the ordering parameter\n- \u0060StoreExtensions.FindManyAsync\u0060 \u2014 Lambda overload that also accepts \u0060OrderBy\u003CT\u003E?\u0060",
+  "Id": "iorderby-persistence"
+}

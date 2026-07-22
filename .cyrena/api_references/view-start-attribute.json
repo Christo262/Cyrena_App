@@ -1,0 +1,14 @@
+{
+  "Title": "ViewStartAttribute - Starting View Marker",
+  "Keywords": [
+    "ViewStartAttribute",
+    "ViewStart",
+    "starting view",
+    "attribute",
+    "Cyrena.Components.Core"
+  ],
+  "Summary": "Class-level attribute that marks a Blazor component as a possible starting view. Used in conjunction with IViewStartProvider to expose startup pages to the user.",
+  "Link": "",
+  "Content": "# ViewStartAttribute\n\n**Namespace**: \u0060Cyrena.Attributes\u0060\n**Assembly**: \u0060Cyrena.Components.Core\u0060\n\n\u0060\u0060\u0060csharp\n[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]\npublic class ViewStartAttribute : Attribute\n{\n    public ViewStartAttribute(string id, string title, string? description = null);\n    public string Id { get; }\n    public string Title { get; }\n    public string? Description { get; }\n}\n\u0060\u0060\u0060\n\nMarks a Blazor component class as a possible starting view. The shell UI enumerates classes carrying this attribute (typically via an \u0060IViewStartProvider\u0060) and offers them to the user as selectable startup pages.\n\n## Constructor\n\n\u0060\u0060\u0060csharp\npublic ViewStartAttribute(string id, string title, string? description = null);\n\u0060\u0060\u0060\n\n| Parameter | Type | Description |\n|-----------|------|-------------|\n| \u0060id\u0060 | \u0060string\u0060 | Unique identifier for the view. Used as the routing key. |\n| \u0060title\u0060 | \u0060string\u0060 | Display title shown in the UI. |\n| \u0060description\u0060 | \u0060string?\u0060 | Optional longer description. Defaults to \u0060null\u0060. |\n\n## Properties\n| Property | Type | Description |\n|----------|------|-------------|\n| \u0060Id\u0060 | \u0060string\u0060 | Routing/identifier string. |\n| \u0060Title\u0060 | \u0060string\u0060 | Display title. |\n| \u0060Description\u0060 | \u0060string?\u0060 | Optional description. |\n\n## Usage\n\n\u0060\u0060\u0060csharp\n[ViewStart(\u0022my-extension\u0022, \u0022My Extension\u0022, \u0022Custom extension page\u0022)]\npublic partial class MyExtensionPage : ComponentBase { }\n\u0060\u0060\u0060\n\n## Notes\n- \u0060AllowMultiple = false\u0060 \u2014 only one \u0060[ViewStart]\u0060 per class.\n- The attribute is class-targeted only; do not apply to properties or methods.\n- This is an alternative to implementing \u0060IViewStartProvider\u0060 programmatically.\n\n## Related\n- \u0060IViewStartProvider\u0060 \u2014 the runtime contract that yields \u0060ViewStart\u0060 entries\n- \u0060ViewStart\u0060 (Cyrena.Core) \u2014 the model returned by providers",
+  "Id": "view-start-attribute"
+}
