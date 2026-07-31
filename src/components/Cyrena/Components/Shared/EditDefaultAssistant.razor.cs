@@ -10,11 +10,11 @@ namespace Cyrena.Components.Shared
 {
     public partial class EditDefaultAssistant
     {
-        [Parameter] public ChatConfiguration Model { get; set; } = default!;
-        private MudForm _form = default!;
+        [Parameter] public ChatConfiguration Model { get; set; } = null!;
+        private MudForm _form = null!;
 
         [CascadingParameter]
-        private IMudDialogInstance MudDialog { get; set; } = default!;
+        private IMudDialogInstance MudDialog { get; set; } = null!;
 
         private async Task Submit()
         {

@@ -1,0 +1,12 @@
+{
+  "Title": "extension.json - Cyrena.Desk Manifest",
+  "Keywords": [
+    "extension.json",
+    "manifest",
+    "cyrena.desk"
+  ],
+  "Summary": "Cyr\u00E9na extension manifest for the Desk package. Declares id, name, version, entry assembly, and a hard dependency on cyrena \u003E=0.6.0.",
+  "Link": null,
+  "Content": "# extension.json - Cyrena.Desk Extension Manifest\n\n**Path**: \u0060extension.json\u0060 at the package root\n**Format**: Cyr\u00E9na extension manifest (consumed by \u0060Cyrena.Extensa\u0060)\n\n## Definition\n\n\u0060\u0060\u0060json\n{\n  \u0022id\u0022: \u0022cyrena.desk\u0022,\n  \u0022name\u0022: \u0022Desk\u0022,\n  \u0022version\u0022: \u00220.6.0\u0022,\n  \u0022entryAssemblyFile\u0022: \u0022Cyrena.Desk.Extension.dll\u0022,\n  \u0022description\u0022: \u0022Needs a description\u0022,\n  \u0022dependencies\u0022: [\n    { \u0022id\u0022: \u0022cyrena\u0022, \u0022minVersion\u0022: \u00220.6.0\u0022 }\n  ]\n}\n\u0060\u0060\u0060\n\n## Fields\n- \u0060id\u0060: \u0060cyrena.desk\u0060 \u2014 stable extension identifier.\n- \u0060name\u0060: \u0060Desk\u0060 \u2014 display name.\n- \u0060version\u0060: \u00600.6.0\u0060 \u2014 extension version, must match the package version.\n- \u0060entryAssemblyFile\u0060: \u0060Cyrena.Desk.Extension.dll\u0060 \u2014 assembly containing \u0060DeskExtension\u0060.\n- \u0060description\u0060: TODO \u2014 placeholder text remains; update with a user-facing description.\n- \u0060dependencies\u0060: requires \u0060cyrena\u0060 at version \u0060\u003E=0.6.0\u0060.\n\n## Status\nThe \u0060description\u0060 field is currently \u0060\u0022Needs a description\u0022\u0060 and should be filled\nin with a short user-facing summary of what the Desk extension does.\n",
+  "Id": "extension-manifest"
+}

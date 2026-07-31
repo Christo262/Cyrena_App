@@ -1,0 +1,13 @@
+{
+  "Title": "AgentInstancesContainer - Implementation",
+  "Keywords": [
+    "AgentInstancesContainer",
+    "implementation",
+    "ConcurrentDictionary",
+    "singleton"
+  ],
+  "Summary": "Internal implementation of IAgentInstancesContainer backed by ConcurrentDictionary. Singleton lifetime.",
+  "Link": null,
+  "Content": "# AgentInstancesContainer (implementation)\n\n**Namespace**: \u0060Cyrena.Desk.Services\u0060\n**Assembly**: \u0060Cyrena.Desk.Extension\u0060\n**Implements**: \u0060Cyrena.Desk.Contracts.IAgentInstancesContainer\u0060\n**Visibility**: \u0060internal\u0060\n**Lifetime**: singleton (registered in \u0060DeskExtension.BuildExtension\u0060)\n\n## Definition\n\n\u0060\u0060\u0060csharp\ninternal class AgentInstancesContainer : IAgentInstancesContainer\n{\n    private readonly ConcurrentDictionary\u003Cstring, AgentInstance\u003E _instances = new();\n\n    public bool TryAdd(AgentInstance instance);\n    public bool TryRemove(string id, out AgentInstance? instance);\n    public bool IsActive(string id);\n    public bool TryGet(string id, out AgentInstance? instance);\n    public IEnumerable\u003CAgentInstance\u003E Instances =\u003E _instances.Values;\n}\n\u0060\u0060\u0060\n\n## Behavior\n- \u0060TryAdd\u0060 keys on \u0060instance.ScheduledAgent.Id\u0060. Returns \u0060false\u0060 if the key is already present.\n- \u0060IsActive\u0060 is a \u0060ContainsKey\u0060 check.\n- \u0060TryGet\u0060 uses \u0060GetValueOrDefault\u0060; returns \u0060null\u0060 if the key is missing.\n- \u0060Instances\u0060 returns a live view (\u0060_instances.Values\u0060). The scheduler snapshots this before iterating.\n\n## Thread safety\nBacked by \u0060ConcurrentDictionary\u003Cstring, AgentInstance\u003E\u0060, so all operations are safe for concurrent\ncallers (scheduler tick, agent instance dispatch, completion sweep, future UI consumers).\n",
+  "Id": "service-agent-instances-container"
+}

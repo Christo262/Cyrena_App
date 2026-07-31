@@ -118,8 +118,8 @@ namespace Cyrena.APIReferences.Services
             [Description("Title of the API reference document. Mandatory.")]
     string title,
 
-            [Description("Keywords used to search for this reference in the future. Mandatory.")]
-    string[] keywords,
+            [Description("Keywords used to search for this reference in the future. Separate keywords with comma. Mandatory.")]
+    string keywords,
 
             [Description("Brief summary of what the reference contains. Mandatory.")]
     string summary,
@@ -159,7 +159,7 @@ namespace Cyrena.APIReferences.Services
                 {
                     Id = id,
                     Title = title,
-                    Keywords = keywords,
+                    Keywords = [.. keywords.Split(',').Select(x => x.Trim())],
                     Summary = summary,
                     Content = content,
                     Link = link
@@ -173,7 +173,7 @@ namespace Cyrena.APIReferences.Services
                 await _context.LogInfo($"Updating API Reference: {article.Title}");
 
                 article.Title = title;
-                article.Keywords = keywords;
+                article.Keywords = [.. keywords.Split(',').Select(x => x.Trim())];
                 article.Summary = summary;
                 article.Content = content;
                 article.Link = link;

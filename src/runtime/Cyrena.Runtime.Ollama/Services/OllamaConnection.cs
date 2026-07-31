@@ -75,6 +75,7 @@ namespace Cyrena.Runtime.Ollama.Services
                     {
                         _responseBuilder.Append(delta);
                     }
+
                     _chat.Stream(delta);
                 }
 
@@ -85,13 +86,7 @@ namespace Cyrena.Runtime.Ollama.Services
                 var text = _responseBuilder.ToString();
                 _responseBuilder = null;
 
-                if (string.IsNullOrEmpty(text))
-                {
-                    await _chat.AddMessage(AuthorRole.Assistant, "[Empty Response]");
-                    return;
-                }
-
-                await _chat.AddMessage(AuthorRole.Assistant, text);
+                await _chat.AddMessage(AuthorRole.Assistant, string.IsNullOrEmpty(text) ? "[Empty Response]" : text);
             }
             finally
             {
@@ -103,6 +98,14 @@ namespace Cyrena.Runtime.Ollama.Services
         {
             lock (_lock)
             {
+                if (_responseBuilder != null)
+                {
+                    var str =  _responseBuilder.ToString();
+                    if (!string.IsNullOrEmpty(str))
+                    {
+                        _chat.AddAssistantMessage(str);
+                    }
+                }
                 _responseBuilder?.Clear();
             }
         }

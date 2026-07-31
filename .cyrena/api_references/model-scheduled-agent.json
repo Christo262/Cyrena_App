@@ -1,0 +1,13 @@
+{
+  "Title": "ScheduledAgent - Persisted Scheduled Agent Entity",
+  "Keywords": [
+    "ScheduledAgent",
+    "Entity",
+    "persistence",
+    "scheduled agent"
+  ],
+  "Summary": "Persisted scheduled-agent entity bound 1:1 to a ChatConfiguration by Id. Holds Schedule, NextExecution, and Instruction.",
+  "Link": null,
+  "Content": "# ScheduledAgent\n\n**Namespace**: \u0060Cyrena.Desk.Models\u0060\n**Assembly**: \u0060Cyrena.Desk.Core\u0060\n**Base class**: \u0060Entity\u0060 (from \u0060Cyrena.Models\u0060)\n\n## Purpose\nA persisted scheduled-agent entry. Maps 1:1 to a \u0060ChatConfiguration\u0060 by sharing\nits \u0060Id\u0060 (\u0060Entity.Id\u0060). When the scheduler fires, the \u0060Instruction\u0060 is sent to\nthe chat identified by \u0060Id\u0060.\n\n## Definition\n\n\u0060\u0060\u0060csharp\npublic class ScheduledAgent : Entity\n{\n    public ScheduledAgent() { }\n    public ScheduledAgent(string chatConfigurationId, Schedule schedule, string instruction);\n\n    public Schedule Schedule { get; set; } = new();\n    public DateTime? NextExecution { get; set; }\n    public string Instruction { get; set; } = string.Empty;\n}\n\u0060\u0060\u0060\n\n## Constructor\n- \u0060chatConfigurationId\u0060 must match an existing \u0060ChatConfiguration.Id\u0060. Cannot be null, empty, or whitespace.\n- \u0060schedule\u0060 cannot be null. Should be validated via \u0060Schedule.Validate()\u0060 or built via \u0060ScheduleBuilder\u0060.\n- \u0060instruction\u0060 cannot be null, empty, or whitespace.\n\n## Schedule\nWhen the agent should fire. Must be consistent with its \u0060Schedule.Interval\u0060 \u2014\nuse \u0060ScheduleBuilder\u0060 to construct, or call \u0060Schedule.Validate()\u0060 after manual\nconstruction.\n\n## NextExecution\nThe next time this agent is scheduled to fire. \u0060null\u0060 means the agent is\npaused or has not been scheduled yet. Updated by the scheduler after each\nexecution. Agents with \u0060Schedule.Interval == ScheduleInterval.None\u0060 are deleted\nby the scheduler rather than being scheduled.\n\n## Instruction\nThe prompt sent to the chat identified by \u0060Entity.Id\u0060 when the agent fires.\nAlways non-null; empty strings are treated as invalid by the constructor.\n\n## Persistence\nStored via \u0060IStore\u003CScheduledAgent\u003E\u0060 under the key \u0060\u0022scheduled_agents\u0022\u0060,\nregistered as a singleton store by \u0060DeskExtension.BuildExtension\u0060.\n",
+  "Id": "model-scheduled-agent"
+}

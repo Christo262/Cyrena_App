@@ -1,0 +1,13 @@
+{
+  "Title": "Cyrena.Desk.Extension - Package Overview",
+  "Keywords": [
+    "Cyrena.Desk.Extension",
+    "extension package",
+    "scheduler",
+    "DeskExtension"
+  ],
+  "Summary": "Extension package wiring the Desk scheduled-agent platform into a Cyrena host. Registers the store, container, and hosted service; ships the extension manifest.",
+  "Link": null,
+  "Content": "# Cyrena.Desk.Extension\n\n**Namespace root**: \u0060Cyrena.Desk\u0060\n**Target framework**: \u0060net10.0\u0060\n**Dependencies**: \u0060Cyrena.Components.Core\u0060, \u0060Cyrena.Extensa.Core\u0060, \u0060Cyrena.Desk.Core\u0060, \u0060Microsoft.AspNetCore.Components.Web\u0060\n**SDK**: \u0060Microsoft.NET.Sdk.Razor\u0060 (Razor components are anticipated)\n\n## Purpose\nExtension package that wires the Desk scheduled-agent platform into a Cyrena host.\nRegisters the persistence store, the agent-instance container, and the\n\u0060SchedulerHostedService\u0060. Ships the extension manifest consumed by the loader.\n\n## Contents\n- \u0060DeskExtension.cs\u0060 \u2014 \u0060Extension\u0060 entry point, builds DI registrations\n- \u0060Services/AgentInstancesContainer.cs\u0060 \u2014 internal implementation of \u0060IAgentInstancesContainer\u0060\n- \u0060Services/SchedulerHostedService.cs\u0060 \u2014 internal \u0060BackgroundService\u0060 that runs the dispatch \u002B sweep loop\n- \u0060Components/_Imports.razor\u0060 \u2014 Razor imports; the \u0060Components/\u0060 folder is otherwise empty\n- \u0060extension.json\u0060 \u2014 extension manifest\n\n## Wiring\n\u0060DeskExtension.BuildExtension\u0060 registers:\n1. \u0060IStore\u003CScheduledAgent\u003E\u0060 under the key \u0060\u0022scheduled_agents\u0022\u0060 (singleton scope, via \u0060ICyrenaPersistenceBuilder\u0060)\n2. \u0060IAgentInstancesContainer\u0060 \u2192 \u0060AgentInstancesContainer\u0060 (singleton)\n3. \u0060SchedulerHostedService\u0060 as a hosted service\n\nThe host service depends on:\n- \u0060IStore\u003CScheduledAgent\u003E\u0060\n- \u0060IKernelController\u0060 (from \u0060Cyrena.Contracts\u0060)\n- \u0060IAgentInstancesContainer\u0060\n- \u0060ILogger\u003CSchedulerHostedService\u003E\u0060\n\n## Tick interval\n\u0060SchedulerHostedService.TickInterval\u0060 is \u0060TimeSpan.FromSeconds(15)\u0060. The service\nyields via \u0060Task.Delay(TickInterval, stoppingToken)\u0060 at the bottom of each loop.\n",
+  "Id": "cyrena-desk-extension-overview"
+}

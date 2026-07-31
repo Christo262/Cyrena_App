@@ -153,7 +153,9 @@ namespace Cyrena.Runtime.Services
                     }
                     catch (Exception ex)
                     {
-                        await kernel.GetRequiredService<IChatMessageService>().LogError(ex.Message);
+                        var chat = kernel.GetRequiredService<IChatMessageService>();
+                        await chat.LogError(ex.Message);
+                        
                         InferenceEnd();
                     }
                 }

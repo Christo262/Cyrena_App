@@ -1,0 +1,13 @@
+{
+  "Title": "DeskExtension - Extension Entry Point",
+  "Keywords": [
+    "DeskExtension",
+    "Extension",
+    "wiring",
+    "DI"
+  ],
+  "Summary": "Extension entry point. Registers the scheduled-agents store, the agent-instance container (singleton), and the scheduler as a hosted service.",
+  "Link": null,
+  "Content": "# DeskExtension\n\n**Namespace**: \u0060Cyrena.Desk\u0060\n**Assembly**: \u0060Cyrena.Desk.Extension\u0060\n**Base class**: \u0060Cyrena.Extensa.Models.Extension\u0060\n\n## Definition\n\n\u0060\u0060\u0060csharp\npublic class DeskExtension : Extension\n{\n    public override void BuildExtension(CyrenaBuilder builder);\n}\n\u0060\u0060\u0060\n\n## BuildExtension\nRegisters:\n\n1. \u0060IStore\u003CScheduledAgent\u003E\u0060 as a singleton store under the key \u0060\u0022scheduled_agents\u0022\u0060,\n   via \u0060ICyrenaPersistenceBuilder.AddSingletonStore\u003CScheduledAgent\u003E(\u0022scheduled_agents\u0022)\u0060.\n2. \u0060IAgentInstancesContainer\u0060 \u2192 \u0060AgentInstancesContainer\u0060 as a singleton.\n3. \u0060SchedulerHostedService\u0060 as a hosted service.\n\n\u0060builder.GetFeatureOption\u003CICyrenaPersistenceBuilder\u003E()\u0060 is used to access the\npersistence feature option; the host must have persistence configured for the\nstore registration to succeed.\n\n## Wiring contract\n- \u0060IStore\u003CScheduledAgent\u003E\u0060 resolution: takes the \u0060IStore\u003CScheduledAgent\u003E\u0060 registered in (1).\n- \u0060IKernelController\u0060 resolution: comes from the host\u0027s \u0060Cyrena.Core\u0060 registration.\n- \u0060ILogger\u003CSchedulerHostedService\u003E\u0060 resolution: standard ASP.NET Core logging.\n",
+  "Id": "desk-extension"
+}

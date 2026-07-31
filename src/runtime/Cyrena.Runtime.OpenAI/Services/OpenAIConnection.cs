@@ -34,6 +34,14 @@ namespace Cyrena.Runtime.OpenAI.Services
         {
             lock (_lock)
             {
+                if (_responseBuilder != null)
+                {
+                    var str =  _responseBuilder.ToString();
+                    if (!string.IsNullOrEmpty(str))
+                    {
+                        _chat.AddAssistantMessage(str);
+                    }
+                }
                 _responseBuilder?.Clear();
             }
         }

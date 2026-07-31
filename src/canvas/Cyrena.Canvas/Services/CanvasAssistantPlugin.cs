@@ -13,7 +13,7 @@ namespace Cyrena.Canvas.Services
     internal class CanvasAssistantPlugin : IAssistantPlugin
     {
         public string Id => "cyrena.canvas";
-        public string[] Modes => [IAssistantMode.AssistantModeDefault];
+        public string[] Modes => [];
 
         public int Priority => 20;
 

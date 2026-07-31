@@ -43,14 +43,14 @@ namespace Cyrena.Extensions
             builder.Services.AddSingleton<IPluginServerService, PluginServerService>();
             builder.Services.AddSingleton<IPluginPackageService, PluginPackageService>();
             builder.Services.AddSingleton<IPackageManager, PackageManager>();
-            builder.Services.AddSingleton<DownloadService>();
+            builder.Services.AddHostedService<DownloadService>();
             builder.AddSettingsComponent<Servers>("Extensions", 10);
-
-            builder.AddRunAction(async (sp, ct) =>
-            {
-                var dms = sp.GetRequiredService<DownloadService>();
-                await dms.StartAsync(ct);
-            });
+            //
+            // builder.AddRunAction(async (sp, ct) =>
+            // {
+            //     var dms = sp.GetRequiredService<DownloadService>();
+            //     await dms.StartAsync(ct);
+            // });
             return builder;
         }
     }
