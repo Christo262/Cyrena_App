@@ -1,7 +1,7 @@
 {
   "id": "cyrena.ltm",
   "name": "Long-term Memory",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "entryAssemblyFile": "Cyrena.LTM.dll",
   "description": "Provides persistent cross-conversation memory for Cyréna’s default assistant, enabling contextual recall and continuity between sessions.",
   "dependencies": [
