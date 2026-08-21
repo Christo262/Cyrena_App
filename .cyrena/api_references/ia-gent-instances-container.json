@@ -1,0 +1,13 @@
+{
+  "Title": "IAgentInstancesContainer - In-Flight Agent Registry",
+  "Keywords": [
+    "IAgentInstancesContainer",
+    "AgentInstance",
+    "registry",
+    "container"
+  ],
+  "Summary": "Contract for the in-flight agent instance registry. Tracks running AgentInstance runs so the scheduler can avoid duplicate spawns and discover completed instances to tear down.",
+  "Link": null,
+  "Content": "# IAgentInstancesContainer\n\n**Namespace**: \u0060Cyrena.Desk.Contracts\u0060\n**Assembly**: \u0060Cyrena.Desk.Core\u0060\n\n## Purpose\nRegistry of in-flight \u0060AgentInstance\u0060 runs. The scheduler uses it to (a) avoid\nspawning a second instance of the same agent while one is already running, and\n(b) discover completed instances to tear down and recompute the next execution.\n\n## Members\n\n\u0060\u0060\u0060csharp\npublic interface IAgentInstancesContainer\n{\n    bool TryAdd(AgentInstance instance);\n    bool TryRemove(string id, out AgentInstance? instance);\n    bool IsActive(string id);\n    bool TryGet(string id, out AgentInstance? instance);\n    IEnumerable\u003CAgentInstance\u003E Instances { get; }\n}\n\u0060\u0060\u0060\n\n### TryAdd\nAdds an \u0060AgentInstance\u0060 keyed by \u0060instance.ScheduledAgent.Id\u0060. Returns \u0060false\u0060\nif an instance for the same id already exists.\n\n### TryRemove\nRemoves the instance for the given id. Returns \u0060true\u0060 and outputs the removed\ninstance if present; otherwise returns \u0060false\u0060 and outputs \u0060null\u0060.\n\n### IsActive\nReturns \u0060true\u0060 if an instance for the given id is currently registered.\n\n### TryGet\nReturns the instance for the given id if present, otherwise \u0060null\u0060.\n\n### Instances\nLive collection of all registered instances. The scheduler snapshots this before\niterating to avoid mutating-during-iteration.\n\n## Implementation\n\u0060Cyrena.Desk.Services.AgentInstancesContainer\u0060 in \u0060Cyrena.Desk.Extension\u0060\n(internal, registered as singleton via \u0060DeskExtension.BuildExtension\u0060).\nBacked by \u0060ConcurrentDictionary\u003Cstring, AgentInstance\u003E\u0060.\n",
+  "Id": "ia-gent-instances-container"
+}

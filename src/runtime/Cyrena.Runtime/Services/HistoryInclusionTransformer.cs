@@ -1,9 +1,6 @@
 ﻿using Cyrena.Contracts;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Cyrena.Runtime.Services
 {
@@ -27,6 +24,12 @@ namespace Cyrena.Runtime.Services
                     return Task.FromResult(IterationCountHistory(history, 2));
                 case Cyrena.Models.HistoryInclusionMode.LastTen:
                     return Task.FromResult(IterationCountHistory(history, 10));
+                case Cyrena.Models.HistoryInclusionMode.LastTwentyFive:
+                    return Task.FromResult(IterationCountHistory(history, 25));
+                case Cyrena.Models.HistoryInclusionMode.LastFifty:
+                    return Task.FromResult(IterationCountHistory(history, 50));
+                case Cyrena.Models.HistoryInclusionMode.LastHundred:
+                    return Task.FromResult(IterationCountHistory(history, 100));
                 case Cyrena.Models.HistoryInclusionMode.Instruct:
                     var hst = new ChatHistory();
                     hst.Add(history.Last());

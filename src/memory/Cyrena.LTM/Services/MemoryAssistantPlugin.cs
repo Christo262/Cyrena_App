@@ -19,7 +19,7 @@ namespace Cyrena.LTM.Services
         }
 
         public string Id => "cyrena.ltm";
-        public string[] Modes => [IAssistantMode.AssistantModeDefault];
+        public string[] Modes => [];
         public int Priority => 10;
         public bool Required => false;
         public string Title => "Long-term Memory";

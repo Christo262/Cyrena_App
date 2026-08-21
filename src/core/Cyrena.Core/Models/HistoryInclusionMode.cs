@@ -20,6 +20,9 @@ namespace Cyrena.Models
         /// Includes only last 10 iterations
         /// </summary>
         LastTen,
+        LastTwentyFive,
+        LastFifty,
+        LastHundred,
         /// <summary>
         /// Includes no history, instruct mode
         /// </summary>

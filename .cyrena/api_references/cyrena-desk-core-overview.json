@@ -1,0 +1,13 @@
+{
+  "Title": "Cyrena.Desk.Core - Package Overview",
+  "Keywords": [
+    "Cyrena.Desk",
+    "scheduled agent",
+    "architecture",
+    "package"
+  ],
+  "Summary": "Contracts and models for the Cyrena.Desk scheduled-agent platform. Pure data \u002B pure logic only, no DI, no I/O, no host services.",
+  "Link": null,
+  "Content": "# Cyrena.Desk.Core\n\n**Namespace root**: \u0060Cyrena.Desk\u0060 (with sub-namespaces \u0060Cyrena.Desk.Contracts\u0060 and \u0060Cyrena.Desk.Models\u0060)\n**Target framework**: \u0060net10.0\u0060\n**Dependencies**: \u0060Cyrena.Core\u0060, \u0060Cyrena.Persistence.Core\u0060\n\n## Purpose\nDefines the data model and contracts for the Cyrena.Desk scheduled-agent platform.\nA \u0060ScheduledAgent\u0060 binds a \u0060ChatConfiguration\u0060 (by \u0060Id\u0060) to a \u0060Schedule\u0060 and an\n\u0060Instruction\u0060. When the scheduler in \u0060Cyrena.Desk.Extension\u0060 fires, it loads a\nkernel for each due agent and runs the instruction through \u0060IIterationService\u0060.\n\n## Contents\n- \u0060Contracts/IAgentInstancesContainer.cs\u0060 \u2014 registry of in-flight agent runs\n- \u0060Models/ScheduledAgent.cs\u0060 \u2014 persisted scheduled-agent entity\n- \u0060Models/AgentInstance.cs\u0060 \u2014 runtime wrapper around a kernel \u002B scheduled agent\n- \u0060Models/Schedule.cs\u0060 \u2014 schedule data \u002B \u0060ScheduleBuilder\u0060 \u002B \u0060Next()\u0060 computation\n\n## Rules\n- Pure data and pure logic only.\n- No \u0060IServiceCollection\u0060 use, no I/O, no host services.\n- \u0060Schedule.Next(from)\u0060 is the single source of truth for next-fire computation.\n",
+  "Id": "cyrena-desk-core-overview"
+}

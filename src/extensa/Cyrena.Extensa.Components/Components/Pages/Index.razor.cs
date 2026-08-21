@@ -134,16 +134,8 @@ namespace Cyrena.Extensa.Components.Pages
         {
             if (ext.Status == ExtensionStatus.Runtime)
                 return;
-            var parameters = new DialogParameters
-            {
-                { "ContentText", $"Are you sure you want to uninstall {ext.Name} ({ext.Version})?" },
-                { "ButtonText", "Uninstall" },
-                { "CancelText", "Cancel" }
-            };
-            var options = new DialogOptions { CloseButton = true };
-            var dialog = await _dialog.ShowAsync<MudMessageBox>("Uninstall Extension", parameters, options);
-            var result = await dialog.Result;
-            if (result != null && !result.Canceled)
+            var res = await _dialog.ShowMessageBoxAsync("Uninstall", $"Are you sure you want to uninstall {ext.Name}?", "Yes", "No");
+            if (res == true)
             {
                 _uninstalls.Add(ext.Id);
                 var path = Path.Combine(_options.Value.InstallationsDirectory, "uninstall.json");

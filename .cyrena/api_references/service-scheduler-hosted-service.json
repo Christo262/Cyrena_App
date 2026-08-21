@@ -1,0 +1,15 @@
+{
+  "Title": "SchedulerHostedService - Scheduled Agent Dispatcher",
+  "Keywords": [
+    "SchedulerHostedService",
+    "BackgroundService",
+    "scheduler",
+    "tick",
+    "dispatch",
+    "sweep"
+  ],
+  "Summary": "Internal BackgroundService that drives Desk. Every 15s it dispatches due agents and sweeps completed instances, recomputing and persisting NextExecution before teardown.",
+  "Link": null,
+  "Content": "# SchedulerHostedService\n\n**Namespace**: \u0060Cyrena.Desk.Services\u0060\n**Assembly**: \u0060Cyrena.Desk.Extension\u0060\n**Base class**: \u0060BackgroundService\u0060\n**Visibility**: \u0060internal\u0060\n**Lifetime**: hosted service (registered in \u0060DeskExtension.BuildExtension\u0060)\n**Tick interval**: \u0060TimeSpan.FromSeconds(15)\u0060\n\n## Purpose\nThe single execution point of the Desk scheduled-agent platform. On each tick:\n\n1. **Dispatch** \u2014 finds scheduled agents whose \u0060NextExecution\u0060 is null or in the past.\n   - Agents with \u0060Schedule.Interval == None\u0060 are deleted from the store and logged.\n   - Other due agents are skipped if already running (\u0060IAgentInstancesContainer.IsActive\u0060).\n   - Otherwise loads a kernel, builds an \u0060AgentInstance\u0060, registers it, sets\n     \u0060IIterationService.Input\u0060 to a \u0060ChatMessageContent(user, instruction)\u0060, and\n     calls \u0060IIterationService.Iterate()\u0060 (fire-and-forget).\n2. **Sweep** \u2014 for each completed instance in the container:\n   - Recomputes \u0060NextExecution\u0060 via \u0060Schedule.Next(DateTime.UtcNow)\u0060 and persists\n     the updated \u0060ScheduledAgent\u0060 via \u0060IStore.UpdateAsync\u0060.\n   - Removes the instance from the container, disposes it, and unloads its kernel.\n\n## Dependencies\n- \u0060IStore\u003CScheduledAgent\u003E\u0060 \u2014 agent persistence\n- \u0060IKernelController\u0060 \u2014 kernel load/unload\n- \u0060IAgentInstancesContainer\u0060 \u2014 in-flight registry\n- \u0060ILogger\u003CSchedulerHostedService\u003E\u0060\n\n## Error handling\n- Each individual agent dispatch is wrapped in try/catch; one bad agent does not stop the tick.\n- Each individual completion sweep is wrapped in try/catch.\n- The tick itself is wrapped in try/catch with \u0060OperationCanceledException\u0060 honoring \u0060stoppingToken\u0060.\n- All errors are logged; the service does not crash on transient persistence or kernel failures.\n\n## Known TODOs\n- Kill agent after N consecutive dispatch failures.\n- Kill agent if \u0060IterationCount \u003E= AgentOptions.MaxIterations\u0060 and notify user.\n- Wire a completion-validation kernel function into \u0060AgentInstance.OnIterationEnd\u0060 so\n  \u0060MarkComplete()\u0060 is called when the LLM signals task completion. Until that is wired,\n  the completion sweep never tears down an instance.\n",
+  "Id": "service-scheduler-hosted-service"
+}
