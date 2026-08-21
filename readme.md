@@ -1,4 +1,16 @@
-﻿# Cyréna
+# Cyréna
+
+> **⚠️ This project is archived and is no longer maintained.**
+>
+> When Cyréna started I couldn't find a good local-first, extension-driven workspace for people running their own models. There are plenty now — Ollama ships its own agent with a skills system, and [Jan](https://jan.ai), [LM Studio](https://lmstudio.ai), [AnythingLLM](https://anythingllm.com), [Msty](https://msty.app) and [Open WebUI](https://openwebui.com) all support MCP and agentic workflows. If you came here looking for an offline-first AI workspace, one of those will serve you better.
+>
+> The repository stays up as a reference. The parts most worth reading:
+>
+> - **Dynamic prompts** — `IPromptManager` plus per-iteration re-materialisation in `ChatMessageService.GetKernelHistory`, so system prompts are assembled fresh each turn from ordered fragments that extensions own.
+> - **Structural feature activation** — `IAssistantPlugin`; a deactivated feature is never registered, so its tools and instructions genuinely do not exist for that conversation rather than being filtered out.
+> - **API references** — `src/coding/src/api_references`; model-authored, distilled project documentation with tiered search/read and context suppression via `ISuppressibleResult`.
+>
+> Thanks to everyone who gave it a try.
 
 Cyréna is an **AI-native workspace** built around extensions, dynamic prompts, and user-controlled model selection.
 
